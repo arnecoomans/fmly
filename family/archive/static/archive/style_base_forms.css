@@ -1,0 +1,73 @@
+.node > form > p > label {
+  width: 225px;
+  vertical-align: top;
+}
+.node > form > p > input,
+.node > form > p > select {
+  border: 1px solid black;
+  padding: 2px;
+  min-width: 800px;
+}
+.node > form > p > select {
+  height: 200px;
+}
+.node > form > p > textarea {
+  width: 800px;
+  min-height: 400px;
+}
+.node > form > p > span.helptext {
+  display: inline-block;
+  margin-left: 235px;
+}
+
+/** edit document */
+form.document-edit {
+  display: inline-block;
+  width: 380px;
+  margin-top: 10px;
+  float: left;
+}
+form.document-edit > p > label, 
+form.document-edit > p > input,
+form.document-edit > p > textarea,
+form.document-edit > p > select,
+form.document-edit > p > span {
+  display: inline-block;
+  vertical-align: top;
+}
+form.document-edit > p > input,
+form.document-edit > p > textarea,
+form.document-edit > p > select {
+  border: 1px solid;
+  padding: 3px 5px;
+}
+form.document-edit > p > label,
+form.document-edit > p > input,
+form.document-edit > p > textarea,
+form.document-edit > p > select,
+form.document-edit > p > span {
+  width: 97%%;
+}
+/** File Uploads with Dropzone.js */
+form.dropzone {
+  width: 100%;
+  margin-bottom: 25px;
+}
+form.dropzone > label,
+form.dropzone > input[type='file'],
+form.dropzone > input[type='submit'] {
+  display: none;
+}
+p.upload.proceed {
+  background-color: rgb(46, 235, 46);
+  border-radius: 10px;
+  padding: 10px 5px;
+  text-align: center;
+
+}
+p.upload.proceed > a {
+  color: darkblue;
+}
+p.upload.proceed > a:hover {
+  color: black;
+}

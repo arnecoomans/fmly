@@ -1,0 +1,72 @@
+{% extends "index.html" %}
+
+{% block pagetitle %}{{ image.title|default:'-' }}{% if image.year %} ({{ image.year }}){% endif %}{% endblock %}
+
+{% block css %}{% endblock %}
+
+{% block content %}
+  <div class="content-block detail documents">
+    <header>
+      <h2>{{ image.title|safe }}:</h2>
+      {% if page_description %}<p class="page-description">{{ page_description}}</p>{% endif %}
+    </header>
+    {% if perms.archive.view_document %}
+      <div class="view node document">
+        <div class="preview">
+          <a href="/documents/{{ image.source }}" title="Bekijk origineel van {{ image.title }}" target="_blank"><img src="/documents/{{ image.source }}"></a>
+          {% if user.is_superuser %}
+            <div class="superadmin">
+              <h3>Superadmin functies</h3>
+              <ul class="has-icons">
+                <li class="edit edit-icon"><a href="/admin/archive/image/{{ image.id }}/change/">Bewerk document in admin</a></li>
+                <li class="create create-icon"><a href="/admin/archive/image/add/">Nieuw document toevoegen in admin</a></li>
+              </ul>
+            </div>
+          {% endif %}
+        </div>
+        <div class="details">
+          {% include 'archive/inline_documentdetails.html' %}
+          {% if perms.archive.change_document %}
+          <ul class="has-icons">
+            <li class="edit edit-icon"><a href="{% url 'archive:image-edit' image.id %}">Bewerk documentgegevens</a></li>
+          </ul>
+          {% endif %}
+          {% include 'archive/inline_comments.html' with form=comment_form %}
+        </div>
+      </div>
+      <!-- Gegroepeerde documenten -->
+      {% if perms.archive.view_group or preview %}
+        {% if image.in_group.all %}
+          <div class="list">
+            {% for group in image.in_group.all %}
+              {% if group.images.all.count > 1 %}
+                <h3>{{ group.title }}</h3>
+                {% if group.description %}
+                  <p class="description">{{ group.description }}</p>
+                {% endif %}
+                {% for group_image in group.images.all %}
+                  {% if not group_image == image %}
+                    {% with group_image as image %}
+                      {% include 'archive/listblock_image.html' %}
+                    {% endwith %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endif %}
+      <!-- Oude koppelingen -->{% comment %}
+      {% if image.images.all %}
+        <div class="list">
+          <h3>Gekoppelde documenten:</h3>
+          {% for image in image.images.all %}
+            {% include 'archive/listblock_image.html' %}
+          {% endfor %}
+        </div>
+      {% endif %}{% endcomment %}
+    {% else %}
+      {% include 'archive/inline_insufficient_rights.html' %}
+    {% endif %}
+  </div>
+{% endblock %}

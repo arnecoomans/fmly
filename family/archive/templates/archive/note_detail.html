@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+
+{% block pagetitle %}{{ note.title|default:'-' }}{% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% load markdown_extras %}
+
+{% block content %}
+<div class="content-block detail node note">
+  <header>
+    <h2>Note:   {{ note.title|safe }}:</h2>
+    {% if page_description %}<p class="page-description">{{ page_description}}</p>{% endif %}
+  </header>
+  {% if perms.archive.view_note %}
+    <div class="view note">
+      {{ note.content|markdown|safe }}    
+    </div>
+    <div class="sidebar sidebar-right note-meta">
+      {% with note as document %}
+        {% include 'archive/inline_documentdetails.html' %}
+      {% endwith %}
+      {% if perms.archive.add_note or perms.archive.change_note %}
+        <div>
+          <h3>Beheer</h3>
+          <ul class="has-icons">
+            {% if perms.archive.change_note %}<li class="edit edit-icon"><a href="{% url 'archive:note-edit' note.id %}">Bewerk document</a></li>{% endif %}
+            {% if perms.archive.add_note %}<li class="create create-icon"><a href="{% url 'archive:add-note' %}">Nieuw document toevoegen</a></li>{% endif %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+    <div class="clearfix"></div>
+  {% else %}
+    {% include 'archive/inline_insufficient_rights.html' %}
+  {% endif %}
+  </div>
+{% endblock %}

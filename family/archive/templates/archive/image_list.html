@@ -1,0 +1,41 @@
+{% extends "index.html" %}
+
+{% block pagetitle %}{{ page_scope|default:'alle documenten' }}{% endblock %}
+
+{% block css %}{% endblock %}
+
+{% block content %}
+  <div class="content-block list documents">
+    <header>
+      <h2>Overzicht van {{ page_scope|default:'alle documenten' }}:</h2>
+      {% if page_description %}<p class="page-description">{{ page_description}}</p>{% endif %}
+    </header>
+      {% if images and user.is_authenticated or preview %}
+    <!-- Pagination -->
+    {% include "pagination.html" %}
+    <div class="list-documents">
+      {% if perms.archive.view_document or preview or show_all%}
+        {% for image in images %}
+          {% if date_headers %}
+            {% ifchanged image.uploaded_at.day %}
+              <div class="clearfix"></div>
+              <h5>{{ image.uploaded_at|date:'d/m/Y' }}</h5>
+              <div class="clearfix"></div>
+            {% endifchanged %}
+          {% endif %}
+          {% include 'archive/listblock_image.html' %}
+        {% endfor %}
+      {% else %}
+        {% include 'archive/inline_insufficient_rights.html' %}
+      {% endif %}
+    </div>
+
+    <!-- Pagination -->
+    {% include "pagination.html" %}
+  {% elif not user.is_authenticated %}
+    {% include 'archive/inline_login.html' %}
+  {% else %}
+    <p>No documents available</p>
+  {% endif %}
+  </div>
+{% endblock %}

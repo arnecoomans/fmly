@@ -1,0 +1,310 @@
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render, redirect
+from django.urls import reverse, reverse_lazy
+from django.views import generic
+from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
+from django.template.defaultfilters import slugify
+#from django.core.forms import SignUpForm
+from django.contrib.auth.forms import UserCreationForm
+from django.db.models import Q
+
+
+# https://docs.djangoproject.com/en/4.0/topics/auth/default/
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
+from math import floor
+
+from .models import *
+from .forms import *
+
+# Documents
+class DocumentListView(generic.ListView):
+  context_object_name = 'images'
+
+  paginate_by = 12
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    #context['truncate'] = True
+    return context
+  def get_queryset(self):
+    # Return the 5 latest Documents
+    return Image.objects.filter(is_deleted=False).filter(show_in_index=True).order_by('-uploaded_at')
+
+class DocumentPreviewListView(generic.ListView):
+  # Returns a single page of documents without login.
+  context_object_name = 'images'
+  paginate_by = 12
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['page_scope'] = 'voorbeelddocumenten'
+    context['page_description'] = 'In dit overzicht zie je een voorbeeld hoe documenten worden weergegeven. Wil je meer zien of details bekijken? Neem contact op.'
+    context['preview'] = True
+    return context
+  def get_queryset(self):
+    return Image.objects.filter(is_deleted=False).filter(show_in_index=True).order_by('-uploaded_at')[:12]
+
+class DocumentDecadeView(generic.ListView):
+  template_name = 'archive/documents-decade.html'
+  context_object_name = 'images'
+
+  paginate_by = 12
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    decade = floor(int(self.kwargs['decade']) / 10) * 10
+    context['page_scope'] = 'documenten in periode ' + str(decade) + ' - ' + str(decade + 9)
+    #context['page_description'] = ''
+    return context
+  def get_queryset(self):
+    decade = floor(int(self.kwargs['decade']) / 10) * 10
+    return Image.objects.filter(is_deleted=False).filter(year__gte=decade).filter(year__lte=decade+9).order_by('-year')
+
+class DocumentYearView(generic.DetailView):
+  model = Image
+  context_object_name = 'images'
+  def get(self, request, *args, **kwargs):
+    # Redirect to decade: divide year by ten, remove decimals, multiply by ten
+    # 1981 becomes 1980
+    decade = floor(int(self.kwargs['year']) / 10) * 10
+    return redirect('archive:decade', decade)
+
+class DocumentView(generic.DetailView):
+  model = Image
+
+class DocumentRedirectView(generic.DetailView):
+  # redirect /document/1/ to /document/1/title-included/
+  model = Image
+  context_object_name = 'images'
+  def get(self, request, *args, **kwargs):
+    # Redirect to document with slug
+    image = Image.objects.get(pk=self.kwargs['pk'])
+    title = 'needs a title' if image.title == '' else image.title
+    return redirect('archive:image', image.id, slugify(title) )
+
+class DocumentEditView(PermissionRequiredMixin, UpdateView):
+  permission_required = 'archive.change_document'  
+
+  model = Image
+  fields = ['title', 'description',
+            'document_source', 'date', 'year',
+            'people', 'tag',
+            'in_group', 'attachments',
+            'show_in_index']
+  #fields = '__all__'
+    
+  def form_valid(self, form):
+    form.instance.user = self.request.user
+    return super().form_valid(form)
+
+class MyDocumentList(generic.ListView):
+  context_object_name = 'images'
+  paginate_by = 15
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['page_scope'] = 'Documenten van ' + self.request.user.username 
+    context['page_description'] = 'Overzicht van documenten geupload door ' + self.request.user.first_name + ' ' + self.request.user.last_name + ' (' + self.request.user.username + ').'
+    context['show_all'] = True
+    context['date_headers'] = True
+    return context
+  def get_queryset(self):
+    return Image.objects.filter(user=self.request.user).filter(is_deleted=False).order_by('-uploaded_at')
+
+class MyPersonDetails(generic.DetailView):
+  permission_required = 'archive.view_person'
+  model = Person
+  def get_object(self):
+    return get_object_or_404(Person, related_user=self.request.user)
+
+class PersonRedirect(generic.DetailView):
+  def get(self, request, *args, **kwargs):
+    # Redirect to document with slug
+    person = Person.objects.get(pk=self.kwargs['pk'])
+    return redirect('archive:person', person.id, person.slug )
+
+class AddImage(PermissionRequiredMixin, CreateView):
+  permission_required = 'archive.create_document'
+  model = Image
+  fields = ['source']
+  success_url = reverse_lazy('archive:my-images') #'/mijn/documenten/'
+
+  template_name = 'archive/image_create.html'
+
+  def form_valid(self, form):
+    form.instance.user = self.request.user
+    form.instance.title = self.request.FILES['source'].name
+    form.instance.show_in_index = False
+    return super().form_valid(form)
+
+class AddImages(PermissionRequiredMixin, CreateView):
+  permission_required = 'archive.create_document'
+  model = Image #TmpDoc
+  fields = ['source']
+  success_url = reverse_lazy('archive:my-images') #'/mijn/documenten/'
+  template_name = 'archive/image_upload.html'
+  def form_valid(self, form):
+    form.instance.user = self.request.user
+    form.instance.title = self.request.FILES['source'].name
+    form.instance.show_in_index = False
+    return super().form_valid(form)
+
+# Comments
+class CommentView(PermissionRequiredMixin, CreateView):
+  permission_required = 'archive.add_comment'
+
+  model = Comment
+  fields = ['content']
+
+  def form_valid(self, form):
+    form.instance.user = self.request.user
+    form.instance.image = Image.objects.get(pk=self.kwargs['pk'])
+    return super().form_valid(form)
+class EditCommentView(PermissionRequiredMixin, UpdateView):
+  permission_required = 'archive.change_comment'
+  model = Comment
+  fields = ['content']
+  
+
+class CommentsView(generic.ListView):
+  model = Comment
+  context_object_name = 'comments'
+  paginate_by = 12
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['page_scope'] = 'Reacties op foto\'s'
+    context['page_description'] = 'Om een reactie te plaatsen, open de foto en plaats je reactie.'
+    return context
+  def get_queryset(self):      
+    return Comment.objects.order_by('-date_modified')
+
+class MyCommentList(generic.ListView):
+  model = Comment
+  context_object_name = 'comments'
+  paginate_by = 12
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['page_scope'] = 'Mijn reacties'
+    return context
+  def get_queryset(self):      
+    return Comment.objects.filter(user=self.request.user).order_by('-date_modified')
+
+
+
+# People
+class PersonView(generic.DetailView):
+  permission_required = 'archive.view_person'
+  model = Person
+
+class PersonsView(generic.ListView):
+  model = Person
+  #context_object_name = 'objects'
+  template_name = 'archive/people_list.html'
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['origin'] = 'person'
+    context['page_scope'] = 'personen'
+    context['page_description'] = 'Personen met afbeelding | <a href="' + reverse('archive:all-people') + '">Alle personen</a>.'
+    return context
+  def get_queryset(self):      
+    return Person.objects.all().filter(~Q(images=None)).order_by('last_name', 'first_name')
+class PersonsAllView(generic.ListView):
+  model = Person
+  #context_object_name = 'objects'
+  template_name = 'archive/people_list.html'
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['origin'] = 'person'
+    context['page_scope'] = 'personen'
+    context['page_description'] = '<a href="' + reverse('archive:people') + '">Personen met afbeelding</a> | Alle personen - op geboortejaar'
+    return context
+  def get_queryset(self):      
+    return Person.objects.all().order_by('last_name', 'year_of_birth')
+
+
+class PersonUpdateView(UpdateView):
+  model = Person
+  fields = ['first_name', 'given_names', 'last_name', 'nickname', 
+            'date_of_birth', 'year_of_birth', 'place_of_birth', 
+            'date_of_death', 'year_of_death', 'place_of_death',
+            'bio']
+  # fields = '__all__'
+  def get_form(self):
+    if self.request.user == self.get_object().related_user:
+      #self.email = self.get_object().related_user.email
+      self.fields.append('email')
+    form = super(PersonUpdateView, self).get_form()
+    return form
+
+  def form_valid(self, form):
+    return super().form_valid(form)
+
+class AddPerson(PermissionRequiredMixin, CreateView):
+  permission_required = 'archive.create_person'
+
+  model = Person
+  fields = ['first_name', 'given_names', 'last_name', 'nickname', 
+            'date_of_birth', 'year_of_birth', 'place_of_birth', 
+            'date_of_death', 'year_of_death', 'place_of_death',
+            'bio']
+
+  def form_valid(self, form):
+    form.instance.user = self.request.user
+    form.instance.slug = slugify(form.instance.first_name + ' ' + form.instance.last_name)
+    return super().form_valid(form)
+
+
+# Tags
+class TagView(generic.ListView):
+  model = Image
+  context_object_name = 'images'
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['page_scope'] = 'documenten met tag "' + self.kwargs['slug'] + '"'
+    #context['page_description'] = ''
+    return context
+  def get_queryset(self):
+    return Image.objects.filter(tag__slug=self.kwargs['slug']).order_by('-uploaded_at')
+
+class TagsView(generic.ListView):
+  model = Tag
+  context_object_name = 'objects'
+  template_name = 'archive/object_list.html'
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['origin'] = 'tag'
+    context['page_scope'] = 'tags'
+    #context['page_description'] = ''
+    return context
+class AddTagView(CreateView):
+  model = Tag
+  fields = ['title']
+
+
+# NOTITIES
+class NoteListView(generic.ListView):
+  model = Note
+  context_object_name = 'objects'
+  template_name = 'archive/object_list.html'
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['origin'] = 'note'
+    context['page_scope'] = 'notities'
+    #context['page_description'] = ''
+    return context
+
+class NoteView(generic.DetailView):
+  model = Note
+
+class NoteCreateView(generic.edit.CreateView):
+  model = Note
+  fields = ['title', 'content',]
+
+class NoteUpdateView(generic.edit.UpdateView):
+  model = Note
+  fields = ['title', 'content', 'people', 'tag']
+
+
+# USER MANAGEMENT
+class SignUpView(CreateView):
+  form_class = UserCreationForm
+  success_url = reverse_lazy('login')
+  template_name = 'registration/user_register_form.html'
+  #success_message = "Your profile was created successfully"

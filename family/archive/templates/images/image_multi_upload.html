@@ -1,0 +1,40 @@
+{% extends "index.html" %}
+
+{% block pagetitle %}Afbeelding toevoegen{% endblock %}
+
+{% block head %}
+  <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+{% endblock %}
+{% block css %}{% endblock %}
+
+{% block content %}
+  <h3>Upload bestand<!--en-->:</h3>
+  <!-- <p>Upload meerdere bestanden tegelijk.</p> -->
+  <ul>
+    <li>Bestand wordt als document aangemaakt</li>
+    <li>Het document krijgt de bestandsnaam als titel</li>
+    <li>Het document wordt niet getoond in het overzicht</li>
+    <li>Voor documenten die jij hebt geüploadet, kijk <a href="{% url 'archive:my-images' %}">hier</a>.</li>
+    <li>Werkt slepen niet? <a href="{% url 'archive:add-photo' %}">Gebruik het upload-formulier</a>.</li>
+  </ul>
+  {% if perms.archive.edit_document %}
+    <script>
+      Dropzone.options.imageUpload = {
+        // Configuration options go here
+        paramName: 'source',
+        uploadMultiple: false,
+      };
+    </script>
+    <form action="." enctype="multipart/form-data" method="post" class="document-edit dropzone" id="image-upload">
+      {% csrf_token %}
+      {{ form }}
+      <input type="submit" value="Opslaan"> 
+    </form>
+    <div class="clearfix"></div>
+    <p class="upload proceed"><a href="{% url 'archive:my-images' %}">Klaar met uploaden? Ga naar je ge&uuml;ploade afbeeldingen.</a></p>
+    <div class="clearfix"></div>
+  {% else %}
+    {% include 'archive/inline_insufficient_rights.html' %}
+  {% endif %}
+{% endblock %}

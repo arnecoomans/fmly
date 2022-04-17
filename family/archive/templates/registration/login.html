@@ -1,0 +1,17 @@
+{% extends "index.html" %}
+
+{% block pagetitle %}Aanmelden{% endblock %}
+
+{% block css %}{% endblock %}
+
+{% block login %}
+  <div class="registration node">
+    <h3>Login</h3>
+    <form method="POST" action=".">
+      {% csrf_token %}
+      {{ form.as_p }}                    
+      <button class="btn btn-primary" type="submit">Log in</button>
+    </form>
+    <p class="text-center">Heb je nog geen account, <a href="{% url 'archive:signup' %}">registreer</a> je hier.</p>
+  </div>
+{% endblock %}

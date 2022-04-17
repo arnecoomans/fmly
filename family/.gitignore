@@ -1,0 +1,12 @@
+*.pyc
+*~
+*.bak
+__pycache__
+myvenv
+db.sqlite3
+/static
+/documents
+.DS_Store
+/family/settings.py
+auth.md
+*/migrations/*.py

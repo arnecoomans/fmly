@@ -1,0 +1,13 @@
+<div class="list node document" id="document-{{ document.id }}">
+  <!-- Document header -->
+  <header>
+    <span class="document-id">#{{ image.id }}</span>
+    <h1><a href="{% url 'archive:image' image.id image.title|default:'needs-a-title'|slugify %}">{{ image.title|default:'-'|safe|truncatewords_html:3 }}</a></h1>
+  </header>
+  <!-- Hero image -->
+  {% include 'archive/inline_thumbnail.html' %}
+  <!-- Document details -->
+  {% with compact=4 %}
+    {% include 'archive/inline_documentdetails.html' %}
+  {% endwith %}
+</div>

@@ -1,0 +1,26 @@
+{% block pagination %}
+<!-- Pagination -->
+  {% if page_obj.paginator.num_pages > 1 %}
+    <div class="pagination">
+      <span class="previous">
+        {% if page_obj.has_previous %}
+          <a href="?page=1">eerste</a>
+          {% if page_obj.number != 2 %}
+            <a href="?page={{ page_obj.previous_page_number }}">vorige</a>
+          {% endif %}
+        {% endif %}
+      </span>
+      <span class="current">
+        {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+      </span>
+      <span class="next">
+        {% if page_obj.number != page_obj.paginator.num_pages %}
+          {% if page_obj.next_page_number != page_obj.paginator.num_pages %}
+            <a href="?page={{ page_obj.next_page_number }}">volgende</a>
+          {% endif %}
+          <a href="?page={{ page_obj.paginator.num_pages }}">laatste</a>
+        {% endif %}
+      </span>
+    </div>  
+  {% endif %}
+{% endblock %}

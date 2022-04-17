@@ -1,0 +1,3 @@
+python -m pip install Markdown
+python -m pip install Pillow
+

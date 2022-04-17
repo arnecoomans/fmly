@@ -1,0 +1,115 @@
+/** People/Person */
+.node > .column.right {
+  width: 380px;
+  overflow: hidden;
+  float: right;
+}
+.node > .column.left {
+  width: 780px;
+  float: left;
+}
+.node > .column > .portrait > img,
+.node > .column > .portrait > a > img {
+  width: 380px;
+  max-height:260px;
+  object-fit: cover;
+}
+.person-details > dl {
+  width: 100%;
+}
+.person-details > dl > dt,
+.person-details > dl > dd {
+  display: inline-block;
+  overflow: auto;
+  vertical-align: top;
+}
+
+.person-details > dl > dt  {
+  width: 260px;
+  clear:left;
+  float:left;
+}
+.person-details > dl > dd {
+  width: 510px;
+  clear:right;
+  padding:4px 0 4px 40px;
+}
+@media screen and (max-width: 840px) {
+  .node > .column.left,
+  .person-details > dl > dt,
+  .person-details > dl > dd {
+    width: 380px;
+    clear: both;
+  }
+}
+/** people list */
+li >span.person-details > span,
+li > span.person-details > a {
+  display: inline-block;
+  border: 0;
+}
+li > span.person-details > a {
+  width: 320px;
+}
+li > span.person-details > span.person-dates {
+  width: 120px;
+}
+
+
+
+/** File Uploads with Dropzone.js */
+form.dropzone {
+  width: 100%;
+  margin-bottom: 25px;
+}
+form.dropzone > label,
+form.dropzone > input[type='file'],
+form.dropzone > input[type='submit'] {
+  display: none;
+}
+p.upload.proceed {
+  background-color: rgb(46, 235, 46);
+  border-radius: 10px;
+  padding: 10px 5px;
+  text-align: center;
+
+}
+p.upload.proceed > a {
+  color: darkblue;
+}
+p.upload.proceed > a:hover {
+  color: black;
+}
+
+/** Footer */
+footer {
+  width: 1200px;
+  margin: 50px auto 150px auto;
+}
+footer > div.column {
+  display: inline-block;
+  width: 285px;
+  padding: 5px;
+  font-size: 80%;
+  vertical-align: top;
+}
+footer > div.column > h2 {
+  font-size: 16px;
+  font-weight: bold;
+}
+footer > div.column > ul {
+  list-style-type: none;
+  padding: 0;
+}
+footer > div.column > ul > li {
+  margin: 0;
+}
+footer > div.column > a,
+footer > div.column > ul > li > a {
+  color: #333;
+}
+footer > div.column > a:hover,
+footer > div.column > ul > li > a:hover {
+  color: #339;
+  background: tan;
+}

@@ -1,0 +1,10 @@
+<span class="person-details">
+  <a href="{% url 'archive:person' person.id person.slug|default:'details' %}" title="Bekijk details van {{ person.full_name }}">{{ person.full_name }}</a> 
+  <!-- born / died --><span class="person-dates">{% if person.year_of_birth or person.year_of_death %}({{ person.year_of_birth|default:'' }}{% if person.year_of_death %}-{% endif %}{{ person.year_of_death|default:'' }}){% endif %}</span>
+  <span class="person-icons has-icons">
+    <!-- bio -->{% if person.bio %}<i class="icon bio-icon" title="{{ person.name }} heeft een biografie"></i>{% endif %}
+    <!-- images -->{% if person.images.all.count > 0 %} <i class="icon image-icon" title="{{ person.images.all.count }} afbeeldingen met {{ person.name }}"></i>{{ person.images.all.count }}{% endif %}
+    <!-- notes -->{% if person.notes.all.count > 0 %} <i class="icon note-icon" title="{{ person.notes.all.count }} notities van {{ person.name }}"></i>{{ person.notes.all.count }}{% endif %}
+    <!-- comments -->{% if person.related_user.comments.all.count > 0 %} <i class="icon comment{% if person.related_user.comments.all.count > 1 %}s{% endif %}-icon" title="{{ person.related_user.comments.all.count }} reacties door {{ person.name }}"></i>{{ person.related_user.comments.all.count }}{% endif %}
+  </span>
+</span>

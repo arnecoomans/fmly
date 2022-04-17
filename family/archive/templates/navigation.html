@@ -1,0 +1,25 @@
+{% block navigation %}
+  <ul class="navigation has-icons white-icons">
+    {% if not user.is_authenticated %}
+      <li class="login-icon"><a href="{% url 'login' %}">Inloggen</a></li>
+    {% endif %}
+    {% if perms.archive.view_person %}
+      <li class="person person-icon"><a href="{% url 'archive:people' %}">Personen</a></li>
+    {% endif %}
+    {% if perms.archive.view_tag %}
+      <li class="tag tag-icon"><a href="{% url 'archive:tags' %}">Tags</a></li>
+    {% endif %}
+    {% if perms.archive.view_comment %}
+      <li class="comment comments-icon"><a href="{% url 'archive:comments' %}">Reacties</a></li>
+    {% endif %}
+    {% if perms.archive.view_note %}
+      <li class="note note-icon"><a href="{% url 'archive:notes' %}">Notities</a></li>
+    {% endif %}
+    {% if user.is_staff %}
+      <li class="admin-icon"><a href="/admin/">Admin</a></li>
+    {% endif %}
+    {% if user.is_authenticated %}
+      <li class="logout-icon"><a href="{% url 'logout' %}" title="Je bent ingelogd als {% if user.first_name %}{{ user.first_name }} {{ user.last_name }} ({% endif %}{{ user.username }}{% if user.first_name %}){% endif %}">Uitloggen</a></li>
+    {% endif %}
+  </ul>
+{% endblock %}

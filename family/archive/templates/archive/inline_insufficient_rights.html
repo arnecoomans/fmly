@@ -1,0 +1,13 @@
+<div class="error node insufficient-rights">
+  <h4>Je hebt niet genoeg rechten om {{ origin|default:'dit element' }} te bekijken.</h4>
+  <p>Als je bent geregistreerd, is dit nog niet genoeg. Je moet ook nog rechten toegewezen krijgen om de inhoud te bekijken. De site-beheerder(s) moet(en) deze rechten aan jou toekennen. Het makkelijkste is om de site-beheerder(s) een berichtje te sturen.</p>
+  <p></p>
+  <p>Ben je van mening dat deze melding onterecht is, neem contact op met de site-beheerder. Je kan daarbij de volgende gegevens vermelden:</p>
+  <ul class="has-icons">
+    <li class="user-icon">Wie: {{ user.username|safe }}</li>
+    <li class="admin-icon">Url: https://{{ request.get_host }}{{ request.path }}</li>
+    {% if request.META.HTTP_REFERER %}<li class="admin-icon">Via: {{ request.META.HTTP_REFERER }}</li>{% endif %}
+    <li class="date-icon">Tijd:  {% now "H:i d/m/Y" %}</li>
+    <li class="info-icon">Rechten: {{ origin|default:'onbekend' }}</li>
+  </ul> 
+</div>

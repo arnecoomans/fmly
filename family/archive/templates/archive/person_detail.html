@@ -1,0 +1,117 @@
+{% extends "index.html" %}
+
+{% block pagetitle %}{{ person.full_name }}{% endblock %}
+
+{% block css %}{% endblock %}
+
+{% load markdown_extras %}
+
+{% block content %}
+  <div class="content-block detail person node">
+    <header>
+      <h2>{{ person.full_name }}</h2>
+      {% if page_description %}<p class="page-description">{{ page_description}}</p>{% endif %}
+    </header>
+
+    <!-- Right column -->
+      <div class="column right">
+        {% if person.portrait %}
+          <div class="portrait">
+            <a href="{% url 'archive:image-redirect' person.portrait.id %}"><img src="/documents/{{ person.portrait.source }}"></a>
+          </div>
+        {% endif %}
+        {% if perms.archive.change_person or person.related_user.id %}
+          <h4>Beheer:</h4>
+          <ul class="has-icons">
+            {% if person.related_user.id %}<li class="info info-icon">Gebruiker: {{ person.related_user }}</li>{% endif %}
+            {% if perms.archive.change_person %}<li class="edit edit-icon"><a href="{% url 'archive:person-edit' person.id %}">Bewerk gegevens</a></li>{% endif %}
+          </ul>
+        {% endif %}        
+      </div>
+
+    <!-- Lef Column -->
+    <div class="column left">
+      {% if perms.archive.view_person %}
+        <div class="person-details">
+          <dl>
+            {% if person.nickname %}
+              <dt>Bijnaam/bijnamen:</dt>
+              <dd>{{ person.nickname }}</dd>
+            {% endif %}
+            {% if person.date_of_birth or person.year_of_birth or person.place_of_birth%}
+              <dt>Geboren:</dt>
+              <dd>
+                {% if person.date_of_birth %}{{ person.date_of_birth|date:'d/m/Y' }}{% elif person.year_of_birth %}{{ person.year_of_birth }}{% endif %}
+                {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}
+              </dd>
+            {% endif %}
+            {% if person.date_of_death or person.year_of_death or person.place_of_death%}
+              <dt>Overleden:</dt>
+              <dd>
+                {% if person.date_of_death %}{{ person.date_of_death|date:'d/m/Y' }}{% elif person.year_of_death %}{{ person.year_of_death }}{% endif %}
+                {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}
+                {% if person.age %}({{ person.age }}){% endif %}
+              </dd>
+            {% endif %}
+            <!-- Ouder -->
+            {% if person.get_parents %}
+              <dt>Ouder{% if person.get_parents|length > 1 %}s{% endif %}:</dt>
+              <dd>
+                {% for person in person.get_parents %}
+                  {% include 'archive/inline_personlink.html' %}{% if not forloop.last %}<br>{% endif %}
+                {% endfor %}
+                </dd>
+            {% endif %}
+            <!-- Partners -->
+            {% if person.get_partners %}
+              <dt>Partner{% if person.get_partners|length > 1 %}s{% endif %}:</dt>
+              <dd>
+                {% for person in person.get_partners %}
+                  {% include 'archive/inline_personlink.html' %}{% if not forloop.last %}<br>{% endif %}
+                {% endfor %}
+              </dd>
+            {% endif %}
+            <!-- Broer(s) en Zus(sen) -->
+            {% if person.get_siblings %}
+              <dt>Broer(s)/Zus(sen):</dt>
+              <dd>
+                {% for person in person.get_siblings %}
+                  {% include 'archive/inline_personlink.html' %}{% if not forloop.last %}<br>{% endif %}
+                {% endfor %}
+              </dd>
+            {% endif %}
+            <!-- Kinderen -->
+            {% if person.get_children %}
+              <dt>Kind{% if person.get_children|length > 1 %}eren{% endif %}:</dt>
+              <dd>
+                {% for person in person.get_children %}
+                  {% include 'archive/inline_personlink.html' %}{% if not forloop.last %}<br>{% endif %}
+                {% endfor %}
+            {% endif %}
+            {% if person.bio %}
+              <dt>Biografie:</dt>
+              <dd>{{ person.bio|markdown|safe }}</dd>
+            {% endif %}
+          </dl>
+        </div>
+      </div>  
+
+      
+
+      <div class="clearfix"></div>
+    </div>
+
+    <div class="list persons">
+      {% if person.images.all %}
+        <div class="list-documents">
+          <h2>Gekoppelde documenten ({{ person.images.all.count }}):</h2>
+          {% for image in person.images.all %}
+            {% include 'archive/listblock_image.html' %}
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% else %}
+        {% include 'archive/inline_insufficient_rights.html' %}
+      {% endif %}
+    </div>
+{% endblock %}

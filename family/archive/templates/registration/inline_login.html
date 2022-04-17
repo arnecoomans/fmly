@@ -1,0 +1,21 @@
+<div class="registration node">
+    <h3>Login</h3>
+    <p>Je bent niet ingelogd. Om de inhoud van de site te kunnen bekijken moet je een account hebben en inloggen. Heb je nog geen account, kan je je <a href="{% url 'archive:signup' %}">registreren</a>.</p>
+    
+    <form method="POST" action="{% url 'login' %}?next={{request.path}}">
+      {% csrf_token %}
+      <p>
+      <label for="id_username">Username:</label>
+      <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required id="id_username">
+    </p>
+    <p>
+      <label for="id_password">Password:</label>
+      <input type="password" name="password" autocomplete="current-password" required id="id_password">
+    </p>                    
+      <button class="btn btn-primary" type="submit">Log in</button>
+    </form>
+    <p class="text-center">Heb je nog geen account, <a href="{% url 'archive:signup' %}">registreer</a> je.</p>
+  </div>
+
+    
+  

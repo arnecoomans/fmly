@@ -1,0 +1,91 @@
+/**
+    Family Photo Archive
+    Domain specific stylesheet. This stylesheet contains colouring
+    contact: development @ cmns . nl
+
+*/
+/**
+  style_base.css
+*/
+
+/**
+  fmly.css
+*/
+body {
+  font-family: monospace;
+  background-image: url('/static/archive/images/background-indonesie.jpg');
+}
+body > header {
+  background-color: rgba(0,0,0,0.85);
+}
+header > h1 *,
+header > ul *,
+header > span {
+  color: white;
+}
+header * a:hover {
+  color: tan;
+}
+body > header > h1 > a::before {
+  content: '__';
+}
+.pagination * > a {
+  color: black;
+}
+.pagination * > a:hover {
+  color: tan;
+  background-color: black;
+}
+.content {
+  background-color: white;
+}
+
+/** Nodes */
+.list.node > header {
+  background-color: black;x
+}
+.node > div > * a {
+  color: black;
+  border-bottom: 1px solid tan;
+}
+.node > div > * a:hover {
+  color: black;
+  background-color: tan;
+}
+/* forms */
+form.document-edit > p > input,
+form.document-edit > p > textarea,
+form.document-edit > p > select {
+  border-color: tan;
+}
+
+
+/** Icons */
+i.icon::before,
+ul.has-icons > li::before {
+  color: tan;
+}
+ul.has-icons.white-icons > li::before {
+  color: white;
+}
+/** Comments */
+.comments > h3 {
+  font-size: 20px;
+}
+.comments > form > textarea,
+.comments > .comment {
+  border-color: tan;
+}
+.comments > .comment > h4 {
+  font-size: 16px;
+  background-color: tan;
+  color: white;
+}
+,
+.comments > form > input[type=submit] {
+  padding:5px 15px; 
+  border:1px solid;
+  cursor:pointer;
+  background: white; 
+  border-color: tan;
+}

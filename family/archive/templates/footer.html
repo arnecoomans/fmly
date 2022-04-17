@@ -1,0 +1,32 @@
+<footer>
+  <div class="column">
+    {% if request.user.is_authenticated %}
+      <h2>Mijn gegevens</h2>
+      <ul>
+        <li><a href="{% url 'archive:my-images' %}">Bekijk mijn uploads</a></li>
+        <li><a href="{% url 'archive:my-bio' %}">Bekijk mijn profiel</a></li>
+        <li><a href="{% url 'archive:my-comments' %}">Bekijk mijn reacties</a></li>
+      </ul>
+    {% endif %}
+  </div>
+  <div class="column">
+    {% if request.user.is_authenticated %}
+      <h2>Beheer</h2>
+      <ul>
+        {% if perms.archive.add_image %}<li><a href="{% url 'archive:add-photos' %}">Afbeeldingen uploaden</a></li>{% endif %}
+        {% if perms.archive.add_person %}<li><a href="{% url 'archive:add-person' %}">Persoon toevoegen</a></li>{% endif %}
+        {% if perms.archive.add_tag %}<li><a href="{% url 'archive:add-tag' %}">Tag toevoegen</a></li>{% endif %}
+        {% if perms.archive.add_note %}<li><a href="{% url 'archive:add-note' %}">Notitie toevoegen</a></li>{% endif %}
+      </ul>
+    {% endif %}
+  </div>
+
+  <div class="column">
+  </div>
+
+  <div class="column">
+    <h2>Over fmly</h2>
+    Gebouwd, beheerd en onderhouden door <a href="https://arnecoomans.nl/">Arne Coomans</a>.<br/>
+    Een flexibele foto-gallerij met veel extra context-informatie om een familiegeschiedenis op te bouwen.
+  </div>
+</footer>

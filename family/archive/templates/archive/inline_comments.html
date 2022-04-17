@@ -1,0 +1,20 @@
+{% load markdown_extras %}
+<div class="comments">
+  {% if perms.archive.add_comment %}
+    <form action="{% url 'archive:comment' image.id %}" method="post">
+      {% csrf_token %}
+      <textarea name="content" cols="45" rows="3" id="id_content" required=required></textarea>
+      <input type="submit" value="Reageer">
+    </form>
+  {% endif %}
+  {% if perms.archive.view_comment and image.comments.all %}
+    <h3>Reacties:</h3>
+    {% for comment in image.comments.all reversed %}
+      <div class="comment">
+        <h4>{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user.username }}{% endif %}, {{ comment.date_created|timesince }} geleden.</h4><!-- date:'d/m/Y G:i' -->
+        {{ comment.content|markdown|safe }}
+        {% if comment.user == request.user %}<br /><a href="{% url 'archive:edit-comment' comment.id %}" class="edit-comment">Bewerk je reactie</a>{% endif %}
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>

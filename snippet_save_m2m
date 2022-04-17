@@ -1,0 +1,31 @@
+# Populate linked images
+    # if this document has linked images via images
+    if self.images.all():
+      # Images this image links to:
+      linked_image_list = [ self.id ]
+      # Images linked images link to:
+      linked_linked_image_list = []
+      # Build a list of images that are linked to
+      # by checking all linked images for linked imags
+      for linked_image in self.images.all():
+        if linked_image.id not in linked_image_list:
+          linked_image_list.append(linked_image.id)
+        for linked_linked_image in linked_image.images.all():
+          if linked_linked_image.id not in linked_image_list:
+            linked_image_list.append(linked_linked_image.id)
+            # If the image is notn yet mentioned in directly linked images, 
+            # and not mentioned by previously linked images,
+            # it should be concidered new and actionable.
+            linked_linked_image_list.append(linked_linked_image.id)
+      # Now we have a list of unique image id's that are referenced in all images, 
+      # and have not yet been linked.
+      # Take action on these images.
+      debug_message = ''
+      for id in linked_linked_image_list:
+        debug_message += 'adding ' + str(id) + ': ' + str(Document.objects.get(pk=id)) + "\n"
+        self.images.add(Document.objects.get(pk=id))
+      # Debugging - dump info to description
+      linked_image_list = [str(int) for int in linked_image_list]
+      linked_linked_image_list = [str(int) for int in linked_linked_image_list]
+      #self.description = ', '.join(linked_image_list) + ' | ' + ', '.join(linked_linked_image_list)
+      self.description = debug_message + "\n\n" + str(self.images.all())
