@@ -1,0 +1,41 @@
+{% extends "index.html" %}
+
+{% block pagetitle %}{{ page_scope|default:'alle documenten' }}{% endblock %}
+
+{% block css %}{% endblock %}
+
+{% block content %}
+  <div class="content-block node documents">
+    <header>
+      <h2>Overzicht van {{ page_scope|default:'alle personen' }} ({{ person_list.all.count }}):</h2>
+      {% if page_navigation %}<p class="page-description">{{ page_navigation|safe }}</p>{% endif %}
+    </header>
+    {% if perms.archive.view_person %}
+      {% if person_list %}
+        <div>
+          {% for person in person_list %}
+            {% if forloop.first %}
+              <ul class="object-list has-icons">
+            {% endif %}
+            {% ifchanged person.last_name %}
+              </ul>
+              <h5>{{ person.last_name }}</h5>
+              <ul class="object-list has-icons">
+            {% endifchanged %}
+            <li class="person person-icon">{% include 'archive/inline_personlink.html' %}</li>
+          {% endfor %}
+          </ul>
+          {% if perms.archive.create_person %}
+            <ul class="has-icons admin-functions">
+              {% if origin == 'person' and perms.archive.create_person %}
+                <li class="edit-icon"><a href="{% url 'archive:add-person' %}">Persoon aanmaken</a></li>
+              {% endif %}
+            </ul>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% else %}
+      {% include 'archive/inline_insufficient_rights.html' %}
+    {% endif %}
+  </div>
+{% endblock %}

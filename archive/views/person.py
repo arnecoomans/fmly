@@ -8,6 +8,7 @@ from django.db.models import Q
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
+from math import floor
 
 from archive.models import Person
 
@@ -16,6 +17,40 @@ from archive.models import Person
 class PersonView(generic.DetailView):
   model = Person
 
+class PersonListView(generic.ListView):
+  model = Person
+  options = {
+    'photo': False,
+    'year': None,
+    'lastname': None,
+  }
+
+  def __init__(self):
+    pass
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['origin'] = 'person'
+    context['page_scope'] = 'alle personen'
+    context['page_description'] = 'Personen met afbeelding | <a href="' + reverse('archive:all-people') + '">Alle personen</a>.'
+    
+    #context['page_navigation'] = [decade_start, decade_end]
+    return context
+
+  def get_queryset(self):
+    queryset = Person.objects.all()
+    if self.request.GET.get('has_photo', ''):
+      queryset = queryset.filter(~Q(images=None))
+    ''' Use ?year=1234 to see all people who lived in this year'''
+    if self.request.GET.get('year', ''):
+      year = int(self.request.GET.get('year', ''))
+      queryset = queryset.filter(year_of_birth=year)| queryset.filter(year_of_birth__lte=year).filter(year_of_death__gte=year)
+    ''' Use ?decade=1980 to see al people who lived in this decade'''
+    if self.request.GET.get('decade', ''):
+      decade_start = floor(int(self.request.GET.get('decade', ''))/10)*10
+      queryset = queryset.filter(year_of_birth__gte=decade_start).filter(year_of_birth__lte=decade_start+9) | queryset.filter(year_of_birth__lte=decade_start).filter(year_of_death__gte=decade_start+9)
+    queryset = queryset.order_by('last_name', 'first_name')
+    return queryset
 # Renamed PersonsView to PersonWithImageListView
 class PersonWithImageListView(generic.ListView):
   model = Person
