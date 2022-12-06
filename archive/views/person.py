@@ -19,38 +19,99 @@ class PersonView(generic.DetailView):
 
 class PersonListView(generic.ListView):
   model = Person
-  options = {
-    'photo': False,
+  filters = {
+    'has_photo': False,
     'year': None,
+    'decade': None,
+    'century': None,
     'lastname': None,
   }
 
-  def __init__(self):
-    pass
-
+  def dispatch(self, request, *args, **kwargs):
+    ''' Process filter argument and prepare these to be useful '''
+    if self.request.GET.get('has_photo'):
+      self.filters['has_photo'] = True
+    if self.request.GET.get('year'):
+      try: 
+        self.filters['year'] = int(self.request.GET.get('year'))
+      except:
+        pass
+    elif self.request.GET.get('decade'):
+      try:
+        self.filters['decade'] = floor(int(self.request.GET.get('decade'))/10)*10
+      except:
+        pass
+    elif self.request.GET.get('century'):
+      try:
+        self.filters['century'] = floor(int(self.request.GET.get('century'))/100)*100
+      except:
+        pass
+    return super(PersonListView, self).dispatch(request, *args, **kwargs)
+  
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['origin'] = 'person'
-    context['page_scope'] = 'alle personen'
-    context['page_description'] = 'Personen met afbeelding | <a href="' + reverse('archive:all-people') + '">Alle personen</a>.'
-    
-    #context['page_navigation'] = [decade_start, decade_end]
+    context['page_scope'] = 'personen'
+    context['filter'] = self.filters
+    context['available_decades'] = self.get_decades()
+    context['available_years'] = self.get_years()
+    ''' Page description
+        is dynamically describing active filters
+    '''
+    context['page_description'] = 'Overzicht van personen in de familie'
+    if self.filters['year']:
+      context['page_description'] += f" in leven in {str(self.filters['year'])}"
+    elif self.filters['decade']:
+      context['page_description'] += f" in leven tussen {str(self.filters['decade'])} en {str(self.filters['decade']+9)}"
+    elif self.filters['century']:
+      context['page_description'] += f" in leven tussen {str(self.filters['century'])} en {str(self.filters['century']+99)}"
+    if self.filters['has_photo']:
+      context['page_description'] += f" met afbeelding gekoppeld"
+    context['page_description'] += "."
     return context
 
   def get_queryset(self):
     queryset = Person.objects.all()
-    if self.request.GET.get('has_photo', ''):
+    ''' Only show results with photo '''
+    if self.filters['has_photo']:
       queryset = queryset.filter(~Q(images=None))
-    ''' Use ?year=1234 to see all people who lived in this year'''
-    if self.request.GET.get('year', ''):
-      year = int(self.request.GET.get('year', ''))
-      queryset = queryset.filter(year_of_birth=year)| queryset.filter(year_of_birth__lte=year).filter(year_of_death__gte=year)
-    ''' Use ?decade=1980 to see al people who lived in this decade'''
-    if self.request.GET.get('decade', ''):
-      decade_start = floor(int(self.request.GET.get('decade', ''))/10)*10
-      queryset = queryset.filter(year_of_birth__gte=decade_start).filter(year_of_birth__lte=decade_start+9) | queryset.filter(year_of_birth__lte=decade_start).filter(year_of_death__gte=decade_start+9)
+    ''' Show results based on year, decade or century '''
+    if self.filters['year']:
+      ''' Use ?year=1234 to see all people who lived in this year'''
+      queryset = queryset.filter(year_of_birth=self.filters['year']) | queryset.filter(year_of_birth__lte=self.filters['year']).filter(year_of_death__gte=self.filters['year']) | queryset.filter(year_of_birth__lte=self.filters['year']).filter(year_of_death=None)
+    elif self.filters['decade']:
+      ''' Use ?decade=1980 to see al people who lived in this decade
+          Do not mix with ?year=
+      '''
+      queryset = queryset.filter(year_of_birth__gte=self.filters['decade']).filter(year_of_birth__lte=self.filters['decade']+9) | queryset.filter(year_of_birth__lte=self.filters['decade']).filter(year_of_death__gte=self.filters['decade']+9)
+    elif self.filters['century']:
+      ''' Use ?century=1980 to see al people who lived in this century
+          Do not mix with ?year= or ?decade
+      '''
+      queryset = queryset.filter(year_of_birth__gte=self.filters['century']).filter(year_of_birth__lte=self.filters['century']+99) | queryset.filter(year_of_birth__lte=self.filters['century']).filter(year_of_death__lte=self.filters['century']+99)
+    ''' Overall ordering '''
     queryset = queryset.order_by('last_name', 'first_name')
     return queryset
+
+  def get_decades(self):
+    decades = []
+    #years = Person.objects.all().values_list('year_of_birth')
+    for year in Person.objects.all().values_list('year_of_birth'):
+      if year[0]:
+        decade = floor(int(year[0])/100)*100
+        if not decade in decades:
+          decades.append(decade)
+    decades.sort()
+    return decades
+  def get_years(self):
+    years = []
+    for year in Person.objects.all().values_list('year_of_birth'):
+      if year[0]:
+        year = floor(int(year[0])/10)*10
+        if not year in years:
+          years.append(year)
+    years.sort()
+    return years
 # Renamed PersonsView to PersonWithImageListView
 class PersonWithImageListView(generic.ListView):
   model = Person

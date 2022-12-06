@@ -9,6 +9,22 @@
     <header>
       <h2>Overzicht van {{ page_scope|default:'alle personen' }} ({{ person_list.all.count }}):</h2>
       {% if page_navigation %}<p class="page-description">{{ page_navigation|safe }}</p>{% endif %}
+      {{ page_description }}
+      <div class="filters">
+        <span class="option">
+          <a href="?has_photo=true">heeft foto</a>
+        </span>
+        <span class="option">
+          <form method="get">
+            <label for="decade">Decennium: </label>
+            <select name="decade">
+              {% for decade in available_decades %}
+                <option value="decade">{{ decade }}</option>
+              {% endfor %}
+            </select>
+          </form>
+        </span>
+      </div>
     </header>
     {% if perms.archive.view_person %}
       {% if person_list %}
