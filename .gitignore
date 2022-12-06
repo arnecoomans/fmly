@@ -1,12 +1,22 @@
+# Ignore Python files
 *.pyc
 *~
 *.bak
 __pycache__
-myvenv
+
+# Keep database outside repo
 db.sqlite3
-/static
-/documents
+# Keep settings file outside repo
+settings.py
+# Keep statics and uploads outside repo
+/public/static
+/public/documents/*
+/public/documents/files/*
+# Keep logs outside repo
+/logs
+
+# Keep mac-folders outside repo
 .DS_Store
-/family/settings.py
+
+#/family/settings.py
 auth.md
-*/migrations/*.py
