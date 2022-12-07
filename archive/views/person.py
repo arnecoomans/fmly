@@ -31,21 +31,32 @@ class PersonListView(generic.ListView):
     ''' Process filter argument and prepare these to be useful '''
     if self.request.GET.get('has_photo'):
       self.filters['has_photo'] = True
+    else:
+      self.filters['has_photo'] = False
     if self.request.GET.get('year'):
       try: 
         self.filters['year'] = int(self.request.GET.get('year'))
       except:
         self.filters['year'] = None
+      else:
+        self.filters['decade'] = None
+        self.filters['century'] = None
     elif self.request.GET.get('decade'):
       try:
         self.filters['decade'] = floor(int(self.request.GET.get('decade'))/10)*10
       except:
         self.filters['decade'] = None
+      else:
+        self.filters['year'] = None
+        self.filters['century'] = None
     elif self.request.GET.get('century'):
       try:
         self.filters['century'] = floor(int(self.request.GET.get('century'))/100)*100
       except:
         self.filters['century'] = None
+      else:
+        self.filters['decade'] = None
+        self.filters['year'] = None
     return super(PersonListView, self).dispatch(request, *args, **kwargs)
   
   def get_context_data(self, **kwargs):
@@ -97,7 +108,6 @@ class PersonListView(generic.ListView):
 
   def get_centuries(self):
     decades = []
-    #years = Person.objects.all().values_list('year_of_birth')
     for year in Person.objects.all().values_list('year_of_birth'):
       if year[0]:
         decade = floor(int(year[0])/100)*100
@@ -114,6 +124,10 @@ class PersonListView(generic.ListView):
           centuries.append(year)
     centuries.sort()
     return centuries
+
+
+
+
 # Renamed PersonsView to PersonWithImageListView
 class PersonWithImageListView(generic.ListView):
   model = Person

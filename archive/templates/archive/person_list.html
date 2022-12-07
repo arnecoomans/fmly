@@ -15,17 +15,18 @@
       <div class="filters">
         <span class="option">
           {% if filter.has_photo %}
-            <a href="?">Met of zonder foto</a>
+            <a href="?{% if filter.century %}century={{ filter.century }}{% elif filter.decade %}decade={{ filter.decade }}{% elif filter.year %}year={{ filter.year }}{% endif %}">Met of zonder foto</a>
           {% else %}
-            <a href="?has_photo=true">Heeft foto</a>
+            <a href="?{% if filter.century %}century={{ filter.century }}&{% elif filter.decade %}decade={{ filter.decade }}&{% elif filter.year %}year={{ filter.year }}&{% endif %}has_photo=true">Heeft foto</a>
           {% endif %}
         </span>
         {% if not filter.years and not filter.century %}
           <span class="option">
             <form method="get" action="{% if filter.has_photo %}?has_photo=true{% endif %}">
+              {% if filter.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
               <label for="decade">Decennium: </label>
               <select name="decade" onchange="this.form.submit()">
-                <option value="">-----</option>
+                <option value="none">-----</option>
                 {% for decade in available_decades %}
                   <option value="{{ decade }}"{% if decade == filter.decade %} selected{% endif %}>{{ decade }}</option>
                 {% endfor %}
@@ -33,9 +34,10 @@
             </form>
           </span>
         {% endif %}
-        {% if not filter.years and not filter.century %}
+        {% if not filter.years and not filter.decade %}
           <span class="option">
             <form method="get" action="{% if filter.has_photo %}?has_photo=true{% endif %}">
+              {% if filter.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
               <label for="century">Eeuw: </label>
               <select name="century" onchange="this.form.submit()">
                 <option value="none">-----</option>
