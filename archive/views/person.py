@@ -35,17 +35,17 @@ class PersonListView(generic.ListView):
       try: 
         self.filters['year'] = int(self.request.GET.get('year'))
       except:
-        pass
+        self.filters['year'] = None
     elif self.request.GET.get('decade'):
       try:
         self.filters['decade'] = floor(int(self.request.GET.get('decade'))/10)*10
       except:
-        pass
+        self.filters['decade'] = None
     elif self.request.GET.get('century'):
       try:
         self.filters['century'] = floor(int(self.request.GET.get('century'))/100)*100
       except:
-        pass
+        self.filters['century'] = None
     return super(PersonListView, self).dispatch(request, *args, **kwargs)
   
   def get_context_data(self, **kwargs):
@@ -53,8 +53,10 @@ class PersonListView(generic.ListView):
     context['origin'] = 'person'
     context['page_scope'] = 'personen'
     context['filter'] = self.filters
+    context['available_centuries'] = self.get_centuries()
     context['available_decades'] = self.get_decades()
-    context['available_years'] = self.get_years()
+    #context['available_years'] = self.get_years()
+    #context['dev'] = self.get_centuries()
     ''' Page description
         is dynamically describing active filters
     '''
@@ -93,7 +95,7 @@ class PersonListView(generic.ListView):
     queryset = queryset.order_by('last_name', 'first_name')
     return queryset
 
-  def get_decades(self):
+  def get_centuries(self):
     decades = []
     #years = Person.objects.all().values_list('year_of_birth')
     for year in Person.objects.all().values_list('year_of_birth'):
@@ -103,15 +105,15 @@ class PersonListView(generic.ListView):
           decades.append(decade)
     decades.sort()
     return decades
-  def get_years(self):
-    years = []
+  def get_decades(self):
+    centuries = []
     for year in Person.objects.all().values_list('year_of_birth'):
       if year[0]:
         year = floor(int(year[0])/10)*10
-        if not year in years:
-          years.append(year)
-    years.sort()
-    return years
+        if not year in centuries:
+          centuries.append(year)
+    centuries.sort()
+    return centuries
 # Renamed PersonsView to PersonWithImageListView
 class PersonWithImageListView(generic.ListView):
   model = Person
