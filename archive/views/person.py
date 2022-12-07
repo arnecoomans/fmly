@@ -24,11 +24,16 @@ class PersonListView(generic.ListView):
     'year': None,
     'decade': None,
     'century': None,
-    'lastname': None,
+    'family': None,
   }
 
   def dispatch(self, request, *args, **kwargs):
     ''' Process filter argument and prepare these to be useful '''
+    if self.request.GET.get('family'):
+      if self.request.GET.get('family').lower() == 'none' or self.request.GET.get('family').lower() == 'all':
+        self.filters['family'] = None
+      else:
+        self.filters['family'] = self.request.GET.get('family')[:1].upper() + self.request.GET.get('family')[1:].lower()
     if self.request.GET.get('has_photo'):
       self.filters['has_photo'] = True
     else:
@@ -66,25 +71,31 @@ class PersonListView(generic.ListView):
     context['filter'] = self.filters
     context['available_centuries'] = self.get_centuries()
     context['available_decades'] = self.get_decades()
+    context['available_families'] = ['Coomans', 'Bake']
     #context['available_years'] = self.get_years()
     #context['dev'] = self.get_centuries()
     ''' Page description
         is dynamically describing active filters
     '''
     context['page_description'] = 'Overzicht van personen in de familie'
+    if self.filters['family']:
+      context['page_description'] += f" {str(self.filters['family'])}"
+    if self.filters['has_photo']:
+      context['page_description'] += f" met afbeelding gekoppeld"
     if self.filters['year']:
       context['page_description'] += f" in leven in {str(self.filters['year'])}"
     elif self.filters['decade']:
       context['page_description'] += f" in leven tussen {str(self.filters['decade'])} en {str(self.filters['decade']+9)}"
     elif self.filters['century']:
       context['page_description'] += f" in leven tussen {str(self.filters['century'])} en {str(self.filters['century']+99)}"
-    if self.filters['has_photo']:
-      context['page_description'] += f" met afbeelding gekoppeld"
     context['page_description'] += "."
     return context
 
   def get_queryset(self):
     queryset = Person.objects.all()
+    ''' Only show members in family '''
+    if self.filters['family']:
+      queryset = queryset.filter(last_name=self.filters['family']) | queryset.filter(married_name=self.filters['family'])
     ''' Only show results with photo '''
     if self.filters['has_photo']:
       queryset = queryset.filter(~Q(images=None))

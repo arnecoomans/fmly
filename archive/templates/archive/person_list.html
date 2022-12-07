@@ -14,19 +14,37 @@
       {{ filter }} -->
       <div class="filters">
         <span class="option">
-          {% if filter.has_photo %}
-            <a href="?{% if filter.century %}century={{ filter.century }}{% elif filter.decade %}decade={{ filter.decade }}{% elif filter.year %}year={{ filter.year }}{% endif %}">Met of zonder foto</a>
-          {% else %}
-            <a href="?{% if filter.century %}century={{ filter.century }}&{% elif filter.decade %}decade={{ filter.decade }}&{% elif filter.year %}year={{ filter.year }}&{% endif %}has_photo=true">Heeft foto</a>
-          {% endif %}
+          <form method="get">
+            {% if filter.family %}<input type="hidden" name="family" value="{{ filter.family }}">{% endif %}
+            {% if filter.century %}<input type="hidden" name="century" value="{{ filter.century }}">{% endif %}
+            {% if filter.decade %}<input type="hidden" name="decade" value="{{ filter.decade }}">{% endif %}
+            {% if filter.year %}<input type="hidden" name="year" value="{{ filter.year }}">{% endif %}
+            <label for="has_photo">Met afbeelding</label><input type="checkbox" name="has_photo" value="true" {% if filter.has_photo %} checked{% endif %} onchange="this.form.submit()">
+          </form>
+        </span>
+        <span class="option">
+          <form method="get">
+            {% if filter.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
+            {% if filter.century %}<input type="hidden" name="century" value="{{ filter.century }}">{% endif %}
+            {% if filter.decade %}<input type="hidden" name="decade" value="{{ filter.decade }}">{% endif %}
+            {% if filter.year %}<input type="hidden" name="year" value="{{ filter.year }}">{% endif %}
+            <label for="family">Familie: </label>
+            <select name="family" onchange="this.form.submit()">
+              <option value="all">-----</option>
+              {% for family in available_families %}
+                <option value="{{ family }}" {% if filter.family == family %} selected{% endif %}>{{ family }}</option>
+              {% endfor %}
+            </select>
+          </form>
         </span>
         {% if not filter.years and not filter.century %}
           <span class="option">
-            <form method="get" action="{% if filter.has_photo %}?has_photo=true{% endif %}">
+            <form method="get">
               {% if filter.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
+              {% if filter.family %}<input type="hidden" name="family" value="{{ filter.family }}">{% endif %}
               <label for="decade">Decennium: </label>
               <select name="decade" onchange="this.form.submit()">
-                <option value="none">-----</option>
+                <option value="all">-----</option>
                 {% for decade in available_decades %}
                   <option value="{{ decade }}"{% if decade == filter.decade %} selected{% endif %}>{{ decade }}</option>
                 {% endfor %}
@@ -36,11 +54,12 @@
         {% endif %}
         {% if not filter.years and not filter.decade %}
           <span class="option">
-            <form method="get" action="{% if filter.has_photo %}?has_photo=true{% endif %}">
+            <form method="get">
               {% if filter.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
+              {% if filter.family %}<input type="hidden" name="family" value="{{ filter.family }}">{% endif %}
               <label for="century">Eeuw: </label>
               <select name="century" onchange="this.form.submit()">
-                <option value="none">-----</option>
+                <option value="all">-----</option>
                 {% for century in available_centuries %}
                   <option value="{{ century }}"{% if century == filter.century %} selected{% endif %}>{{ century }}</option>
                 {% endfor %}
