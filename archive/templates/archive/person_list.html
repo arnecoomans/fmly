@@ -10,8 +10,8 @@
       <h2>Overzicht van {{ page_scope|default:'alle personen' }} ({{ person_list.all.count }}):</h2>
       {% if page_navigation %}<p class="page-description">{{ page_navigation|safe }}</p>{% endif %}
       {{ page_description }}
-      {{ dev }}
-      {{ filter }}
+      <!-- {{ dev }}
+      {{ filter }} -->
       <div class="filters">
         <span class="option">
           {% if filter.has_photo %}
