@@ -7,7 +7,9 @@ from django.template.defaultfilters import slugify
 class Person(models.Model):
   first_name          = models.CharField(max_length=255, blank=True, verbose_name='Roepnaam')
   given_names         = models.CharField(max_length=255, blank=True, verbose_name='Voornamen', help_text='Alle voornamen, inclusief roepnaam')
-  last_name           = models.CharField(max_length=255, blank=True, verbose_name='Achternaam')
+  last_name           = models.CharField(max_length=255, blank=True, verbose_name='Achternaam', help_text='Achternaam bij geboorte')
+  married_name        = models.CharField(max_length=255, blank=True, verbose_name='Getrouwde Achternaam', help_text='Achternaam van echtgeno(o)t(e)')
+
   nickname            = models.CharField(max_length=255, blank=True, verbose_name='Bijnaam')
   email               = models.EmailField(blank=True, help_text='Dit veld is alleen zichtbaar voor jou en voor de site-beheerder(s). Vul je e-mailadres in zodat we je een wachtwoord-reset email kunnen sturen als je niet langer kan inloggen.')
   slug                = models.CharField(max_length=255, unique=True)
@@ -19,6 +21,8 @@ class Person(models.Model):
   year_of_birth       = models.PositiveSmallIntegerField(blank=True, null=True, help_text='Is automatically filled when date is supplied')
   date_of_death       = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
   year_of_death       = models.PositiveSmallIntegerField(blank=True, null=True, help_text='Is automatically filled when date is supplied')
+  moment_of_death_unconfirmed = models.BooleanField(default=False, help_text='Set True if moment of death is unknown but person has deceased.')
+
   # Bio
   bio                 = models.TextField(blank=True, help_text='Markdown supported')
   # Meta
@@ -42,7 +46,7 @@ class Person(models.Model):
     call_sign = ''
     if self.first_name and  self.first_name not in self.given_names.split(' '):
       call_sign = '(' + self.first_name + ') '
-    return ' '.join([call_sign, self.given_names, self.last_name])
+    return ' '.join([call_sign, self.given_names, self.last_name, self.married_name])
 
   def get_first_name(self):
     if self.first_name:
