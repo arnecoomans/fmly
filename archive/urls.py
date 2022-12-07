@@ -26,9 +26,9 @@ urlpatterns = [
   path('<username>/comments/', views.CommentListByUserView.as_view(), {'columns': ('username')}, name='bio-of-user'),
 
   # People
-  path('people/', views.PersonWithImageListView.as_view(), name='people'),
-  path('people/all/', views.PersonAllListView.as_view(), name='all-people'),
-  path('people/list/', views.PersonListView.as_view(), name='person-list'),
+  path('people/', views.PersonListView.as_view(), name='people'),
+  #path('people/all/', views.PersonAllListView.as_view(), name='all-people'),
+  #path('people/list/', views.PersonListView.as_view(), name='person-list'),
   path('person/<int:pk>/', views.PersonRedirectView.as_view(), name='person-short'),
   path('person/<int:pk>/edit', views.EditPersonView.as_view(), name='person-edit'),
   path('person/<int:pk>/<name>/', views.PersonView.as_view(), name='person'),
