@@ -10,20 +10,44 @@
       <h2>Overzicht van {{ page_scope|default:'alle personen' }} ({{ person_list.all.count }}):</h2>
       {% if page_navigation %}<p class="page-description">{{ page_navigation|safe }}</p>{% endif %}
       {{ page_description }}
+      {{ dev }}
+      {{ filter }}
       <div class="filters">
         <span class="option">
-          <a href="?has_photo=true">heeft foto</a>
+          {% if filter.has_photo %}
+            <a href="?{% if filter.century %}century={{ filter.century }}{% elif filter.decade %}decade={{ filter.decade }}{% elif filter.year %}year={{ filter.year }}{% endif %}">Met of zonder foto</a>
+          {% else %}
+            <a href="?{% if filter.century %}century={{ filter.century }}&{% elif filter.decade %}decade={{ filter.decade }}&{% elif filter.year %}year={{ filter.year }}&{% endif %}has_photo=true">Heeft foto</a>
+          {% endif %}
         </span>
-        <span class="option">
-          <form method="get">
-            <label for="decade">Decennium: </label>
-            <select name="decade">
-              {% for decade in available_decades %}
-                <option value="decade">{{ decade }}</option>
-              {% endfor %}
-            </select>
-          </form>
-        </span>
+        {% if not filter.years and not filter.century %}
+          <span class="option">
+            <form method="get" action="{% if filter.has_photo %}?has_photo=true{% endif %}">
+              {% if filter.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
+              <label for="decade">Decennium: </label>
+              <select name="decade" onchange="this.form.submit()">
+                <option value="none">-----</option>
+                {% for decade in available_decades %}
+                  <option value="{{ decade }}"{% if decade == filter.decade %} selected{% endif %}>{{ decade }}</option>
+                {% endfor %}
+              </select>
+            </form>
+          </span>
+        {% endif %}
+        {% if not filter.years and not filter.decade %}
+          <span class="option">
+            <form method="get" action="{% if filter.has_photo %}?has_photo=true{% endif %}">
+              {% if filter.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
+              <label for="century">Eeuw: </label>
+              <select name="century" onchange="this.form.submit()">
+                <option value="none">-----</option>
+                {% for century in available_centuries %}
+                  <option value="{{ century }}"{% if century == filter.century %} selected{% endif %}>{{ century }}</option>
+                {% endfor %}
+              </select>
+            </form>
+          </span>
+        {% endif %}
       </div>
     </header>
     {% if perms.archive.view_person %}
