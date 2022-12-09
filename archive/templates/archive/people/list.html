@@ -1,0 +1,87 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <header>
+    <h2>Personen</h2>
+    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+  </header>
+  {% if not people %}
+    ERROR: No people to be shown
+  {% endif %}
+  {% if perms.archive.view_person %}
+    <div class="people">
+<!-- Filters -->
+      <div class="filters">
+        <span class="option">
+          <form method="get">
+            {% if filters.family %}<input type="hidden" name="family" value="{{ filters.family }}">{% endif %}
+            {% if filters.century %}<input type="hidden" name="century" value="{{ filters.century }}">{% endif %}
+            {% if filters.decade %}<input type="hidden" name="decade" value="{{ filters.decade }}">{% endif %}
+            {% if filters.year %}<input type="hidden" name="year" value="{{ filters.year }}">{% endif %}
+            <label for="has_photo">Met afbeelding</label><input type="checkbox" name="has_photo" value="true" {% if filters.has_photo %} checked{% endif %} onchange="this.form.submit()">
+          </form>
+        </span>
+        <span class="option">
+          <form method="get">
+            {% if filters.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
+            {% if filters.century %}<input type="hidden" name="century" value="{{ filters.century }}">{% endif %}
+            {% if filters.decade %}<input type="hidden" name="decade" value="{{ filters.decade }}">{% endif %}
+            {% if filters.year %}<input type="hidden" name="year" value="{{ filters.year }}">{% endif %}
+            <label for="family">Familie: </label>
+            <select name="family" onchange="this.form.submit()">
+              <option value="all">-----</option>
+              {% for family in available_families %}
+                <option value="{{ family }}" {% if filters.family == family %} selected{% endif %}>{{ family }}</option>
+              {% endfor %}
+            </select>
+          </form>
+        </span>
+        {% if not filters.years and not filters.century %}
+          <span class="option">
+            <form method="get">
+              {% if filters.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
+              {% if filters.family %}<input type="hidden" name="family" value="{{ filters.family }}">{% endif %}
+              <label for="decade">Decennium: </label>
+              <select name="decade" onchange="this.form.submit()">
+                <option value="all">-----</option>
+                {% for decade in available_decades %}
+                  <option value="{{ decade }}"{% if decade == filters.decade %} selected{% endif %}>{{ decade }}</option>
+                {% endfor %}
+              </select>
+            </form>
+          </span>
+        {% endif %}
+        {% if not filters.years and not filters.decade %}
+          <span class="option">
+            <form method="get">
+              {% if filters.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
+              {% if filters.family %}<input type="hidden" name="family" value="{{ filters.family }}">{% endif %}
+              <label for="century">Eeuw: </label>
+              <select name="century" onchange="this.form.submit()">
+                <option value="all">-----</option>
+                {% for century in available_centuries %}
+                  <option value="{{ century }}"{% if century == filters.century %} selected{% endif %}>{{ century }}</option>
+                {% endfor %}
+              </select>
+            </form>
+          </span>
+        {% endif %}
+      </div>
+
+<!-- People -->
+      {% for person in people %}
+        {% if forloop.first %}
+          <ul class="people">
+        {% endif %}
+        {% ifchanged person.last_name %}
+          </ul>
+          <h5>{{ person.last_name }}</h5>
+          <ul class="people" id="{{ person.last_name }}">
+        {% endifchanged %}
+        <li>
+          {% include 'archive/snippets/person_link.html' %}
+        </li>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

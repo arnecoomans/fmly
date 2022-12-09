@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <header>
+    <h2>Tags</h2>
+    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+  </header>
+  {% if not tag_list or tag_list.all.count == 0 %}
+    ERROR: No tags to be shown
+  {% endif %}
+  {% if perms.archive.view_tag %}
+    <ul class="tags">
+      {% for tag in tag_list %}
+        {% include 'archive/snippets/tag.html' %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

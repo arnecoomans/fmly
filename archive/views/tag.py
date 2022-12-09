@@ -10,25 +10,24 @@ from math import floor
 
 from archive.models import Image, Tag
 
-# Renamed TagView to ImagesByTagListView
-class ImagesByTagListView(generic.ListView):
-  model = Image
-  context_object_name = 'images'
+# # Renamed TagView to ImagesByTagListView
+# class ImagesByTagListView(generic.ListView):
+#   model = Image
+#   context_object_name = 'images'
   
-  def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    context['page_scope'] = 'documenten met tag "' + self.kwargs['slug'] + '"'
-    #context['page_description'] = ''
-    return context
+#   def get_context_data(self, **kwargs):
+#     context = super().get_context_data(**kwargs)
+#     context['page_scope'] = 'documenten met tag "' + self.kwargs['slug'] + '"'
+#     #context['page_description'] = ''
+#     return context
 
-  def get_queryset(self):
-    return Image.objects.filter(tag__slug=self.kwargs['slug']).order_by('-uploaded_at')
+#   def get_queryset(self):
+#     return Image.objects.filter(tag__slug=self.kwargs['slug']).order_by('-uploaded_at')
 
 # Renamed TagsView to TagListView
 class TagListView(generic.ListView):
   model = Tag
-  context_object_name = 'objects'
-  template_name = 'archive/object_list.html'
+  template_name = 'archive/tags/list.html'
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)

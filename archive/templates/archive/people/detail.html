@@ -1,0 +1,88 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <section class="person">
+    <header>
+      <h2>{{ person.full_name }}</h2>
+    </header>
+    {% if not person %}
+      ERROR: No images to be shown
+    {% elif not perms.archive.view_person %}
+      ERROR: onvoldoende rechten om deze gegevens te bekijken
+    {% elif person.is_deleted %}
+      ERROR: afbeelding is niet beschikbaar
+    {% else %}
+      <!-- Portrait -->
+      <div class="column right">
+        {% if person.portrait %}
+          <div class="portrait">
+            <a href="{% url 'archive:image-redirect' person.portrait.id %}"><img src="/documents/{{ person.portrait.source }}"></a>
+          </div>
+        {% endif %}
+      </div>
+      <!-- Collected data -->
+      <dl class="collected data">
+        {% if person.related_user %}
+          <dt>&nbsp;</dt><dd>Is {% if person.related_user.is_superuser %}beheerder{% else %}gebruiker{% endif %} van deze website</dd>
+        {% endif %}
+        {% if person.bio %}
+          <dt>Biografie:</dt><dd>{{ person.bio|markdown|safe }}</dd>
+        {% endif %}
+        {% if person.nickname %}
+          <dt>Bijnaam:</dt><dd>{{ person.nickname }}</dd>
+        {% endif %}
+        <dt>Voornaam</dt><dd>{{ person.FulLFirstName }}</dd>
+        <dt>Achternaam</dt><dd>{% if person.married_name %}<a href="{% url 'archive:people' %}?family={{ person.married_name }}">{{ person.married_name }}</a> (geboren: <a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>){% else %}<a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>{% endif %}</dd>
+        {% if person.year_of_birth or person.month_of_birth or person_day_of_birth or person.place_of_birth %}
+          <dt>Geboren</dt><dd>{{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}</dd>
+        {% endif %}
+        {% if person.year_of_death or person.month_of_death or person_day_of_death or moment_of_death_unconfirmed or person.place_of_death %}
+          <dt>Overleden</dt><dd>{{ person.day_of_death|default:'?' }}-{{ person.month_of_death|default:'?' }}-{{ person.year_of_death|default:'?' }} {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}{% if person.age %} ({{ person.age }}){% endif %}</dd>
+        {% endif %}
+        {% if person.get_parents %}
+          <dt>Ouder{% if person.get_parents|length > 1 %}s{% endif %}:</dt>
+          <dd>
+            {% for person in person.get_parents %}
+              {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+            </dd>
+        {% endif %}
+        <!-- Partners -->
+        {% if person.get_partners %}
+          <dt>Partner{% if person.get_partners|length > 1 %}s{% endif %}:</dt>
+          <dd>
+            {% for person in person.get_partners %}
+            {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+          </dd>
+        {% endif %}
+        <!-- Broer(s) en Zus(sen) -->
+        {% if person.get_siblings %}
+          <dt>Broer(s)/Zus(sen):</dt>
+          <dd>
+            {% for person in person.get_siblings %}
+            {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+          </dd>
+        {% endif %}
+        <!-- Kinderen -->
+        {% if person.get_children %}
+          <dt>Kind{% if person.get_children|length > 1 %}eren{% endif %}:</dt>
+          <dd>
+            {% for person in person.get_children %}
+            {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+        {% endif %}
+      </dl>
+      <!-- Related data -->
+      {% if person.images.all.count > 0 %}
+        <div class="objects">
+          {% for object in person.images.all %}
+          {% include 'archive/snippets/image.html' %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endif %}
+    <div class="clearfix"></div>
+  </section>
+{% endblock %}

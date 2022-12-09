@@ -15,7 +15,20 @@ def hide(modeladmin, request, queryset):
 @admin.action(description='Softdelete')
 def softdelete(modeladmin, request, queryset):
   queryset.update(is_deleted=True)
+@admin.action(description='Set image dates from date field')
 
+@admin.action(description='Reset Image Dimensions')
+def resetDimensions(modeladmin, request, queryset):
+  for image in queryset:
+    image.storeDimensions()
+@admin.action(description='Reset Image Orientation')
+def resetOrientation(modeladmin, request, queryset):
+  for image in queryset:
+    image.storeOrientation()
+@admin.action(description='Reset File Size')
+def resetSize(modeladmin, request, queryset):
+  for object in queryset:
+    object.storeSize()
 
 
 class FamilyRelationsInline(admin.TabularInline):
@@ -32,6 +45,7 @@ class PersonAdmin(admin.ModelAdmin):
                          'given_names': ('first_name',),}
   list_filter = ['last_name']
   inlines = [FamilyRelationsInline,]
+  actions=[]
   def get_changeform_initial_data(self, request):
     get_data = super(PersonAdmin, self).get_changeform_initial_data(request)
     get_data['user'] = request.user.pk
@@ -45,11 +59,11 @@ class GroupAdmin(admin.ModelAdmin):
 
 
 class ImageAdmin(admin.ModelAdmin):
-  list_display = ['get_indexed_name', 'show_in_index', 'count_tags', 'count_people', 'get_year',]
+  list_display = ['get_indexed_name', 'show_in_index', 'count_tags', 'count_people', 'year']
   search_fields = ['title', 'description']
   exclude = ['thumbnail']
   empty_value_display = '---'
-  actions = [reset_thumbnail, show, hide, softdelete]
+  actions = [reset_thumbnail, show, hide, softdelete, resetDimensions, resetOrientation, resetSize ]
   list_filter = ['tag', 'show_in_index', 'people']
   def get_changeform_initial_data(self, request):
     get_data = super(DocumentAdmin, self).get_changeform_initial_data(request)

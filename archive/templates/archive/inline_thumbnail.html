@@ -1,9 +1,0 @@
-<div class="thumbnail">
-  <a href="{% url 'archive:image' image.id image.title|default:'needs-a-title'|slugify %}">
-    {% if image.thumbnail %}
-      <img src="{{ image.thumbnail }}">
-    {% else %}
-      <i class="fas fa-file-alt" style="color: tan; margin: 10px 10px 10px 30px; font-size: 700%;"></i>
-    {% endif %}
-  </a>
-</div>
