@@ -15,7 +15,11 @@ def hide(modeladmin, request, queryset):
 @admin.action(description='Softdelete')
 def softdelete(modeladmin, request, queryset):
   queryset.update(is_deleted=True)
+
 @admin.action(description='Set image dates from date field')
+def fixDate(modeladmin, request, queryset):
+  for object in queryset:
+    object.fixdate()
 
 @admin.action(description='Reset Image Dimensions')
 def resetDimensions(modeladmin, request, queryset):
@@ -45,7 +49,7 @@ class PersonAdmin(admin.ModelAdmin):
                          'given_names': ('first_name',),}
   list_filter = ['last_name']
   inlines = [FamilyRelationsInline,]
-  actions=[]
+  actions=[fixDate]
   def get_changeform_initial_data(self, request):
     get_data = super(PersonAdmin, self).get_changeform_initial_data(request)
     get_data['user'] = request.user.pk
