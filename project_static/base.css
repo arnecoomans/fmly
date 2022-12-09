@@ -1,0 +1,244 @@
+body {
+  font-family: var(--site-font-family);
+  background-color: var(--site-background-color);
+  background-image: var(--site-background-image);
+}
+a {
+  color: var(--link-color);
+  text-decoration-color: var(--link-highlight);
+}
+a:hover {
+  color: var(--link-color);
+  background-color: var(--link-highlight);
+}
+/** HEADER  and NAVIGATION*/
+body > header,
+body > nav {
+  background-color: var(--header-background-color, black);
+  padding-left: 50px;
+}
+body > header {
+  min-height: var(--header-min-height, 100px);
+  padding-top: 50px;
+}
+body > header > h1,
+body > header > h1 > a,
+body > nav > ul > li,
+body > nav > ul > li > a {
+  color: var(--header-text-color, white);
+  text-decoration: none;
+}
+body > header > h1 > a:hover,
+body > nav > ul > li > a:hover {
+  background-color: transparent;
+  color: var(--header-text-hover, yellow)
+}
+body > header > h1 > a::before {
+  content: var(--header-text-before, '');
+}
+body > nav > ul {
+  list-style-type: none;
+}
+body > nav > ul > li {
+  margin-right: 10px;
+}
+body > nav > ul > li > a {
+  padding-left: 0.75em;
+  padding-right: 1.5em;
+}
+nav.pagination {
+  text-align: center;
+  align-content: center;
+}
+
+/** Content Wrapper */
+body > section#wrapper {
+  background-color: var(--wrapper-background-color, white);
+  border: var(--wrapper-border, 0);
+  padding: 25px 15px;
+}
+#wrapper > header {
+  margin-bottom: 20px;
+}
+
+/** Content */
+.objects > .object {
+  border: var(--object-border);
+  padding: 0;
+  display: inline-block;
+  width: 100%;
+  min-height: 275px;
+  margin-bottom: 15px;
+  vertical-align: top;
+}
+.objects > .object.hidden {
+  border-color: #f90;
+}
+.objects > .object.deleted {
+  border-color: #f00;
+}
+
+/** Devices with space for 2 columns */
+@media (min-width: 800px) {
+  .container, container-md, container-sm {
+    max-width: 802px !important;
+  }
+  .objects > .object { 
+    width: 380px;
+  }
+}
+
+/** Devices with space for 3 columns */
+@media (min-width: 1200px) { 
+  .container, container-md, container-sm {
+    max-width: 1203px !important;
+  }
+}
+
+/** Devices with space for 4 columns */
+@media (min-width: 1600px) { 
+  .container, container-md, container-sm {
+    max-width: 1604px !important;
+  }
+}
+.objects > .object > h2 {
+  background-color: var(--object-title-background);
+  font-size: 1.6em;
+}
+.objects > .object.hidden > h2 {
+  background-color: rgba(0,0,0,0.5)
+}
+.objects > .object.deleted > h2 {
+  background-color: rgba(255,0,0,0.3)
+}
+.objects > .object > h2 > * {
+  color: var(--object-title-text);
+  text-decoration: none;
+}
+.objects > .object:hover > h2 > * {
+  color: var(--object-title-text-hover);
+}
+.objects > .object > h2 > span {
+  font-size: 40%;
+  margin-right: 5px;
+}
+.objects > .object > h2 > a:hover {
+  background-color: transparent;
+}
+.object > .column {
+  display: inline-block;
+  vertical-align: top;
+}
+.object > .column.left {
+  width: 39%;
+}
+.object > .column.right {
+  width: 58%;
+}
+.object > .column > a > img {
+  max-width: 100%;
+}
+ul.metadata, ul.tags {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.comment {
+  display: inline-block; 
+  width: 90%; 
+  vertical-align: top;
+  border: var(--object-border);
+  margin-bottom: 15px;
+}
+.comment h4 {
+  background-color: var(--object-title-background);
+  color: var(--object-title-text);
+  font-size: 1em;
+  padding: 3px;
+}
+.comment * textarea {
+  width: 95%;
+  height: 2em;
+  border: var(--object-border);
+  background-color: rgba(255,255,255,0.3);
+  padding: 5px;
+  margin: 10px;
+}
+.comment * textarea:focus {
+  height: 8em;
+  background-color: rgba(255,255,255,0.8);
+  outline-color: var(--link-highlight);
+}
+.comment * input {
+  margin: 0 0 10px 10px;
+  padding: 5px 30px;
+  border: var(--object-border);
+}
+.comment * input:hover {
+  background-color: var(--link-highlight);
+}
+.comment > .actions {
+  font-size: 0.7em;
+}
+/** People */
+ul.people {
+  list-style-type: none;
+  padding-left: 15px;
+}
+ul.people > li > span {
+  display: inline-block;
+}
+ul.people > li > span.name {
+  min-width: 27.5em;
+}
+ul.people > li > span.date {
+  min-width: 8em;
+}
+.person > .column.right {
+  display: block;
+  float: right;
+  width: 380px;
+  overflow: hidden;
+}
+.person > .column > .portrait > a > img {
+  width: 380px;
+  max-height: 260px;
+  object-fit: cover;
+}
+.person > dl {
+  max-width: 1200px;
+}
+.person > dl > dt,
+.person > dl > dd {
+  display: inline-block;
+  overflow: auto;
+  vertical-align: top;
+}
+
+.person > dl > dt  {
+  width: 260px;
+  clear:left;
+  float:left;
+}
+.person > dl > dd {
+  min-width: 510px;
+  max-width: 780px;
+  clear:right;
+  padding:4px 0 4px 40px;
+}
+/** Filters */
+.filters > span > form > label {
+  min-width: 15em;
+}
+/** Pagination */
+nav.pagination * a {
+  color: var(--pagination-text-color)
+}
+.pagination > .active > a
+ {
+  background-color: var(--pagination-active-page-color, navy) !important;
+  border-color: var(--pagination-active-page-color, navy) !important;
+}
+.pagination > * > a:hover {
+  color: var(--pagination-highligh, navy) !important;
+}

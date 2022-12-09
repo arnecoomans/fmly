@@ -5,7 +5,8 @@ from django.template.defaultfilters import slugify
 class Tag(models.Model):
   title               = models.CharField(max_length=255)
   slug                = models.SlugField(unique=True)
-  
+  description         = models.TextField(blank=True, help_text='Write down why this tag is relevant. Plain text only.')
+
   def __str__(self):
     return self.title
   

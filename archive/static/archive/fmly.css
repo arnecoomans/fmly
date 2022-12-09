@@ -1,91 +1,39 @@
 /**
-    Family Photo Archive
-    Domain specific stylesheet. This stylesheet contains colouring
-    contact: development @ cmns . nl
-
+  This is the install MASTER CSS file as referenced in settings.py
+  Use this MASTER CSS file to define CSS Variables that are used in the generic CSS handling
+  This allows to have as little CSS files as possible, while allowing to diverisify the amount of installed locations, 
+  by avoiding complete css file per install
+  Working with CSS Variables: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
 */
-/**
-  style_base.css
-*/
+:root {
+  /** Site wide */
+  --site-background-color: #000;
+  --site-background-image: url('/static/archive/images/background-indonesie.jpg');
+  --site-font-family: monospace;
+  --link-color: #333;
+  --link-highlight: tan;
+  
+  /** Header and navigation */
+  --header-background-color: rgba(0,0,0,0.85);
+  --header-text-color: #fff;
+  --header-text-hover: tan;
+  --header-text-before: '__';
+  --header-min-height: 125px;
 
-/**
-  fmly.css
-*/
-body {
-  font-family: monospace;
-  background-image: url('/static/archive/images/background-indonesie.jpg');
-}
-body > header {
-  background-color: rgba(0,0,0,0.85);
-}
-header > h1 *,
-header > ul *,
-header > span {
-  color: white;
-}
-header * a:hover {
-  color: tan;
-}
-body > header > h1 > a::before {
-  content: '__';
-}
-.pagination * > a {
-  color: black;
-}
-.pagination * > a:hover {
-  color: tan;
-  background-color: black;
-}
-.content {
-  background-color: white;
-}
+  /** Content wrapper */
+  --wrapper-background-color: rgba(255,255,255,0.7);
+  --wrapper-border: 1px solid black;
 
-/** Nodes */
-.list.node > header {
-  background-color: black;x
-}
-.node > div > * a {
-  color: black;
-  border-bottom: 1px solid tan;
-}
-.node > div > * a:hover {
-  color: black;
-  background-color: tan;
-}
-/* forms */
-form.document-edit > p > input,
-form.document-edit > p > textarea,
-form.document-edit > p > select {
-  border-color: tan;
-}
+  /** Objects */
+  --object-border: 1px solid black;
+  --object-title-background: black;
+  --object-title-text: white;
+  --object-title-text-hover: tan;
 
+  /** Pagination */
+  --pagination-text-color: black;
+  --pagination-inactive-text-color: darkgrey;
+  --pagination-active-page-color: tan;
+  --pagination-highligh: tan;
 
-/** Icons */
-i.icon::before,
-ul.has-icons > li::before {
-  color: tan;
-}
-ul.has-icons.white-icons > li::before {
-  color: white;
-}
-/** Comments */
-.comments > h3 {
-  font-size: 20px;
-}
-.comments > form > textarea,
-.comments > .comment {
-  border-color: tan;
-}
-.comments > .comment > h4 {
-  font-size: 16px;
-  background-color: tan;
-  color: white;
-}
-,
-.comments > form > input[type=submit] {
-  padding:5px 15px; 
-  border:1px solid;
-  cursor:pointer;
-  background: white; 
-  border-color: tan;
 }

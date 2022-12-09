@@ -5,6 +5,7 @@ from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.db.models import Q
+from django.conf import settings
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -16,9 +17,12 @@ from archive.models import Person
 
 class PersonView(generic.DetailView):
   model = Person
+  template_name = 'archive/people/detail.html'
 
 class PersonListView(generic.ListView):
   model = Person
+  template_name = 'archive/people/list.html'
+  context_object_name = 'people'
   filters = {
     'has_photo': False,
     'year': None,
@@ -26,93 +30,88 @@ class PersonListView(generic.ListView):
     'century': None,
     'family': None,
   }
+  def getFilters(self):
+    filters = {}
+    for filter, default in self.filters.items():
+      if self.request.GET.get(filter):
+        if self.request.GET.get(filter).lower() == 'true':
+          filters[filter] = True
+        elif self.request.GET.get(filter).lower() in ['false', 'none', 'all']:
+          filters[filter] = False
+        else: 
+          try:
+            filters[filter] = int(self.request.GET.get(filter))
+            if filter == 'decade':
+              filters[filter] = floor(filters[filter]/10)*10
+            elif filter =='century':
+              filters[filter] = floor(filters[filter]/100)*100
+          except:
+            filters[filter] = self.request.GET.get(filter)
+      else:
+        filters[filter] = default
+    return filters
 
-  def dispatch(self, request, *args, **kwargs):
-    ''' Process filter argument and prepare these to be useful '''
-    if self.request.GET.get('family'):
-      if self.request.GET.get('family').lower() == 'none' or self.request.GET.get('family').lower() == 'all':
-        self.filters['family'] = None
-      else:
-        self.filters['family'] = self.request.GET.get('family')[:1].upper() + self.request.GET.get('family')[1:].lower()
-    if self.request.GET.get('has_photo'):
-      self.filters['has_photo'] = True
-    else:
-      self.filters['has_photo'] = False
-    if self.request.GET.get('year'):
-      try: 
-        self.filters['year'] = int(self.request.GET.get('year'))
-      except:
-        self.filters['year'] = None
-      else:
-        self.filters['decade'] = None
-        self.filters['century'] = None
-    elif self.request.GET.get('decade'):
-      try:
-        self.filters['decade'] = floor(int(self.request.GET.get('decade'))/10)*10
-      except:
-        self.filters['decade'] = None
-      else:
-        self.filters['year'] = None
-        self.filters['century'] = None
-    elif self.request.GET.get('century'):
-      try:
-        self.filters['century'] = floor(int(self.request.GET.get('century'))/100)*100
-      except:
-        self.filters['century'] = None
-      else:
-        self.filters['decade'] = None
-        self.filters['year'] = None
-    return super(PersonListView, self).dispatch(request, *args, **kwargs)
+  def hasActiveFilters(self):
+    for key, value in self.getFilters().items():
+      if value not in [False, None]:
+        return True
+    return False
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
-    context['origin'] = 'person'
-    context['page_scope'] = 'personen'
-    context['filter'] = self.filters
+    context['has_active_filters'] = self.hasActiveFilters()
+    context['filters'] = self.getFilters()
+    
     context['available_centuries'] = self.get_centuries()
     context['available_decades'] = self.get_decades()
-    context['available_families'] = ['Coomans', 'Bake']
+    context['available_families'] = settings.FAMILIES
     #context['available_years'] = self.get_years()
     #context['dev'] = self.get_centuries()
     ''' Page description
         is dynamically describing active filters
     '''
-    context['page_description'] = 'Overzicht van personen in de familie'
-    if self.filters['family']:
-      context['page_description'] += f" {str(self.filters['family'])}"
-    if self.filters['has_photo']:
+    context['page_description'] = f'Overzicht van {str(self.get_queryset().count())} personen in de familie'
+    if context['filters']['family']:
+      context['page_description'] += f" {str(context['filters']['family'])[:1].upper()}{str(context['filters']['family'])[1:].lower()}"
+    if context['filters']['has_photo']:
       context['page_description'] += f" met afbeelding gekoppeld"
-    if self.filters['year']:
-      context['page_description'] += f" in leven in {str(self.filters['year'])}"
-    elif self.filters['decade']:
-      context['page_description'] += f" in leven tussen {str(self.filters['decade'])} en {str(self.filters['decade']+9)}"
-    elif self.filters['century']:
-      context['page_description'] += f" in leven tussen {str(self.filters['century'])} en {str(self.filters['century']+99)}"
-    context['page_description'] += "."
+    if context['filters']['year']:
+      context['page_description'] += f" in leven in {str(context['filters']['year'])}"
+    elif context['filters']['decade']:
+      context['page_description'] += f" in leven tussen {str(context['filters']['decade'])} en {str(context['filters']['decade']+9)}"
+    elif context['filters']['century']:
+      context['page_description'] += f" in leven tussen {str(context['filters']['century'])} en {str(context['filters']['century']+99)}"
     return context
 
   def get_queryset(self):
+    filters = self.getFilters()
     queryset = Person.objects.all()
     ''' Only show members in family '''
-    if self.filters['family']:
-      queryset = queryset.filter(last_name=self.filters['family']) | queryset.filter(married_name=self.filters['family'])
+    if filters['family']:
+      queryset = queryset.filter(last_name__iexact=filters['family']) | queryset.filter(married_name__iexact=filters['family'])
     ''' Only show results with photo '''
-    if self.filters['has_photo']:
+    if filters['has_photo']:
       queryset = queryset.filter(~Q(images=None))
     ''' Show results based on year, decade or century '''
-    if self.filters['year']:
+    if filters['year']:
       ''' Use ?year=1234 to see all people who lived in this year'''
-      queryset = queryset.filter(year_of_birth=self.filters['year']) | queryset.filter(year_of_birth__lte=self.filters['year']).filter(year_of_death__gte=self.filters['year']) | queryset.filter(year_of_birth__lte=self.filters['year']).filter(year_of_death=None)
-    elif self.filters['decade']:
+      queryset =  queryset.filter(year_of_birth__lte=filters['year']).filter(year_of_death__gte=filters['year']) | \
+                  queryset.filter(year_of_birth__lte=filters['year']).filter(year_of_death=None)
+      queryset =  queryset.exclude(year_of_birth__lte=filters['year']-80)
+    elif filters['decade']:
       ''' Use ?decade=1980 to see al people who lived in this decade
           Do not mix with ?year=
       '''
-      queryset = queryset.filter(year_of_birth__gte=self.filters['decade']).filter(year_of_birth__lte=self.filters['decade']+9) | queryset.filter(year_of_birth__lte=self.filters['decade']).filter(year_of_death__gte=self.filters['decade']+9)
-    elif self.filters['century']:
+      queryset = queryset.exclude(year_of_birth__gt=filters['decade']+9).\
+                          exclude(year_of_death__lte=filters['decade']).\
+                          filter(year_of_birth__gte=filters['decade']-90)
+    elif filters['century']:
       ''' Use ?century=1980 to see al people who lived in this century
           Do not mix with ?year= or ?decade
       '''
-      queryset = queryset.filter(year_of_birth__gte=self.filters['century']).filter(year_of_birth__lte=self.filters['century']+99) | queryset.filter(year_of_birth__lte=self.filters['century']).filter(year_of_death__lte=self.filters['century']+99)
+      queryset = queryset.exclude(year_of_birth__gt=filters['century']+99).\
+                          exclude(year_of_death__lte=filters['century']).\
+                          filter(year_of_birth__gte=filters['century']-90)
     ''' Overall ordering '''
     queryset = queryset.order_by('last_name', 'first_name')
     return queryset
@@ -139,33 +138,33 @@ class PersonListView(generic.ListView):
 
 
 
-# Renamed PersonsView to PersonWithImageListView
-class PersonWithImageListView(generic.ListView):
-  model = Person
-  template_name = 'people/list.html'
+# # Renamed PersonsView to PersonWithImageListView
+# class PersonWithImageListView(generic.ListView):
+#   model = Person
+#   template_name = 'people/list.html'
 
-  def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    context['origin'] = 'person'
-    context['page_scope'] = 'personen'
-    context['page_description'] = 'Personen met afbeelding | <a href="' + reverse('archive:all-people') + '">Alle personen</a>.'
-    return context
-  def get_queryset(self):      
-    return Person.objects.all().filter(~Q(images=None)).order_by('last_name', 'first_name')
+#   def get_context_data(self, **kwargs):
+#     context = super().get_context_data(**kwargs)
+#     context['origin'] = 'person'
+#     context['page_scope'] = 'personen'
+#     context['page_description'] = 'Personen met afbeelding | <a href="' + reverse('archive:all-people') + '">Alle personen</a>.'
+#     return context
+#   def get_queryset(self):      
+#     return Person.objects.all().filter(~Q(images=None)).order_by('last_name', 'first_name')
 
-# Renamed PersonsAllView to PersonAllListView
-class PersonAllListView(generic.ListView):
-  model = Person
-  template_name = 'people/list.html'
+# # Renamed PersonsAllView to PersonAllListView
+# class PersonAllListView(generic.ListView):
+#   model = Person
+#   template_name = 'people/list.html'
 
-  def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    context['origin'] = 'person'
-    context['page_scope'] = 'personen'
-    context['page_description'] = '<a href="' + reverse('archive:people') + '">Personen met afbeelding</a> | Alle personen - op geboortejaar'
-    return context
-  def get_queryset(self):      
-    return Person.objects.all().order_by('last_name', 'year_of_birth')
+#   def get_context_data(self, **kwargs):
+#     context = super().get_context_data(**kwargs)
+#     context['origin'] = 'person'
+#     context['page_scope'] = 'personen'
+#     context['page_description'] = '<a href="' + reverse('archive:people') + '">Personen met afbeelding</a> | Alle personen - op geboortejaar'
+#     return context
+#   def get_queryset(self):      
+#     return Person.objects.all().order_by('last_name', 'year_of_birth')
 
 # Renamed PersonUpdateView to EditPersonView
 class EditPersonView(UpdateView):

@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <header>
+    <h2>Afbeeldingen en Documenten</h2>
+    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+  </header>
+  {% if not images %}
+    ERROR: No images to be shown
+  {% endif %}
+  {% if perms.archive.view_document %}
+    <!-- Pagination -->
+    {% include 'archive/snippets/pagination.html' %}
+    <!-- Content -->
+    <div class="objects">
+      {% for object in images %}
+        {% include 'archive/snippets/image.html' %}
+      {% endfor %}
+    </div>
+    <!-- Pagination -->
+    {% include 'archive/snippets/pagination.html' %}
+  {% else %}
+    <!-- No rights to view images -->
+  {% endif %}
+{% endblock %}

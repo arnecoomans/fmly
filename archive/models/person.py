@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
+from django.conf import settings
 
 
 class Person(models.Model):
@@ -17,16 +18,23 @@ class Person(models.Model):
   place_of_birth      = models.CharField(max_length=255, blank=True)
   place_of_death      = models.CharField(max_length=255, blank=True)
   # Dating
+  # Dating
   date_of_birth       = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
   year_of_birth       = models.PositiveSmallIntegerField(blank=True, null=True, help_text='Is automatically filled when date is supplied')
+  month_of_birth      = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
+  day_of_birth        = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
   date_of_death       = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
   year_of_death       = models.PositiveSmallIntegerField(blank=True, null=True, help_text='Is automatically filled when date is supplied')
+  month_of_death      = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
+  day_of_death        = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
+
   moment_of_death_unconfirmed = models.BooleanField(default=False, help_text='Set True if moment of death is unknown but person has deceased.')
 
   # Bio
   bio                 = models.TextField(blank=True, help_text='Markdown supported')
   # Meta
-  related_user        = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='related_person')
+  related_user        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='related_person')
+  #other_user          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='profile')
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
   
   def __str__(self):
@@ -39,6 +47,23 @@ class Person(models.Model):
         value += ')'
     return value
 
+  def fixdate(self):
+    if self.date_of_birth:
+      if not self.year_of_birth:
+        self.year_of_birth = self.date_of_birth.year
+      if not self.month_of_birth:
+        self.month_of_birth = self.date_of_birth.month
+      if not self.day_of_birth:
+        self.day_of_birth = self.date_of_birth.day
+    if self.date_of_death:
+      if not self.year_of_death:
+        self.year_of_death = self.date_of_death.year
+      if not self.month_of_death:
+        self.month_of_death = self.date_of_death.month
+      if not self.day_of_death:
+        self.day_of_death = self.date_of_death.day
+    self.save()
+
   def name(self):
     return ' '.join([self.first_name, self.last_name])
 
@@ -46,8 +71,13 @@ class Person(models.Model):
     call_sign = ''
     if self.first_name and  self.first_name not in self.given_names.split(' '):
       call_sign = '(' + self.first_name + ') '
-    return ' '.join([call_sign, self.given_names, self.last_name, self.married_name])
+    return ' '.join([call_sign, self.given_names, self.last_name, self.married_name]).strip()
 
+  def FulLFirstName(self):
+    if self.first_name:
+      if self.first_name not in self.given_names:
+        return f"({self.first_name}) {self.given_names}"
+    return self.given_names
   def get_first_name(self):
     if self.first_name:
       return self.first_name if self.first_name not in self.given_names else None

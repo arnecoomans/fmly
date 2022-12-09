@@ -1,8 +1,11 @@
 from django.db import models
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User
+from django.conf import settings
 from .tag import Tag
 from .person import Person
+from PIL import Image
+from pathlib import Path
 
 # Create Thumbnail function
 def get_thumbnail(image):
@@ -13,7 +16,7 @@ def get_thumbnail(image):
     return 'documents/format_not_supported.jpg'
   import base64
   from io import BytesIO
-  from PIL import Image, ImageOps
+  from PIL import ImageOps
   Image.MAX_IMAGE_PIXELS = 933120000
 
   thumbnail_size = 150, 300
@@ -50,10 +53,32 @@ class Attachment(models.Model):
   file                = models.FileField(null=True, blank=True, upload_to='files', help_text='Possible to attach file to an image. Use for pdf, doc, excel, etc.')
   desciption          = models.CharField(max_length=512, blank=True, null=True)
   # Meta
+  size                = models.IntegerField(default=0)
   uploaded_at         = models.DateTimeField(auto_now_add=True)
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
   def __str__(self) -> str:
     return self.desciption
+  
+  def extension(self):
+    return Path(str(self.file)).suffix[1:].lower()
+  def storeSize(self):
+    from os import stat
+    file_stats = stat(settings.MEDIA_ROOT.joinpath(str(self.file  )))
+    self.size = file_stats.st_size
+    self.save()
+  ''' Display Image File size. Calculate if not stored yet '''
+  def getSize(self):
+    ''' https://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python '''
+    from math import floor, pow, log
+    if self.size == 0:
+      self.storeSize()
+    if self.size == 0:
+      return "0B"
+    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+    i = int(floor(log(self.size, 1024)))
+    p = pow(1024, i)
+    s = round(self.size / p, 2)
+    return "%s %s" % (s, size_name[i])
 
 class Image(models.Model):
   # Document details
@@ -65,14 +90,22 @@ class Image(models.Model):
   # Relations
   people              = models.ManyToManyField(Person, blank=True, related_name='images', help_text='Tag people that are on the photo')
   tag                 = models.ManyToManyField(Tag, blank=True, related_name='images')
-  attachment          = models.FileField(null=True, blank=True, upload_to='files', help_text='Possible to attach file to an image. Use for pdf, doc, excel, etc.')
+  #attachment          = models.FileField(null=True, blank=True, upload_to='files', help_text='Possible to attach file to an image. Use for pdf, doc, excel, etc.')
   attachments         = models.ManyToManyField(Attachment, blank=True, related_name='images')
   is_portrait_of      = models.OneToOneField(Person, on_delete=models.CASCADE, related_name='portrait', blank=True, null=True)
   in_group            = models.ManyToManyField(Group, blank=True, related_name='images', help_text='Group images')
   # Dating
-  year                = models.PositiveSmallIntegerField(blank=True, null=True, help_text='Is automatically filled when date is supplied')
-  date                = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
+  year                = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
+  month               = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
+  day                 = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
+  #date                = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
   # Meta
+  size                = models.IntegerField(default=0)
+  width               = models.IntegerField(default=0)
+  height              = models.IntegerField(default=0)
+  ORIENTATION_CHOICES = [('p', 'portrait'), ('l', 'landscape'), ('s', 'square'), ('u', 'unknown')]
+  orientation         = models.CharField(max_length=1, choices=ORIENTATION_CHOICES, default='u')
+  
   uploaded_at         = models.DateTimeField(auto_now_add=True)
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
   show_in_index       = models.BooleanField(default=True)
@@ -96,40 +129,65 @@ class Image(models.Model):
     return self.people.count()
   def has_thumbnail(self):
     return True if self.thumbnail else False
-  def get_year(self):
-    return self.date.year if self.date else self.year
-  # def get_attachment_type(self):
-  #   if not self.attachment:
-  #     return None
-  #   elif self.attachment.name[-4:].lower() == '.pdf':
-  #     return 'pdf'
-  #   elif self.attachment.name[-4:].lower() == '.doc' or self.attachment.name[-5:].lower() == '.docx':
-  #     return 'word'
-  #   elif self.attachment.name[-4:].lower() == '.xls' or self.attachment.name[-5:].lower() == '.xlsx':
-  #     return 'excel'
-  #   elif self.attachment.name[-4:].lower() == '.jpg' or self.attachment.name[-5:].lower() == '.jpeg':
-  #     return 'jpeg'
-  #   elif self.attachment.name[-4:].lower() == '.png':
-  #     return 'png'
-  #   elif self.attachment.name[-4:].lower() == '.txt':
-  #     return 'txt'
-  #   elif self.attachment.name[-4:].lower() == '.csv':
-  #     return 'csv'
-  #   else:
-  #     return 'unknown'
-
+  def extension(self):
+    return Path(str(self.source)).suffix[1:].lower()
   def get_absolute_url(self):
     return reverse('archive:image', kwargs={'pk': self.pk, 'name': self.title })  
+
+  ''' Cache Metadata 
+      Image Metadata is sometimes displayed as nice-to-have. To minimize file system calls, this information is cached in the database.
+  '''
+  ''' Store image width and height '''
+  def storeDimensions(self):
+    from PIL import Image
+    try:
+      image = Image.open(self.source)
+      self.width, self.height = image.size
+      self.save()
+    except:
+      return None
+  ''' Store square, portrait or landscape orientation '''
+  def storeOrientation(self):
+    if self.width == 0 or self.height == 0:
+      self.storeDimensions()
+    if self.width == self.height:
+      self.orientation = 's'
+    elif self.width > self.height:
+      self.orientation = 'l'
+    else:
+      self.orientation = 'p'
+    self.save()
+  ''' Store Image File Size '''
+  def storeSize(self):
+    from os import stat
+    file_stats = stat(settings.MEDIA_ROOT.joinpath(str(self.source)))
+    self.size = file_stats.st_size
+    self.save()
+  ''' Display Image File size. Calculate if not stored yet '''
+  def getSize(self):
+    ''' https://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python '''
+    from math import floor, pow, log
+    if self.size == 0:
+      self.storeSize()
+    if self.size == 0:
+      return "0B"
+    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+    i = int(floor(log(self.size, 1024)))
+    p = pow(1024, i)
+    s = round(self.size / p, 2)
+    return "%s %s" % (s, size_name[i])
 
   def save(self, *args, **kwargs):
     # Enforce user
     if not self.user:
       self.user = request.user
-    # Fill in year if date is known
-    if not self.year and self.date:
-      self.year = int(self.date.year)
     # Generate thumbnail
     if self.source and not self.thumbnail:
       self.thumbnail = get_thumbnail(self.source)
+    # Store Dimensions and Orientation
+    if self.height == 0 or self.width == 0:
+      self.storeDimensions()
+    if self.orientation == 'u':
+      self.storeOrientation()
     # Save
     return super(Image, self).save(*args, **kwargs)
