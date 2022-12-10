@@ -16,7 +16,7 @@ def get_thumbnail(image):
     return 'documents/format_not_supported.jpg'
   import base64
   from io import BytesIO
-  from PIL import ImageOps
+  from PIL import ImageOps, Image
   Image.MAX_IMAGE_PIXELS = 933120000
 
   thumbnail_size = 150, 300
