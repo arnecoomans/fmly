@@ -65,7 +65,7 @@
             </li>
             {% endif %}
           {% if perms.archive.view_comment and image.comments.all.count > 0 %}
-            {% for comment in image.comments.all reversed %}
+            {% for comment in image.get_comments reversed %}
               <li class="bi bi-chat-right-text">
                 <div class="comment">
                   <h4>{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} schreef op {{ comment.date_created|date:'d/m/Y' }}:</h4>
@@ -77,7 +77,6 @@
                       {% if comment.user == user or user.is_staff %}<a href=""><s>Delete comment</s></a>{% endif %}
                     </span>
                   {% endif %}
-                  
                 </div>
               </li>
             {% endfor %}

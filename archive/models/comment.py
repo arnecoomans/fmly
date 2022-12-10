@@ -8,6 +8,7 @@ class Comment(models.Model):
   # Meta
   date_modified       = models.DateTimeField(auto_now=True)
   date_created        = models.DateTimeField(auto_now_add=True)
+  is_deleted          = models.BooleanField(default=False)
   user                = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
   # Content
   content             = models.TextField(help_text='Markdown supported')

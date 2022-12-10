@@ -22,8 +22,8 @@ class CommentListView(generic.ListView):
     return context
   
   def get_queryset(self):      
-    return Comment.objects.order_by('-date_modified')
-
+    queryset = Comment.objects.filter(is_deleted=False).order_by('-date_modified')
+    return queryset
 
 # Renamed CommentView to AddCommentView
 class AddCommentView(PermissionRequiredMixin, CreateView):
@@ -45,24 +45,24 @@ class EditCommentView(PermissionRequiredMixin, UpdateView):
   fields = ['content']
   template_name = 'comment/comment_form.html'
 
-# Renamed MyCommentList to CommentListByUserView
-class CommentListByUserView(generic.ListView):
-  model = Comment
-  context_object_name = 'comments'
-  paginate_by = 24
-  template_name = 'comment/comment_list.html'
+# # Renamed MyCommentList to CommentListByUserView
+# class CommentListByUserView(generic.ListView):
+#   model = Comment
+#   context_object_name = 'comments'
+#   paginate_by = 24
+#   template_name = 'comment/comment_list.html'
 
-  def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    context['page_scope'] = 'Mijn reacties'
-    return context
+#   def get_context_data(self, **kwargs):
+#     context = super().get_context_data(**kwargs)
+#     context['page_scope'] = 'Mijn reacties'
+#     return context
 
-  def get_queryset(self):
-    # If a username is supplied, use username as search key
-    if 'username' in  self.kwargs:
-      person = get_object_or_404(Person, related_user__username=self.kwargs['username'])
-      user = person.related_user if person else None
-    # If no username is supplied, assume current logged in user
-    else:
-      user = self.request.user
-    return Comment.objects.filter(user=user).order_by('-date_modified')
+#   def get_queryset(self):
+#     # If a username is supplied, use username as search key
+#     if 'username' in  self.kwargs:
+#       person = get_object_or_404(Person, related_user__username=self.kwargs['username'])
+#       user = person.related_user if person else None
+#     # If no username is supplied, assume current logged in user
+#     else:
+#       user = self.request.user
+#     return Comment.objects.filter(user=user).order_by('-date_modified')
