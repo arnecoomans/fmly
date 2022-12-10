@@ -47,7 +47,7 @@
           {% if not image.show_in_index %}<li class="bi bi-info-circle-fill"> Verborgen</li>{% endif %}
           <li class="bi bi-info-circle-fill"> {{ image.extension }}, {{ image.getSize }}</li>
           <li class="bi bi-info-circle-fill"> {{ image.width }}x{{ image.height }} pixels, {{ image.get_orientation_display }}</li>
-          <li class="bi bi-person-fill-check"> Gedeeld door: <a href="/?by={{ image.user.username }}">{% if image.user.first_name %}{{ image.user.first_name }} {{ image.user.last_name }}{% else %} {{ image.user }}{% endif %}</a></li>
+          <li class="bi bi-person-fill-check"> Gedeeld door: <a href="{% url 'archive:image-by-uploader' image.user.username %}">{% if image.user.first_name %}{{ image.user.first_name }} {{ image.user.last_name }}{% else %} {{ image.user }}{% endif %}</a></li>
           <!-- Comments -->
           {% if perms.archive.view_comment and image.comments.all.count > 0 %}
             <a name="comments"></a>

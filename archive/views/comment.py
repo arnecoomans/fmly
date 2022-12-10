@@ -2,6 +2,7 @@ from re import template
 from django.views import generic
 from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
 from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -10,9 +11,8 @@ from archive.models import Comment, Image, Person
 # Renamed CommentsView to CommentListView
 class CommentListView(generic.ListView):
   model = Comment
-  context_object_name = 'comments'
-  template_name = 'comment/comment_list.html'
-  paginate_by = 12
+  template_name = 'archive/comments/list.html'
+  paginate_by = settings.PAGINATE
 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)

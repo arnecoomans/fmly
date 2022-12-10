@@ -8,8 +8,7 @@ from archive.models import Note
 # Renamed NoteListView to NotesListView
 class NotesListView(generic.ListView):
   model = Note
-  context_object_name = 'objects'
-  template_name = 'archive/object_list.html'
+  template_name = 'archive/notes/list.html'
 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
@@ -21,6 +20,7 @@ class NotesListView(generic.ListView):
 
 class NoteView(generic.DetailView):
   model = Note
+  template_name = 'archive/notes/detail.html'
 
 # Renamed NoteCreateView to AddNoteView
 class AddNoteView(generic.edit.CreateView):

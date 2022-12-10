@@ -1,0 +1,33 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <header>
+    <h2>{{ note.title }}</h2>
+    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+    {% if note.people.all.count > 0 %}{% endif %}
+      <ul class="metadata">
+        {% for person in note.people.all %}
+          <li class="bi bi-person-fill"> {% include 'archive/snippets/person_link.html' %}</li>
+        {% endfor %}
+      </ul>
+    {% if note.tag.all.count > 0 %}
+      <ul class="metadata">
+        {% for tag in note.tag.all %}
+          {% include 'archive/snippets/tag.html' %}
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </header>
+  {% if perms.archive.view_note %}
+    <div class="note">
+      {{ note.content|markdown|safe }}
+    </div>
+    <div class="meta">
+        <ul class="metadata">
+          <li>Door: {{ note.user }}</li>
+          <li>Aangemaakt: {{ note.date_created}}</li>
+          {% if note.date_created != note.date_modified %}<li>Voor het laatst aangepast: {{ note.date_modified }}</li>{% endif %}
+        </ul>
+    </div>
+  {% endif %}
+{% endblock %}
