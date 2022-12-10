@@ -123,6 +123,10 @@ class Image(models.Model):
       title += ' (deleted)'
     return id + ' ' + title
   
+  def count_comments(self):
+    return self.comments.filter(is_deleted=False).count()
+  def get_comments(self):
+    return self.comments.filter(is_deleted=False)
   def count_tags(self):
     return self.tag.count()
   def count_people(self):
