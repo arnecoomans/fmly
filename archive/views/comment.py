@@ -3,6 +3,7 @@ from django.views import generic
 from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.contrib import messages
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -35,6 +36,7 @@ class AddCommentView(PermissionRequiredMixin, CreateView):
     form.instance.user = self.request.user
     # Set image to image from URL
     form.instance.image = Image.objects.get(pk=self.kwargs['pk'])
+    messages.add_message(self.request, messages.SUCCESS, f"Reactie toegevoegd aan \"{form.instance.image.title}\"")
     return super().form_valid(form)
 
 class EditCommentView(PermissionRequiredMixin, UpdateView):
