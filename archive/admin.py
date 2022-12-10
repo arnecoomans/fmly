@@ -70,7 +70,7 @@ class ImageAdmin(admin.ModelAdmin):
   actions = [reset_thumbnail, show, hide, softdelete, resetDimensions, resetOrientation, resetSize ]
   list_filter = ['tag', 'show_in_index', 'people']
   def get_changeform_initial_data(self, request):
-    get_data = super(DocumentAdmin, self).get_changeform_initial_data(request)
+    get_data = super(ImageAdmin, self).get_changeform_initial_data(request)
     get_data['user'] = request.user.pk
     return get_data
 
