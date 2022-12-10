@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <header>
+    <h2>Reacties</h2>
+    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+  </header>
+  {% if not note_list %}
+    ERROR: No comments to be shown
+  {% endif %}
+  {% if perms.archive.view_note %}
+    <ul>
+      {% for note in note_list %}
+        <li><a href="{% url 'archive:note-with-name' note.id note.title|slugify %}">{{ note.title }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

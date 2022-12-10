@@ -28,12 +28,12 @@
         {% endif %}
         {% if perms.archive.view_comment %}
           <li class="nav-item">
-            <a class="nav-link bi bi-chat-text-fill disabled" href="#"> Reacties</a>
+            <a class="nav-link bi bi-chat-text-fill" href="{% url 'archive:comments' %}"> Reacties</a>
           </li>
         {% endif %}
         {% if perms.archive.view_note %}
           <li class="nav-item">
-            <a class="nav-link bi bi-stickies-fill disabled" href="#"> Notities</a>
+            <a class="nav-link bi bi-stickies-fill" href="{% url 'archive:notes' %}"> Notities</a>
           </li>
         {% endif %}
         {% if user.is_authenticated %}
@@ -53,6 +53,9 @@
               {% if user.is_staff %}
                 <li><div class="dropdown-divider"></div></li>
                 <li><a class="dropdown-item bi bi-wrench-adjustable-circle-fill" href="/admin"> Admin</a></li>
+                {% if image %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/image/{{ image.id }}/change/"> Edit image in admin</a></li>{% endif %}
+                {% if person %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/person/{{ person.id }}/change/"> Edit person in admin</a></li>{% endif %}
+                {% if note %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/note/{{ note.id }}/change/"> Edit note in admin</a></li>{% endif %}
               {% endif %}
               <li><div class="dropdown-divider"></div></li>
               <li><a class="dropdown-item bi bi-box-arrow-left" href="{% url 'logout' %}"> Uitloggen</a></li>

@@ -19,18 +19,8 @@ urlpatterns = [
   path('objects/by/<str:user>', views.ImageListView.as_view(), {'columns': ('user')}, name='image-by-uploader'),
 
 
-  # User actions and views
-  #path('mijn/afbeeldingen/', views.ImageListByUserView.as_view(), name='my-images'),
-  #path('mijn/bio/', views.PersonUserView.as_view(), name='my-bio'),
-  #path('mijn/comments/', views.CommentListByUserView.as_view(), name='my-comments'),
-  #path('<username>/afbeeldingen/', views.ImageListByUserView.as_view(), {'columns': ('username')}, name='images-of-user'),
-  #path('<username>/bio/', views.PersonUserView.as_view(), {'columns': ('username')}, name='bio-of-user'),
-  #path('<username>/comments/', views.CommentListByUserView.as_view(), {'columns': ('username')}, name='bio-of-user'),
-
   # People
   path('people/', views.PersonListView.as_view(), name='people'),
-  #path('people/all/', views.PersonAllListView.as_view(), name='all-people'),
-  #path('people/list/', views.PersonListView.as_view(), name='person-list'),
   path('person/<int:pk>/', views.PersonRedirectView.as_view(), name='person-short'),
   #path('person/<int:pk>/edit', views.EditPersonView.as_view(), name='person-edit'),
   path('person/<int:pk>/<name>/', views.PersonView.as_view(), name='person'),
@@ -40,13 +30,13 @@ urlpatterns = [
   #path('tag/<slug>/', views.ImagesByTagListView.as_view(), name='tag'),
     
   # Notes
-  # path('note/', views.NotesListView.as_view(), name='notes'),
+  path('note/', views.NotesListView.as_view(), name='notes'),
   # path('note/<int:pk>/edit/', views.EditNoteView.as_view(), name='note-edit'),
-  # path('note/<int:pk>/', views.NoteView.as_view(), name='note'),
-  # path('note/<int:pk>/<title>/', views.NoteView.as_view(), name='note-with-name'),
+  path('note/<int:pk>/', views.NoteView.as_view(), name='note'),
+  path('note/<int:pk>/<title>/', views.NoteView.as_view(), name='note-with-name'),
 
   # Comments
-  # path('comments/', views.CommentListView.as_view(), name='comments'),
+  path('comments/', views.CommentListView.as_view(), name='comments'),
   # path('comments/<int:pk>/edit/', views.EditCommentView.as_view(), name='edit-comment'),
 
   # Adding and removing

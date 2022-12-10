@@ -1,0 +1,32 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <header>
+    <h2>Reacties</h2>
+    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+  </header>
+  {% if not comment_list %}
+    ERROR: No comments to be shown
+  {% endif %}
+  {% if perms.archive.view_comment %}
+    <!-- Pagination -->
+    {% include 'archive/snippets/pagination.html' %}
+    <section class="objects">
+      {% for comment in comment_list %}
+        <div class="object">
+          <h2><a href="{% url 'archive:image' comment.image.id comment.image.title|slugify %}#comments">{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} over {{ comment.image.title }}</a></h2>
+          <div class="column left">
+            <a href="{% url 'archive:image' comment.image.id comment.image.title|default:'needs-a-title'|slugify %}" title="{{ comment.image.title }}">
+              <img src="{{ comment.image.thumbnail }}" alt="{{ comment.image.title }}" title="{{ comment.image.title }} - {{ comment.image.description }}">
+            </a>
+          </div>
+          <div class="column right">
+            {{ comment.content|markdown|safe }}
+          </div>
+        </div>
+      {% endfor %}
+    </section>
+    <!-- Pagination -->
+    {% include 'archive/snippets/pagination.html' %}
+  {% endif %}
+{% endblock %}
