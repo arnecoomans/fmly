@@ -58,7 +58,7 @@
         {% endif %}
         <!-- Broer(s) en Zus(sen) -->
         {% if person.get_siblings %}
-          <dt>Broer(s)/Zus(sen):</dt>
+          <dt>Broer{% if person.get_siblings.all.count > 1 %}(s){% endif %}/Zus{% if person.get_siblings.all.count > 1 %}(sen){% endif %}:</dt>
           <dd>
             {% for person in person.get_siblings %}
             {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
