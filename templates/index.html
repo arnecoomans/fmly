@@ -27,8 +27,10 @@
 {% include 'messages.html' %}
 <!-- Content -->
 <section class="container" id="wrapper">
-  {% if user.is_authenticated or preview or login %}
+  {% if user.is_authenticated or login %}
     {% block content %}{% endblock %}
+  {% elif register %}
+    {% block register %}{% endblock %}
   {% else %}
     {% include 'registration/inline_login.html' %}
   {% endif %}
