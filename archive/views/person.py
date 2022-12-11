@@ -65,8 +65,6 @@ class PersonListView(generic.ListView):
     context['available_centuries'] = self.get_centuries()
     context['available_decades'] = self.get_decades()
     context['available_families'] = settings.FAMILIES
-    #context['available_years'] = self.get_years()
-    #context['dev'] = self.get_centuries()
     ''' Page description
         is dynamically describing active filters
     '''
@@ -169,9 +167,10 @@ class PersonListView(generic.ListView):
 # Renamed PersonUpdateView to EditPersonView
 class EditPersonView(UpdateView):
   model = Person
-  fields = ['first_name', 'given_names', 'last_name', 'nickname', 
-            'date_of_birth', 'year_of_birth', 'place_of_birth', 
-            'date_of_death', 'year_of_death', 'place_of_death',
+  template_name = 'archive/people/edit.html'
+  fields = ['first_name', 'given_names', 'last_name', 'married_name', 'nickname', 
+            'day_of_birth', 'month_of_birth', 'year_of_birth', 'place_of_birth', 
+            'day_of_death', 'month_of_death', 'year_of_death', 'place_of_death',
             'bio']
   # fields = '__all__'
   def get_form(self):
@@ -186,7 +185,7 @@ class EditPersonView(UpdateView):
 # Renamed AddPerson to AddPersonView
 class AddPersonView(PermissionRequiredMixin, CreateView):
   permission_required = 'archive.create_person'
-
+  template_name = 'archive/people/edit.html'
   model = Person
   fields = ['first_name', 'given_names', 'last_name', 'nickname', 
             'date_of_birth', 'year_of_birth', 'place_of_birth', 
