@@ -1,9 +1,11 @@
 from re import template
 from django.views import generic
 from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
-from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
 from django.conf import settings
 from django.contrib import messages
+from django.urls import reverse
+from django.template.defaultfilters import slugify
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -44,6 +46,49 @@ class EditCommentView(PermissionRequiredMixin, UpdateView):
   model = Comment
   fields = ['content']
   template_name = 'comment/comment_form.html'
+
+class CommentDeleteView(PermissionRequiredMixin, generic.DetailView):
+  permission_required = 'archive.change_comment'
+  model = Comment
+  
+  def get_comment_preview(self, comment):
+    comment = comment.content.split(' ')
+    if len(comment) > 6:
+      comment = comment[:6]
+      comment.append('...')
+    return ' '.join(comment)
+    
+  def get(self, request, *args, **kwargs):
+    comment = Comment.objects.get(pk=self.kwargs['pk'])
+    if self.request.user.is_staff or self.request.user == comment.user:
+      comment.is_deleted = True
+      messages.add_message(self.request, messages.SUCCESS, f"Reactie \"{ self.get_comment_preview(comment) }\" op \"{comment.image.title}\" verwijderd. <a href=\"{reverse('archive:undelete-comment', args=[comment.id])}\">Ongedaan maken</a>.")
+    else:
+      messages.add_message(self.request, messages.ERROR, f"Reactie \"{ self.get_comment_preview(comment) }\" op \"{comment.image.title}\" kan niet worden verwijderd. Is het wel jouw reactie?")
+    comment.save()
+    return redirect('archive:image', comment.image.id, slugify(comment.image.title))
+
+class CommentUnDeleteView(PermissionRequiredMixin, generic.DetailView):
+  permission_required = 'archive.change_comment'
+  model = Comment
+  
+  def get_comment_preview(self, comment):
+    comment = comment.content.split(' ')
+    if len(comment) > 6:
+      comment = comment[:6]
+      comment.append('...')
+    return ' '.join(comment)
+    
+  def get(self, request, *args, **kwargs):
+    comment = Comment.objects.get(pk=self.kwargs['pk'])
+    if self.request.user.is_staff or self.request.user == comment.user:
+      comment.is_deleted = False
+      messages.add_message(self.request, messages.SUCCESS, f"Reactie \"{ self.get_comment_preview(comment) }\" op \"{comment.image.title}\" hersteld.")
+    else:
+      messages.add_message(self.request, messages.ERROR, f"Reactie \"{ self.get_comment_preview(comment) }\" op \"{comment.image.title}\" kan niet worden hersteld. Is het wel jouw reactie?")
+    comment.save()
+    return redirect('archive:image', comment.image.id, slugify(comment.image.title))
+
 
 # # Renamed MyCommentList to CommentListByUserView
 # class CommentListByUserView(generic.ListView):

@@ -164,11 +164,11 @@ ul.metadata, ul.tags {
   padding: 5px;
   margin: 10px;
 }
-.comment * textarea:focus {
+/* .comment > textarea:focus {
   height: 8em;
   background-color: rgba(255,255,255,0.8);
   outline-color: var(--link-highlight);
-}
+} */
 .comment * input {
   margin: 0 0 10px 10px;
   padding: 5px 30px;

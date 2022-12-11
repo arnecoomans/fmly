@@ -51,14 +51,14 @@
           <!-- Comments -->
           {% if perms.archive.view_comment and image.comments.all.count > 0 %}
             <a name="comments"></a>
-            <li class="bi bi-chat-right-text-fill" > {{ image.comments.all.count }} reactie{% if image.comments.all.count > 1 %}s{% endif %}</li>
+            <li class="bi bi-chat-right-text-fill" > {{ image.count_comments }} reactie{% if image.comments.all.count > 1 %}s{% endif %}</li>
           {% endif %}
           {% if perms.archive.add_comment %}
             <li class="bi bi-cursor-text">
               <div class="comment">
                 <form method="post" action="{% url 'archive:comment' image.id %}">
                   {% csrf_token %}
-                  <textarea name="content" id="id_content" required=required></textarea>
+                  <textarea name="content" id="id_content" required=required onfocus="this.style.height='8em'"></textarea>
                   <input type="submit" value="Reageer">
                 </form>
               </div>
@@ -74,7 +74,7 @@
                     <span class="actions">
                       {% if comment.user == user %}<a href=""><s>Edit comment</s></a>{% endif %}
                       {% if user.is_staff %}<a href="/admin/archive/comment/{{ comment.id }}/change/">Edit in admin</a>{% endif %}
-                      {% if comment.user == user or user.is_staff %}<a href=""><s>Delete comment</s></a>{% endif %}
+                      {% if comment.user == user or user.is_staff %}<a href="{% url 'archive:delete-comment' comment.id %}">Delete comment</a>{% endif %}
                     </span>
                   {% endif %}
                 </div>
