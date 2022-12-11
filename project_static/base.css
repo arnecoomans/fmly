@@ -214,26 +214,42 @@ ul.people > li > span.date {
   max-height: 260px;
   object-fit: cover;
 }
-.person > dl {
+.person > dl,
+.note > dl {
   max-width: 1200px;
 }
+.note > dl > dt,
+.note > dl > dd,
 .person > dl > dt,
 .person > dl > dd {
   display: inline-block;
   overflow: auto;
   vertical-align: top;
 }
-
+.note > dl > dt,
 .person > dl > dt  {
   width: 260px;
   clear:left;
   float:left;
 }
+.note > dl > dd,
 .person > dl > dd {
   min-width: 510px;
   max-width: 780px;
   clear:right;
   padding:4px 0 4px 40px;
+}
+.note > dl > dd {
+  min-width: 650px;
+}
+.note > dl > dd > input,
+.note > dl > dd > textarea,
+.note > dl > dd > select,
+.note > dd > dd > option {
+  width: 100%;
+}
+.note > dl > dd > textarea {
+  min-height: 50em;
 }
 /** Filters */
 .filters > span > form > label {
