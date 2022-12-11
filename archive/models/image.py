@@ -124,7 +124,7 @@ class Image(models.Model):
     return id + ' ' + title
   
   def count_comments(self):
-    return self.comments.filter(is_deleted=False).count()
+    return self.comments.filter(is_deleted=False).count() 
   def get_comments(self):
     return self.comments.filter(is_deleted=False)
   def count_tags(self):
