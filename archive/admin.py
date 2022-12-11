@@ -66,7 +66,7 @@ class GroupAdmin(admin.ModelAdmin):
 
 
 class ImageAdmin(admin.ModelAdmin):
-  list_display = ['get_indexed_name', 'show_in_index', 'count_tags', 'count_people', 'year']
+  list_display = ['get_indexed_name', 'show_in_index', 'day', 'month', 'year']
   search_fields = ['title', 'description']
   exclude = ['thumbnail']
   empty_value_display = '---'

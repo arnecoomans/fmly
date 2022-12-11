@@ -101,17 +101,23 @@ body > section#wrapper {
     max-width: 1604px !important;
   }
 }
-.objects > .object > h2 {
+.objects > .object > h2,
+.objects > .object > h5 {
   background-color: var(--object-title-background);
+}
+.objects > .object > h2 {
   font-size: 1.6em;
 }
-.objects > .object.hidden > h2 {
+.objects > .object.hidden > h2,
+.objects > .object.hidden > h5 {
   background-color: rgba(0,0,0,0.5)
 }
-.objects > .object.deleted > h2 {
+.objects > .object.deleted > h2,
+.objects > .object.hidden > h5 {
   background-color: rgba(255,0,0,0.3)
 }
-.objects > .object > h2 > * {
+.objects > .object > h2 > *,
+.objects > .object > h5 > * {
   color: var(--object-title-text);
   text-decoration: none;
 }

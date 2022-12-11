@@ -14,13 +14,14 @@
     <section class="objects">
       {% for comment in comment_list %}
         <div class="object">
-          <h2><a href="{% url 'archive:image' comment.image.id comment.image.title|slugify %}#comments">{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} over {{ comment.image.title }}</a></h2>
+          <h5><a href="{% url 'archive:image' comment.image.id comment.image.title|slugify %}#comments">{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} over {{ comment.image.title }}</a></h5>
           <div class="column left">
             <a href="{% url 'archive:image' comment.image.id comment.image.title|default:'needs-a-title'|slugify %}" title="{{ comment.image.title }}">
               <img src="{{ comment.image.thumbnail }}" alt="{{ comment.image.title }}" title="{{ comment.image.title }} - {{ comment.image.description }}">
             </a>
           </div>
           <div class="column right">
+            Op {{ comment.date_created|date:'m/d/y H:m' }}:<br>
             {{ comment.content|markdown|safe }}
           </div>
         </div>

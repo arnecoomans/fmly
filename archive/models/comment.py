@@ -15,7 +15,8 @@ class Comment(models.Model):
   image               = models.ForeignKey(Image, related_name='comments', on_delete=models.CASCADE)
   
   def __str__(self):
-    return self.user.username + ' on ' + self.image.title
+    deleted = ' (deleted)' if self.is_deleted else ''
+    return self.user.username + ' on ' + self.image.title + deleted
   
   def save(self, *args, **kwargs):
     if not self.user:
