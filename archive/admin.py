@@ -15,6 +15,9 @@ def hide(modeladmin, request, queryset):
 @admin.action(description='Softdelete')
 def softdelete(modeladmin, request, queryset):
   queryset.update(is_deleted=True)
+@admin.action(description='Softundelete')
+def softundelete(modeladmin, request, queryset):
+  queryset.update(is_deleted=False)
 
 @admin.action(description='Set image dates from date field')
 def fixDate(modeladmin, request, queryset):
@@ -87,7 +90,8 @@ class NoteAdmin(admin.ModelAdmin):
     return get_data
 
 class CommentAdmin(admin.ModelAdmin):
-  list_display = ['user', 'image', 'content']
+  list_display = ['user', 'image', 'is_deleted', 'content']
+  actions = [softdelete, softundelete]
   def get_changeform_initial_data(self, request):
     get_data = super(CommentAdmin, self).get_changeform_initial_data(request)
     get_data['user'] = request.user.pk
