@@ -58,7 +58,7 @@
               {% endif %}
               {% if image or note %}
                 {% if note %}
-                  <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:note-edit' note.id %}"> Bewerk notitie</a></li>
+                  <li><a class="dropdown-item bi bi-pencil-fill {% if note.user != user and not user.is_superuser %}disabled{% endif %}" href="{% url 'archive:note-edit' note.id %}"> Bewerk notitie</a></li>
                 {% endif %}
               {% endif %}
               {% if user.is_staff %}
