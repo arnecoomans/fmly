@@ -1,6 +1,6 @@
 from django.views import generic
 from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
-
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from archive.models import Note
@@ -33,4 +33,8 @@ class AddNoteView(generic.edit.CreateView):
 # Renamed NoteUpdateView to EditNoteView
 class EditNoteView(generic.edit.UpdateView):
   model = Note
+  template_name = 'archive/notes/edit.html'
   fields = ['title', 'content', 'people', 'tag']
+  def form_valid(self, form):
+    messages.add_message(self.request, messages.SUCCESS, f"Notitie \"{form.instance.title}\" opgeslagen.")
+    return super().form_valid(form)
