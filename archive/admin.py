@@ -50,7 +50,7 @@ class PersonAdmin(admin.ModelAdmin):
   list_display = ['first_name', 'given_names', 'last_name', 'nickname', 'slug']
   prepopulated_fields = {'slug': ('given_names', 'last_name',), 
                          'given_names': ('first_name',),}
-  list_filter = ['last_name']
+  list_filter = ['last_name', 'images']
   inlines = [FamilyRelationsInline,]
   actions=[fixDate]
   def get_changeform_initial_data(self, request):
@@ -66,7 +66,7 @@ class GroupAdmin(admin.ModelAdmin):
 
 
 class ImageAdmin(admin.ModelAdmin):
-  list_display = ['get_indexed_name', 'show_in_index', 'day', 'month', 'year']
+  list_display = ['get_indexed_name', 'show_in_index', 'year']
   search_fields = ['title', 'description']
   exclude = ['thumbnail']
   empty_value_display = '---'
@@ -91,6 +91,7 @@ class NoteAdmin(admin.ModelAdmin):
 
 class CommentAdmin(admin.ModelAdmin):
   list_display = ['user', 'image', 'is_deleted', 'content']
+  list_filter = ['image']
   actions = [softdelete, softundelete]
   def get_changeform_initial_data(self, request):
     get_data = super(CommentAdmin, self).get_changeform_initial_data(request)
