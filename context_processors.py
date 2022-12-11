@@ -7,4 +7,5 @@ def setting_data(request):
     'LANGUAGE_CODE': settings.LANGUAGE_CODE,
     'master_css': settings.MASTER_CSS,
     'families': settings.FAMILIES,
+    'unauthenticated_welcome': settings.UNAUTHENTICATED_WELCOME,
   }
