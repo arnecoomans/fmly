@@ -53,6 +53,9 @@
               {% if perms.archive.add_person %}
                 <li><a class="dropdown-item bi bi-person-fill-add disabled" href="#"> Persoon aanmaken</a></li>
               {% endif %}
+              {% if perms.archive.add_note %}
+                <li><a class="dropdown-item bi bi-file-earmark-arrow-up-fill" href="{% url 'archive:add-note' %}"> Notitie aanmaken</a></li>
+              {% endif %}
               {% if image or note %}
                 {% if note %}
                   <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:note-edit' note.id %}"> Bewerk notitie</a></li>

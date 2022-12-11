@@ -25,6 +25,7 @@ class NoteView(generic.DetailView):
 # Renamed NoteCreateView to AddNoteView
 class AddNoteView(generic.edit.CreateView):
   model = Note
+  template_name = 'archive/notes/edit.html'
   fields = ['title', 'content', 'people', 'tag']
   def form_valid(self, form):
     form.instance.user = self.request.user
