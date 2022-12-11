@@ -51,7 +51,10 @@
                 <li><a class="dropdown-item bi bi-cloud-arrow-up disabled" href="#"> Afbeelding uploaden</a></li>
               {% endif %}
               {% if perms.archive.add_person %}
-                <li><a class="dropdown-item bi bi-person-fill-add disabled" href="#"> Persoon aanmaken</a></li>
+                <li><a class="dropdown-item bi bi-person-fill-add" href="{% url 'archive:add-person' %}"> Persoon aanmaken</a></li>
+              {% endif %}
+              {% if person and perms.archive.edit_person %}
+                <li><a class="dropdown-item bi bi-person-fill" href="{% url 'archive:person-edit' person.id %}"> Persoon bewerken</a></li>
               {% endif %}
               {% if perms.archive.add_note %}
                 <li><a class="dropdown-item bi bi-file-earmark-arrow-up-fill" href="{% url 'archive:add-note' %}"> Notitie aanmaken</a></li>
