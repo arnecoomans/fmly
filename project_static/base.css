@@ -121,14 +121,17 @@ body > section#wrapper {
   color: var(--object-title-text);
   text-decoration: none;
 }
-.objects > .object:hover > h2 > * {
+.objects > .object:hover > h2 > *,
+.objects > .object:hover > h5 > * {
   color: var(--object-title-text-hover);
 }
-.objects > .object > h2 > span {
+.objects > .object > h2 > span,
+.objects > .object > h5 > span {
   font-size: 40%;
   margin-right: 5px;
 }
-.objects > .object > h2 > a:hover {
+.objects > .object > h2 > a:hover,
+.objects > .object > h5 > a:hover {
   background-color: transparent;
 }
 .object > .column {
