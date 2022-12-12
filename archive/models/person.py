@@ -36,6 +36,8 @@ class Person(models.Model):
   # Meta
   related_user        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='related_person')
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
+  date_modified       = models.DateTimeField(auto_now=True)
+  date_created        = models.DateTimeField(auto_now_add=True)
   
   def __str__(self):
     value = self.full_name()
