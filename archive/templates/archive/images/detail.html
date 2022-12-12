@@ -37,6 +37,22 @@
               {% include 'archive/snippets/tag.html' %}
             {% endfor %}
           {% endif %}
+          <!-- Grouping -->
+          {% if image.in_group.all.count > 0 %}
+            {% for group in image.in_group.all %}
+              <li class="bi bi-collection-fill"> {{ group.title }} ({{ group.images.all.count}})
+                {% if group.images.all.count > 1 %}
+                  <ul>
+                    {% for grouped_image in group.images.all %}
+                      {% if grouped_image != image %}
+                        <li class=" bi bi-image"> <a href="{% url 'archive:image' grouped_image.id grouped_image.title|slugify %}">{{ grouped_image.title }}</a></li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </li>
+            {% endfor %}
+          {% endif %}
           <!-- Attachments -->
           {% if perms.archive.view_attachment and image.attachments.all.count > 0 %}
             {% for attachment in image.attachments.all reversed %}
