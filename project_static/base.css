@@ -152,6 +152,10 @@ ul.metadata, ul.tags {
   margin: 0;
   padding: 0;
 }
+ul.metadata > li > ul {
+  list-style-type: none;
+  margin: 0;
+}
 .comment {
   display: inline-block; 
   width: 90%; 

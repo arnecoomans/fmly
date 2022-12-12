@@ -34,6 +34,12 @@
           {% include 'archive/snippets/tag.html' %}
         {% endfor %}
       {% endif %}
+      <!-- Grouping -->
+      {% if object.in_group.all.count > 0 %}
+            {% for group in object.in_group.all %}
+              <li class="bi bi-collection-fill"> {{ group.title }} ({{ group.images.all.count}})</li>
+            {% endfor %}
+          {% endif %}
       <!-- Comments -->
       {% if perms.archive.view_comment and object.count_comments > 0 %}
         <li class="comments bi bi-chat-right-fill"> <a href="{% url 'archive:image' object.id object.title|default:'needs-a-title'|slugify %}#comments" title="{{ object.title }}">{{ object.count_comments }} reactie{% if object.count_comments > 1 %}s{% endif %}</a></li>  
