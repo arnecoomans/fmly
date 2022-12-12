@@ -17,6 +17,9 @@
         {% endfor %}
       </ul>
     {% endif %}
+    <ul class="metadata">
+      <li class="bi bi-pencil-fill"> <a href="{% url 'archive:note-edit' note.id %}">Bewerk notitie</a></li> 
+    </ul>
   </header>
   {% if perms.archive.view_note %}
     <div class="note">

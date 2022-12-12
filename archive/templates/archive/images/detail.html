@@ -77,7 +77,7 @@
               <div class="comment">
                 <form method="post" action="{% url 'archive:comment' image.id %}">
                   {% csrf_token %}
-                  <textarea name="content" id="id_content" required=required onfocus="this.style.height='8em'"></textarea>
+                  <textarea name="content" id="id_content" required=required style="height: 2em;" onfocus="this.style.height='8em'"></textarea>
                   <input type="submit" value="Reageer">
                 </form>
               </div>
@@ -91,7 +91,7 @@
                   {{ comment.content|markdown|safe }}
                   {% if comment.user == user or user.is_staff %}
                     <span class="actions">
-                      {% if comment.user == user %}<a href=""><s>Edit comment</s></a>{% endif %}
+                      {% if comment.user == user %}<a href="{% url 'archive:edit-comment' comment.id %}">Edit comment</a>{% endif %}
                       {% if user.is_staff %}<a href="/admin/archive/comment/{{ comment.id }}/change/">Edit in admin</a>{% endif %}
                       {% if comment.user == user or user.is_staff %}<a href="{% url 'archive:delete-comment' comment.id %}">Delete comment</a>{% endif %}
                     </span>
