@@ -18,7 +18,6 @@ urlpatterns = [
   path('objects/<str:tag>', views.ImageListView.as_view(), {'columns': ('tag')}, name='image-with-tag'),
   path('objects/by/<str:user>', views.ImageListView.as_view(), {'columns': ('user')}, name='image-by-uploader'),
 
-
   # People
   path('people/', views.PersonListView.as_view(), name='people'),
   path('person/<int:pk>/', views.PersonRedirectView.as_view(), name='person-short'),
@@ -42,6 +41,7 @@ urlpatterns = [
 
   # Comments
   path('comments/', views.CommentListView.as_view(), name='comments'),
+  path('comment/<int:pk>/edit/', views.CommentEditView.as_view(), name='edit-comment'),
   path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='delete-comment'),
   path('comment/<int:pk>/undelete/', views.CommentUnDeleteView.as_view(), name='undelete-comment'),
   
