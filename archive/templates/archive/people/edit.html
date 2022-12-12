@@ -86,72 +86,74 @@
             <dd><input type="submit" value="Verstuur wijzigingen"></dd>
         </dl>
       </form>
-      <hr>
-      <!-- Family Relations -->
-      <form>
-        <dl>
-          {% with me=person %}
-            {% if person.get_parents %}
-            <dt>Ouder{% if person.get_parents|length > 1 %}s{% endif %}:</dt>
-            <dd>
-              {% for person in person.get_parents %}
-                {% include 'archive/snippets/person_link.html' %} 
-                <a href="{% url 'archive:remove-relationship' me.id 'parent' person.id %}" title="Remove relationship">[x]</a>
-                {% if not forloop.last %}<br>{% endif %}
-              {% endfor %}
-              </dd>
-            {% endif %}
-            <!-- Partners -->
-            {% if person.get_partners %}
-              <dt>Partner{% if person.get_partners|length > 1 %}s{% endif %}:</dt>
+      {% if person %}
+        <hr>
+        <!-- Family Relations -->
+        <form>
+          <dl>
+            {% with me=person %}
+              {% if person.get_parents %}
+              <dt>Ouder{% if person.get_parents|length > 1 %}s{% endif %}:</dt>
               <dd>
-                {% for person in person.get_partners %}
-                {% include 'archive/snippets/person_link.html' %} 
-                <a href="{% url 'archive:remove-relationship' me.id 'partner' person.id %}" title="Remove relationship">[x]</a>
-                {% if not forloop.last %}<br>{% endif %}
+                {% for person in person.get_parents %}
+                  {% include 'archive/snippets/person_link.html' %} 
+                  <a href="{% url 'archive:remove-relationship' me.id 'parent' person.id %}" title="Remove relationship">[x]</a>
+                  {% if not forloop.last %}<br>{% endif %}
                 {% endfor %}
-              </dd>
-            {% endif %}
-            <!-- Broer(s) en Zus(sen) -->
-            {% if person.get_siblings %}
-              <dt>Broer{% if person.get_siblings.all.count > 1 %}(s){% endif %}/Zus{% if person.get_siblings.all.count > 1 %}(sen){% endif %}:</dt>
+                </dd>
+              {% endif %}
+              <!-- Partners -->
+              {% if person.get_partners %}
+                <dt>Partner{% if person.get_partners|length > 1 %}s{% endif %}:</dt>
+                <dd>
+                  {% for person in person.get_partners %}
+                  {% include 'archive/snippets/person_link.html' %} 
+                  <a href="{% url 'archive:remove-relationship' me.id 'partner' person.id %}" title="Remove relationship">[x]</a>
+                  {% if not forloop.last %}<br>{% endif %}
+                  {% endfor %}
+                </dd>
+              {% endif %}
+              <!-- Broer(s) en Zus(sen) -->
+              {% if person.get_siblings %}
+                <dt>Broer{% if person.get_siblings.all.count > 1 %}(s){% endif %}/Zus{% if person.get_siblings.all.count > 1 %}(sen){% endif %}:</dt>
+                <dd>
+                  {% for person in person.get_siblings %}
+                  {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
+                  {% endfor %}
+                </dd>
+              {% endif %}
+              <!-- Kinderen -->
+              {% if person.get_children %}
+                <dt>Kind{% if person.get_children|length > 1 %}eren{% endif %}:</dt>
+                <dd>
+                  {% for person in person.get_children %}
+                  {% include 'archive/snippets/person_link.html' %} 
+                  <a href="{% url 'archive:remove-relationship' me.id 'child' person.id %}" title="Remove relationship">[x]</a>
+                  {% if not forloop.last %}<br>{% endif %}
+                  {% endfor %}
+                </dd>
+              {% endif %}
+            {% endwith %}
+          </dl>
+        </form>
+        <form method="post" action="{% url 'archive:add-relationship' %}">
+          <dl>
+            <dt>Voeg relatie toe:</dt>
               <dd>
-                {% for person in person.get_siblings %}
-                {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
-                {% endfor %}
+                {% csrf_token %}
+                <input type="hidden" name="subject" value="{{ person.id }}">
+                <select name="type"><option value="parent">Ouder</option><option value="child">Kind</option><option value="partner">Partner</option></select>
+                <select name="person">
+                  {% for person in available_relations %}
+                    <option value="{{ person.id }}">{{ person }}</option>
+                  {% endfor %}
+                </select>
               </dd>
-            {% endif %}
-            <!-- Kinderen -->
-            {% if person.get_children %}
-              <dt>Kind{% if person.get_children|length > 1 %}eren{% endif %}:</dt>
-              <dd>
-                {% for person in person.get_children %}
-                {% include 'archive/snippets/person_link.html' %} 
-                <a href="{% url 'archive:remove-relationship' me.id 'child' person.id %}" title="Remove relationship">[x]</a>
-                {% if not forloop.last %}<br>{% endif %}
-                {% endfor %}
-              </dd>
-            {% endif %}
-          {% endwith %}
-        </dl>
-      </form>
-      <form method="post" action="{% url 'archive:add-relationship' %}">
-        <dl>
-          <dt>Voeg relatie toe:</dt>
-            <dd>
-              {% csrf_token %}
-              <input type="hidden" name="subject" value="{{ person.id }}">
-              <select name="type"><option value="parent">Ouder</option><option value="child">Kind</option><option value="partner">Partner</option></select>
-              <select name="person">
-                {% for person in available_relations %}
-                  <option value="{{ person.id }}">{{ person }}</option>
-                {% endfor %}
-              </select>
-            </dd>
-          <dt>&nbsp;</dt>
-            <dd><input type="submit" value="Voeg relatie toe"></dd>
-        </dl>
-      </form>
+            <dt>&nbsp;</dt>
+              <dd><input type="submit" value="Voeg relatie toe"></dd>
+          </dl>
+        </form>
+      {% endif %}
     </div>
     <!-- Meta information -->
     <hr>

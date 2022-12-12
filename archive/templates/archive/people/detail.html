@@ -18,10 +18,10 @@
           <div class="portrait">
             <a href="{% url 'archive:image-redirect' person.portrait.id %}"><img src="/documents/{{ person.portrait.source }}"></a>
           </div>
-          <ul class="metadata">
-            {% if perms.archive.edit_person %}<li class="bi bi-pencil-fill"> <a href="{% url 'archive:person-edit' person.id %}">Bewerk gegevens van {{ person.first_name }}</a></li>{% endif %}
-          </ul>
         {% endif %}
+        <ul class="metadata">
+          {% if perms.archive.edit_person %}<li class="bi bi-pencil-fill"> <a href="{% url 'archive:person-edit' person.id %}">Bewerk gegevens van {{ person.first_name }}</a></li>{% endif %}
+        </ul>
       </div>
       <!-- Collected data -->
       <dl class="collected data">
