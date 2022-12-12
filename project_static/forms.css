@@ -1,0 +1,49 @@
+form > dl {
+}
+
+form > dl > dt, 
+form > dl > dd {
+  display: inline-block;
+  vertical-align: top;
+}
+form > dl > dt {
+  width: 100%;
+}
+form > dl > dd {
+  width: 100%;
+}
+
+/** Devices with space for 2 columns */
+@media (min-width: 800px) {
+  form > dl {
+    max-width: 750px !important;
+  }
+  form > dl > dt {
+    width: 280px;
+  }
+  form > dl > dd {
+    width: 455px;
+  }
+}
+
+/** Devices with space for 3 columns */
+@media (min-width: 1200px) { 
+  form > dl {
+    max-width: 1100px !important;
+  }
+  form > dl > dt {
+    width: 350px;
+  }
+  form > dl > dd {
+    width: 730px;
+  }
+}  
+
+form > dl > dd > input,
+form > dl > dd > textarea {
+  width: 100%;
+}
+form > dl > dd > input[type=number] {
+  width: 8em;
+}
+

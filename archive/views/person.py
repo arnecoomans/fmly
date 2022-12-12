@@ -6,12 +6,13 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.db.models import Q
 from django.conf import settings
+from django.contrib import messages
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from math import floor
 
-from archive.models import Person
+from archive.models import Person, FamilyRelations
 
 
 
@@ -165,14 +166,21 @@ class PersonListView(generic.ListView):
 #     return Person.objects.all().order_by('last_name', 'year_of_birth')
 
 # Renamed PersonUpdateView to EditPersonView
-class EditPersonView(UpdateView):
+class EditPersonView(PermissionRequiredMixin, UpdateView):
   model = Person
+  permission_required = 'archive.edit_person'
   template_name = 'archive/people/edit.html'
   fields = ['first_name', 'given_names', 'last_name', 'married_name', 'nickname', 
             'day_of_birth', 'month_of_birth', 'year_of_birth', 'place_of_birth', 
             'day_of_death', 'month_of_death', 'year_of_death', 'place_of_death',
-            'bio']
-  # fields = '__all__'
+            'moment_of_death_unconfirmed',
+            'bio',]
+  
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['available_relations'] = Person.objects.all()
+    return context
+
   def get_form(self):
     if self.request.user == self.get_object().related_user:
       self.fields.append('email')
@@ -189,13 +197,11 @@ class AddPersonView(PermissionRequiredMixin, CreateView):
   model = Person
   fields = ['first_name', 'given_names', 'last_name', 'nickname', 
             'date_of_birth', 'year_of_birth', 'place_of_birth', 
-            'date_of_death', 'year_of_death', 'place_of_death',
+            'date_of_death', 'year_of_death', 'place_of_death', 
+            'moment_of_death_unconfirmed',
             'bio']
-
   def form_valid(self, form):
     form.instance.user = self.request.user
-    # Moved to model:
-    #form.instance.slug = slugify(form.instance.first_name + ' ' + form.instance.last_name)
     return super().form_valid(form)
 
 ## Special views
@@ -217,3 +223,74 @@ class PersonRedirectView(generic.DetailView):
     # Redirect to document with slug
     person = Person.objects.get(pk=self.kwargs['pk'])
     return redirect('archive:person', person.id, person.slug )
+
+class PersonRemoveRelationView(PermissionRequiredMixin, generic.DetailView):
+  permission_required = 'archive.edit_person'
+  def get(self, request, *args, **kwargs):
+    subject = Person.objects.get(pk=kwargs['subject'])
+    type = kwargs['type'].lower()
+    removed_person = Person.objects.get(pk=kwargs['removed_person'])
+    if type == 'parent':
+      try:
+        relation = FamilyRelations.objects.get(up_id=removed_person.id, down_id=subject.id, type=type)
+        messages.add_message(self.request, messages.SUCCESS, f"\"{ removed_person }\" verwijderd als ouder van \"{ subject }\".")
+        relation.delete()
+      except:
+        messages.add_message(self.request, messages.WARNING, f"Fout! Kan relatie tussen \"{ removed_person }\" en \"{ subject }\" niet verwijderen.")
+    elif type == "child":
+      try:
+        relation = FamilyRelations.objects.get(up_id=subject.id, down_id=removed_person.id, type='parent')
+        messages.add_message(self.request, messages.SUCCESS, f"\"{ subject }\" verwijderd als ouder van \"{ removed_person }\".")
+        relation.delete()
+      except:
+        messages.add_message(self.request, messages.WARNING, f"Fout! Kan relatie tussen \"{ removed_person }\" en \"{ subject }\" niet verwijderen.")
+    elif type == 'partner':
+      try:
+        relation = FamilyRelations.objects.get(up_id=removed_person.id, down_id=subject.id, type=type)
+      except FamilyRelations.DoesNotExist:
+        relation = FamilyRelations.objects.get(up_id=subject.id, down_id=removed_person.id, type=type)
+      try:
+        relation.delete()
+      except:
+        messages.add_message(self.request, messages.WARNING, f"Fout! Kan relatie tussen \"{ removed_person }\" en \"{ subject }\" niet verwijderen.")
+      else:
+        messages.add_message(self.request, messages.SUCCESS, f"\"{ removed_person }\" verwijderd als partner van \"{ subject }\".")
+    return redirect('archive:person-edit', subject.id )
+
+class PersonAddRelationView(PermissionRequiredMixin, CreateView):
+  permission_required = 'archive.edit_person'
+
+  def post(self, request, *args, **kwargs):
+    subject = Person.objects.get(pk=self.request.POST.get('subject'))
+    type = self.request.POST.get('type').lower()
+    person = Person.objects.get(pk=self.request.POST.get('person'))
+    vertaling = {
+      'parent': 'ouder',
+      'child': 'kind',
+      'partner': 'partner',
+    }
+    if type == 'parent':
+      try:
+        relation = FamilyRelations(up_id=person.id, down_id=subject.id, type='parent')
+        relation.save()
+      except:
+        messages.add_message(self.request, messages.ERROR, f"Kan \"{ person }\" niet als ouder toevoegen van \"{ subject }\".")
+        return redirect('archive:person-edit', subject.id )
+    elif type == 'child':
+      try:
+        relation = FamilyRelations(up_id=subject.id, down_id=person.id, type='parent')
+        relation.save()
+      except:
+        messages.add_message(self.request, messages.ERROR, f"Kan \"{ person }\" niet als kind toevoegen van \"{ subject }\".")
+        return redirect('archive:person-edit', subject.id )
+    elif type == 'partner':
+      try:
+        relation = FamilyRelations(up_id=subject.id, down_id=person.id, type='partner')
+        relation.save()
+      except:
+        messages.add_message(self.request, messages.ERROR, f"Kan \"{ person }\" niet als partner toevoegen van \"{ subject }\".")
+        return redirect('archive:person-edit', subject.id ) 
+
+    messages.add_message(self.request, messages.SUCCESS, f"\"{ person }\" is { vertaling[type] } van \"{ subject }\"")
+    return redirect('archive:person-edit', subject.id )
+  

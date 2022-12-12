@@ -10,15 +10,146 @@
       <form method="post" class="note">
         {% csrf_token %}
         <dl>
-          {% for field in form %}
-            <dt>{{ field.label_tag }}</dt>
-              <dd>
-                {{ field }}
-                {% if field.erros %}{{ field.errors }}{% endif %}
-              </dd>
-          {% endfor %}
+          {% if form.non_field_errors %}
+            <dt>Fout(en)</dt>
+              <dd>{{ form.non_field_errors }}</dd>
+          {% endif %}
+          <dt><label for="{{ form.first_name.id_for_label }}">Roepnaam:</label></dt>
+            <dd>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}<p>{{ form.first_name.errors }}</p>{% endif %}
+            </dd>
+          <dt><label for="{{ form.given_names.id_for_label }}">Voornamen:</label></dt>
+            <dd>
+              {{ form.given_names }}
+              {% if form.given_names.errors %}<p>{{ form.given_names.errors }}</p>{% endif %}
+            </dd>
+          <dt><label for="{{ form.last_name.id_for_label }}">Achternaam:</label></dt>
+            <dd>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}<p>{{ form.last_name.errors }}</p>{% endif %}
+              <p>Achternaam bij geboorte</p>
+            </dd>
+          <dt><label for="{{ form.married_name.id_for_label }}">Aangetrouwde naam:</label></dt>
+            <dd>
+              {{ form.married_name }}
+              {% if form.married_name.errors %}<p>{{ form.married_name.errors }}</p>{% endif %}
+              <p>Achternaam van echtgenoot/echtgenote, indien aangenomen</p>
+            </dd>
+          <dt><label for="{{ form.nickname.id_for_label }}">Bijnaam:</label></dt>
+            <dd>
+              {{ form.nickname }}
+              {% if form.nickname.errors %}<p>{{ form.nickname.errors }}</p>{% endif %}
+            </dd>
+          <dt>Geboren:</dt>
+            <dd class="date">
+              {{ form.day_of_birth }}
+              {{ form.month_of_birth }}
+              {{ form.year_of_birth }}
+              <br>
+              {{ form.place_of_birth }}
+              {% if form.day_of_birth.errors or form.month_of_birth.errors or form.year_of_birth.errors or form.place_of_birth.errors %}
+                <p>
+                  {{ form.day_of_birth.errors }}
+                  {{ form.month_of_birth.errors }}
+                  {{ form.year_of_birth.errors }}
+                  {{ form.place_of_birth.errors }}
+                </p>
+              {% endif %}
+            </dd>
+          <dt>Overleden:</dt>
+            <dd class="date">
+              {{ form.day_of_death }}
+              {{ form.month_of_death }}
+              {{ form.year_of_death }}
+              <br>
+              {{ form.place_of_death }}
+              {% if not form.year_of_death.value %}
+                <label for="{{ form.moment_of_death_unconfirmed.id_for_label }}">Overleden, maar jaar van overlijden niet bekend:</label>
+                {{ form.moment_of_death_unconfirmed }}
+              {% endif %}
+              {% if form.day_of_death.errors or form.month_of_death.errors or form.year_of_death.errors or form.place_of_death.errors %}
+                <p>
+                  {{ form.day_of_death.errors }}
+                  {{ form.month_of_death.errors }}
+                  {{ form.year_of_death.errors }}
+                  {{ form.place_of_death.errors }}
+                </p>
+              {% endif %}
+            </dd>
+          <dt><label for="{{ form.bio.id_for_label }}">Bio:</label></dt>
+            <dd>
+              {{ form.bio }}
+              {% if form.bio.errors %}<p>{{ form.bio.errors }}</p>{% endif %}
+            </dd>
           <dt>&nbsp;</dt>
             <dd><input type="submit" value="Verstuur wijzigingen"></dd>
+        </dl>
+      </form>
+      <hr>
+      <!-- Family Relations -->
+      <form>
+        <dl>
+          {% with me=person %}
+            {% if person.get_parents %}
+            <dt>Ouder{% if person.get_parents|length > 1 %}s{% endif %}:</dt>
+            <dd>
+              {% for person in person.get_parents %}
+                {% include 'archive/snippets/person_link.html' %} 
+                <a href="{% url 'archive:remove-relationship' me.id 'parent' person.id %}" title="Remove relationship">[x]</a>
+                {% if not forloop.last %}<br>{% endif %}
+              {% endfor %}
+              </dd>
+            {% endif %}
+            <!-- Partners -->
+            {% if person.get_partners %}
+              <dt>Partner{% if person.get_partners|length > 1 %}s{% endif %}:</dt>
+              <dd>
+                {% for person in person.get_partners %}
+                {% include 'archive/snippets/person_link.html' %} 
+                <a href="{% url 'archive:remove-relationship' me.id 'partner' person.id %}" title="Remove relationship">[x]</a>
+                {% if not forloop.last %}<br>{% endif %}
+                {% endfor %}
+              </dd>
+            {% endif %}
+            <!-- Broer(s) en Zus(sen) -->
+            {% if person.get_siblings %}
+              <dt>Broer{% if person.get_siblings.all.count > 1 %}(s){% endif %}/Zus{% if person.get_siblings.all.count > 1 %}(sen){% endif %}:</dt>
+              <dd>
+                {% for person in person.get_siblings %}
+                {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
+                {% endfor %}
+              </dd>
+            {% endif %}
+            <!-- Kinderen -->
+            {% if person.get_children %}
+              <dt>Kind{% if person.get_children|length > 1 %}eren{% endif %}:</dt>
+              <dd>
+                {% for person in person.get_children %}
+                {% include 'archive/snippets/person_link.html' %} 
+                <a href="{% url 'archive:remove-relationship' me.id 'child' person.id %}" title="Remove relationship">[x]</a>
+                {% if not forloop.last %}<br>{% endif %}
+                {% endfor %}
+              </dd>
+            {% endif %}
+          {% endwith %}
+        </dl>
+      </form>
+      <form method="post" action="{% url 'archive:add-relationship' %}">
+        <dl>
+          <dt>Voeg relatie toe:</dt>
+            <dd>
+              {% csrf_token %}
+              <input type="hidden" name="subject" value="{{ person.id }}">
+              <select name="type"><option value="parent">Ouder</option><option value="child">Kind</option><option value="partner">Partner</option></select>
+              <select name="person">
+                {% for person in available_relations %}
+                  <option value="{{ person.id }}">{{ person }}</option>
+                {% endfor %}
+              </select>
+            </dd>
+          <dt>&nbsp;</dt>
+            <dd><input type="submit" value="Voeg relatie toe"></dd>
         </dl>
       </form>
     </div>

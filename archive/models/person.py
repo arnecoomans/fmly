@@ -3,6 +3,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Person(models.Model):
@@ -22,7 +23,7 @@ class Person(models.Model):
   date_of_birth       = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
   year_of_birth       = models.PositiveSmallIntegerField(blank=True, null=True, help_text='Is automatically filled when date is supplied')
   month_of_birth      = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', choices=MONTHS)
-  day_of_birth        = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
+  day_of_birth        = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', validators=[MaxValueValidator(31), MinValueValidator(1)])
   date_of_death       = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
   year_of_death       = models.PositiveSmallIntegerField(blank=True, null=True, help_text='Is automatically filled when date is supplied')
   month_of_death      = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', choices=MONTHS)
@@ -34,7 +35,6 @@ class Person(models.Model):
   bio                 = models.TextField(blank=True, help_text='Markdown supported')
   # Meta
   related_user        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='related_person')
-  #other_user          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='profile')
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
   
   def __str__(self):
@@ -160,17 +160,6 @@ class Person(models.Model):
       slug += str(self.year_of_birth) if self.year_of_birth else ''
       slug += ' - ' + str(self.year_of_death) if self.year_of_death else ''
     self.slug = slugify(slug)
-    # if Person.objects.filter(slug=self.slug).count() > 1:
-    #   names = self.given_names if self.given_names else self.first_name
-    #   slug = ' '.join(names, self.last_name) + '('
-    #   if self.year_of_birth:
-    #     slug += str(self.year_of_birth)
-    #   slug += '-'
-    #   if self.year_of_death:
-    #     slug += self.year_of_death
-    #   slug += ')'
-    #   self.slug = slugify(slug)
-
     # Pass person information to user object if linked
     if self.related_user and self.first_name:
       self.related_user.first_name = self.first_name
@@ -190,6 +179,9 @@ class FamilyRelations(models.Model):
   up                  = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='relation_down')
   down                = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='relation_up')
   type                = models.CharField(choices=RELATION_CHOICES, max_length=16, default='parent')
+
+  class Meta:
+    unique_together = ('up', 'down', 'type', )
 
   def __str__(self):
     return str(self.up) + ' is ' + self.type + ' of ' + str(self.down)
