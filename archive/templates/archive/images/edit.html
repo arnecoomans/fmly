@@ -1,0 +1,119 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <header>
+    <h2>{{ image.title }}</h2>
+    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+  </header>
+  {% if perms.archive.change_document %}
+    <div class="edit image">
+      <form method="post" class="image">
+        {% csrf_token %}
+        <dl>
+          {% if form.non_field_errors %}
+            <dt>Fout(en)</dt>
+              <dd>{{ form.non_field_errors }}</dd>
+          {% endif %}
+          <dt><label for="{{ form.source.id_for_label }}">Bronbestand:</label></dt>
+            <dd>
+              {{ form.source }}
+              {% if form.source.errors %}<p>{{ form.source.errors }}</p>{% endif %}
+            </dd>
+          <dt><label for="{{ form.title.id_for_label }}">Titel:</label></dt>
+            <dd>
+              {{ form.title }}
+              {% if form.title.errors %}<p>{{ form.title.errors }}</p>{% endif %}
+            </dd>
+          <dt><label for="{{ form.description.id_for_label }}">Omschrijving:</label></dt>
+            <dd>
+              {{ form.description }}
+              {% if form.description.errors %}<p>{{ form.description.errors }}</p>{% endif %}
+              <p>Markdown toegestaan</p>
+            </dd>
+          <dt><label for="{{ form.document_source.id_for_label }}">Bron:</label></dt>
+            <dd>
+              {{ form.document_source }}
+              {% if form.document_source.errors %}<p>{{ form.document_source.errors }}</p>{% endif %}
+              <p>Gebruik website-link indien mogelijk</p>
+            </dd>
+          <dt>Datum:</dt>
+            <dd class="date">
+              {{ form.day }}
+              {{ form.month }}
+              {{ form.year }}
+              {% if form.day.errors or form.month.errors or form.year.errors %}
+                <p>
+                  {{ form.day.errors }}
+                  {{ form.month.errors }}
+                  {{ form.year.errors }}
+                </p>
+              {% endif %}
+            </dd>
+          <dt>&nbsp;</dt>
+            <dd><input type="submit" value="Verstuur wijzigingen"></dd>
+        </dl>
+        <hr>
+        <dl>
+          <dt>Opties:</dt>
+            <dd>
+              <label for="{{ form.show_in_index.id_for_label }}">Toon in overzicht: </label>{{ form.show_in_index }}
+              <label for="{{ form.is_deleted.id_for_label }}">Is verwijderd: </label>{{ form.is_deleted}}
+              {% if form.bio.errors %}<p>{{ form.bio.errors }}</p>{% endif %}
+            </dd>
+          {% if perms.archive.view_person %}
+            <dt><label for="{{ form.people.id_for_label }}">Personen:</label></dt>
+              <dd>
+                {{ form.people }}
+                {% if form.people.errors %}<p>{{ form.people.errors }}</p>{% endif %}
+                <p>
+                  <a class="bi bi-people-fill" href="{% url 'archive:people' %}"> Personen</a>
+                  {% if perms.archive.add_person %}
+                    <a class="bi bi-person-fill-add" href="{% url 'archive:add-person' %}"> Persoon aanmaken</a>
+                  {% endif %}
+                </p>
+              </dd>
+          {% endif %}
+          {% if perms.archive.view_tag %}
+            <dt><label for="{{ form.tag.id_for_label }}">Tag(s):</label></dt>
+              <dd>
+                {{ form.tag }}
+                {% if form.tag.errors %}<p>{{ form.tag.errors }}</p>{% endif %}
+                <p>
+                  <a class="bi bi-tags-fill" href="{% url 'archive:list-tags' %}"> Tags</a>
+                  <s>Tag toevoegen</s>
+                </p>
+              </dd>
+          {% endif %}
+          <dt><label for="{{ form.in_group.id_for_label }}">In groep:</label></dt>
+            <dd>
+              {{ form.in_group }}
+              {% if form.in_group.errors %}<p>{{ form.in_group.errors }}</p>{% endif %}
+              <p><s>Groepen - nieuwe groep</s></p>
+            </dd>
+          <dt><label for="{{ form.attachments.id_for_label }}">Attachment:</label></dt>
+            <dd>
+              {{ form.attachments }}
+              {% if form.attachments.errors %}<p>{{ form.attachments.errors }}</p>{% endif %}
+            </dd>
+          <dt><label for="{{ form.is_portrait_of.id_for_label }}">Is portet van:</label></dt>
+            <dd>
+              {{ form.is_portrait_of }}
+              {% if form.is_portrait_of.errors %}<p>{{ form.is_portrait_of.errors }}</p>{% endif %}
+            </dd>
+          <dt>&nbsp;</dt>
+            <dd><input type="submit" value="Verstuur wijzigingen"></dd>
+        </dl>
+      </form>
+    </div>
+    
+    <!-- Meta information -->
+    <hr>
+    <div class="meta">
+      <ul class="metadata">
+        <li>Door: {{ object.user }}</li>
+        <li>Aangemaakt: {{ object.uploaded_at }}</li>
+        {% if object.uploaded_at != object.date_modified %}<li>Voor het laatst aangepast: {{ object.date_modified }}</li>{% endif %}
+      </ul>
+    </div>
+  {% endif %}
+{% endblock %}

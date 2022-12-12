@@ -16,6 +16,12 @@
         <a href="/documents/{{ image.source }}" title="" target="_blank">
           <img src="/documents/{{ image.source }}" title="" alt="" />
         </a>
+        {% if perms.archive.change_document %}
+          <br><br>
+          <ul class="metadata">
+            <li class="bi bi-pencil-fill"> <a href="{% url 'archive:image-edit' image.id %}">Bewerk afbeelding en gegevens</a></li>
+          </ul>
+        {% endif %}
       </div>
       <div class="column right">
         <!-- Description -->
@@ -65,7 +71,7 @@
           <li class="bi bi-info-circle-fill"> {{ image.width }}x{{ image.height }} pixels, {{ image.get_orientation_display }}</li>
           <li class="bi bi-person-fill-check"> 
             Gedeeld door: <a href="{% url 'archive:image-by-uploader' image.user.username %}">{% if image.user.first_name %}{{ image.user.first_name }} {{ image.user.last_name }}{% else %} {{ image.user }}{% endif %}</a> 
-            op {{ image.uploaded_at|date:'d/m/y' }}
+            op {{ image.uploaded_at|date:'d/m/y' }}<br>
           </li>
           <!-- Comments -->
           {% if perms.archive.view_comment and image.count_comments > 0 %}

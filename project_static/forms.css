@@ -36,6 +36,7 @@ form > dl > dd {
   }
   form > dl > dd {
     width: 730px;
+    margin-bottom: 35px;
   }
 }  
 
@@ -43,7 +44,11 @@ form > dl > dd > input,
 form > dl > dd > textarea {
   width: 100%;
 }
-form > dl > dd > input[type=number] {
+
+form > dl > dd > input[type=number],
+form > dl > dd > input[type=checkbox] {
   width: 8em;
 }
-
+form > dl > dd > select {
+  max-width: 95%;
+}
