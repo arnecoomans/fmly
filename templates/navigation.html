@@ -50,6 +50,9 @@
               {% if perms.archive.add_document %}
                 <li><a class="dropdown-item bi bi-cloud-arrow-up disabled" href="#"> Afbeelding uploaden</a></li>
               {% endif %}
+              {% if object and perms.archive.change_document %}
+                <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:image-edit' object.id %}"> Afbeelding bewerken</a></li>
+              {% endif %}
               {% if perms.archive.add_person %}
                 <li><a class="dropdown-item bi bi-person-fill-add" href="{% url 'archive:add-person' %}"> Persoon aanmaken</a></li>
               {% endif %}

@@ -77,52 +77,55 @@ class ImageView(generic.DetailView):
   model = Image
   template_name = 'archive/images/detail.html'
   
-## Add Image / Images
-# Renamed AddImage to AddImageView
-class AddImageView(PermissionRequiredMixin, CreateView):
-  permission_required = 'archive.create_document'
-  model = Image
-  fields = ['source']
-  success_url = reverse_lazy('archive:image')
+# ## Add Image / Images
+# # Renamed AddImage to AddImageView
+# class AddImageView(PermissionRequiredMixin, CreateView):
+#   permission_required = 'archive.create_document'
+#   model = Image
+#   fields = ['source']
+#   success_url = reverse_lazy('archive:image')
 
-  template_name = 'images/image_single_upload.html'
+#   template_name = 'images/image_single_upload.html'
 
-  def form_valid(self, form):
-    form.instance.user = self.request.user
-    form.instance.title = self.request.FILES['source'].name
-    form.instance.show_in_index = False
-    return super().form_valid(form)
+#   def form_valid(self, form):
+#     form.instance.user = self.request.user
+#     form.instance.title = self.request.FILES['source'].name
+#     form.instance.show_in_index = False
+#     return super().form_valid(form)
 
-# Renamed AddImages to AddImagesView
-class AddImagesView(PermissionRequiredMixin, CreateView):
-  permission_required = 'archive.create_document'
-  model = Image
-  fields = ['source']
-  success_url = reverse_lazy('archive:my-images')
-  template_name = 'images/image_multi_upload.html'
+# # Renamed AddImages to AddImagesView
+# class AddImagesView(PermissionRequiredMixin, CreateView):
+#   permission_required = 'archive.create_document'
+#   model = Image
+#   fields = ['source']
+#   success_url = reverse_lazy('archive:my-images')
+#   template_name = 'images/image_multi_upload.html'
   
-  def form_valid(self, form):
-    form.instance.user = self.request.user
-    form.instance.title = self.request.FILES['source'].name
-    form.instance.show_in_index = False
-    return super().form_valid(form)
+#   def form_valid(self, form):
+#     form.instance.user = self.request.user
+#     form.instance.title = self.request.FILES['source'].name
+#     form.instance.show_in_index = False
+#     return super().form_valid(form)
 
 class EditImageView(PermissionRequiredMixin, UpdateView):
   permission_required = 'archive.change_document'  
-
+  template_name = 'archive/images/edit.html'
   model = Image
-  fields = ['title', 'description',
-            'document_source', 'date', 'year',
+  fields = ['source', 'title', 'description',
+            'document_source', 'day', 'month', 'year',
             'people', 'tag',
             'in_group',
             'attachments',
-            'show_in_index']
-  #fields = '__all__'
+            'is_portrait_of',
+            'show_in_index', 'is_deleted']
     
   def form_valid(self, form):
-    form.instance.user = self.request.user
+    if not form.instance.user:
+      form.instance.user = self.request.user
     return super().form_valid(form)
 
+  def get_success_url(self):
+    return reverse_lazy('archive:image-redirect', args=[self.object.id])
 
 ## Special views
 

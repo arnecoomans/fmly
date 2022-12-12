@@ -9,7 +9,7 @@ urlpatterns = [
   path('', views.ImageListView.as_view(), name='home'),
   path('object/<int:pk>/', views.ImageRedirectView.as_view(), name='image-redirect'),
   path('object/<int:pk>/comment/', views.AddCommentView.as_view(), name='comment'),
-  #path('object/<int:pk>/edit/', views.EditImageView.as_view(), name='image-edit'),
+  path('object/<int:pk>/edit/', views.EditImageView.as_view(), name='image-edit'),
   #path('object/<int:pk>/attach/', views.AddAttachmentToImageView.as_view(), name='image-add-attachment'),
   path('object/<int:pk>/<name>/', views.ImageView.as_view(), name='image'),
   

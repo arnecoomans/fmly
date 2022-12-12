@@ -6,6 +6,7 @@ from .tag import Tag
 from .person import Person
 from PIL import Image
 from pathlib import Path
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create Thumbnail function
 def get_thumbnail(image):
@@ -95,9 +96,10 @@ class Image(models.Model):
   is_portrait_of      = models.OneToOneField(Person, on_delete=models.CASCADE, related_name='portrait', blank=True, null=True)
   in_group            = models.ManyToManyField(Group, blank=True, related_name='images', help_text='Group images')
   # Dating
+  MONTHS = [(1, 'januari'), (2, 'februari'), (3, 'maart'), (4, 'april'), (5, 'mei'), (6, 'juni'), (7, 'juli'), (8, 'augustus'), (9, 'september'), (10, 'oktober'), (11, 'november'), (12, 'december')]
   year                = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
-  month               = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
-  day                 = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
+  month               = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', choices=MONTHS)
+  day                 = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', validators=[MaxValueValidator(31), MinValueValidator(1)])
   #date                = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
   # Meta
   size                = models.IntegerField(default=0)
@@ -107,6 +109,7 @@ class Image(models.Model):
   orientation         = models.CharField(max_length=1, choices=ORIENTATION_CHOICES, default='u')
   
   uploaded_at         = models.DateTimeField(auto_now_add=True)
+  date_modified       = models.DateTimeField(auto_now=True)
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
   show_in_index       = models.BooleanField(default=True)
   is_deleted          = models.BooleanField(default=False)
