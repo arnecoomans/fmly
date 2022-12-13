@@ -188,6 +188,8 @@ class Image(models.Model):
     # Enforce user
     if not self.user:
       self.user = request.user
+    if not self.title:
+      self.title = Path(self.source).stem.replace('_', ' ')
     # Generate thumbnail
     if self.source and not self.thumbnail:
       self.thumbnail = get_thumbnail(self.source)

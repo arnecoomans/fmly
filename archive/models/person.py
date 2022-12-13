@@ -5,7 +5,6 @@ from django.template.defaultfilters import slugify
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-
 class Person(models.Model):
   first_name          = models.CharField(max_length=255, blank=True, verbose_name='Roepnaam')
   given_names         = models.CharField(max_length=255, blank=True, verbose_name='Voornamen', help_text='Alle voornamen, inclusief roepnaam')

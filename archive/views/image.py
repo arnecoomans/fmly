@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
+
 from pathlib import Path
 from math import floor
 
@@ -43,8 +44,11 @@ class ImageListView(generic.ListView):
       queryset = queryset.filter(tag__slug=self.kwargs['tag'])
     if 'decade' in self.kwargs:
       queryset = queryset.filter(year__gte=self.get_decade()).filter(year__lte=self.get_decade()+9)
-    if not self.request.user.is_superuser:
-      queryset = queryset.filter(show_in_index=True) #| queryset.filter(user_id=self.request.user)
+    if hasattr(self.request.user, 'preference') and self.request.user.preference.show_hidden_files == True:
+      queryset.exclude(show_in_index=False)
+    else:
+      if 'user' not in self.kwargs:
+        queryset = queryset.filter(show_in_index=True)
     queryset = queryset.order_by('-uploaded_at')
     return queryset
 
@@ -87,7 +91,10 @@ class AddImageView(PermissionRequiredMixin, CreateView):
             'show_in_index', 'is_deleted']
   
   def form_valid(self, form):
-    form.instance.user = self.request.user
+    if not hasattr(form.instance, 'user'):
+      form.instance.user = self.request.user
+    if hasattr(self.request.user, 'preference') and self.request.user.preference.upload_is_hidden == False:
+      form.instance.show_in_index = True
     if not form.instance.title:
       form.instance.title = Path(self.request.FILES['source'].name).stem.replace('_', ' ')
     messages.add_message(self.request, messages.SUCCESS, f"Afbeelding \"{ form.instance.title }\" geupload.")

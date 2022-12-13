@@ -144,6 +144,15 @@ body > section#wrapper {
 .object > .column.right {
   width: 58%;
 }
+.objects > .object > .column > h1,
+.objects > .object > .column > h2,
+.objects > .object > .column > h3,
+.objects > .object > .column > h4,
+.objects > .object > .column > h5,
+.objects > .object > .column > h6 {
+  font-size: 1em;
+  font-weight: bold;
+}
 .object > .column > a > img {
   max-width: 100%;
 }
