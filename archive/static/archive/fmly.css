@@ -5,6 +5,10 @@
   by avoiding complete css file per install
   Working with CSS Variables: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
 */
+/** idea: randoma11y.com Neon Carrot: 
+- light: #e99a32;
+- dark: ##23232c;
+*/
 :root {
   /** Site wide */
   --site-background-color: #000;
