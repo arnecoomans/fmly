@@ -1,53 +1,55 @@
-<div class="object{% if object.is_deleted %} deleted{% endif %}{% if not object.show_in_index %} hidden{% endif %}" id="{{ object.title|slugify }}">
-  <h2><span class="object-id">#{{ object.id }}</span><a href="{% url 'archive:image' object.id object.title|default:'needs-a-title'|slugify %}" title="{{ object.title }}">{{ object.title|truncatewords_html:3 }}</a></h2>
-  <div class="column left">
-    <a href="{% url 'archive:image' object.id object.title|default:'needs-a-title'|slugify %}" title="{{ object.title }}">
-      <img src="{{ object.thumbnail }}" alt="{{ object.title }}" title="{{ object.title }} - {{ object.description }}">
-    </a>
-  </div>
-  <div class="column right">
-    {{ object.description|markdown|safe|truncatewords_html:10 }}
-    <!-- Object Meta data -->
-    <ul class="metadata">
-      <!-- Date-->
-      {% if object.day or object.month or object.year %}
-        <li class="date bi bi-calendar-event-fill">
-          {% if object.day %}{{ object.day }}-{% if not object.month %}?-{% endif %}{% endif %}{% if object.month %}{{ object.month }}-{% if not object.year %}?{% endif %}{% endif %}{% if object.year %}<a href="{% url 'archive:images-by-decade' object.year %}" title="Bekijk alles uit {{ object.year }}">{{ object.year }}</a>{% endif %}</li>
-      {% endif %}
-      <!-- People -->
-      {% if perms.archive.view_person and object.people.all.count > 0 and object.people.all.count < 6 %}
-        {% for person in object.people.all %}
-          <li class="bi bi-person-fill"> <a href="{% url 'archive:person' person.id person.name %}" title="Bekijk gegevens van {{ person.full_name }}">{{ person.name }}</a></li>
-        {% endfor %}
-      {% elif perms.archive.view_person and object.people.all.count > 6 %}
-        {% for person in object.people.all %}
-          {% if forloop.counter < 4 %}
+{% if not object.is_deleted %}
+  <div class="object{% if not object.show_in_index %} hidden{% endif %}" id="{{ object.title|slugify }}">
+    <h2><span class="object-id">#{{ object.id }}</span><a href="{% url 'archive:image' object.id object.title|default:'needs-a-title'|slugify %}" title="{{ object.title }}">{{ object.title|truncatewords_html:3 }}</a></h2>
+    <div class="column left">
+      <a href="{% url 'archive:image' object.id object.title|default:'needs-a-title'|slugify %}" title="{{ object.title }}">
+        <img src="{{ object.thumbnail }}" alt="{{ object.title }}" title="{{ object.title }} - {{ object.description }}">
+      </a>
+    </div>
+    <div class="column right">
+      {{ object.description|markdown|safe|truncatewords_html:10 }}
+      <!-- Object Meta data -->
+      <ul class="metadata">
+        <!-- Date-->
+        {% if object.day or object.month or object.year %}
+          <li class="date bi bi-calendar-event-fill">
+            {% if object.day %}{{ object.day }}-{% if not object.month %}?-{% endif %}{% endif %}{% if object.month %}{{ object.month }}-{% if not object.year %}?{% endif %}{% endif %}{% if object.year %}<a href="{% url 'archive:images-by-decade' object.year %}" title="Bekijk alles uit {{ object.year }}">{{ object.year }}</a>{% endif %}</li>
+        {% endif %}
+        <!-- People -->
+        {% if perms.archive.view_person and object.people.all.count > 0 and object.people.all.count < 6 %}
+          {% for person in object.people.all %}
             <li class="bi bi-person-fill"> <a href="{% url 'archive:person' person.id person.name %}" title="Bekijk gegevens van {{ person.full_name }}">{{ person.name }}</a></li>
-          {% elif forloop.counter == 4 %}
-            <li class="bi bi-people-fill"> ... en {{ forloop.revcounter }} meer</li>
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-      <!-- Tags -->
-      {% if perms.archive.view_tag and object.tag.all.count > 0 %}
-        {% for tag in object.tag.all %}
-          {% include 'archive/snippets/tag.html' %}
-        {% endfor %}
-      {% endif %}
-      <!-- Grouping -->
-      {% if object.in_group.all.count > 0 %}
-            {% for group in object.in_group.all %}
-              <li class="bi bi-collection-fill"> {{ group.title }} ({{ group.images.all.count}})</li>
-            {% endfor %}
-          {% endif %}
-      <!-- Comments -->
-      {% if perms.archive.view_comment and object.count_comments > 0 %}
-        <li class="comments bi bi-chat-right-fill"> <a href="{% url 'archive:image' object.id object.title|default:'needs-a-title'|slugify %}#comments" title="{{ object.title }}">{{ object.count_comments }} reactie{% if object.count_comments > 1 %}s{% endif %}</a></li>  
-      {% endif %}
-      <!-- Attachments -->
-      {% if perms.archive.view_attachment and object.attachments.all.count > 0 %}
-        <li class="attachments bi-paperclip"> {{object.attachments.all.count }} bijlage{% if object.attachments.all.count > 1 %}n{% endif%}</li>
-      {% endif %}
-    </ul>
+          {% endfor %}
+        {% elif perms.archive.view_person and object.people.all.count > 6 %}
+          {% for person in object.people.all %}
+            {% if forloop.counter < 4 %}
+              <li class="bi bi-person-fill"> <a href="{% url 'archive:person' person.id person.name %}" title="Bekijk gegevens van {{ person.full_name }}">{{ person.name }}</a></li>
+            {% elif forloop.counter == 4 %}
+              <li class="bi bi-people-fill"> ... en {{ forloop.revcounter }} meer</li>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+        <!-- Tags -->
+        {% if perms.archive.view_tag and object.tag.all.count > 0 %}
+          {% for tag in object.tag.all %}
+            {% include 'archive/snippets/tag.html' %}
+          {% endfor %}
+        {% endif %}
+        <!-- Grouping -->
+        {% if object.in_group.all.count > 0 %}
+              {% for group in object.in_group.all %}
+                <li class="bi bi-collection-fill"> {{ group.title }} ({{ group.images.all.count}})</li>
+              {% endfor %}
+            {% endif %}
+        <!-- Comments -->
+        {% if perms.archive.view_comment and object.count_comments > 0 %}
+          <li class="comments bi bi-chat-right-fill"> <a href="{% url 'archive:image' object.id object.title|default:'needs-a-title'|slugify %}#comments" title="{{ object.title }}">{{ object.count_comments }} reactie{% if object.count_comments > 1 %}s{% endif %}</a></li>  
+        {% endif %}
+        <!-- Attachments -->
+        {% if perms.archive.view_attachment and object.attachments.all.count > 0 %}
+          <li class="attachments bi-paperclip"> {{object.attachments.all.count }} bijlage{% if object.attachments.all.count > 1 %}n{% endif%}</li>
+        {% endif %}
+      </ul>
+    </div>
   </div>
-</div>
+{% endif %}
