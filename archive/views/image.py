@@ -2,11 +2,12 @@ from django.views import generic
 from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
 
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import redirect
 from django.template.defaultfilters import slugify
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib import messages
+from pathlib import Path
 from math import floor
 
 from archive.models import Image, Person
@@ -47,10 +48,10 @@ class ImageListView(generic.ListView):
     queryset = queryset.order_by('-uploaded_at')
     return queryset
 
-class ImageSearchView(generic.ListView):
-  template_name = 'archive/images/list.html'
-  context_object_name = ' images'
-  paginate_by = settings.PAGINATE
+# class ImageSearchView(generic.ListView):
+#   template_name = 'archive/images/list.html'
+#   context_object_name = ' images'
+#   paginate_by = settings.PAGINATE
 
 ''' Redirect views
     Redirect id-only link to link with title included
@@ -66,32 +67,34 @@ class ImageRedirectView(generic.DetailView):
     title = 'needs a title' if image.title == '' else image.title
     return redirect('archive:image', image.id, slugify(title) )
 
-
-
-
-
-
-
 # Renamed DocumentView to ImageView
 class ImageView(generic.DetailView):
   model = Image
   template_name = 'archive/images/detail.html'
   
-# ## Add Image / Images
-# # Renamed AddImage to AddImageView
-# class AddImageView(PermissionRequiredMixin, CreateView):
-#   permission_required = 'archive.create_document'
-#   model = Image
-#   fields = ['source']
-#   success_url = reverse_lazy('archive:image')
+## Add Image / Images
+# Renamed AddImage to AddImageView
+class AddImageView(PermissionRequiredMixin, CreateView):
+  permission_required = 'archive.create_document'
+  template_name = 'archive/images/edit.html'
+  model = Image
+  fields = ['source', 'title', 'description',
+            'document_source', 'day', 'month', 'year',
+            'people', 'tag',
+            'in_group',
+            'attachments',
+            'is_portrait_of',
+            'show_in_index', 'is_deleted']
+  
+  def form_valid(self, form):
+    form.instance.user = self.request.user
+    if not form.instance.title:
+      form.instance.title = Path(self.request.FILES['source'].name).stem.replace('_', ' ')
+    messages.add_message(self.request, messages.SUCCESS, f"Afbeelding \"{ form.instance.title }\" geupload.")
+    return super().form_valid(form)
 
-#   template_name = 'images/image_single_upload.html'
-
-#   def form_valid(self, form):
-#     form.instance.user = self.request.user
-#     form.instance.title = self.request.FILES['source'].name
-#     form.instance.show_in_index = False
-#     return super().form_valid(form)
+  def get_success_url(self):
+    return reverse_lazy('archive:image-redirect', args=[self.object.id])
 
 # # Renamed AddImages to AddImagesView
 # class AddImagesView(PermissionRequiredMixin, CreateView):

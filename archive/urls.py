@@ -12,7 +12,7 @@ urlpatterns = [
   path('object/<int:pk>/edit/', views.EditImageView.as_view(), name='image-edit'),
   #path('object/<int:pk>/attach/', views.AddAttachmentToImageView.as_view(), name='image-add-attachment'),
   path('object/<int:pk>/<name>/', views.ImageView.as_view(), name='image'),
-  
+  path('add/image/', views.AddImageView.as_view(), name='add-image'),
   # Special Image views
   path('objects/<int:decade>/', views.ImageListView.as_view(), {'columns': ('decade')}, name='images-by-decade'),
   path('objects/<str:tag>', views.ImageListView.as_view(), {'columns': ('tag')}, name='image-with-tag'),
@@ -48,7 +48,6 @@ urlpatterns = [
   # path('comments/<int:pk>/edit/', views.EditCommentView.as_view(), name='edit-comment'),
 
   # Adding and removing
-  # path('add/image/', views.AddImageView.as_view(), name='add-photo'),
   # path('add/images/', views.AddImagesView.as_view(), name='add-photos'),
   # path('add/person/', views.AddPersonView.as_view(), name='add-person'),
   # path('add/note/', views.AddNoteView.as_view(), name='add-note'),

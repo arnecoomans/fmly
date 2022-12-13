@@ -7,7 +7,7 @@
   </header>
   {% if perms.archive.change_document %}
     <div class="edit image">
-      <form method="post" class="image">
+      <form method="post" class="image" enctype="multipart/form-data">
         {% csrf_token %}
         <dl>
           {% if form.non_field_errors %}

@@ -48,7 +48,7 @@
               <li><a class="dropdown-item bi bi-images" href="{% url 'archive:image-by-uploader' user %}"> Mijn uploads</a></li>
               <li><div class="dropdown-divider"></div></li>
               {% if perms.archive.add_document %}
-                <li><a class="dropdown-item bi bi-cloud-arrow-up disabled" href="#"> Afbeelding uploaden</a></li>
+                <li><a class="dropdown-item bi bi-cloud-arrow-up" href="{% url 'archive:add-image' %}"> Afbeelding uploaden</a></li>
               {% endif %}
               {% if object and perms.archive.change_document %}
                 <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:image-edit' object.id %}"> Afbeelding bewerken</a></li>

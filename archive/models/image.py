@@ -85,7 +85,7 @@ class Image(models.Model):
   # Document details
   source              = models.ImageField()
   thumbnail           = models.CharField(max_length=2000, blank=True, null=True)
-  title               = models.CharField(max_length=255)
+  title               = models.CharField(max_length=255, blank=True)
   description         = models.TextField(blank=True, help_text='Markdown supported')
   document_source     = models.CharField(max_length=255, blank=True, help_text='Link or textual description of source')
   # Relations
