@@ -14,8 +14,6 @@ from math import floor
 
 from archive.models import Person, FamilyRelations
 
-
-
 class PersonView(generic.DetailView):
   model = Person
   template_name = 'archive/people/detail.html'

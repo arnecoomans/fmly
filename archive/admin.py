@@ -109,5 +109,5 @@ admin.site.register(Comment, CommentAdmin)
 admin.site.register(FamilyRelations, FamilyRelationsAdmin)
 admin.site.register(Attachment)
 admin.site.register(Group, GroupAdmin)
-
+admin.site.register(Preference)
 #admin.site.register(TmpDoc)
