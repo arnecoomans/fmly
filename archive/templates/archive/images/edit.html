@@ -100,18 +100,27 @@
               {{ form.is_portrait_of }}
               {% if form.is_portrait_of.errors %}<p>{{ form.is_portrait_of.errors }}</p>{% endif %}
             </dd>
+          {% if user.is_superuser %}
+            <dt><label for="{{ form.user.id_for_label }}">User:</label></dt>
+              <dd>
+                {{ form.user }}
+                {% if form.user.errors %}<p>{{ form.user.errors }}</p>{% endif %}
+              </dd>
+          {% endif %}
           <dt>&nbsp;</dt>
-            <dd><input type="submit" value="Verstuur wijzigingen"></dd>
+            <dd><input type="submit" value="Verstuur wijzigingen">
+              {% if image %} <a href="{% url 'archive:image' image.id image.title|slugify %}" type="button" class="btn btn-warning">Annuleren</a>{% endif %}
         </dl>
       </form>
     </div>
     
     <!-- Meta information -->
     <hr>
+    
     <div class="meta">
       <ul class="metadata">
-        <li>Door: {{ object.user }}</li>
-        <li>Aangemaakt: {{ object.uploaded_at }}</li>
+        <li>Door: {% if image %}{{ object.user }}{% else %}{{ request.user }}{% endif %}</li>
+        <li>Aangemaakt: {% if image %}{{ object.uploaded_at }}{% else %}{% now 'd/m/y H:m' %}{% endif %}</li>
         {% if object.uploaded_at != object.date_modified %}<li>Voor het laatst aangepast: {{ object.date_modified }}</li>{% endif %}
       </ul>
     </div>
