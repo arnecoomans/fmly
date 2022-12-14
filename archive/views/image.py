@@ -75,7 +75,8 @@ class ImageRedirectView(generic.DetailView):
 class ImageView(generic.DetailView):
   model = Image
   template_name = 'archive/images/detail.html'
-  
+
+
 ## Add Image / Images
 # Renamed AddImage to AddImageView
 class AddImageView(PermissionRequiredMixin, CreateView):

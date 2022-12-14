@@ -12,6 +12,7 @@
     <title>
       {% if page_title %}{{ page_title }} - {% endif %}
       {% if image %}{{ image.title }} - {% endif %}
+      {% if person %}{{ person.full_name }} - {% endif %}
       {{ website_title }}</title>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'archive/' %}{{ master_css }}" />
