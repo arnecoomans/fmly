@@ -34,7 +34,7 @@
           <!-- People -->
           {% if perms.archive.view_person and image.people.all.count > 0 %}
             {% for person in object.people.all %}
-              <li class=" bi bi-person-fill"> <a href="{% url 'archive:person' person.id person.name %}" title="Bekijk gegevens van {{ person.full_name }}">{{ person }}</a></li>
+              <li class=" bi bi-person-fill"> <a href="{% url 'archive:person' person.id person.name %}" title="Bekijk gegevens van {{ person.full_name }}">{{ person }}</a> {% if person == image.is_portrait_of %}<i class="bi bi-image-fill" title="Deze afbeelding is een portret van {{ person.first_name}} {{ person.last_name }}"></i>{% endif %}</li>
             {% endfor %}
           {% endif %}
           <!-- Tags -->
