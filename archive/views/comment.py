@@ -47,6 +47,19 @@ class CommentEditView(PermissionRequiredMixin, UpdateView):
   model = Comment
   fields = ['content']
 
+  def form_valid(self, form):
+    comment = Comment.objects.get(pk=self.kwargs['pk'])
+    if self.request.user != comment.user:
+      form.instance.user = comment.user
+      messages.add_message(self.request, messages.WARNING, f"Reactie op \"{form.instance.image.title}\" kan niet worden bewerkt: de gebruiker kan niet worden aan")
+      return False
+    if len(form.changed_data) > 0:
+      messages.add_message(self.request, messages.SUCCESS, f"Wijzigingen opgeslagen.")
+      return super().form_valid(form)
+    else:
+      messages.add_message(self.request, messages.WARNING, f"Geen wijzigingen opgegeven.")
+      return redirect(reverse('archive:image', args=[form.instance.image.id, slugify(form.instance.image.title)]))
+
 class CommentDeleteView(PermissionRequiredMixin, generic.DetailView):
   permission_required = 'archive.change_comment'
   model = Comment
