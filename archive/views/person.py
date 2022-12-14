@@ -193,11 +193,11 @@ class AddPersonView(PermissionRequiredMixin, CreateView):
   permission_required = 'archive.create_person'
   template_name = 'archive/people/edit.html'
   model = Person
-  fields = ['first_name', 'given_names', 'last_name', 'nickname', 
-            'date_of_birth', 'year_of_birth', 'place_of_birth', 
-            'date_of_death', 'year_of_death', 'place_of_death', 
+  fields = ['first_name', 'given_names', 'last_name', 'married_name', 'nickname', 
+            'day_of_birth', 'month_of_birth', 'year_of_birth', 'place_of_birth', 
+            'day_of_death', 'month_of_death', 'year_of_death', 'place_of_death',
             'moment_of_death_unconfirmed',
-            'bio']
+            'bio',]
   def form_valid(self, form):
     form.instance.user = self.request.user
     return super().form_valid(form)
