@@ -83,16 +83,21 @@ class AddImageView(PermissionRequiredMixin, CreateView):
   permission_required = 'archive.create_document'
   template_name = 'archive/images/edit.html'
   model = Image
+  
   fields = ['source', 'title', 'description',
             'document_source', 'day', 'month', 'year',
             'people', 'tag',
             'in_group',
             'attachments',
             'is_portrait_of',
-            'show_in_index', 'is_deleted']
+            'show_in_index', 'is_deleted',
+            'user']
   
+  def get_initial(self):
+    return {'user': self.request.user }
+
   def form_valid(self, form):
-    if not hasattr(form.instance, 'user'):
+    if not hasattr(form.instance, 'user') or not form.instance.user:
       form.instance.user = self.request.user
     if hasattr(self.request.user, 'preference') and self.request.user.preference.upload_is_hidden == False:
       form.instance.show_in_index = True
@@ -128,11 +133,20 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
             'in_group',
             'attachments',
             'is_portrait_of',
-            'show_in_index', 'is_deleted']
-    
+            'show_in_index', 'is_deleted',
+            'user']
+
   def form_valid(self, form):
+    #if not self.request.user.is_superuser and form.isinstance.user.is_changed():
+    #if hasattr(form.changed_data, 'user'):
+    if not self.request.user.is_superuser and 'user' in form.changed_data: 
+      original = Image.objects.get(pk=self.kwargs['pk'])
+      form.instance.user = original.user
+      messages.add_message(self.request, messages.WARNING, f"Gebruiker kan niet worden gewijzigd! { original.user } blijft gebruiker.")
     if not form.instance.user:
       form.instance.user = self.request.user
+    if len(form.changed_data) > 0:
+      messages.add_message(self.request, messages.SUCCESS, f"Wijzigingen opgeslagen.")
     return super().form_valid(form)
 
   def get_success_url(self):
