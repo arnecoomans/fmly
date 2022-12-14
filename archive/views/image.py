@@ -147,7 +147,10 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
       form.instance.user = self.request.user
     if len(form.changed_data) > 0:
       messages.add_message(self.request, messages.SUCCESS, f"Wijzigingen opgeslagen.")
-    return super().form_valid(form)
+      return super().form_valid(form)
+    else:
+      messages.add_message(self.request, messages.WARNING, f"Geen wijzigingen opgegeven.")
+      return redirect(reverse_lazy('archive:image', args=[form.instance.id, slugify(form.instance.title)]))
 
   def get_success_url(self):
     return reverse_lazy('archive:image-redirect', args=[self.object.id])
