@@ -11,33 +11,33 @@
 */
 :root {
   /** Site wide */
-  --site-background-color: #140a04;
-  --site-background-image: url('/documents/van-erp2.jpeg');
-  --site-font-family: sans-serif;
-  --link-color: #red;
-  --link-highlight: gold;
+  --site-background-color: #000;
+  --site-background-image: url('/static/archive/images/background-indonesie.jpg');
+  --site-font-family: monospace;
+  --link-color: #333;
+  --link-highlight: tan;
   
   /** Header and navigation */
   --header-background-color: rgba(0,0,0,0.85);
-  --header-text-color: #red;
-  --header-text-hover: gold;
+  --header-text-color: #fff;
+  --header-text-hover: tan;
   --header-text-before: '__';
   --header-min-height: 125px;
 
   /** Content wrapper */
-  --wrapper-background-color: rgba(255,0,0,0.7);
+  --wrapper-background-color: rgba(255,255,255,0.7);
   --wrapper-border: 1px solid black;
 
   /** Objects */
-  --object-border: 1px solid #140a04;
-  --object-title-background: #140a04;
-  --object-title-text: red;
-  --object-title-text-hover: gold;
+  --object-border: 1px solid black;
+  --object-title-background: black;
+  --object-title-text: white;
+  --object-title-text-hover: tan;
 
   /** Pagination */
-  --pagination-text-color: #140a04;
+  --pagination-text-color: black;
   --pagination-inactive-text-color: darkgrey;
-  --pagination-active-page-color: gold;
-  --pagination-highligh: gold;
+  --pagination-active-page-color: tan;
+  --pagination-highligh: tan;
 
 }
