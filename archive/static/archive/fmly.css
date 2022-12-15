@@ -12,8 +12,8 @@
 :root {
   /** Site wide */
   --site-background-color: #140a04;
-  --site-background-image: url('/static/archive/images/background-indonesie.jpg');
-  --site-font-family: monospace;
+  --site-background-image: url('/documents/van-erp2.jpeg');
+  --site-font-family: sans-serif;
   --link-color: #red;
   --link-highlight: gold;
   
