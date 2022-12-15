@@ -6,7 +6,7 @@
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
   </header>
   {% if not note_list %}
-    ERROR: No comments to be shown
+    ERROR: No notes to be shown
   {% endif %}
   {% if perms.archive.view_note %}
     <ul>
