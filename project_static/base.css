@@ -25,7 +25,7 @@ body > header > h1,
 body > header > h1 > a,
 body > nav > ul > li,
 body > nav > ul > li > a {
-  color: var(--header-text-color, white);
+  color: var(--header-text-color, var(--header-text-color), white);
   text-decoration: none;
 }
 body > header > h1 > a:hover,
