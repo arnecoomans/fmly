@@ -7,16 +7,14 @@
     </header>
     {% if not image %}
       ERROR: No images to be shown
-    {% elif not perms.archive.view_document %}
-      ERROR: onvoldoende rechten om deze afbeelding te bekijken
     {% elif image.is_deleted %}
       ERROR: afbeelding is niet beschikbaar
-    {% else %}
+    {% elif perms.archive.view_image %}
       <div class="column left">
         <a href="/documents/{{ image.source }}" title="" target="_blank">
           <img src="/documents/{{ image.source }}" title="" alt="" />
         </a>
-        {% if perms.archive.change_document %}
+        {% if perms.archive.change_document or perms.archive.change_image %}
           <br><br>
           <ul class="metadata">
             <li class="bi bi-pencil-fill"> <a href="{% url 'archive:image-edit' image.id %}">Bewerk afbeelding en gegevens</a></li>
@@ -109,6 +107,8 @@
           <!-- Tasks -->
         </ul>
       </div>
+    {% else %}
+      <p>ERROR: onvoldoende rechten om deze afbeelding te bekijken</p>
     {% endif %}
   </section>
 {% endblock %}

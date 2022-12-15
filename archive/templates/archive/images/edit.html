@@ -5,7 +5,7 @@
     <h2>{{ image.title }}</h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
   </header>
-  {% if perms.archive.change_document %}
+  {% if perms.archive.add_image or perms.archive.change_image %}
     <div class="edit image">
       <form method="post" class="image" enctype="multipart/form-data">
         {% csrf_token %}
@@ -106,6 +106,8 @@
                 {{ form.user }}
                 {% if form.user.errors %}<p>{{ form.user.errors }}</p>{% endif %}
               </dd>
+          {% else %}
+            <input type="hidden" name="user" value="{{ request.user.id }}">
           {% endif %}
           <dt>&nbsp;</dt>
             <dd><input type="submit" value="Verstuur wijzigingen">

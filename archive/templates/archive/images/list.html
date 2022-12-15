@@ -7,8 +7,7 @@
   </header>
   {% if not images %}
     ERROR: No images to be shown
-  {% endif %}
-  {% if perms.archive.view_document %}
+  {% elif perms.archive.view_image %}
     <!-- Pagination -->
     {% include 'archive/snippets/pagination.html' %}
     <!-- Content -->
@@ -21,5 +20,6 @@
     {% include 'archive/snippets/pagination.html' %}
   {% else %}
     <!-- No rights to view images -->
+    <p>ERROR: Je hebt onvoldoende rechten om afbeeldingen te bekijken. Neem contact op met de beheerder</p>
   {% endif %}
 {% endblock %}

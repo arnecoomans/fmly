@@ -80,7 +80,7 @@ class ImageView(generic.DetailView):
 ## Add Image / Images
 # Renamed AddImage to AddImageView
 class AddImageView(PermissionRequiredMixin, CreateView):
-  permission_required = 'archive.create_document'
+  permission_required = 'archive.add_image'
   template_name = 'archive/images/edit.html'
   model = Image
   
@@ -96,8 +96,12 @@ class AddImageView(PermissionRequiredMixin, CreateView):
   def get_initial(self):
     return {'user': self.request.user }
 
+  def form_invalid(self, form):
+    messages.add_message(self.request, messages.WARNING, f"Formulier kan niet worden ingediend vanwege de volgende fout(en): { form.errors }")
+    return super().form_invalid(form)
+
   def form_valid(self, form):
-    if not hasattr(form.instance, 'user') or not form.instance.user:
+    if not hasattr(form.instance, 'user'):
       form.instance.user = self.request.user
     if hasattr(self.request.user, 'preference') and self.request.user.preference.upload_is_hidden == False:
       form.instance.show_in_index = True
@@ -124,7 +128,7 @@ class AddImageView(PermissionRequiredMixin, CreateView):
 #     return super().form_valid(form)
 
 class EditImageView(PermissionRequiredMixin, UpdateView):
-  permission_required = 'archive.change_document'  
+  permission_required = 'archive.change_image'  
   template_name = 'archive/images/edit.html'
   model = Image
   fields = ['source', 'title', 'description',
