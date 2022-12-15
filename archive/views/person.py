@@ -190,7 +190,7 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
 
 # Renamed AddPerson to AddPersonView
 class AddPersonView(PermissionRequiredMixin, CreateView):
-  permission_required = 'archive.create_person'
+  permission_required = 'archive.add_person'
   template_name = 'archive/people/edit.html'
   model = Person
   fields = ['first_name', 'given_names', 'last_name', 'married_name', 'nickname', 
