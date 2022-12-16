@@ -14,7 +14,7 @@
   --site-background-color: gold;
   --site-background-image: url('/documents/van-erp2.jpeg');
   --site-font-family: sans-serif;
-  --link-color: #red;
+  --link-color: red;
   --link-highlight: gold;
   
   /** Header and navigation */
