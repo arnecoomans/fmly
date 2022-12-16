@@ -30,8 +30,8 @@ urlpatterns = [
   path('person/add-relation/', views.PersonAddRelationView.as_view(), name='add-relationship'),
   # Tags 
   path('tags/', views.TagListView.as_view(), name='list-tags'),
-  #path('tag/<slug>/', views.ImagesByTagListView.as_view(), name='tag'),
-    
+  path('tags/add/', views.AddTagView.as_view(), name='add-tag'),
+  path('tag/<str:slug>/', views.EditTagView.as_view(), name='edit-tag'),
   # Notes
   path('note/', views.NotesListView.as_view(), name='notes'),
   path('note/<int:pk>/edit/', views.EditNoteView.as_view(), name='note-edit'),

@@ -61,6 +61,12 @@
               {% if person and perms.archive.change_person %}
                 <li><a class="dropdown-item bi bi-person-fill" href="{% url 'archive:person-edit' person.id %}"> Persoon bewerken</a></li>
               {% endif %}
+              {% if perms.archive.add_tag %}
+                <li><a class="dropdown-item bi bi-tag-fill" href="{% url 'archive:add-tag' %}"> Tag toevoegen</a></li>
+              {% endif %}
+              {% if tag and perms.archive.change_tag %}
+                <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:edit-tag' tag.slug %}"> Tag bewerken</a></li>
+              {% endif %}
               {% if perms.archive.add_note %}
                 <li><a class="dropdown-item bi bi-file-earmark-arrow-up-fill" href="{% url 'archive:add-note' %}"> Notitie aanmaken</a></li>
               {% endif %}

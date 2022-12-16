@@ -1,0 +1,35 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <header>
+    <h2>{{ tag.title }}</h2>
+    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+  </header>
+  {% if perms.archive.view_tag %}
+    <div class="edit tag">
+      <form method="post" class="tag">
+        {% csrf_token %}
+        <dl>
+          {% for field in form %}
+            <dt>{{ field.label_tag }}</dt>
+              <dd>
+                {{ field }}
+                {% if field.erros %}{{ field.errors }}{% endif %}
+              </dd>
+          {% endfor %}
+          <dt>&nbsp;</dt>
+            <dd><input type="submit" value="Verstuur wijzigingen"></dd>
+        </dl>
+      </form>
+    </div>
+    <!-- Meta information -->
+    <hr>
+    <div class="meta">
+      <ul class="metadata">
+        <li>Door: {{ tag.user }}</li>
+        <li>Aangemaakt: {{ tag.date_created}}</li>
+        {% if tag.date_created != tag.date_modified %}<li>Voor het laatst aangepast: {{ tag.date_modified }}</li>{% endif %}
+      </ul>
+    </div>
+  {% endif %}
+{% endblock %}
