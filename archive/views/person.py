@@ -223,7 +223,7 @@ class PersonRedirectView(generic.DetailView):
     return redirect('archive:person', person.id, person.slug )
 
 class PersonRemoveRelationView(PermissionRequiredMixin, generic.DetailView):
-  permission_required = 'archive.edit_person'
+  permission_required = 'archive.change_person'
   def get(self, request, *args, **kwargs):
     subject = Person.objects.get(pk=kwargs['subject'])
     type = kwargs['type'].lower()
@@ -256,7 +256,7 @@ class PersonRemoveRelationView(PermissionRequiredMixin, generic.DetailView):
     return redirect('archive:person-edit', subject.id )
 
 class PersonAddRelationView(PermissionRequiredMixin, CreateView):
-  permission_required = 'archive.edit_person'
+  permission_required = 'archive.change_person'
 
   def post(self, request, *args, **kwargs):
     subject = Person.objects.get(pk=self.request.POST.get('subject'))
