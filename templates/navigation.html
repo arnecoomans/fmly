@@ -52,7 +52,7 @@
               {% if perms.archive.add_document or perms.archive.add_image %}
                 <li><a class="dropdown-item bi bi-cloud-arrow-up" href="{% url 'archive:add-image' %}"> Afbeelding uploaden</a></li>
               {% endif %}
-              {% if object and perms.archive.change_document %}
+              {% if object and perms.archive.change_image %}
                 <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:image-edit' object.id %}"> Afbeelding bewerken</a></li>
               {% endif %}
               {% if perms.archive.add_person %}
