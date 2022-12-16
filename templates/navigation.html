@@ -45,27 +45,27 @@
               Profiel
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item bi bi-person"> {{ user.first_name }} {{ user.last_name }} ({{ user }})</a></li>
+              <li><div class="dropdown-divider"></div></li>
               <li><a class="dropdown-item bi bi-images" href="{% url 'archive:image-by-uploader' user %}"> Mijn uploads</a></li>
               <li><div class="dropdown-divider"></div></li>
               {% if perms.archive.add_document or perms.archive.add_image %}
                 <li><a class="dropdown-item bi bi-cloud-arrow-up" href="{% url 'archive:add-image' %}"> Afbeelding uploaden</a></li>
               {% endif %}
-              {% if object and perms.archive.change_document %}
+              {% if object and perms.archive.change_image %}
                 <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:image-edit' object.id %}"> Afbeelding bewerken</a></li>
               {% endif %}
               {% if perms.archive.add_person %}
                 <li><a class="dropdown-item bi bi-person-fill-add" href="{% url 'archive:add-person' %}"> Persoon aanmaken</a></li>
               {% endif %}
-              {% if person and perms.archive.edit_person %}
+              {% if person and perms.archive.change_person %}
                 <li><a class="dropdown-item bi bi-person-fill" href="{% url 'archive:person-edit' person.id %}"> Persoon bewerken</a></li>
               {% endif %}
               {% if perms.archive.add_note %}
                 <li><a class="dropdown-item bi bi-file-earmark-arrow-up-fill" href="{% url 'archive:add-note' %}"> Notitie aanmaken</a></li>
               {% endif %}
-              {% if image or note %}
-                {% if note %}
-                  <li><a class="dropdown-item bi bi-pencil-fill {% if note.user != user and not user.is_superuser %}disabled{% endif %}" href="{% url 'archive:note-edit' note.id %}"> Bewerk notitie</a></li>
-                {% endif %}
+              {% if note %}
+                  <li><a class="dropdown-item bi bi-pencil-fill {% if user != note.user and not user.is_superuser %}disabled{% endif %}" href="{% url 'archive:note-edit' note.id %}"> Bewerk notitie</a></li>
               {% endif %}
               {% if user.is_staff %}
                 <li><div class="dropdown-divider"></div></li>
@@ -78,7 +78,7 @@
                 {% if note %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/note/{{ note.id }}/change/"> Edit note in admin</a></li>{% endif %}
               {% endif %}
               <li><div class="dropdown-divider"></div></li>
-              <li><a class="dropdown-item bi bi-box-arrow-left" href="{% url 'logout' %}"> Uitloggen</a></li>
+              <li><a class="dropdown-item bi bi-box-arrow-left" href="{% url 'logout' %}" title="Je bent ingelogd als {{ user.first_name }} {{ user.last_name }} ({{ user }})"> Uitloggen</a></li>
             </ul>
           </li>
         {% endif %}

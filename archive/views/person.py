@@ -166,7 +166,7 @@ class PersonListView(generic.ListView):
 # Renamed PersonUpdateView to EditPersonView
 class EditPersonView(PermissionRequiredMixin, UpdateView):
   model = Person
-  permission_required = 'archive.edit_person'
+  permission_required = 'archive.change_person'
   template_name = 'archive/people/edit.html'
   fields = ['first_name', 'given_names', 'last_name', 'married_name', 'nickname', 
             'day_of_birth', 'month_of_birth', 'year_of_birth', 'place_of_birth', 
