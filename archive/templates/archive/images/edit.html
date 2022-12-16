@@ -80,7 +80,7 @@
                 {% if form.tag.errors %}<p>{{ form.tag.errors }}</p>{% endif %}
                 <p>
                   <a class="bi bi-tags-fill" href="{% url 'archive:list-tags' %}"> Tags</a>
-                  <s>Tag toevoegen</s>
+                  <a class="bi bi-tag" href="{% url 'archive:add-tag' %}">Tag toevoegen</a>
                 </p>
               </dd>
           {% endif %}

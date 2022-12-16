@@ -11,7 +11,11 @@
   {% if perms.archive.view_tag %}
     <ul class="tags">
       {% for tag in tag_list %}
-        {% include 'archive/snippets/tag.html' %}
+      <li class="tag bi bi-tag-fill">
+        <a href="{% url 'archive:image-with-tag' tag.slug %}" class="tag">{{ tag.title|title }}</a>
+        ({{ tag.images.all.count }})
+        {% if perms.archive.change_tag %}<a class="bi bi-pencil-fill" href="{% url 'archive:edit-tag' tag.slug %}"> </a>{% endif %}
+      </li>
       {% endfor %}
     </ul>
   {% endif %}

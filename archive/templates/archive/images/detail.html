@@ -36,7 +36,7 @@
             {% endfor %}
           {% endif %}
           <!-- Tags -->
-          {% if perms.archive.view_tags and image.tag.all.count > 0 %}
+          {% if perms.archive.view_tag and image.tag.all.count > 0 %}
             {% for tag in image.tag.all %}
               {% include 'archive/snippets/tag.html' %}
             {% endfor %}

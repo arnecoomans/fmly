@@ -1,14 +1,14 @@
 from django.views import generic
 from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
 
-from django.urls import reverse, reverse_lazy
+#from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
-from django.template.defaultfilters import slugify
+#from django.template.defaultfilters import slugify
 from django.db.models import Q
 from django.conf import settings
 from django.contrib import messages
 
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from math import floor
 
