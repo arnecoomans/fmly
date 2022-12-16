@@ -45,6 +45,8 @@
               Profiel
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item bi bi-person"> {{ user.first_name }} {{ user.last_name }} ({{ user }})</a></li>
+              <li><div class="dropdown-divider"></div></li>
               <li><a class="dropdown-item bi bi-images" href="{% url 'archive:image-by-uploader' user %}"> Mijn uploads</a></li>
               <li><div class="dropdown-divider"></div></li>
               {% if perms.archive.add_document or perms.archive.add_image %}
@@ -78,7 +80,7 @@
                 {% if note %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/note/{{ note.id }}/change/"> Edit note in admin</a></li>{% endif %}
               {% endif %}
               <li><div class="dropdown-divider"></div></li>
-              <li><a class="dropdown-item bi bi-box-arrow-left" href="{% url 'logout' %}"> Uitloggen</a></li>
+              <li><a class="dropdown-item bi bi-box-arrow-left" href="{% url 'logout' %}" title="Je bent ingelogd als {{ user.first_name }} {{ user.last_name }} ({{ user }})"> Uitloggen</a></li>
             </ul>
           </li>
         {% endif %}
