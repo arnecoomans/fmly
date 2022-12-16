@@ -58,16 +58,14 @@
               {% if perms.archive.add_person %}
                 <li><a class="dropdown-item bi bi-person-fill-add" href="{% url 'archive:add-person' %}"> Persoon aanmaken</a></li>
               {% endif %}
-              {% if person and perms.archive.edit_person %}
+              {% if person and perms.archive.change_person %}
                 <li><a class="dropdown-item bi bi-person-fill" href="{% url 'archive:person-edit' person.id %}"> Persoon bewerken</a></li>
               {% endif %}
               {% if perms.archive.add_note %}
                 <li><a class="dropdown-item bi bi-file-earmark-arrow-up-fill" href="{% url 'archive:add-note' %}"> Notitie aanmaken</a></li>
               {% endif %}
-              {% if image or note %}
-                {% if note %}
-                  <li><a class="dropdown-item bi bi-pencil-fill {% if note.user != user and not user.is_superuser %}disabled{% endif %}" href="{% url 'archive:note-edit' note.id %}"> Bewerk notitie</a></li>
-                {% endif %}
+              {% if note %}
+                  <li><a class="dropdown-item bi bi-pencil-fill {% if user != note.user and not user.is_superuser %}disabled{% endif %}" href="{% url 'archive:note-edit' note.id %}"> Bewerk notitie</a></li>
               {% endif %}
               {% if user.is_staff %}
                 <li><div class="dropdown-divider"></div></li>
