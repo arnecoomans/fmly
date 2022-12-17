@@ -6,7 +6,7 @@ class Preference(models.Model):
   ''' Display preferences '''
   show_hidden_files   = models.BooleanField(default=False)
   ''' Upload preferences '''
-  upload_is_hidden    = models.BooleanField(default=False)
+  show_new_uploads    = models.BooleanField(default=True)
 
   def __str__(self):
     return f"Voorkeuren van { self.user }"

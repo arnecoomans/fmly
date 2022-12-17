@@ -11,7 +11,7 @@ from django.contrib import messages
 from pathlib import Path
 from math import floor
 
-from archive.models import Image, Person
+from archive.models import Image
 
 
 ''' List Views
@@ -94,7 +94,10 @@ class AddImageView(PermissionRequiredMixin, CreateView):
             'user']
   
   def get_initial(self):
-    return {'user': self.request.user }
+    initial = {'user': self.request.user }
+    if hasattr(self.request.user, 'preference'):
+      initial['show_in_index'] = self.request.user.preference.show_new_uploads
+    return initial
 
   def form_invalid(self, form):
     messages.add_message(self.request, messages.WARNING, f"Formulier kan niet worden ingediend vanwege de volgende fout(en): { form.errors }")
