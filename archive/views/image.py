@@ -106,8 +106,9 @@ class AddImageView(PermissionRequiredMixin, CreateView):
   def form_valid(self, form):
     if not hasattr(form.instance, 'user'):
       form.instance.user = self.request.user
-    if hasattr(self.request.user, 'preference') and self.request.user.preference.upload_is_hidden == False:
-      form.instance.show_in_index = True
+    # moved to get_initial
+    #if hasattr(self.request.user, 'preference') and self.request.user.preference.upload_is_hidden == False:
+    #  form.instance.show_in_index = True
     if not form.instance.title:
       form.instance.title = Path(self.request.FILES['source'].name).stem.replace('_', ' ')
     messages.add_message(self.request, messages.SUCCESS, f"Afbeelding \"{ form.instance.title }\" geupload.")
