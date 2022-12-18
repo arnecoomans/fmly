@@ -73,7 +73,7 @@
                 </p>
               </dd>
           {% endif %}
-          {% if perms.archive.view_tag %}
+          {% if perms.archive.view_tag and form.tag %}
             <dt><label for="{{ form.tag.id_for_label }}">Tag(s):</label></dt>
               <dd>
                 {{ form.tag }}
@@ -84,22 +84,28 @@
                 </p>
               </dd>
           {% endif %}
-          <dt><label for="{{ form.in_group.id_for_label }}">In groep:</label></dt>
-            <dd>
-              {{ form.in_group }}
-              {% if form.in_group.errors %}<p>{{ form.in_group.errors }}</p>{% endif %}
-              <p><s>Groepen - nieuwe groep</s></p>
-            </dd>
-          <dt><label for="{{ form.attachments.id_for_label }}">Attachment:</label></dt>
-            <dd>
-              {{ form.attachments }}
-              {% if form.attachments.errors %}<p>{{ form.attachments.errors }}</p>{% endif %}
-            </dd>
-          <dt><label for="{{ form.is_portrait_of.id_for_label }}">Is portet van:</label></dt>
-            <dd>
-              {{ form.is_portrait_of }}
-              {% if form.is_portrait_of.errors %}<p>{{ form.is_portrait_of.errors }}</p>{% endif %}
-            </dd>
+          {% if form.group %}
+            <dt><label for="{{ form.in_group.id_for_label }}">In groep:</label></dt>
+              <dd>
+                {{ form.in_group }}
+                {% if form.in_group.errors %}<p>{{ form.in_group.errors }}</p>{% endif %}
+                <p><s>Groepen - nieuwe groep</s></p>
+              </dd>
+          {% endif %}
+          {% if form.attachments %}
+            <dt><label for="{{ form.attachments.id_for_label }}">Attachment:</label></dt>
+              <dd>
+                {{ form.attachments }}
+                {% if form.attachments.errors %}<p>{{ form.attachments.errors }}</p>{% endif %}
+              </dd>
+          {% endif %}
+          {% if form.is_portrait_of %}
+            <dt><label for="{{ form.is_portrait_of.id_for_label }}">Is portet van:</label></dt>
+              <dd>
+                {{ form.is_portrait_of }}
+                {% if form.is_portrait_of.errors %}<p>{{ form.is_portrait_of.errors }}</p>{% endif %}
+              </dd>
+          {% endif %}
           {% if user.is_superuser %}
             <dt><label for="{{ form.user.id_for_label }}">User:</label></dt>
               <dd>

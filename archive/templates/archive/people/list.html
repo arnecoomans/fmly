@@ -10,33 +10,41 @@
   {% endif %}
   {% if perms.archive.view_person %}
     <div class="people">
-<!-- Filters -->
+<!-- Filters 
+     Each filter has its own form, to avoid cluttering the url arguments.
+     That means that each filter requires hidden form fields if that option is selected.
+  -->
       <div class="filters">
+        <!-- Filter Images Only With image -->
         <span class="option">
           <form method="get">
             {% if filters.family %}<input type="hidden" name="family" value="{{ filters.family }}">{% endif %}
-            {% if filters.century %}<input type="hidden" name="century" value="{{ filters.century }}">{% endif %}
-            {% if filters.decade %}<input type="hidden" name="decade" value="{{ filters.decade }}">{% endif %}
+            {% if filters.century and filters.century.count > 1 %}<input type="hidden" name="century" value="{{ filters.century }}">{% endif %}
+            {% if filters.decade and filters.decade.count > 1 %}<input type="hidden" name="decade" value="{{ filters.decade }}">{% endif %}
             {% if filters.year %}<input type="hidden" name="year" value="{{ filters.year }}">{% endif %}
             <label for="has_photo">Met afbeelding</label><input type="checkbox" name="has_photo" value="true" {% if filters.has_photo %} checked{% endif %} onchange="this.form.submit()">
           </form>
         </span>
+        <!-- Filter Families -->
         <span class="option">
           <form method="get">
             {% if filters.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
             {% if filters.century %}<input type="hidden" name="century" value="{{ filters.century }}">{% endif %}
             {% if filters.decade %}<input type="hidden" name="decade" value="{{ filters.decade }}">{% endif %}
             {% if filters.year %}<input type="hidden" name="year" value="{{ filters.year }}">{% endif %}
-            <label for="family">Familie: </label>
-            <select name="family" onchange="this.form.submit()">
-              <option value="all">-----</option>
-              {% for family in available_families %}
-                <option value="{{ family }}" {% if filters.family == family %} selected{% endif %}>{{ family }}</option>
-              {% endfor %}
-            </select>
+            {% if available_families|length > 1 %}
+              <label for="family">Familie: </label>
+              <select name="family" onchange="this.form.submit()">
+                <option value="all">-----</option>
+                {% for family in available_families %}
+                  <option value="{{ family }}" {% if filters.family == family %} selected{% endif %}>{{ family }}</option>
+                {% endfor %}
+              </select>
+            {% endif %}
           </form>
         </span>
-        {% if not filters.years and not filters.century %}
+        <!-- Decade filtering -->
+        {% if not filters.years and not filters.century and available_decades|length > 1%}
           <span class="option">
             <form method="get">
               {% if filters.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
@@ -51,7 +59,8 @@
             </form>
           </span>
         {% endif %}
-        {% if not filters.years and not filters.decade %}
+        <!-- Century filtering -->
+        {% if not filters.years and not filters.decade and available_centuries|length > 1 %}
           <span class="option">
             <form method="get">
               {% if filters.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}

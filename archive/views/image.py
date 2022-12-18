@@ -12,6 +12,7 @@ from pathlib import Path
 from math import floor
 
 from archive.models import Image
+from archive.models import Group, Tag, Attachment, Person
 
 
 ''' List Views
@@ -86,13 +87,22 @@ class AddImageView(PermissionRequiredMixin, CreateView):
   
   fields = ['source', 'title', 'description',
             'document_source', 'day', 'month', 'year',
-            'people', 'tag',
-            'in_group',
-            'attachments',
-            'is_portrait_of',
+            'people', 
             'show_in_index', 'is_deleted',
             'user']
   
+  def __init__(self, *args, **kwargs):
+    super(AddImageView, self).__init__(*args, **kwargs)
+    if Tag.objects.all().count() > 0:
+      self.fields.append('tag')
+    if Group.objects.all().count() > 0:
+      self.fields.append('in_group')
+    if Attachment.objects.all().count() > 0:
+      self.fields.append('attachments')
+    if Person.objects.all().count() > 0:
+      self.fields.append('is_portrait_of')
+
+
   def get_initial(self):
     initial = {'user': self.request.user }
     if hasattr(self.request.user, 'preference'):
@@ -137,12 +147,20 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
   model = Image
   fields = ['source', 'title', 'description',
             'document_source', 'day', 'month', 'year',
-            'people', 'tag',
-            'in_group',
-            'attachments',
-            'is_portrait_of',
+            'people', 
             'show_in_index', 'is_deleted',
             'user']
+  
+  def __init__(self, *args, **kwargs):
+    super(EditImageView, self).__init__(*args, **kwargs)
+    if Tag.objects.all().count() > 0:
+      self.fields.append('tag')
+    if Group.objects.all().count() > 0:
+      self.fields.append('in_group')
+    if Attachment.objects.all().count() > 0:
+      self.fields.append('attachments')
+    if Person.objects.all().count() > 0:
+      self.fields.append('is_portrait_of')
 
   def form_valid(self, form):
     #if not self.request.user.is_superuser and form.isinstance.user.is_changed():

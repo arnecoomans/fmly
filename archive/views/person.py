@@ -132,38 +132,6 @@ class PersonListView(generic.ListView):
     centuries.sort()
     return centuries
 
-
-
-
-# # Renamed PersonsView to PersonWithImageListView
-# class PersonWithImageListView(generic.ListView):
-#   model = Person
-#   template_name = 'people/list.html'
-
-#   def get_context_data(self, **kwargs):
-#     context = super().get_context_data(**kwargs)
-#     context['origin'] = 'person'
-#     context['page_scope'] = 'personen'
-#     context['page_description'] = 'Personen met afbeelding | <a href="' + reverse('archive:all-people') + '">Alle personen</a>.'
-#     return context
-#   def get_queryset(self):      
-#     return Person.objects.all().filter(~Q(images=None)).order_by('last_name', 'first_name')
-
-# # Renamed PersonsAllView to PersonAllListView
-# class PersonAllListView(generic.ListView):
-#   model = Person
-#   template_name = 'people/list.html'
-
-#   def get_context_data(self, **kwargs):
-#     context = super().get_context_data(**kwargs)
-#     context['origin'] = 'person'
-#     context['page_scope'] = 'personen'
-#     context['page_description'] = '<a href="' + reverse('archive:people') + '">Personen met afbeelding</a> | Alle personen - op geboortejaar'
-#     return context
-#   def get_queryset(self):      
-#     return Person.objects.all().order_by('last_name', 'year_of_birth')
-
-# Renamed PersonUpdateView to EditPersonView
 class EditPersonView(PermissionRequiredMixin, UpdateView):
   model = Person
   permission_required = 'archive.change_person'
@@ -188,7 +156,6 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
   def form_valid(self, form):
     return super().form_valid(form)
 
-# Renamed AddPerson to AddPersonView
 class AddPersonView(PermissionRequiredMixin, CreateView):
   permission_required = 'archive.add_person'
   template_name = 'archive/people/edit.html'
@@ -198,6 +165,7 @@ class AddPersonView(PermissionRequiredMixin, CreateView):
             'day_of_death', 'month_of_death', 'year_of_death', 'place_of_death',
             'moment_of_death_unconfirmed',
             'bio',]
+  
   def form_valid(self, form):
     form.instance.user = self.request.user
     return super().form_valid(form)
