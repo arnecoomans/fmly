@@ -132,7 +132,7 @@ class Person(models.Model):
       return siblings
 
   class Meta:
-    ordering = ('last_name', 'first_name')
+    ordering = ('first_name', 'last_name')
   
   def get_absolute_url(self):
     return reverse('archive:person', kwargs={'pk':self.id, 'name': self.slug})
