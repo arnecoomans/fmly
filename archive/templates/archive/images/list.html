@@ -4,7 +4,7 @@
   <header>
     <h2>Afbeeldingen en Documenten</h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
-    {% if images_hidden > 0 %}<p class="bi bi-info-circle-fill"> Er {{ images_hidden|pluralize:'is,zijn' }} <a href="?hidden=True" title="Toon ook de {{ images_hidden }} afbeelding{{ images_hidden|pluralize:'en' }}">{{ images_hidden }} afbeelding{{ images_hidden|pluralize:'en' }}</a> verborgen.</p>{% endif %}
+    {% if images_hidden > 0 %}<p class="bi bi-info-circle-fill"> Er {{ images_hidden|pluralize:'is,zijn' }} <a href="?{% include 'archive/snippets/fixparams.html' with ignore='hidden' %}hidden=True" title="Toon ook de {{ images_hidden }} afbeelding{{ images_hidden|pluralize:'en' }}">{{ images_hidden }} afbeelding{{ images_hidden|pluralize:'en' }}</a> verborgen.</p>{% endif %}
   </header>
   {% if not images %}
     ERROR: No images to be shown

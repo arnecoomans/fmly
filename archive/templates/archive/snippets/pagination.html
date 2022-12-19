@@ -3,18 +3,18 @@
     <ul class="pagination justify-content-center">
       <!-- Fist/Previous -->
       <li class="page-item{% if not page_obj.has_previous %} disabled{% endif %}">
-        {% if page_obj.has_previous %}<a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">{% else %}<span class="page-link">{% endif %}
+        {% if page_obj.has_previous %}<a class="page-link" href="?{% include 'archive/snippets/fixparams.html' with ignore='page' %}page={{ page_obj.previous_page_number }}" aria-label="Previous">{% else %}<span class="page-link">{% endif %}
           <span aria-hidden="true">&laquo;</span>
           <span class="sr-only">Vorige</span>
           {% if page_obj.has_previous %}</a>{% else %}</span>{% endif %}
       </li>
       <!-- Pages -->
       {% for page in page_obj.paginator.page_range %}
-        <li class="page-item{% if page_obj.number == page %} active{% endif %}"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+        <li class="page-item{% if page_obj.number == page %} active{% endif %}"><a class="page-link" href="?{% include 'archive/snippets/fixparams.html' with ignore='page' %}page={{ page }}">{{ page }}</a></li>
       {% endfor %}
       <!-- Next/Last -->
       <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
-        {% if page_obj.has_next %}<a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Previous">{% else %}<span class="page-link">{% endif %}
+        {% if page_obj.has_next %}<a class="page-link" href="?{% include 'archive/snippets/fixparams.html' with ignore='page' %}page={{ page_obj.next_page_number }}" aria-label="Previous">{% else %}<span class="page-link">{% endif %}
           <span class="sr-only">Volgende</span>
           <span aria-hidden="true">&raquo;</span>
           {% if page_obj.has_next %}</a>{% else %}</span>{% endif %}
