@@ -40,7 +40,7 @@
           <dt>Geboren</dt><dd>{{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}</dd>
         {% endif %}
         {% if person.year_of_death or person.month_of_death or person_day_of_death or moment_of_death_unconfirmed or person.place_of_death %}
-          <dt>Overleden</dt><dd>{{ person.day_of_death|default:'?' }}-{{ person.month_of_death|default:'?' }}-{{ person.year_of_death|default:'?' }} {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}{% if person.age %} ({{ person.age }}){% endif %}</dd>
+          <dt>Overleden</dt><dd>{{ person.day_of_death|default:'?' }}-{{ person.month_of_death|default:'?' }}-{{ person.year_of_death|default:'?' }} {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}{% if person.ageatdeath %} ({{ person.ageatdeath }}){% endif %}</dd>
         {% endif %}
         {% if person.get_parents %}
           <dt>Ouder{% if person.get_parents|length > 1 %}s{% endif %}:</dt>
