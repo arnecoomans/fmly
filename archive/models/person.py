@@ -6,6 +6,11 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 class Person(models.Model):
+  ''' Model: Person
+      People are:
+      - tagged on an image
+      - related to another person
+  '''
   first_name          = models.CharField(max_length=255, blank=True, verbose_name='Roepnaam')
   given_names         = models.CharField(max_length=255, blank=True, verbose_name='Voornamen', help_text='Alle voornamen, inclusief roepnaam')
   last_name           = models.CharField(max_length=255, blank=True, verbose_name='Achternaam', help_text='Achternaam bij geboorte')
@@ -38,32 +43,20 @@ class Person(models.Model):
   date_modified       = models.DateTimeField(auto_now=True)
   date_created        = models.DateTimeField(auto_now_add=True)
   
-  def __str__(self):
-    value = self.full_name()
-    if self.year_of_birth or self.year_of_death:
-        value += ' ('
-        value += str(self.year_of_birth) if self.year_of_birth else ' '
-        value += ' - '
-        value += str(self.year_of_death) if self.year_of_death else ' '
-        value += ')'
-    return value
+  class Meta:
+    ordering = ('first_name', 'last_name')
+    verbose_name = 'person'
+    verbose_name_plural = 'people'
 
-  def fixdate(self):
-    if self.date_of_birth:
-      if not self.year_of_birth:
-        self.year_of_birth = self.date_of_birth.year
-      if not self.month_of_birth:
-        self.month_of_birth = self.date_of_birth.month
-      if not self.day_of_birth:
-        self.day_of_birth = self.date_of_birth.day
-    if self.date_of_death:
-      if not self.year_of_death:
-        self.year_of_death = self.date_of_death.year
-      if not self.month_of_death:
-        self.month_of_death = self.date_of_death.month
-      if not self.day_of_death:
-        self.day_of_death = self.date_of_death.day
-    self.save()
+  def __str__(self):
+    ''' Return the name of the person with year of birth and death '''
+    name = self.full_name()
+    if self.year_of_birth or self.year_of_death or self.moment_of_death_unconfirmed:
+      name += f" ({ str(self.year_of_birth) if self.year_of_birth else ' ' }"
+      if self.year_of_death or self.moment_of_death_unconfirmed:
+        name += f" - { self.year_of_death if self.year_of_death else '?' }"
+      name += f")"
+    return name
 
   def name(self):
     return ' '.join([self.first_name, self.last_name])
@@ -74,18 +67,7 @@ class Person(models.Model):
       call_sign = '(' + self.first_name + ') '
     return ' '.join([call_sign, self.given_names, self.last_name, self.married_name]).strip()
 
-  def FulLFirstName(self):
-    if self.first_name:
-      if self.first_name not in self.given_names:
-        return f"({self.first_name}) {self.given_names}"
-    return self.given_names
-  def get_first_name(self):
-    if self.first_name:
-      return self.first_name if self.first_name not in self.given_names else None
-    else:
-      return self.given_names
-
-  def age(self):
+  def ageatdeath(self):
     if self.date_of_birth and self.date_of_death:
       age = self.date_of_death.year - self.date_of_birth.year
       age -= ((self.date_of_birth.month, self.date_of_birth.day) <
@@ -94,7 +76,17 @@ class Person(models.Model):
     elif self.year_of_birth and self.year_of_death:
       return self.year_of_death - self.year_of_birth
 
-  # Process Family Relations
+  ''' Family Relations
+      There are two family relations stored:
+      * A (up) is parent of B (down)
+      * C is partner of D
+      Brothers and sisters are calculated by havind a shared parent.
+  '''
+
+  ''' get_parents()
+      Parents have a simple relation
+      up is parent of down.
+  '''
   def get_parents(self):
     if self.relation_up:
       parents = []
@@ -102,6 +94,10 @@ class Person(models.Model):
         parents.append(parent.up)
       return parents
 
+  ''' get_children()
+      Childern have a simple relation
+      down is child of parent up
+  '''
   def get_children(self):
     if self.relation_down:
       children = []
@@ -109,6 +105,10 @@ class Person(models.Model):
         children.append(child.down)
       return children
   
+  ''' get_partners()
+      partners have a two-sided relation
+      a is partner of b, or b is partner of a
+  '''
   def get_partners(self):
     if self.relation_down:
       partners = []
@@ -122,46 +122,47 @@ class Person(models.Model):
         partners.append(partner.down)
       return partners
 
+  ''' get_siblings
+      siblings have a two-hop relation:
+      for each parent, fetch children
+  '''
   def get_siblings(self):
     if self.relation_up:
       siblings = []
-      for parent in self.relation_up.filter(type='parent'):
+      for parent in self.relation_up.filter(type='parent').order_by('up__year_of_birth'):
         for child in parent.up.relation_down.all():
           if child.down not in siblings and child.down != self:
             siblings.append(child.down)
       return siblings
 
-  class Meta:
-    ordering = ('first_name', 'last_name')
-  
+  ''' Absulute URL
+      should return URL with both name and slug
+  '''
   def get_absolute_url(self):
     return reverse('archive:person', kwargs={'pk':self.id, 'name': self.slug})
   
+
+  ''' Processing at save
+  '''
   def save(self, *args, **kwargs):
-    # Ensure there is a first name. If no first name is mentioned,
-    # use the first word from given name
+    ''' First name:
+        If no first name is given, but given names are mentioned, assume first given name is first-name.
+    '''
     if self.given_names and not self.first_name:
       if ' ' in self.given_names:
         self.first_name = self.given_names.split()[1]
       else:
         self.first_name = self.given_names
-    # Set user
-    if not self.user:
-      self.user = request.user
-    # Automatically fill year of birth/death if date is known
-    if not self.year_of_birth and self.date_of_birth:
-      self.year_of_birth = int(self.date_of_birth.year)
-    if not self.year_of_death and self.date_of_death:
-      self.year_of_death = int(self.date_of_death.year)
-    # Recalculate slug
-    # Slug should be (first-name) given-names lastname (birth-death)
-    slug = self.full_name()
-    if self.year_of_birth or self.year_of_death:
-      slug += '-'
-      slug += str(self.year_of_birth) if self.year_of_birth else ''
-      slug += ' - ' + str(self.year_of_death) if self.year_of_death else ''
-    self.slug = slugify(slug)
-    # Pass person information to user object if linked
+    ''' Slug:
+        Slug should always contain given names, last name and married name, but also 
+        year of birth and -death.
+        Make use of __str__() to get the correct fields
+    '''
+    self.slug = slugify(self.__str__().replace('(', '')).replace(')', '')
+    ''' Related User:
+        If a related user is set, copy user information to the related user
+        and back
+    '''
     if self.related_user and self.first_name:
       self.related_user.first_name = self.first_name
     if self.related_user and self.last_name:
@@ -172,6 +173,12 @@ class Person(models.Model):
       self.related_user.save()
     return super(Person, self).save(*args, **kwargs)
 
+
+''' Family Relations
+    Family Relations are stored by defining person A is relation of person B. Currently only relation
+    parent or partner can be selected. 
+    Children are calculated by fetching one's parents children
+'''
 class FamilyRelations(models.Model):
   RELATION_CHOICES = [
     ('parent', 'Parent'),
