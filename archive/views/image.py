@@ -23,6 +23,7 @@ class ImageListView(generic.ListView):
   template_name = 'archive/images/list.html'
   context_object_name = 'images'
   paginate_by = settings.PAGINATE
+  added_context = {}
 
   def get_decade(self, **kwargs):
     return floor(int(self.kwargs['decade']) / 10) * 10
@@ -31,26 +32,61 @@ class ImageListView(generic.ListView):
     context = super().get_context_data(**kwargs)
     context['active_tab'] = 'images'
     context['page_description'] = 'Afbeeldingen en documenten met jou gedeeld'
+    if 'user' in self.kwargs:
+      context['page_description'] = f"Afbeeldingen en documenten van { self.kwargs['user'] }"
     if 'decade' in self.kwargs:
       context['page_description'] = f"Documenten in periode {str(self.get_decade())} - {str(self.get_decade() + 9)}, gesorteerd op jaartal, nieuwste eerst. <br />"  + \
                                     f"Kijk ook eens bij <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()-10])}\">{ str(self.get_decade()-10) } - { str(self.get_decade()-1) }</a> of <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()+10])}\">{ str(self.get_decade()+10) } - { str(self.get_decade()+20) }</a>"
+    if len(self.added_context) > 0:
+      for key in self.added_context:
+        context[key] = self.added_context[key]
     return context
   
+  ''' Showing hidden files 
+      Returns True when
+      1. User preference says hidden files should be shown
+      2. URL argument ?hidden=true is supplied
+      Returns False when URL argument ?hidden=false is supplied
+    '''
+  def show_hidden_files(self) -> bool:
+    result = False
+    if hasattr(self.request.user, 'preference'):
+      if self.request.user.preference.show_hidden_files == True:
+        result = True
+    if self.request.GET.get('hidden'):
+      if self.request.GET.get('hidden').lower() == 'true':
+        result = True
+      else:
+        result = False
+    return result
+
+  ''' Get queryset
+  '''
   def get_queryset(self):
     queryset = Image.objects.all()
+    ''' Remove deleted images '''
     queryset = queryset.filter(is_deleted=False)
+    ''' Show images by a single user '''
     if 'user' in self.kwargs:
       queryset = queryset.filter(user_id__username=self.kwargs['user'])
+    ''' Show images with a tag '''
     if 'tag' in self.kwargs:
       queryset = queryset.filter(tag__slug=self.kwargs['tag'])
+    ''' Show images in a decade '''
     if 'decade' in self.kwargs:
       queryset = queryset.filter(year__gte=self.get_decade()).filter(year__lte=self.get_decade()+9)
-    if hasattr(self.request.user, 'preference') and self.request.user.preference.show_hidden_files == True:
-      queryset.exclude(show_in_index=False)
+    ''' Show or hide hidden files '''
+    if not self.show_hidden_files():
+      if queryset.filter(show_in_index=False).count() > 0:
+        self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count()
+        queryset = queryset.exclude(show_in_index=False)
+      else:
+        self.added_context['images_hidden'] =  False
     else:
-      if 'user' not in self.kwargs:
-        queryset = queryset.filter(show_in_index=True)
+      self.added_context['images_hidden'] = False
+    ''' Order images '''
     queryset = queryset.order_by('-uploaded_at')
+    ''' Return result '''
     return queryset
 
 # class ImageSearchView(generic.ListView):
