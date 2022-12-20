@@ -1,5 +1,5 @@
-from django.views import generic
-from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
+from django.views.generic import ListView, DetailView
+from django.views.generic.edit import CreateView, UpdateView 
 
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
@@ -19,7 +19,7 @@ from archive.models import Group, Tag, Attachment, Person
     Default home view:
     List Images By Date Uploaded, newest first, paginated
 ''' 
-class ImageListView(generic.ListView):
+class ImageListView(ListView):
   template_name = 'archive/images/list.html'
   context_object_name = 'images'
   paginate_by = settings.PAGINATE
@@ -99,7 +99,7 @@ class ImageListView(generic.ListView):
     Redirect id-only link to link with title included
 '''
 # Renamed DocumentRedirectView to ImageRedirectView
-class ImageRedirectView(generic.DetailView):
+class ImageRedirectView(DetailView):
   # redirect /document/1/ to /document/1/title-included/
   model = Image
   context_object_name = 'images'
@@ -110,7 +110,7 @@ class ImageRedirectView(generic.DetailView):
     return redirect('archive:image', image.id, slugify(title) )
 
 # Renamed DocumentView to ImageView
-class ImageView(generic.DetailView):
+class ImageView(DetailView):
   model = Image
   template_name = 'archive/images/detail.html'
 
@@ -153,9 +153,6 @@ class AddImageView(PermissionRequiredMixin, CreateView):
   def form_valid(self, form):
     if not hasattr(form.instance, 'user'):
       form.instance.user = self.request.user
-    # moved to get_initial
-    #if hasattr(self.request.user, 'preference') and self.request.user.preference.upload_is_hidden == False:
-    #  form.instance.show_in_index = True
     if not form.instance.title:
       form.instance.title = Path(self.request.FILES['source'].name).stem.replace('_', ' ')
     messages.add_message(self.request, messages.SUCCESS, f"Afbeelding \"{ form.instance.title }\" geupload.")

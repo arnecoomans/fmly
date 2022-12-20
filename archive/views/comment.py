@@ -1,15 +1,14 @@
-from re import template
 from django.views import generic
-from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
+from django.views.generic.edit import CreateView, UpdateView
 from django.shortcuts import redirect
 from django.conf import settings
 from django.contrib import messages
 from django.urls import reverse
 from django.template.defaultfilters import slugify
 
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
-from archive.models import Comment, Image, Person
+from archive.models import Comment, Image
 
 # Renamed CommentsView to CommentListView
 class CommentListView(generic.ListView):

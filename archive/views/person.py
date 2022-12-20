@@ -1,21 +1,23 @@
-from django.views import generic
-from django.views.generic.edit import CreateView, UpdateView #, FormView, DeleteView
+from django.views.generic import ListView, DetailView
+from django.views.generic.edit import CreateView, UpdateView
 
-#from django.urls import reverse, reverse_lazy
-from django.shortcuts import get_object_or_404, redirect
-#from django.template.defaultfilters import slugify
+from django.shortcuts import redirect
 from django.db.models import Q
 from django.conf import settings
 from django.contrib import messages
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
-# from django.core.paginator import Paginator
 
 from math import floor
 
 from archive.models import Person, FamilyRelations, Image
 
-class PersonView(generic.ListView):
+''' PersonView
+    PersonView is actually a ListView of model Images. This allows for query adaptation such
+    as show/hide hidden and pagination.
+    The Person is added via Context.
+'''
+class PersonView(ListView):
   model = Image
   template_name = 'archive/people/detail.html'
   paginate_by = settings.PAGINATE
@@ -23,12 +25,22 @@ class PersonView(generic.ListView):
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
+    ''' Add Person to the context '''
     context['person'] = Person.objects.get(pk=self.kwargs['pk'])
+    ''' Add additional context created by the get_queryset actions'''
     if len(self.added_context) > 0:
       for key in self.added_context:
         context[key] = self.added_context[key]
     return context
   
+  ''' show_hidden_files()
+      Checks if current user has prerence entry. 
+      If user has preferences, it returns the show_hidden_files-prefence of the user.
+      Then it checks if the current default or preference should be overridden with the 
+      request querystring ?hidden=true/false.
+      This allows to start off with the default value or user preference, and override with
+      request querystring.
+  '''
   def show_hidden_files(self) -> bool:
     result = False
     if hasattr(self.request.user, 'preference'):
@@ -37,12 +49,15 @@ class PersonView(generic.ListView):
     if self.request.GET.get('hidden'):
       if self.request.GET.get('hidden').lower() == 'true':
         result = True
-      else:
+      elif self.request.GET.get('hidden').lower() == 'false':
         result = False
     return result
 
+  ''' Return filtered queryset with Images for this Person '''
   def get_queryset(self):
+    ''' Fetch images with Person in field people '''
     queryset = Image.objects.filter(people=Person.objects.get(pk=self.kwargs['pk']))
+    ''' Always remove deleted images '''
     queryset = queryset.filter(is_deleted=False)
     ''' Show or hide hidden files '''
     if not self.show_hidden_files():
@@ -59,10 +74,15 @@ class PersonView(generic.ListView):
     ''' Return result '''
     return queryset
 
-class PersonListView(generic.ListView):
+''' PersonListView
+    Display a list of people, grouped by family (Last_name or Married_name)
+    Allows for additional filtering
+'''
+class PersonListView(ListView):
   model = Person
   template_name = 'archive/people/list.html'
   context_object_name = 'people'
+  ''' Filters and their default values '''
   filters = {
     'has_photo': False,
     'year': None,
@@ -70,27 +90,41 @@ class PersonListView(generic.ListView):
     'century': None,
     'family': None,
   }
+
+  ''' getFilters
+      Returns dict of active filters
+  '''
   def getFilters(self):
     filters = {}
+    ''' Loop through all available Filters configured in self.filters '''
     for filter, default in self.filters.items():
+      ''' See if Filter is mentioned in the querystring '''
       if self.request.GET.get(filter):
+        ''' Process special values '''
         if self.request.GET.get(filter).lower() == 'true':
+          ''' Process string True as boolan value True'''
           filters[filter] = True
         elif self.request.GET.get(filter).lower() in ['false', 'none', 'all']:
+          ''' Process string False, None or special value All as boolean value False '''
           filters[filter] = False
         else: 
           try:
+            ''' Try to process Filter Value as Integer '''
             filters[filter] = int(self.request.GET.get(filter))
+            ''' Process value to expected format if Decade or Century filter is active '''
             if filter == 'decade':
               filters[filter] = floor(filters[filter]/10)*10
             elif filter =='century':
               filters[filter] = floor(filters[filter]/100)*100
           except:
+            ''' If processing as Integer failed, just accept the filter value '''
             filters[filter] = self.request.GET.get(filter)
       else:
+        ''' If no filter has been passed in querystring, use default value '''
         filters[filter] = default
     return filters
 
+  ''' Check if a current filters are different than default values '''
   def hasActiveFilters(self):
     for key, value in self.getFilters().items():
       if value not in [False, None]:
@@ -101,7 +135,6 @@ class PersonListView(generic.ListView):
     context = super().get_context_data(**kwargs)
     context['has_active_filters'] = self.hasActiveFilters()
     context['filters'] = self.getFilters()
-    
     context['available_centuries'] = self.get_centuries()
     context['available_decades'] = self.get_decades()
     context['available_families'] = settings.FAMILIES
@@ -154,24 +187,27 @@ class PersonListView(generic.ListView):
     queryset = queryset.order_by('last_name', 'first_name')
     return queryset
 
+  ''' Get a list of centuries of all People '''
   def get_centuries(self):
-    decades = []
-    for year in Person.objects.all().values_list('year_of_birth'):
-      if year[0]:
-        decade = floor(int(year[0])/100)*100
-        if not decade in decades:
-          decades.append(decade)
-    decades.sort()
-    return decades
-  def get_decades(self):
     centuries = []
     for year in Person.objects.all().values_list('year_of_birth'):
       if year[0]:
-        year = floor(int(year[0])/10)*10
-        if not year in centuries:
-          centuries.append(year)
+        century = floor(int(year[0])/100)*100
+        if not century in centuries:
+          centuries.append(century)
     centuries.sort()
     return centuries
+  ''' Get a list of all decades a Person has been born in '''
+  def get_decades(self):
+    decades = []
+    for year in Person.objects.all().values_list('year_of_birth'):
+      if year[0]:
+        year = floor(int(year[0])/10)*10
+        if not year in decades:
+          decades.append(year)
+    decades.sort()
+    return decades
+
 
 class EditPersonView(PermissionRequiredMixin, UpdateView):
   model = Person
@@ -211,27 +247,14 @@ class AddPersonView(PermissionRequiredMixin, CreateView):
     form.instance.user = self.request.user
     return super().form_valid(form)
 
-## Special views
-# Renamed MyPersonDetails to PersonUserView
-class PersonUserView(generic.DetailView):
-  permission_required = 'archive.view_person'
-  model = Person
-  def get(self, request, *args, **kwargs):
-    if 'username' in  self.kwargs:
-      person = get_object_or_404(Person, related_user__username=self.kwargs['username'])
-    # If no username is supplied, assume current logged in user
-    else:
-      person = Person.objects.get(related_user=self.request.user)
-    return redirect('archive:person', person.id, person.slug )
-
 # Renamed PersonRedirect to PersonRedirectView
-class PersonRedirectView(generic.DetailView):
+class PersonRedirectView(DetailView):
   def get(self, request, *args, **kwargs):
     # Redirect to document with slug
     person = Person.objects.get(pk=self.kwargs['pk'])
     return redirect('archive:person', person.id, person.slug )
 
-class PersonRemoveRelationView(PermissionRequiredMixin, generic.DetailView):
+class PersonRemoveRelationView(PermissionRequiredMixin, DetailView):
   permission_required = 'archive.change_person'
   def get(self, request, *args, **kwargs):
     subject = Person.objects.get(pk=kwargs['subject'])

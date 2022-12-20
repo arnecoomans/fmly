@@ -1,8 +1,5 @@
-from django.views import generic
-from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
-
-#from django.urls import reverse, reverse_lazy
-#from django.shortcuts import get_object_or_404, redirect
+from django.views.generic import ListView, DetailView
+from django.views.generic.edit import CreateView, UpdateView
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
@@ -11,8 +8,11 @@ from math import floor
 from archive.models import Image, Tag
 
 
-# Renamed TagsView to TagListView
-class TagListView(generic.ListView):
+''' Tags
+    Tags are referenced in images, groups and attachments and are used to add context.
+    Tag detail view is handled by the Image model, where it displays all images with a set tag.
+'''
+class TagListView(ListView):
   model = Tag
   template_name = 'archive/tags/list.html'
   
@@ -20,7 +20,6 @@ class TagListView(generic.ListView):
     context = super().get_context_data(**kwargs)
     context['origin'] = 'tag'
     context['page_scope'] = 'tags'
-    #context['page_description'] = ''
     return context
 
 class AddTagView(PermissionRequiredMixin, CreateView):
@@ -38,5 +37,3 @@ class EditTagView(PermissionRequiredMixin, UpdateView):
   fields = ['title', 'description']
   permission_required = 'archive.change_tag'
   template_name = 'archive/tags/edit.html'
-  # def form_valid(self, form):
-  #   return super().form_valid(form)
