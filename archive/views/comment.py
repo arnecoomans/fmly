@@ -53,7 +53,7 @@ class CommentListView(generic.ListView):
     queryset = queryset.filter(is_deleted=False).order_by('-date_modified')
     return queryset
 
-# Renamed CommentView to AddCommentView
+''' Add Comment '''
 class AddCommentView(PermissionRequiredMixin, CreateView):
   permission_required = 'archive.add_comment'
   model = Comment
@@ -67,6 +67,7 @@ class AddCommentView(PermissionRequiredMixin, CreateView):
     messages.add_message(self.request, messages.SUCCESS, f"Reactie toegevoegd aan \"{form.instance.image.title}\"")
     return super().form_valid(form)
 
+''' Edit Comment '''
 class CommentEditView(PermissionRequiredMixin, UpdateView):
   permission_required = 'archive.change_comment'
   template_name = 'archive/comments/edit.html'
@@ -134,5 +135,3 @@ class CommentUnDeleteView(PermissionRequiredMixin, generic.DetailView):
       messages.add_message(self.request, messages.ERROR, f"Reactie \"{ get_comment_preview(comment) }\" op \"{comment.image.title}\" kan niet worden hersteld. Is het wel jouw reactie?")
     comment.save()
     return redirect('archive:image', comment.image.id, slugify(comment.image.title))
-
-

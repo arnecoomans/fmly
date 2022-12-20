@@ -15,6 +15,24 @@ from archive.models import Image
 from archive.models import Group, Tag, Attachment, Person
 
 
+''' View Shared Functions '''
+
+''' Get_additional_fields
+    Used by add/create view
+    Loop through possible fields and add return if field has enough options
+'''
+def get_additional_fields():
+  fields = []
+  if Tag.objects.all().count() > 0:
+    fields.append('tag')
+  if Group.objects.all().count() > 0:
+    fields.append('in_group')
+  if Attachment.objects.all().count() > 0:
+    fields.append('attachments')
+  if Person.objects.all().count() > 0:
+    fields.append('is_portrait_of')
+  return fields
+
 ''' List Views
     Default home view:
     List Images By Date Uploaded, newest first, paginated
@@ -25,18 +43,26 @@ class ImageListView(ListView):
   paginate_by = settings.PAGINATE
   added_context = {}
 
+  ''' get_decade 
+      returns the decade start year of querystring Decade.
+      For example; ?decade=1981 returns 1980.
+  '''
   def get_decade(self, **kwargs):
     return floor(int(self.kwargs['decade']) / 10) * 10
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_tab'] = 'images'
+    ''' Default page description '''
     context['page_description'] = 'Afbeeldingen en documenten met jou gedeeld'
+    ''' If user filter is active, add user details '''
     if 'user' in self.kwargs:
       context['page_description'] = f"Afbeeldingen en documenten van { self.kwargs['user'] }"
+    ''' If decade filter is active, add decade details '''
     if 'decade' in self.kwargs:
       context['page_description'] = f"Documenten in periode {str(self.get_decade())} - {str(self.get_decade() + 9)}, gesorteerd op jaartal, nieuwste eerst. <br />"  + \
                                     f"Kijk ook eens bij <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()-10])}\">{ str(self.get_decade()-10) } - { str(self.get_decade()-1) }</a> of <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()+10])}\">{ str(self.get_decade()+10) } - { str(self.get_decade()+20) }</a>"
+    ''' Added context, can be placed by get_queryset() '''
     if len(self.added_context) > 0:
       for key in self.added_context:
         context[key] = self.added_context[key]
@@ -90,33 +116,30 @@ class ImageListView(ListView):
     ''' Return result '''
     return queryset
 
-# class ImageSearchView(generic.ListView):
-#   template_name = 'archive/images/list.html'
-#   context_object_name = ' images'
-#   paginate_by = settings.PAGINATE
-
-''' Redirect views
-    Redirect id-only link to link with title included
+''' ImageRedirectView
+    Redirects calls to object/{id} to object/{id}/{slug}/ for seo purposes
 '''
-# Renamed DocumentRedirectView to ImageRedirectView
 class ImageRedirectView(DetailView):
-  # redirect /document/1/ to /document/1/title-included/
   model = Image
   context_object_name = 'images'
   def get(self, request, *args, **kwargs):
-    # Redirect to document with slug
+    ''' Fetch image to read title '''
     image = Image.objects.get(pk=self.kwargs['pk'])
+    ''' Get title or use default '''
     title = 'needs a title' if image.title == '' else image.title
+    ''' Redirect to proper view '''
     return redirect('archive:image', image.id, slugify(title) )
 
-# Renamed DocumentView to ImageView
+''' ImageView'''
 class ImageView(DetailView):
   model = Image
   template_name = 'archive/images/detail.html'
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['active_tab'] = 'images'
+    return context
 
-
-## Add Image / Images
-# Renamed AddImage to AddImageView
+''' Add Images '''
 class AddImageView(PermissionRequiredMixin, CreateView):
   permission_required = 'archive.add_image'
   template_name = 'archive/images/edit.html'
@@ -128,31 +151,31 @@ class AddImageView(PermissionRequiredMixin, CreateView):
             'show_in_index', 'is_deleted',
             'user']
   
+
   def __init__(self, *args, **kwargs):
     super(AddImageView, self).__init__(*args, **kwargs)
-    if Tag.objects.all().count() > 0:
-      self.fields.append('tag')
-    if Group.objects.all().count() > 0:
-      self.fields.append('in_group')
-    if Attachment.objects.all().count() > 0:
-      self.fields.append('attachments')
-    if Person.objects.all().count() > 0:
-      self.fields.append('is_portrait_of')
-
-
+    ''' Only add additional fields if these have enough options to be useful '''
+    for field in get_additional_fields():
+      self.fields.append(field)
+    
+  ''' Build initial form '''
   def get_initial(self):
     initial = {'user': self.request.user }
+    ''' Only if user has preferences stored, set field to preference '''
     if hasattr(self.request.user, 'preference'):
       initial['show_in_index'] = self.request.user.preference.show_new_uploads
     return initial
 
+  ''' Catch form validation errors '''
   def form_invalid(self, form):
     messages.add_message(self.request, messages.WARNING, f"Formulier kan niet worden ingediend vanwege de volgende fout(en): { form.errors }")
     return super().form_invalid(form)
 
   def form_valid(self, form):
+    ''' Force user '''
     if not hasattr(form.instance, 'user'):
       form.instance.user = self.request.user
+    ''' Grab title from filename if not supplied. Omit suffix '''
     if not form.instance.title:
       form.instance.title = Path(self.request.FILES['source'].name).stem.replace('_', ' ')
     messages.add_message(self.request, messages.SUCCESS, f"Afbeelding \"{ form.instance.title }\" geupload.")
@@ -160,20 +183,6 @@ class AddImageView(PermissionRequiredMixin, CreateView):
 
   def get_success_url(self):
     return reverse_lazy('archive:image-redirect', args=[self.object.id])
-
-# # Renamed AddImages to AddImagesView
-# class AddImagesView(PermissionRequiredMixin, CreateView):
-#   permission_required = 'archive.create_document'
-#   model = Image
-#   fields = ['source']
-#   success_url = reverse_lazy('archive:my-images')
-#   template_name = 'images/image_multi_upload.html'
-  
-#   def form_valid(self, form):
-#     form.instance.user = self.request.user
-#     form.instance.title = self.request.FILES['source'].name
-#     form.instance.show_in_index = False
-#     return super().form_valid(form)
 
 class EditImageView(PermissionRequiredMixin, UpdateView):
   permission_required = 'archive.change_image'  
@@ -187,18 +196,11 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
   
   def __init__(self, *args, **kwargs):
     super(EditImageView, self).__init__(*args, **kwargs)
-    if Tag.objects.all().count() > 0:
-      self.fields.append('tag')
-    if Group.objects.all().count() > 0:
-      self.fields.append('in_group')
-    if Attachment.objects.all().count() > 0:
-      self.fields.append('attachments')
-    if Person.objects.all().count() > 0:
-      self.fields.append('is_portrait_of')
+    ''' Only add additional fields if these have enough options to be useful '''
+    for field in get_additional_fields():
+      self.fields.append(field)
 
   def form_valid(self, form):
-    #if not self.request.user.is_superuser and form.isinstance.user.is_changed():
-    #if hasattr(form.changed_data, 'user'):
     if not self.request.user.is_superuser and 'user' in form.changed_data: 
       original = Image.objects.get(pk=self.kwargs['pk'])
       form.instance.user = original.user
