@@ -53,7 +53,6 @@ class PersonView(generic.ListView):
         self.added_context['images_hidden'] =  False
     else:
       self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count() * -1
-      # self.added_context['images_hidden'] = False
     self.added_context['count_images'] = queryset.count()
     ''' Order images '''
     queryset = queryset.order_by('uploaded_at')
