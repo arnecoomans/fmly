@@ -87,10 +87,12 @@ class Person(models.Model):
       Parents have a simple relation
       up is parent of down.
   '''
-  def get_parents(self):
-    if self.relation_up:
+  def get_parents(self, person=None):
+    if not person:
+      person = self
+    if person.relation_up:
       parents = []
-      for parent in self.relation_up.filter(type='parent').order_by('up__year_of_birth'):
+      for parent in person.relation_up.filter(type='parent').order_by('up__year_of_birth'):
         parents.append(parent.up)
       return parents
 
@@ -98,10 +100,12 @@ class Person(models.Model):
       Childern have a simple relation
       down is child of parent up
   '''
-  def get_children(self):
-    if self.relation_down:
+  def get_children(self, person=None):
+    if not person:
+      person = self
+    if person.relation_down:
       children = []
-      for child in self.relation_down.filter(type='parent').order_by('down__year_of_birth'):
+      for child in person.relation_down.filter(type='parent').order_by('down__year_of_birth'):
         children.append(child.down)
       return children
   
@@ -109,16 +113,20 @@ class Person(models.Model):
       partners have a two-sided relation
       a is partner of b, or b is partner of a
   '''
-  def get_partners(self):
-    if self.relation_down:
+  def get_partners(self, person=None):
+    if not person:
+      person = self
+    if person.relation_down:
       partners = []
-      for child in self.relation_down.filter(type='parent'):
-        for parent in child.down.relation_up.filter(type='parent'):
-          if parent.up not in partners and parent.up != self:
-            partners.append(parent.up)
-      for partner in self.relation_up.filter(type='partner'):
+      ''' Partner is the other parent of a child '''
+      for child in self.get_children():
+        for parent in self.get_parents(child):
+          if parent not in partners and parent != person:
+            partners.append(parent)
+      ''' Partner is also found by relation type=partner '''
+      for partner in person.relation_up.filter(type='partner'):
         partners.append(partner.up)
-      for partner in self.relation_down.filter(type='partner'):
+      for partner in person.relation_down.filter(type='partner'):
         partners.append(partner.down)
       return partners
 
@@ -126,13 +134,15 @@ class Person(models.Model):
       siblings have a two-hop relation:
       for each parent, fetch children
   '''
-  def get_siblings(self):
-    if self.relation_up:
+  def get_siblings(self, person=None):
+    if not person:
+      person = self
+    if person.relation_up:
       siblings = []
-      for parent in self.relation_up.filter(type='parent').order_by('up__year_of_birth'):
-        for child in parent.up.relation_down.all():
-          if child.down not in siblings and child.down != self:
-            siblings.append(child.down)
+      for parent in self.get_parents():
+        for child in self.get_children(parent):
+          if child not in siblings and child != person:
+            siblings.append(child)
       return siblings
 
   ''' Absulute URL
