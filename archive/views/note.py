@@ -12,15 +12,18 @@ class NotesListView(ListView):
 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
-    context['origin'] = 'note'
-    context['page_scope'] = 'notities'
-    #context['page_description'] = ''
+    context['active_page'] = 'notes'
     return context
 
 
 class NoteView(DetailView):
   model = Note
   template_name = 'archive/notes/detail.html'
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['active_page'] = 'notes'
+    return context
+
 
 # Renamed NoteCreateView to AddNoteView
 class AddNoteView(PermissionRequiredMixin, CreateView):
@@ -28,6 +31,11 @@ class AddNoteView(PermissionRequiredMixin, CreateView):
   template_name = 'archive/notes/edit.html'
   fields = ['title', 'content', 'people', 'tag']
   permission_required = 'archive.add_note'
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['active_page'] = 'notes'
+    return context
 
   def form_valid(self, form):
     form.instance.user = self.request.user
@@ -39,6 +47,11 @@ class EditNoteView(PermissionRequiredMixin, UpdateView):
   template_name = 'archive/notes/edit.html'
   fields = ['title', 'content', 'people', 'tag']
   permission_required = 'archive.change_note'
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['active_page'] = 'notes'
+    return context
 
   def form_valid(self, form):
     messages.add_message(self.request, messages.SUCCESS, f"Notitie \"{form.instance.title}\" opgeslagen.")

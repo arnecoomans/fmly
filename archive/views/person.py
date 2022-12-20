@@ -25,6 +25,7 @@ class PersonView(ListView):
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
+    context['active_page'] = 'people'
     ''' Add Person to the context '''
     context['person'] = Person.objects.get(pk=self.kwargs['pk'])
     ''' Add additional context created by the get_queryset actions'''
@@ -133,6 +134,7 @@ class PersonListView(ListView):
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
+    context['active_page'] = 'people'
     context['has_active_filters'] = self.hasActiveFilters()
     context['filters'] = self.getFilters()
     context['available_centuries'] = self.get_centuries()
@@ -221,6 +223,7 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
+    context['active_page'] = 'people'
     context['available_relations'] = Person.objects.all()
     return context
 

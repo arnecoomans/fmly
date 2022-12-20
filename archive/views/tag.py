@@ -18,8 +18,9 @@ class TagListView(ListView):
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
-    context['origin'] = 'tag'
-    context['page_scope'] = 'tags'
+    context['active_page'] = 'tags'
+    # context['origin'] = 'tag'
+    # context['page_scope'] = 'tags'
     return context
 
 class AddTagView(PermissionRequiredMixin, CreateView):
@@ -27,7 +28,12 @@ class AddTagView(PermissionRequiredMixin, CreateView):
   fields = ['title', 'description']
   permission_required = 'archive.add_tag'
   template_name = 'archive/tags/edit.html'
-
+  
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['active_page'] = 'tags'
+    return context
+  
   def form_valid(self, form):
     form.instance.user = self.request.user
     return super().form_valid(form)
@@ -37,3 +43,8 @@ class EditTagView(PermissionRequiredMixin, UpdateView):
   fields = ['title', 'description']
   permission_required = 'archive.change_tag'
   template_name = 'archive/tags/edit.html'
+  
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['active_page'] = 'tags'
+    return context
