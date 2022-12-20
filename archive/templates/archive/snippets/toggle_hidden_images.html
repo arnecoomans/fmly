@@ -1,1 +1,9 @@
-{% if images_hidden > 0 %}<p class="bi bi-info-circle-fill"> Er {{ images_hidden|pluralize:'is,zijn' }} <a href="?{% include 'archive/snippets/fixparams.html' with ignore='hidden' %}hidden=True" title="Toon ook de {{ images_hidden }} afbeelding{{ images_hidden|pluralize:'en' }}">{{ images_hidden }} afbeelding{{ images_hidden|pluralize:'en' }}</a> verborgen.</p>{% endif %}
+{% if images_hidden %}
+  <p class="bi bi-info-circle-fill">
+    {% if images_hidden > 0 %}
+      Er {{ images_hidden|pluralize:'is,zijn' }} ook <a href="?{% include 'archive/snippets/fixparams.html' with ignore='hidden' %}hidden=True" title="Toon ook de {{ images_hidden }} afbeelding{{ images_hidden|pluralize:'en' }}">{{ images_hidden }} verborgen afbeelding{{ images_hidden|pluralize:'en' }}</a> te tonen.
+    {% elif images_hidden < 0 %}
+    Er {{ images_hidden|pluralize:'is,zijn' }} <a href="?{% include 'archive/snippets/fixparams.html' with ignore='hidden' %}hidden=False" title="Verberg de {{ images_hidden }} afbeelding{{ images_hidden|pluralize:'en' }}">{{ images_hidden|abs }} afbeelding{{ images_hidden|pluralize:'en' }}</a> te verbergen.
+    {% endif %}
+  </p>
+{% endif %}

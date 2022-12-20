@@ -15,9 +15,6 @@ from math import floor
 
 from archive.models import Person, FamilyRelations, Image
 
-# class PersonView(generic.DetailView):
-#   model = Person
-#   template_name = 'archive/people/detail.html'
 class PersonView(generic.ListView):
   model = Image
   template_name = 'archive/people/detail.html'
@@ -55,7 +52,9 @@ class PersonView(generic.ListView):
       else:
         self.added_context['images_hidden'] =  False
     else:
-      self.added_context['images_hidden'] = False
+      self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count() * -1
+      # self.added_context['images_hidden'] = False
+    self.added_context['count_images'] = queryset.count()
     ''' Order images '''
     queryset = queryset.order_by('uploaded_at')
     ''' Return result '''

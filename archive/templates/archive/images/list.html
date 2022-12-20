@@ -2,7 +2,7 @@
 
 {% block content %}
   <header>
-    <h2>Afbeeldingen en Documenten</h2>
+    <h2>{{ count_images }} Afbeelding{{ count_images|pluralize:'en' }} en Documenten</h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
     {% include 'archive/snippets/toggle_hidden_images.html' %}
   </header>
