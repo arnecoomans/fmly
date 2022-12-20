@@ -80,7 +80,7 @@
       </dl>
       <!-- Related data -->
       {% if person.images.all.count > 0 %}
-        <h2>Afbeeldingen met {{ person.full_name }}:</h2>
+        <h3>{{ count_images }} Afbeelding{{ count_images|pluralize:'en' }} met {{ person.full_name }}:</h3>
         {% include 'archive/snippets/toggle_hidden_images.html' %}
         <!-- Pagination -->
         {% include 'archive/snippets/pagination.html' %}
