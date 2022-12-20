@@ -2,7 +2,7 @@
 
 {% block content %}
   <header>
-    <h2>Tags</h2>
+    <h2>Tags:</h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
   </header>
   {% if not tag_list or tag_list.all.count == 0 %}
