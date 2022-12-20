@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.conf import settings

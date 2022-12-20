@@ -14,29 +14,24 @@
           <a class="nav-link" href="{% url 'archive:signup' %}">Aanmelden</a>
         </li>
         {% endif %}
-        {% comment %} {% if perms.archive.view_image %}
-          <li class="nav-item active">
-            <a class="nav-link" href="/">Afbeeldingen</a>
-          </li>
-        {% endif %} {% endcomment %}
         {% if perms.archive.view_person %}
           <li class="nav-item">
-            <a class="nav-link bi bi-people-fill" href="{% url 'archive:people' %}"  accesskey="p"> Personen</a>
+            <a class="nav-link bi bi-people-fill{% if active_page == 'people' %} active{% endif %}" href="{% url 'archive:people' %}"  accesskey="p"> Personen</a>
           </li>
         {% endif %}
         {% if perms.archive.view_tag %}
           <li class="nav-item">
-            <a class="nav-link bi bi-tags-fill" href="{% url 'archive:list-tags' %}" accesskey="t"> Tags</a>
+            <a class="nav-link bi bi-tags-fill{% if active_page == 'tags' %} active{% endif %}" href="{% url 'archive:list-tags' %}" accesskey="t"> Tags</a>
           </li>
         {% endif %}
         {% if perms.archive.view_comment %}
           <li class="nav-item">
-            <a class="nav-link bi bi-chat-text-fill" href="{% url 'archive:comments' %}"  accesskey="r"> Reacties</a>
+            <a class="nav-link bi bi-chat-text-fill{% if active_page == 'comments' %} active{% endif %}" href="{% url 'archive:comments' %}"  accesskey="r"> Reacties</a>
           </li>
         {% endif %}
         {% if perms.archive.view_note %}
           <li class="nav-item">
-            <a class="nav-link bi bi-stickies-fill" href="{% url 'archive:notes' %}"  accesskey="n"> Notities</a>
+            <a class="nav-link bi bi-stickies-fill{% if active_page == 'notes' %} active{% endif %}" href="{% url 'archive:notes' %}"  accesskey="n"> Notities</a>
           </li>
         {% endif %}
         {% if user.is_authenticated %}
