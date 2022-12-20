@@ -1,5 +1,5 @@
 from django.views import generic
-from django.views.generic.edit import CreateView, DeleteView, UpdateView, FormView
+from django.views.generic.edit import CreateView, UpdateView #, FormView, DeleteView
 
 #from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
@@ -9,14 +9,57 @@ from django.conf import settings
 from django.contrib import messages
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
+# from django.core.paginator import Paginator
 
 from math import floor
 
-from archive.models import Person, FamilyRelations
+from archive.models import Person, FamilyRelations, Image
 
-class PersonView(generic.DetailView):
-  model = Person
+# class PersonView(generic.DetailView):
+#   model = Person
+#   template_name = 'archive/people/detail.html'
+class PersonView(generic.ListView):
+  model = Image
   template_name = 'archive/people/detail.html'
+  paginate_by = settings.PAGINATE
+  added_context = {}
+  
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['person'] = Person.objects.get(pk=self.kwargs['pk'])
+    if len(self.added_context) > 0:
+      for key in self.added_context:
+        context[key] = self.added_context[key]
+    return context
+  
+  def show_hidden_files(self) -> bool:
+    result = False
+    if hasattr(self.request.user, 'preference'):
+      if self.request.user.preference.show_hidden_files == True:
+        result = True
+    if self.request.GET.get('hidden'):
+      if self.request.GET.get('hidden').lower() == 'true':
+        result = True
+      else:
+        result = False
+    return result
+
+  def get_queryset(self):
+    queryset = Image.objects.filter(people=Person.objects.get(pk=self.kwargs['pk']))
+    queryset = queryset.filter(is_deleted=False)
+    ''' Show or hide hidden files '''
+    if not self.show_hidden_files():
+      if queryset.filter(show_in_index=False).count() > 0:
+        self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count()
+        queryset = queryset.exclude(show_in_index=False)
+      else:
+        self.added_context['images_hidden'] =  False
+    else:
+      self.added_context['images_hidden'] = False
+    ''' Order images '''
+    queryset = queryset.order_by('uploaded_at')
+    ''' Return result '''
+    return queryset
 
 class PersonListView(generic.ListView):
   model = Person

@@ -80,11 +80,17 @@
       </dl>
       <!-- Related data -->
       {% if person.images.all.count > 0 %}
+        <h2>Afbeeldingen met {{ person.full_name }}:</h2>
+        {% include 'archive/snippets/toggle_hidden_images.html' %}
+        <!-- Pagination -->
+        {% include 'archive/snippets/pagination.html' %}
         <div class="objects">
-          {% for object in person.images.all %}
+          {% for object in image_list.all %}
           {% include 'archive/snippets/image.html' %}
           {% endfor %}
         </div>
+        <!-- Pagination -->
+        {% include 'archive/snippets/pagination.html' %}
       {% endif %}
     {% endif %}
     <div class="clearfix"></div>

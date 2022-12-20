@@ -1,0 +1,1 @@
+{% if images_hidden > 0 %}<p class="bi bi-info-circle-fill"> Er {{ images_hidden|pluralize:'is,zijn' }} <a href="?{% include 'archive/snippets/fixparams.html' with ignore='hidden' %}hidden=True" title="Toon ook de {{ images_hidden }} afbeelding{{ images_hidden|pluralize:'en' }}">{{ images_hidden }} afbeelding{{ images_hidden|pluralize:'en' }}</a> verborgen.</p>{% endif %}
