@@ -10,9 +10,9 @@
           <li class="bi bi-person-fill"> {% include 'archive/snippets/person_link.html' %}</li>
         {% endfor %}
       </ul>
-    {% if note.tag.all.count > 0 %}
+    {% if note.tags.all.count > 0 %}
       <ul class="metadata">
-        {% for tag in note.tag.all %}
+        {% for tag in note.tags.all %}
           {% include 'archive/snippets/tag.html' %}
         {% endfor %}
       </ul>

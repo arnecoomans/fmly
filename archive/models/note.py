@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from .person import Person
 from .tag import Tag
+from .image import Image, Attachment
 
 #from django.template.defaultfilters import slugify
 
@@ -15,8 +16,10 @@ class Note(models.Model):
   date_created        = models.DateTimeField(auto_now_add=True)
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
   # Relations
+  images              = models.ManyToManyField(Image, blank=True, related_name='notes')
   people              = models.ManyToManyField(Person, blank=True, related_name='notes')
-  tag                 = models.ManyToManyField(Tag, blank=True, related_name='notes')
+  tags                = models.ManyToManyField(Tag, blank=True, related_name='notes')
+  attachments         = models.ManyToManyField(Attachment, blank=True, related_name='notes')
   
   def __str__(self):
     return self.title
