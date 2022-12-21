@@ -12,6 +12,14 @@ from math import floor
 
 from archive.models import Person, FamilyRelations, Image
 
+''' Class Functions '''
+def get_fields():
+  return ['first_name', 'given_names', 'last_name', 'married_name', 'nickname', 
+          'day_of_birth', 'month_of_birth', 'year_of_birth', 'place_of_birth', 
+          'day_of_death', 'month_of_death', 'year_of_death', 'place_of_death',
+          'moment_of_death_unconfirmed',
+          'bio',]
+
 ''' PersonView
     PersonView is actually a ListView of model Images. This allows for query adaptation such
     as show/hide hidden and pagination.
@@ -215,11 +223,8 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
   model = Person
   permission_required = 'archive.change_person'
   template_name = 'archive/people/edit.html'
-  fields = ['first_name', 'given_names', 'last_name', 'married_name', 'nickname', 
-            'day_of_birth', 'month_of_birth', 'year_of_birth', 'place_of_birth', 
-            'day_of_death', 'month_of_death', 'year_of_death', 'place_of_death',
-            'moment_of_death_unconfirmed',
-            'bio',]
+  ''' Use get_fields() as general function in this file to maintain fields in one spot '''
+  fields = get_fields()
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
@@ -240,11 +245,8 @@ class AddPersonView(PermissionRequiredMixin, CreateView):
   permission_required = 'archive.add_person'
   template_name = 'archive/people/edit.html'
   model = Person
-  fields = ['first_name', 'given_names', 'last_name', 'married_name', 'nickname', 
-            'day_of_birth', 'month_of_birth', 'year_of_birth', 'place_of_birth', 
-            'day_of_death', 'month_of_death', 'year_of_death', 'place_of_death',
-            'moment_of_death_unconfirmed',
-            'bio',]
+  ''' Use get_fields() as general function in this file to maintain fields in one spot '''
+  fields = get_fields()
   
   def form_valid(self, form):
     form.instance.user = self.request.user

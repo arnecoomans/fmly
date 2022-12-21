@@ -19,19 +19,30 @@ from archive.models import Group, Tag, Attachment, Person
 
 ''' Get_additional_fields
     Used by add/create view
-    Loop through possible fields and add return if field has enough options
+    When building a form, it makes no sense to allow to select certain fields if there are
+    no selectable options, for example show an empty tag list.
+    So, loop through the Objects themselves, and add the field to the form if the Object
+    has items.
 '''
 def get_additional_fields():
-  fields = []
-  if Tag.objects.all().count() > 0:
-    fields.append('tag')
-  if Group.objects.all().count() > 0:
-    fields.append('in_group')
-  if Attachment.objects.all().count() > 0:
-    fields.append('attachments')
-  if Person.objects.all().count() > 0:
-    fields.append('is_portrait_of')
-  return fields
+  ''' Allow to skip checking each object by using the setting OBJECT_FORM_FIELDS '''
+  if hasattr(settings, 'OBJECT_FORM_FIELDS') and len(settings.OBJECT_FORM_FIELDS) > 0:
+    return settings.OBJECT_FORM_FIELDS
+  else:
+    ''' If no fields have been configured, check each related field and count the
+        number of objects. If there are objects in a related field, add the related
+        field to the fields list.
+    '''
+    fields = []
+    if Tag.objects.all().count() > 0:
+      fields.append('tag')
+    if Group.objects.all().count() > 0:
+      fields.append('in_group')
+    if Attachment.objects.all().count() > 0:
+      fields.append('attachments')
+    if Person.objects.all().count() > 0:
+      fields.append('is_portrait_of')
+    return fields
 
 ''' List Views
     Default home view:
@@ -76,9 +87,11 @@ class ImageListView(ListView):
     '''
   def show_hidden_files(self) -> bool:
     result = False
+    ''' Check Preferences '''
     if hasattr(self.request.user, 'preference'):
       if self.request.user.preference.show_hidden_files == True:
         result = True
+    ''' Check querystring argument, overriding pereference '''
     if self.request.GET.get('hidden'):
       if self.request.GET.get('hidden').lower() == 'true':
         result = True
@@ -201,73 +214,24 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
       self.fields.append(field)
 
   def form_valid(self, form):
+    ''' Only allow user change by superuser '''
     if not self.request.user.is_superuser and 'user' in form.changed_data: 
+      ''' User change is initiated by non_superuser. 
+          Fetch user from stored object and retain'''
       original = Image.objects.get(pk=self.kwargs['pk'])
       form.instance.user = original.user
       messages.add_message(self.request, messages.WARNING, f"Gebruiker kan niet worden gewijzigd! { original.user } blijft gebruiker.")
-    if not form.instance.user:
+    elif not form.instance.user:
+      ''' If for some reason no user it set, set user to current user '''
       form.instance.user = self.request.user
     if len(form.changed_data) > 0:
+      ''' Only if data has changed, save the Object '''
       messages.add_message(self.request, messages.SUCCESS, f"Wijzigingen opgeslagen.")
       return super().form_valid(form)
     else:
+      ''' No changes are detected, redirect to image without saving. '''
       messages.add_message(self.request, messages.WARNING, f"Geen wijzigingen opgegeven.")
       return redirect(reverse_lazy('archive:image', args=[form.instance.id, slugify(form.instance.title)]))
 
   def get_success_url(self):
-    return reverse_lazy('archive:image-redirect', args=[self.object.id])
-
-## Special views
-
-# # Renamed DocumentPreviewListView to RecentImageListPreView
-# class RecentImageListPreView(generic.ListView):
-#   # Returns a single page of documents without login.
-#   context_object_name = 'images'
-#   paginate_by = settings.PAGINATE
-
-#   def get_context_data(self, **kwargs):
-#     context = super().get_context_data(**kwargs)
-#     context['page_scope'] = 'voorbeelddocumenten'
-#     context['page_description'] = 'In dit overzicht zie je een voorbeeld hoe documenten worden weergegeven. Wil je meer zien of details bekijken? Neem contact op.'
-#     context['preview'] = True
-#     return context
-#   def get_queryset(self):
-#     return Image.objects.filter(is_deleted=False).filter(show_in_index=True).order_by('-uploaded_at')[:12]
-
-
-# # Renamed DocumentYearView to ImageYearRedirectView
-# class ImageYearRedirectView(generic.DetailView):
-#   model = Image
-#   context_object_name = 'images'
-#   def get(self, request, *args, **kwargs):
-#     decade = floor(int(self.kwargs['year']) / 10) * 10
-#     return redirect('archive:images-by-decade', decade)
-
-
-
-
-# # Renamed MyDocumentList to ImageListByUserView
-# class ImageListByUserView(generic.ListView):
-#   context_object_name = 'images'
-#   paginate_by = settings.PAGINATE
-
-#   def get_context_data(self, **kwargs):
-#     context = super().get_context_data(**kwargs)
-#     context['page_scope'] = 'Documenten van ' + self.request.user.username 
-#     context['page_description'] = 'Overzicht van documenten geupload door ' + self.request.user.first_name + ' ' + self.request.user.last_name + ' (' + self.request.user.username + ').'
-#     context['show_all'] = True
-#     context['date_headers'] = True
-#     return context
-
-#   def get_queryset(self):
-#     # If a username is supplied, use username as search key
-#     if 'username' in  self.kwargs:
-#       person = get_object_or_404(Person, related_user__username=self.kwargs['username'])
-#       user = person.related_user if person else None
-#     # If no username is supplied, assume current logged in user
-#     else:
-#       user = self.request.user
-#     return Image.objects.filter(user=user).filter(is_deleted=False).order_by('-uploaded_at')
-
-# class AddAttachmentToImageView(CreateView):
-#   model = 'Attachment'
+    return reverse_lazy('archive:image', args=[self.object.id, slugify(self.object.title)])
