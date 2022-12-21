@@ -28,7 +28,7 @@ class NoteView(DetailView):
 class AddNoteView(PermissionRequiredMixin, CreateView):
   model = Note
   template_name = 'archive/notes/edit.html'
-  fields = ['title', 'content', 'people', 'tag']
+  fields = ['title', 'content', 'images', 'people', 'tags', 'attachments']
   permission_required = 'archive.add_note'
 
   def get_context_data(self, **kwargs):
@@ -45,7 +45,7 @@ class AddNoteView(PermissionRequiredMixin, CreateView):
 class EditNoteView(PermissionRequiredMixin, UpdateView):
   model = Note
   template_name = 'archive/notes/edit.html'
-  fields = ['title', 'content', 'people', 'tag']
+  fields = ['title', 'content', 'images', 'people', 'tags', 'attachments']
   permission_required = 'archive.change_note'
 
   def get_context_data(self, **kwargs):
