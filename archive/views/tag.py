@@ -19,8 +19,6 @@ class TagListView(ListView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'tags'
-    # context['origin'] = 'tag'
-    # context['page_scope'] = 'tags'
     return context
 
 class AddTagView(PermissionRequiredMixin, CreateView):
@@ -35,6 +33,7 @@ class AddTagView(PermissionRequiredMixin, CreateView):
     return context
   
   def form_valid(self, form):
+    ''' Enforce user upon tag creation '''
     form.instance.user = self.request.user
     return super().form_valid(form)
 

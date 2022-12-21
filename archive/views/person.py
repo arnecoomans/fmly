@@ -218,7 +218,7 @@ class PersonListView(ListView):
     decades.sort()
     return decades
 
-
+''' Edit Person '''
 class EditPersonView(PermissionRequiredMixin, UpdateView):
   model = Person
   permission_required = 'archive.change_person'
@@ -232,15 +232,15 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
     context['available_relations'] = Person.objects.all()
     return context
 
+  ''' Build form '''
   def get_form(self):
+    ''' If person has related user, add e-mail as field '''
     if self.request.user == self.get_object().related_user:
       self.fields.append('email')
     form = super(EditPersonView, self).get_form()
     return form
 
-  def form_valid(self, form):
-    return super().form_valid(form)
-
+''' Add Person view '''
 class AddPersonView(PermissionRequiredMixin, CreateView):
   permission_required = 'archive.add_person'
   template_name = 'archive/people/edit.html'
@@ -252,19 +252,77 @@ class AddPersonView(PermissionRequiredMixin, CreateView):
     form.instance.user = self.request.user
     return super().form_valid(form)
 
-# Renamed PersonRedirect to PersonRedirectView
+''' Redirect View
+    Redirect calls to person by only id to id and slug
+'''
 class PersonRedirectView(DetailView):
   def get(self, request, *args, **kwargs):
     # Redirect to document with slug
     person = Person.objects.get(pk=self.kwargs['pk'])
     return redirect('archive:person', person.id, person.slug )
 
+''' Family Relations
+    Family Relations are stored in a seperate model where it is stored that
+    Person A is related by type to Person B.
+    Available types are parent and partner.
+    Children are stored by inverting the parent relation.
+'''
+''' Family Relation: Add Relation '''
+class PersonAddRelationView(PermissionRequiredMixin, CreateView):
+  permission_required = 'archive.change_person'
+
+  def post(self, request, *args, **kwargs):
+    ''' Process input '''
+    subject = Person.objects.get(pk=self.request.POST.get('subject'))
+    type = self.request.POST.get('type').lower()
+    person = Person.objects.get(pk=self.request.POST.get('person'))
+    ''' Translate table for relation to relation type'''
+    vertaling = {
+      'parent': 'ouder',
+      'child': 'kind',
+      'partner': 'partner',
+    }
+    ''' Creating relations is caught in a try, to catch restrictions such as existing relations 
+        The exception triggers a message to the user and a redirect to the edit page, not saving changes.
+    '''
+    if type == 'parent':
+      ''' Add Parent Relation '''
+      try:
+        relation = FamilyRelations(up_id=person.id, down_id=subject.id, type='parent')
+        relation.save()
+      except:
+        messages.add_message(self.request, messages.ERROR, f"Kan \"{ person }\" niet als ouder toevoegen van \"{ subject }\".")
+        return redirect('archive:person-edit', subject.id )
+    elif type == 'child':
+      ''' Add Child Relation '''
+      try:
+        relation = FamilyRelations(up_id=subject.id, down_id=person.id, type='parent')
+        relation.save()
+      except:
+        messages.add_message(self.request, messages.ERROR, f"Kan \"{ person }\" niet als kind toevoegen van \"{ subject }\".")
+        return redirect('archive:person-edit', subject.id )
+    elif type == 'partner':
+      ''' Add Partner relation'''
+      try:
+        relation = FamilyRelations(up_id=subject.id, down_id=person.id, type='partner')
+        relation.save()
+      except:
+        messages.add_message(self.request, messages.ERROR, f"Kan \"{ person }\" niet als partner toevoegen van \"{ subject }\".")
+        return redirect('archive:person-edit', subject.id ) 
+    ''' No errors and redirects have been made, so notifuy user of succesful creation '''
+    messages.add_message(self.request, messages.SUCCESS, f"\"{ person }\" is { vertaling[type] } van \"{ subject }\"")
+    return redirect('archive:person-edit', subject.id )
+
+''' Family Relation: Remove Relation '''
 class PersonRemoveRelationView(PermissionRequiredMixin, DetailView):
   permission_required = 'archive.change_person'
+
   def get(self, request, *args, **kwargs):
+    ''' Process input'''
     subject = Person.objects.get(pk=kwargs['subject'])
     type = kwargs['type'].lower()
     removed_person = Person.objects.get(pk=kwargs['removed_person'])
+    
     if type == 'parent':
       try:
         relation = FamilyRelations.objects.get(up_id=removed_person.id, down_id=subject.id, type=type)
@@ -291,41 +349,3 @@ class PersonRemoveRelationView(PermissionRequiredMixin, DetailView):
       else:
         messages.add_message(self.request, messages.SUCCESS, f"\"{ removed_person }\" verwijderd als partner van \"{ subject }\".")
     return redirect('archive:person-edit', subject.id )
-
-class PersonAddRelationView(PermissionRequiredMixin, CreateView):
-  permission_required = 'archive.change_person'
-
-  def post(self, request, *args, **kwargs):
-    subject = Person.objects.get(pk=self.request.POST.get('subject'))
-    type = self.request.POST.get('type').lower()
-    person = Person.objects.get(pk=self.request.POST.get('person'))
-    vertaling = {
-      'parent': 'ouder',
-      'child': 'kind',
-      'partner': 'partner',
-    }
-    if type == 'parent':
-      try:
-        relation = FamilyRelations(up_id=person.id, down_id=subject.id, type='parent')
-        relation.save()
-      except:
-        messages.add_message(self.request, messages.ERROR, f"Kan \"{ person }\" niet als ouder toevoegen van \"{ subject }\".")
-        return redirect('archive:person-edit', subject.id )
-    elif type == 'child':
-      try:
-        relation = FamilyRelations(up_id=subject.id, down_id=person.id, type='parent')
-        relation.save()
-      except:
-        messages.add_message(self.request, messages.ERROR, f"Kan \"{ person }\" niet als kind toevoegen van \"{ subject }\".")
-        return redirect('archive:person-edit', subject.id )
-    elif type == 'partner':
-      try:
-        relation = FamilyRelations(up_id=subject.id, down_id=person.id, type='partner')
-        relation.save()
-      except:
-        messages.add_message(self.request, messages.ERROR, f"Kan \"{ person }\" niet als partner toevoegen van \"{ subject }\".")
-        return redirect('archive:person-edit', subject.id ) 
-
-    messages.add_message(self.request, messages.SUCCESS, f"\"{ person }\" is { vertaling[type] } van \"{ subject }\"")
-    return redirect('archive:person-edit', subject.id )
-  
