@@ -197,6 +197,7 @@ class AddImageView(PermissionRequiredMixin, CreateView):
   def get_success_url(self):
     return reverse_lazy('archive:image-redirect', args=[self.object.id])
 
+''' Edit Image '''
 class EditImageView(PermissionRequiredMixin, UpdateView):
   permission_required = 'archive.change_image'  
   template_name = 'archive/images/edit.html'
