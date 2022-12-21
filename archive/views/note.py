@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 
 from archive.models import Note
 
-# Renamed NoteListView to NotesListView
+''' Notes List View'''
 class NotesListView(ListView):
   model = Note
   template_name = 'archive/notes/list.html'
@@ -15,7 +15,7 @@ class NotesListView(ListView):
     context['active_page'] = 'notes'
     return context
 
-
+''' Note Detail View'''
 class NoteView(DetailView):
   model = Note
   template_name = 'archive/notes/detail.html'
@@ -24,8 +24,7 @@ class NoteView(DetailView):
     context['active_page'] = 'notes'
     return context
 
-
-# Renamed NoteCreateView to AddNoteView
+''' Add Note View'''
 class AddNoteView(PermissionRequiredMixin, CreateView):
   model = Note
   template_name = 'archive/notes/edit.html'
@@ -38,10 +37,11 @@ class AddNoteView(PermissionRequiredMixin, CreateView):
     return context
 
   def form_valid(self, form):
+    ''' Enforce note user is current user '''
     form.instance.user = self.request.user
     return super().form_valid(form)
 
-# Renamed NoteUpdateView to EditNoteView
+''' Edit Note View '''
 class EditNoteView(PermissionRequiredMixin, UpdateView):
   model = Note
   template_name = 'archive/notes/edit.html'
