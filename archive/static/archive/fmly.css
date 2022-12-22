@@ -26,6 +26,7 @@
   --object-background: transparent;
   --object-border: 1px solid black;
   --object-width: 380px;
+  --object-border-hidden: 3px dashed rgba(0,0,0,0.5);
 
   /** Colours */
   --colour-light: tan; /*#e99a32;*/

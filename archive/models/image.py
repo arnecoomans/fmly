@@ -141,18 +141,20 @@ class Image(models.Model):
       title += ' (deleted)'
     return id + ' ' + title
   
+  ''' Related Object Methods'''
   def count_comments(self):
     return self.comments.filter(is_deleted=False).count()
   def get_comments(self):
     return self.comments.filter(is_deleted=False)
-  def count_tags(self):
-    return self.tag.count()
-  def count_people(self):
-    return self.people.count()
   def count_attachments(self):
     return self.attachments.filter(is_deleted=False).count()
   def get_attachments(self):
     return self.attachments.filter(is_deleted=False)
+  
+  def count_tags(self):
+    return self.tag.count()
+  def count_people(self):
+    return self.people.count()
   def has_thumbnail(self):
     return True if self.thumbnail else False
   def extension(self):

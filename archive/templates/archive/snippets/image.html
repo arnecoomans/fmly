@@ -15,6 +15,7 @@
           <li class="date bi bi-calendar-event-fill">
             {% if object.day %}{{ object.day }}-{% if not object.month %}?-{% endif %}{% endif %}{% if object.month %}{{ object.month }}-{% if not object.year %}?{% endif %}{% endif %}{% if object.year %}<a href="{% url 'archive:images-by-decade' object.year %}" title="Bekijk alles uit {{ object.year }}">{{ object.year }}</a>{% endif %}</li>
         {% endif %}
+        {% if not image.show_in_index %}<li class="bi bi-info-circle-fill"> Verborgen</li>{% endif %}
         <!-- People -->
         {% if perms.archive.view_person and object.people.all.count > 0 and object.people.all.count < 6 %}
           {% for person in object.people.all %}
