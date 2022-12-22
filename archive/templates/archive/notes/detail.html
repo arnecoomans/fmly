@@ -5,13 +5,13 @@
     <h2>{{ note.title }}</h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
     {% if note.people.all.count > 0 %}{% endif %}
-      <ul class="metadata">
+      <ul class="metadata no-bullets">
         {% for person in note.people.all %}
           <li class="bi bi-person-fill"> {% include 'archive/snippets/person_link.html' %}</li>
         {% endfor %}
       </ul>
     {% if note.tags.all.count > 0 %}
-      <ul class="metadata">
+      <ul class="metadata no-bullets">
         {% for tag in note.tags.all %}
           {% include 'archive/snippets/tag.html' %}
         {% endfor %}
@@ -27,7 +27,7 @@
     </div>
     <hr>
     <div class="meta">
-        <ul class="metadata">
+        <ul class="metadata no-bullets">
           <li>Door: {{ note.user }}</li>
           <li>Aangemaakt: {{ note.date_created}}</li>
           {% if note.date_created != note.date_modified %}<li>Voor het laatst aangepast: {{ note.date_modified }}</li>{% endif %}

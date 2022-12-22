@@ -52,3 +52,15 @@ form > dl > dd > input[type=checkbox] {
 form > dl > dd > select {
   max-width: 95%;
 }
+
+/** Comment inline form */
+.comment > form > textarea {
+  width: 100%;
+}
+.comment > form > input {
+  width: 100%;
+  border: var(--object-border);
+}
+.comment > form > input:hover {
+  background-color: var(--colour-highlight)
+}

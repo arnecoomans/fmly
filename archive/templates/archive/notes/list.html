@@ -9,7 +9,7 @@
     ERROR: No notes to be shown
   {% endif %}
   {% if perms.archive.view_note %}
-    <ul>
+    <ul class="no-bullets">
       {% for note in note_list %}
         <li><a href="{% url 'archive:note-with-name' note.id note.title|slugify %}">{{ note.title }}</a></li>
       {% endfor %}

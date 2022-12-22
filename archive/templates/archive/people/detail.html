@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 
 {% block content %}
-  <section class="person">
+  <section class="object person">
     <header>
       <h2>{{ person.full_name }}</h2>
     </header>
@@ -13,18 +13,16 @@
       ERROR: afbeelding is niet beschikbaar
     {% else %}
       <!-- Portrait -->
-      <div class="column right">
+      <div class="column left">
         {% if person.portrait %}
-          <div class="portrait">
-            <a href="{% url 'archive:image-redirect' person.portrait.id %}"><img src="/documents/{{ person.portrait.source }}"></a>
-          </div>
+          <a href="{% url 'archive:image-redirect' person.portrait.id %}"><img src="/documents/{{ person.portrait.source }}"></a>
         {% endif %}
-        <ul class="metadata">
+        <ul class="metadata no-bullets">
           {% if perms.archive.change_person %}<li class="bi bi-pencil-fill"> <a href="{% url 'archive:person-edit' person.id %}">Bewerk gegevens van {{ person.first_name }}</a></li>{% endif %}
         </ul>
       </div>
       <!-- Collected data -->
-      <dl class="collected data">
+      <dl class="data column right">
         {% if person.related_user %}
           <dt>&nbsp;</dt><dd>Is {% if person.related_user.is_superuser %}beheerder{% else %}gebruiker{% endif %} van deze website</dd>
         {% endif %}
@@ -34,7 +32,7 @@
         {% if person.nickname %}
           <dt>Bijnaam:</dt><dd>{{ person.nickname }}</dd>
         {% endif %}
-        <dt>Voornaam</dt><dd>{{ person.FulLFirstName }}</dd>
+        <dt>Voornaam</dt><dd>{% if person.first_name in person.given_names %}{{ person.given_names }}{% else %}({{ person.first_name }}) {{ person.given_names }}{% endif %}</dd>
         <dt>Achternaam</dt><dd>{% if person.married_name %}<a href="{% url 'archive:people' %}?family={{ person.married_name }}">{{ person.married_name }}</a> (geboren: <a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>){% else %}<a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>{% endif %}</dd>
         {% if person.year_of_birth or person.month_of_birth or person_day_of_birth or person.place_of_birth %}
           <dt>Geboren</dt><dd>{{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}</dd>
@@ -80,13 +78,14 @@
       </dl>
       <!-- Related data -->
       {% if person.images.all.count > 0 %}
+        <a name="images"></a>
         <h3>{{ count_images }} Afbeelding{{ count_images|pluralize:'en' }} met {{ person.full_name }}:</h3>
         {% include 'archive/snippets/toggle_hidden_images.html' %}
         <!-- Pagination -->
-        {% include 'archive/snippets/pagination.html' %}
+        {% include 'archive/snippets/pagination.html' with focus='images' %}
         <div class="objects">
           {% for object in image_list.all %}
-          {% include 'archive/snippets/image.html' %}
+            {% include 'archive/snippets/image.html' %}
           {% endfor %}
         </div>
         <!-- Pagination -->

@@ -11,33 +11,24 @@
 */
 :root {
   /** Site wide */
-  --site-background-color: gold;
+  --site-background-color: #bbb;
   --site-background-image: url('/documents/van-erp2.jpeg');
   --site-font-family: sans-serif;
-  --link-color: red;
-  --link-highlight: gold;
-  
-  /** Header and navigation */
-  --header-background-color: gold;
-  --header-text-color: red;
-  --header-text-hover: #140a04;
-  --header-text-before: '__';
-  --header-min-height: 125px;
 
-  /** Content wrapper */
-  --wrapper-background-color: rgba(255,255,255,0.8);
+  /** Header */
+  --header-text-before: '~~';
+
+  /** Wrapper */
+  --wrapper-background: rgba(255,255,255,0.8);
   --wrapper-border: 1px solid black;
 
-  /** Objects */
-  --object-border: 1px solid #140a04;
-  --object-title-background: #140a04;
-  --object-title-text: red;
-  --object-title-text-hover: gold;
+  /** Object */
+  --object-background: transparent;
+  --object-border: 1px solid black;
+  --object-width: 380px;
 
-  /** Pagination */
-  --pagination-text-color: #140a04;
-  --pagination-inactive-text-color: darkgrey;
-  --pagination-active-page-color: red;
-  --pagination-highligh: red;
-
+  /** Colours */
+  --colour-light: #e99a32;
+  --colour-dark: #333;
+  --colour-highlight: gold;
 }
