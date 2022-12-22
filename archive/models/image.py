@@ -11,7 +11,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 # Create Thumbnail function
 def get_thumbnail(image):
   # Check if suffix is supported.
-  if image.name[-4:].lower() not in ['.jpg', '.png'] and image.name[-5:].lower() not in ['.jpeg',]:
+  if image.name[-4:].lower() not in ['.jpg', '.png'] and \
+     image.name[-5:].lower() not in ['.jpeg',]:
     # There is an image ready that reads Format Not Supported. This is a
     # friendly way to inform the user of the error.
     return 'documents/format_not_supported.jpg'
@@ -21,12 +22,15 @@ def get_thumbnail(image):
   Image.MAX_IMAGE_PIXELS = 933120000
 
   thumbnail_size = 150, 300
-  data_img = BytesIO()
-  tiny_img = Image.open(image)
-  tiny_img = ImageOps.exif_transpose(tiny_img)
-  tiny_img.thumbnail(thumbnail_size)
-  tiny_img.save(data_img, format="BMP")
-  tiny_img.close()
+  try:
+    data_img = BytesIO()
+    tiny_img = Image.open(image)
+    tiny_img = ImageOps.exif_transpose(tiny_img)
+    tiny_img.thumbnail(thumbnail_size)
+    tiny_img.save(data_img, format="BMP")
+    tiny_img.close()
+  except:
+    return 'documents/decode_error.jpg'
   try:
       return "data:image/jpg;base64,{}".format(
           base64.b64encode(data_img.getvalue()).decode("utf-8")
