@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Name the application
+NAME="fmly"
+# Django Project base-directory
+DJANGODIR=/data/www/fmly.com/
+# Virtualenv directory
+VENVDIR=/home/user/.venv/fmly/
+# Socket file
+# The socket is where the Nginx proxy will communicate with
+SOCKFILE=/data/www/fmly.com/run/gunicorn.sock
+# Log file
+LOGFILE=/data/www/fmly.com/log/gunicorn.log
+# User information; change to your user and user-group
+USER=user
+GROUP=group
+# Configuration
+# How many worker processes should Gunicorn spawn
+NUM_WORKERS=3
+# Django Settings
+DJANGO_SETTINGS_MODULE=family.settings
+DJANGO_WSGI_MODULE=family.wsgi
+
+echo "Starting $NAME as `whoami`"
+
+# Activate the virtual environment
+cd $DJANGODIR
+source $VENVDIR/bin/activate
+export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+export PYTHONPATH=$DJANGODIR:$PYTHONPATH
+
+# Create the run directory if it doesn't exist
+RUNDIR=$(dirname $SOCKFILE)
+test -d $RUNDIR || mkdir -p $RUNDIR
+
+# Start your Django Unicorn
+# Programs meant to be run under supervisor should not daemonize themselves (do not use --daemon)
+exec $VENVDIR/bin/gunicorn ${DJANGO_WSGI_MODULE}:application \
+  --name $NAME \
+  --workers $NUM_WORKERS \
+  --user=$USER --group=$GROUP \
+  --bind=unix:$SOCKFILE \
+  --log-level=debug \
+  --log-file=$LOGFILE
