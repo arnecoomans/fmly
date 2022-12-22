@@ -121,6 +121,9 @@ h6:hover:has(a), h6:hover a, h6 a:hover {
     margin-bottom: 15px;
     overflow: hidden;
   }
+  .object.hidden {
+    border: var(--object-border-hidden, 3px dashed rgba(0,0,0,0.5));
+  }
   .object > a:hover, .object *:not(h2) a:hover {
     background-color: var(--colour-highlight);
   }
