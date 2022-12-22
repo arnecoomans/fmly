@@ -3,7 +3,7 @@
 {% block content %}
   <section class="object">
     <header>
-      <h2>{{ image.title }}:</h2>
+      <h2><span class="object-id">#{{ object.id }}</span>{{ image.title }}:</h2>
     </header>
     {% if not image %}
       ERROR: No images to be shown
@@ -16,7 +16,7 @@
         </a>
         {% if perms.archive.change_document or perms.archive.change_image %}
           <br><br>
-          <ul class="metadata">
+          <ul class="no-bullets">
             <li class="bi bi-pencil-fill"> <a href="{% url 'archive:image-edit' image.id %}">Bewerk afbeelding en gegevens</a></li>
           </ul>
         {% endif %}
@@ -24,7 +24,7 @@
       <div class="column right">
         <!-- Description -->
         {% if image.description %}<p class="description">{{ image.description|markdown|safe }}</p>{% endif %}
-        <ul class="metadata">
+        <ul class="metadata no-bullets">
           <!-- Source -->
           {% if image.document_source %}<li class="bi bi-geo-fill"> {% if image.document_source|truncatechars:5 == "http…" %}<a href="{{ image.document_source }}" target="_blank" title="{{ image.document_source }}">{{ image.document_source|truncatechars:38 }}</a>{% else %}{{ image.document_source }}{% endif %}{% endif %}
           <!-- Date -->
