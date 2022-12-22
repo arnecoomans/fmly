@@ -41,6 +41,7 @@ class Group(models.Model):
   description         = models.CharField(max_length=512, blank=True, null=True)
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
   tag                 = models.ManyToManyField(Tag, blank=True, related_name='groups')
+  
   def __str__(self):
     title = self.title
     ''' Prepend title with tag if there is one tag set. 
@@ -65,8 +66,13 @@ class Attachment(models.Model):
   size                = models.IntegerField(default=0)
   uploaded_at         = models.DateTimeField(auto_now_add=True)
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
+  is_deleted          = models.BooleanField(default=False)
+
   def __str__(self) -> str:
-    return self.desciption
+    description = self.desciption
+    if self.is_deleted:
+      description = f"[Deleted] { description }"
+    return description
   
   def extension(self):
     return Path(str(self.file)).suffix[1:].lower()
@@ -75,6 +81,7 @@ class Attachment(models.Model):
     file_stats = stat(settings.MEDIA_ROOT.joinpath(str(self.file  )))
     self.size = file_stats.st_size
     self.save()
+
   ''' Display Image File size. Calculate if not stored yet '''
   def getSize(self):
     ''' https://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python '''
@@ -135,13 +142,17 @@ class Image(models.Model):
     return id + ' ' + title
   
   def count_comments(self):
-    return self.comments.filter(is_deleted=False).count() 
+    return self.comments.filter(is_deleted=False).count()
   def get_comments(self):
     return self.comments.filter(is_deleted=False)
   def count_tags(self):
     return self.tag.count()
   def count_people(self):
     return self.people.count()
+  def count_attachments(self):
+    return self.attachments.filter(is_deleted=False).count()
+  def get_attachments(self):
+    return self.attachments.filter(is_deleted=False)
   def has_thumbnail(self):
     return True if self.thumbnail else False
   def extension(self):

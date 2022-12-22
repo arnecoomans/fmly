@@ -46,7 +46,7 @@
           <li class="comments bi bi-chat-right-fill"> <a href="{% url 'archive:image' object.id object.title|default:'needs-a-title'|slugify %}#comments" title="{{ object.title }}">{{ object.count_comments }} reactie{% if object.count_comments > 1 %}s{% endif %}</a></li>  
         {% endif %}
         <!-- Attachments -->
-        {% if perms.archive.view_attachment and object.attachments.all.count > 0 %}
+        {% if perms.archive.view_attachment and object.count_attachments > 0 %}
           <li class="attachments bi-paperclip"> {{object.attachments.all.count }} bijlage{% if object.attachments.all.count > 1 %}n{% endif%}</li>
         {% endif %}
       </ul>
