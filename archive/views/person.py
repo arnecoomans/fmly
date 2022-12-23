@@ -212,17 +212,19 @@ class PersonListView(ListView):
   ''' Get a list of centuries of all People '''
   def get_centuries(self):
     centuries = []
-    for year in Person.objects.all().values_list('year_of_birth'):
+    #for year in Person.objects.all().values_list('year_of_birth'):
+    for year in self.get_queryset().values_list('year_of_birth'):
       if year[0]:
         century = floor(int(year[0])/100)*100
         if not century in centuries:
           centuries.append(century)
     centuries.sort()
     return centuries
+    
   ''' Get a list of all decades a Person has been born in '''
   def get_decades(self):
     decades = []
-    for year in Person.objects.all().values_list('year_of_birth'):
+    for year in self.get_queryset().values_list('year_of_birth'):
       if year[0]:
         year = floor(int(year[0])/10)*10
         if not year in decades:
