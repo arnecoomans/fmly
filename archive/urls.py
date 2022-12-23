@@ -46,17 +46,6 @@ urlpatterns = [
   path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='delete-comment'),
   path('comment/<int:pk>/undelete/', views.CommentUnDeleteView.as_view(), name='undelete-comment'),
   
-  # path('comments/<int:pk>/edit/', views.EditCommentView.as_view(), name='edit-comment'),
-
-  # Adding and removing
-  # path('add/images/', views.AddImagesView.as_view(), name='add-photos'),
-  # path('add/person/', views.AddPersonView.as_view(), name='add-person'),
-  # path('add/note/', views.AddNoteView.as_view(), name='add-note'),
-  # path('add/tag/', views.AddTagView.as_view(), name='add-tag'),
-  
   # Accounts
   path("sign-up", views.SignUpView.as_view(), name='signup'),
-
-  # Special views
-  #path('preview/', views.RecentImageListPreView.as_view(), name='preview'),
 ]
