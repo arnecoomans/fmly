@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.template.defaultfilters import slugify
 
 # Register your models here.
 from .models import *
@@ -18,6 +19,11 @@ def softdelete(modeladmin, request, queryset):
 @admin.action(description='Softundelete')
 def softundelete(modeladmin, request, queryset):
   queryset.update(is_deleted=False)
+@admin.action(description='Set slug from file')
+def setSlug(modeladmin, request, queryset):
+  for attachment in queryset:
+    attachment.slug = slugify(str(attachment.file).replace('files/', '')[:64])
+    attachment.save()
 
 @admin.action(description='Set image dates from date field')
 def fixDate(modeladmin, request, queryset):
@@ -78,10 +84,13 @@ class ImageAdmin(admin.ModelAdmin):
     return get_data
 
 class AttachmentAdmin(admin.ModelAdmin):
+  list_display = ['description', 'is_deleted']
+  prepopulated_fields = {'slug': ('file',)}
   def get_changeform_initial_data(self, request):
     get_data = super(AttachmentAdmin, self).get_changeform_initial_data(request)
     get_data['user'] = request.user.pk
     return get_data
+  actions = [setSlug,]
 
 class NoteAdmin(admin.ModelAdmin):
   def get_changeform_initial_data(self, request):
@@ -107,7 +116,7 @@ admin.site.register(Tag, TagAdmin)
 admin.site.register(Note, NoteAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(FamilyRelations, FamilyRelationsAdmin)
-admin.site.register(Attachment)
+admin.site.register(Attachment, AttachmentAdmin)
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Preference)
 #admin.site.register(TmpDoc)

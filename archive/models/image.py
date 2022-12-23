@@ -64,8 +64,9 @@ class Group(models.Model):
     return title
 
 class Attachment(models.Model):
+  slug                = models.CharField(max_length=255, unique=True)
   file                = models.FileField(null=True, blank=True, upload_to='files', help_text='Possible to attach file to an image. Use for pdf, doc, excel, etc.')
-  description          = models.CharField(max_length=512, blank=True, null=True)
+  description         = models.CharField(max_length=512, blank=True, null=True)
   # Meta
   size                = models.IntegerField(default=0)
   uploaded_at         = models.DateTimeField(auto_now_add=True)
