@@ -89,10 +89,10 @@ h6:hover:has(a), h6:hover a, h6 a:hover {
     }
   }
   /** 4 column layout */
-  media (min-width: 1600px) { 
+  @media (min-width: 1600px) { 
     .container, container-md, container-sm {
       /** max-width: 1604px !important; */
-      width: calc((var(--object-width) * 4.2)) !important;
+      min-width: calc((var(--object-width) * 4.18)) !important;
     }
   }
 /** Container */
