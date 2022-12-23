@@ -8,6 +8,8 @@ __pycache__
 *.sqlite3
 # Keep settings file outside repo
 settings.py
+family/urls.py
+
 # Keep statics and uploads outside repo
 /public/static
 /public/documents/*
