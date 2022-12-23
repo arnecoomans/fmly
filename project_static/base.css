@@ -23,7 +23,7 @@ a:hover {
 /** lists */
 ul.no-bullets {
   list-style-type: none;
-  padding-left: 0;
+  padding-left: 0em;
 }
 /** Headers */
 h1, h2, h3, h4, h5, h6 {
@@ -129,7 +129,8 @@ h6:hover:has(a), h6:hover a, h6 a:hover {
   }
   .container > header > h2,
   .object > header > h2,
-  .object > h3
+  .object > h3,
+  .container > div > h5
    {
     padding: 0.2em 1em;
   }
