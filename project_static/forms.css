@@ -64,3 +64,12 @@ form > dl > dd > select {
 .comment > form > input:hover {
   background-color: var(--colour-highlight)
 }
+
+/** Filter form */
+.filters > .option > form > label {
+  display: inline-block;
+  min-width: 10em;
+}
+.filters > .option > form > select {
+  min-width: 10em;
+}
