@@ -15,6 +15,14 @@ class NotesListView(ListView):
     context['active_page'] = 'notes'
     return context
 
+  def get_queryset(self):
+    queryset = Note.objects.all()
+    ''' Note search '''
+    if self.request.GET.get('search'):
+      search_text = self.request.GET.get('search').lower()
+      queryset = queryset.filter(title__icontains=search_text) | \
+                 queryset.filter(content__icontains=search_text)
+    return queryset
 ''' Note Detail View'''
 class NoteView(DetailView):
   model = Note

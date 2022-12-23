@@ -98,6 +98,7 @@ class PersonListView(ListView):
     'decade': None,
     'century': None,
     'family': None,
+    'search': None,
   }
 
   ''' getFilters
@@ -143,7 +144,6 @@ class PersonListView(ListView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'people'
-    context['has_active_filters'] = self.hasActiveFilters()
     context['filters'] = self.getFilters()
     context['available_centuries'] = self.get_centuries()
     context['available_decades'] = self.get_decades()
@@ -162,6 +162,8 @@ class PersonListView(ListView):
       context['page_description'] += f" in leven tussen {str(context['filters']['decade'])} en {str(context['filters']['decade']+9)}"
     elif context['filters']['century']:
       context['page_description'] += f" in leven tussen {str(context['filters']['century'])} en {str(context['filters']['century']+99)}"
+    if context['filters']['search']:
+      context['page_description'] += f" en met zoekterm \"{ context['filters']['search'] }\""
     return context
 
   def get_queryset(self):
@@ -193,6 +195,16 @@ class PersonListView(ListView):
       queryset = queryset.exclude(year_of_birth__gt=filters['century']+99).\
                           exclude(year_of_death__lte=filters['century']).\
                           filter(year_of_birth__gte=filters['century']-90)
+    ''' Free text search
+        Searches Person Name, Bio
+    '''
+    if filters['search']:
+      queryset = queryset.filter(first_name__icontains=filters['search']) | \
+                 queryset.filter(given_names__icontains=filters['search']) | \
+                 queryset.filter(last_name__icontains=filters['search']) | \
+                 queryset.filter(married_name__icontains=filters['search']) | \
+                  queryset.filter(nickname__icontains=filters['search']) | \
+                 queryset.filter(bio__icontains=filters['search'])
     ''' Overall ordering '''
     queryset = queryset.order_by('last_name', 'first_name')
     return queryset
@@ -247,7 +259,12 @@ class AddPersonView(PermissionRequiredMixin, CreateView):
   model = Person
   ''' Use get_fields() as general function in this file to maintain fields in one spot '''
   fields = get_fields()
-  
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['active_page'] = 'people'
+    return context
+
   def form_valid(self, form):
     form.instance.user = self.request.user
     return super().form_valid(form)

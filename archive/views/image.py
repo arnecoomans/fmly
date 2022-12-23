@@ -63,9 +63,9 @@ class ImageListView(ListView):
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
-    context['active_tab'] = 'images'
+    context['active_page'] = 'images'
     ''' Default page description '''
-    context['page_description'] = 'Afbeeldingen en documenten met jou gedeeld'
+    context['page_description'] = 'Afbeeldingen en documenten'
     ''' If user filter is active, add user details '''
     if 'user' in self.kwargs:
       context['page_description'] = f"Afbeeldingen en documenten van { self.kwargs['user'] }"
@@ -73,6 +73,9 @@ class ImageListView(ListView):
     if 'decade' in self.kwargs:
       context['page_description'] = f"Documenten in periode {str(self.get_decade())} - {str(self.get_decade() + 9)}, gesorteerd op jaartal, nieuwste eerst. <br />"  + \
                                     f"Kijk ook eens bij <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()-10])}\">{ str(self.get_decade()-10) } - { str(self.get_decade()-1) }</a> of <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()+10])}\">{ str(self.get_decade()+10) } - { str(self.get_decade()+20) }</a>"
+    ''' If search string is passed '''
+    if self.request.GET.get('search'):
+      context['page_description'] += f" met zoekwoord \"{ self.request.GET.get('search') }\""
     ''' Added context, can be placed by get_queryset() '''
     if len(self.added_context) > 0:
       for key in self.added_context:
@@ -105,6 +108,24 @@ class ImageListView(ListView):
     queryset = Image.objects.all()
     ''' Remove deleted images '''
     queryset = queryset.filter(is_deleted=False)
+    ''' Image search 
+        Free text search in Image title, description, filename
+        Person names,
+        Tag title,
+        Attachment title
+    '''
+    if self.request.GET.get('search'):
+      search_text = self.request.GET.get('search').lower()
+      queryset = queryset.filter(title__icontains=search_text) | \
+                 queryset.filter(description__icontains=search_text) | \
+                 queryset.filter(source__icontains=search_text) | \
+                 queryset.filter(people__first_name__icontains=search_text) | \
+                 queryset.filter(people__given_names__icontains=search_text) | \
+                 queryset.filter(people__last_name__icontains=search_text) | \
+                 queryset.filter(people__married_name__icontains=search_text) | \
+                 queryset.filter(tag__title__icontains=search_text) | \
+                 queryset.filter(attachments__file__icontains=search_text) | \
+                 queryset.filter(attachments__description__icontains=search_text)
     ''' Show images by a single user '''
     if 'user' in self.kwargs:
       queryset = queryset.filter(user_id__username=self.kwargs['user'])
@@ -124,7 +145,7 @@ class ImageListView(ListView):
     else:
       self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count() * -1
     ''' Order images '''
-    queryset = queryset.order_by('-uploaded_at')
+    queryset = queryset.distinct().order_by('-uploaded_at')
     self.added_context['count_images'] = queryset.count()
     ''' Return result '''
     return queryset
@@ -149,7 +170,7 @@ class ImageView(DetailView):
   template_name = 'archive/images/detail.html'
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
-    context['active_tab'] = 'images'
+    context['active_page'] = 'images'
     return context
 
 ''' Add Images '''
@@ -164,6 +185,10 @@ class AddImageView(PermissionRequiredMixin, CreateView):
             'show_in_index', 'is_deleted',
             'user']
   
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['active_page'] = 'images'
+    return context
 
   def __init__(self, *args, **kwargs):
     super(AddImageView, self).__init__(*args, **kwargs)
@@ -208,6 +233,11 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
             'show_in_index', 'is_deleted',
             'user']
   
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['active_page'] = 'images'
+    return context
+    
   def __init__(self, *args, **kwargs):
     super(EditImageView, self).__init__(*args, **kwargs)
     ''' Only add additional fields if these have enough options to be useful '''
