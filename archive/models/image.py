@@ -65,7 +65,7 @@ class Group(models.Model):
 
 class Attachment(models.Model):
   file                = models.FileField(null=True, blank=True, upload_to='files', help_text='Possible to attach file to an image. Use for pdf, doc, excel, etc.')
-  desciption          = models.CharField(max_length=512, blank=True, null=True)
+  description          = models.CharField(max_length=512, blank=True, null=True)
   # Meta
   size                = models.IntegerField(default=0)
   uploaded_at         = models.DateTimeField(auto_now_add=True)
@@ -73,7 +73,7 @@ class Attachment(models.Model):
   is_deleted          = models.BooleanField(default=False)
 
   def __str__(self) -> str:
-    description = self.desciption
+    description = self.description
     if self.is_deleted:
       description = f"[Deleted] { description }"
     return description

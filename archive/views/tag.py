@@ -21,6 +21,15 @@ class TagListView(ListView):
     context['active_page'] = 'tags'
     return context
 
+  def get_queryset(self):
+    queryset = Tag.objects.all()
+    ''' Tag search '''
+    if self.request.GET.get('search'):
+      search_text = self.request.GET.get('search').lower()
+      queryset = queryset.filter(title__icontains=search_text) | \
+                 queryset.filter(description__icontains=search_text)
+    return queryset
+
 class AddTagView(PermissionRequiredMixin, CreateView):
   model = Tag
   fields = ['title', 'description']

@@ -46,11 +46,23 @@ class CommentListView(generic.ListView):
   
   def get_queryset(self):
     queryset = Comment.objects.all()
+    ''' Remove deleted_comments '''
+    queryset = queryset.filter(is_deleted=False)
     ''' Filter comments by user '''
     if self.request.GET.get('user'):
       queryset = queryset.filter(user__username=self.request.GET.get('user'))
-    ''' Remove deleted_comments and add ordering'''
-    queryset = queryset.filter(is_deleted=False).order_by('-date_modified')
+    ''' Free text search 
+        Search Comment text, image title or user
+    '''
+    if self.request.GET.get('search'):
+      search_text = self.request.GET.get('search').lower()
+      queryset = queryset.filter(content__icontains=search_text) | \
+                 queryset.filter(image__title__icontains=search_text) | \
+                 queryset.filter(user__username__icontains=search_text) | \
+                 queryset.filter(user__first_name__icontains=search_text) | \
+                 queryset.filter(user__last_name__icontains=search_text)
+    '''  and add ordering'''
+    queryset = queryset.order_by('-date_modified')
     return queryset
 
 ''' Add Comment '''

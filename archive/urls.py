@@ -17,6 +17,7 @@ urlpatterns = [
   path('objects/<int:decade>/', views.ImageListView.as_view(), {'columns': ('decade')}, name='images-by-decade'),
   path('objects/<str:tag>', views.ImageListView.as_view(), {'columns': ('tag')}, name='image-with-tag'),
   path('objects/by/<str:user>', views.ImageListView.as_view(), {'columns': ('user')}, name='image-by-uploader'),
+  path('objects/', views.ImageListView.as_view(), name='images'),
 
   # People
   path('people/', views.PersonListView.as_view(), name='people'),
@@ -29,7 +30,7 @@ urlpatterns = [
   path('person/<int:subject>/<str:type>:<int:removed_person>/delete/', views.PersonRemoveRelationView.as_view(), {'columns': ('up', 'relation', 'down')}, name='remove-relationship'),
   path('person/add-relation/', views.PersonAddRelationView.as_view(), name='add-relationship'),
   # Tags 
-  path('tags/', views.TagListView.as_view(), name='list-tags'),
+  path('tags/', views.TagListView.as_view(), name='tags'),
   path('tags/add/', views.AddTagView.as_view(), name='add-tag'),
   path('tag/<str:slug>/', views.EditTagView.as_view(), name='edit-tag'),
   # Notes

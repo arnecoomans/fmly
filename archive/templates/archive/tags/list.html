@@ -9,7 +9,7 @@
     ERROR: No tags to be shown
   {% endif %}
   {% if perms.archive.view_tag %}
-    <ul class="tags">
+    <ul class="tags no-bullets">
       {% for tag in tag_list %}
       <li class="tag bi bi-tag-fill">
         <a href="{% url 'archive:image-with-tag' tag.slug %}" class="tag">{{ tag.title|title }}</a>

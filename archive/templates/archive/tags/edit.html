@@ -2,7 +2,7 @@
 
 {% block content %}
   <header>
-    <h2>{{ tag.title }}</h2>
+    <h2>{{ tag.title|default:'Nieuwe tag' }}:</h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
   </header>
   {% if perms.archive.view_tag %}

@@ -60,7 +60,7 @@
           <!-- Attachments -->
           {% if perms.archive.view_attachment and image.attachments.all.count > 0 %}
             {% for attachment in image.get_attachments reversed %}
-              <li class="bi-paperclip"> <a href="/documents/{{ attachment.file }}" title="{{ attachment.desciption }}" target="_blank">{{ attachment.desciption|truncatechars:52 }}</a> {{ attachment.extension }}, {{ attachment.getSize }}</li>
+              <li class="bi-paperclip"> <a href="/documents/{{ attachment.file }}" title="{{ attachment.description }}" target="_blank">{{ attachment.description|truncatechars:52 }}</a> {{ attachment.extension }}, {{ attachment.getSize }}</li>
             {% endfor %}
           {% endif %}
           <!-- Meta info -->

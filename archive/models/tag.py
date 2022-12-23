@@ -25,4 +25,4 @@ class Tag(models.Model):
     return super(Tag, self).save(*args, **kwargs)
 
   def get_absolute_url(self):
-    return reverse_lazy('archive:list-tags')
+    return reverse_lazy('archive:tags')

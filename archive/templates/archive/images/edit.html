@@ -2,7 +2,7 @@
 
 {% block content %}
   <header>
-    <h2>{{ image.title }}</h2>
+    <h2>{{ image.title|default:'Afbeelding toevoegen' }}:</h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
   </header>
   {% if perms.archive.add_image or perms.archive.change_image %}
@@ -79,7 +79,7 @@
                 {{ form.tag }}
                 {% if form.tag.errors %}<p>{{ form.tag.errors }}</p>{% endif %}
                 <p>
-                  <a class="bi bi-tags-fill" href="{% url 'archive:list-tags' %}"> Tags</a>
+                  <a class="bi bi-tags-fill" href="{% url 'archive:tags' %}"> Tags</a>
                   <a class="bi bi-tag" href="{% url 'archive:add-tag' %}">Tag toevoegen</a>
                 </p>
               </dd>

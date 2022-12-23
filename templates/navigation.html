@@ -21,7 +21,7 @@
         {% endif %}
         {% if perms.archive.view_tag %}
           <li class="nav-item">
-            <a class="nav-link bi bi-tags-fill{% if active_page == 'tags' %} active{% endif %}" href="{% url 'archive:list-tags' %}" accesskey="t"> Tags</a>
+            <a class="nav-link bi bi-tags-fill{% if active_page == 'tags' %} active{% endif %}" href="{% url 'archive:tags' %}" accesskey="t"> Tags</a>
           </li>
         {% endif %}
         {% if perms.archive.view_comment %}
@@ -85,10 +85,22 @@
         {% endif %}
       </ul>
       {% if user.is_authenticated %}
-        <form class="d-flex">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success disabled" type="submit">Search</button>
+        <form class="d-flex" method="get"
+              action="{% if active_page == 'images' %}{% url 'archive:images' %}{% elif active_page == 'people' %}{% url 'archive:people' %}{% elif active_page == 'tags' %}{% url 'archive:tags' %}{% elif active_page == 'comments' %}{% url 'archive:comments' %}{% elif active_page == 'notes' %}{% url 'archive:notes' %}{% endif %}">>
+        {% with current='search' %}
+          {% for key, value in filters.items %}
+            {% if value and key != current %}
+              <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endif %}
+          {% endfor %}
+        {% endwith %}
+          <input class="form-control me-2" 
+                 type="search" placeholder="Search" 
+                 aria-label="Search" name="search" 
+                 {% if request.GET.search %}value="{{ request.GET.search }}"{% endif %}>
+          <button class="btn btn-outline-success {% if not active_page %}disabled{% endif %}" type="submit" {% if not active_page %}disabled{% endif %}>Search</button>
         </form>
+        {{ active_page }}
       {% endif %}
     </div>
   </div>

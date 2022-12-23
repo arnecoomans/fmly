@@ -18,20 +18,26 @@
         <!-- Filter Images Only With image -->
         <span class="option">
           <form method="get">
-            {% if filters.family %}<input type="hidden" name="family" value="{{ filters.family }}">{% endif %}
-            {% if filters.century and filters.century.count > 1 %}<input type="hidden" name="century" value="{{ filters.century }}">{% endif %}
-            {% if filters.decade and filters.decade.count > 1 %}<input type="hidden" name="decade" value="{{ filters.decade }}">{% endif %}
-            {% if filters.year %}<input type="hidden" name="year" value="{{ filters.year }}">{% endif %}
+            {% with current='has_photo' %}
+              {% for key, value in filters.items %}
+                {% if value and key != current %}
+                  <input type="hidden" name="{{ key }}" value="{{ value }}">
+                {% endif %}
+              {% endfor %}
+            {% endwith %}
             <label for="has_photo">Met afbeelding</label><input type="checkbox" name="has_photo" value="true" {% if filters.has_photo %} checked{% endif %} onchange="this.form.submit()">
           </form>
         </span>
         <!-- Filter Families -->
         <span class="option">
           <form method="get">
-            {% if filters.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
-            {% if filters.century %}<input type="hidden" name="century" value="{{ filters.century }}">{% endif %}
-            {% if filters.decade %}<input type="hidden" name="decade" value="{{ filters.decade }}">{% endif %}
-            {% if filters.year %}<input type="hidden" name="year" value="{{ filters.year }}">{% endif %}
+            {% with current='family' %}
+              {% for key, value in filters.items %}
+                {% if value and key != current %}
+                  <input type="hidden" name="{{ key }}" value="{{ value }}">
+                {% endif %}
+              {% endfor %}
+            {% endwith %}
             {% if available_families|length > 1 %}
               <label for="family">Familie: </label>
               <select name="family" onchange="this.form.submit()">
@@ -47,9 +53,14 @@
         {% if not filters.years and not filters.century and available_decades|length > 1%}
           <span class="option">
             <form method="get">
-              {% if filters.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
-              {% if filters.family %}<input type="hidden" name="family" value="{{ filters.family }}">{% endif %}
-              <label for="decade">Decennium: </label>
+              {% with current='decade' %}
+              {% for key, value in filters.items %}
+                {% if value and key != current %}
+                  <input type="hidden" name="{{ key }}" value="{{ value }}">
+                {% endif %}
+              {% endfor %}
+            {% endwith %}
+            <label for="decade">Decennium: </label>
               <select name="decade" onchange="this.form.submit()">
                 <option value="all">-----</option>
                 {% for decade in available_decades %}
@@ -63,8 +74,13 @@
         {% if not filters.years and not filters.decade and available_centuries|length > 1 %}
           <span class="option">
             <form method="get">
-              {% if filters.has_photo %}<input type="hidden" name="has_photo" value="true">{% endif %}
-              {% if filters.family %}<input type="hidden" name="family" value="{{ filters.family }}">{% endif %}
+              {% with current='century' %}
+              {% for key, value in filters.items %}
+                {% if value and key != current %}
+                  <input type="hidden" name="{{ key }}" value="{{ value }}">
+                {% endif %}
+              {% endfor %}
+            {% endwith %}
               <label for="century">Eeuw: </label>
               <select name="century" onchange="this.form.submit()">
                 <option value="all">-----</option>
@@ -80,12 +96,13 @@
 <!-- People -->
       {% for person in people %}
         {% if forloop.first %}
-          <ul class="people">
+          <h5>{{ person.last_name }}</h5>
+          <ul class="people no-bullets" id="{{ person.last_name }}>
         {% endif %}
         {% ifchanged person.last_name %}
           </ul>
           <h5>{{ person.last_name }}</h5>
-          <ul class="people" id="{{ person.last_name }}">
+          <ul class="people no-bullets" id="{{ person.last_name }}">
         {% endifchanged %}
         <li>
           {% include 'archive/snippets/person_link.html' %}
