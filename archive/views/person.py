@@ -306,6 +306,21 @@ class PersonAddRelationView(PermissionRequiredMixin, CreateView):
     '''
     if type == 'parent':
       ''' Add Parent Relation '''
+      ''' Check age difference before adding relation '''
+      if person.year_of_birth and subject.year_of_birth:
+        message = None
+        if person.year_of_birth > subject.year_of_birth:
+          ''' Check age difference before adding relation '''
+          message = f"{ person.first_name } ({ person.year_of_birth }) was nog niet geboren toen { subject.first_name } ({ subject.year_of_birth }) werd geboren"
+        elif person.year_of_birth + 12 > subject.year_of_birth:
+          ''' Parent was under 12 when child was born '''
+          message = f"{ person.first_name } ({ person.year_of_birth }) is te jong om ouder te zijn van { subject.first_name } ({ subject.year_of_birth })"
+        elif subject.year_of_birth - person.year_of_birth > 80:
+          ''' Parent was over 80 when child was born '''
+          message = f"{ person.first_name } ({ person.year_of_birth }) is te oud om ouder te zijn van { subject.first_name } ({ subject.year_of_birth })"
+        if message:
+          messages.add_message(self.request, messages.WARNING, f"Relatie kan niet worden toegevoegd: { message }.")
+          return redirect('archive:person-edit', subject.id )
       try:
         relation = FamilyRelations(up_id=person.id, down_id=subject.id, type='parent')
         relation.save()
@@ -314,6 +329,22 @@ class PersonAddRelationView(PermissionRequiredMixin, CreateView):
         return redirect('archive:person-edit', subject.id )
     elif type == 'child':
       ''' Add Child Relation '''
+      ''' Check age difference before adding relation '''
+      if person.year_of_birth and subject.year_of_birth:
+        message = None
+        if subject.year_of_birth > person.year_of_birth:
+          ''' Child was born before parent '''
+          message = f"{ subject.first_name } ({ subject.year_of_birth }) was nog niet geboren toen { person.first_name } ({ person.year_of_birth }) werd geboren"
+        elif subject.year_of_birth + 12 > person.year_of_birth:
+          ''' Parent was under 12 when child was born '''
+          message = f"{ subject.first_name } ({ subject.year_of_birth }) is te jong om ouder te zijn van { person.first_name } ({ person.year_of_birth })"
+        elif person.year_of_birth - subject.year_of_birth > 80:
+          ''' Parent was over 80 when child was born '''
+          message = f"{ subject.first_name } ({ subject.year_of_birth }) is te oud om ouder te zijn van { person.first_name } ({ person.year_of_birth })"
+        if message:
+          messages.add_message(self.request, messages.WARNING, f"Relatie kan niet worden toegevoegd: { message }.")
+          return redirect('archive:person-edit', subject.id )
+      ''' Proceed with setting relation '''
       try:
         relation = FamilyRelations(up_id=subject.id, down_id=person.id, type='parent')
         relation.save()
@@ -322,6 +353,14 @@ class PersonAddRelationView(PermissionRequiredMixin, CreateView):
         return redirect('archive:person-edit', subject.id )
     elif type == 'partner':
       ''' Add Partner relation'''
+      ''' Check if both person and subject were alive during their relationship '''
+      if person.year_of_birth and subject.year_of_birth and person.year_of_death and subject.year_of_death:
+        ''' if person died before subject was born or subject died before person was born '''
+        if person.year_of_birth > subject.year_of_death or subject.year_of_birth > person.year_of_death:
+          message = f"{ subject.first_name } ({ subject.year_of_birth }) en { person.first_name } ({ person.year_of_birth }) leefden niet tegelijkertijd."
+          messages.add_message(self.request, messages.WARNING, f"Relatie kan niet worden toegevoegd: { message }.")
+          return redirect('archive:person-edit', subject.id )
+      ''' Proceed with setting relation '''
       try:
         relation = FamilyRelations(up_id=subject.id, down_id=person.id, type='partner')
         relation.save()
