@@ -200,3 +200,15 @@ h6:hover:has(a), h6:hover a, h6 a:hover {
     font-size: 1em;
     padding: 3px;
   }
+/** Tags */
+  li.tag > a.tag {
+    display: inline-block;
+    min-width: 15em;
+  }
+  li.tag > span.image_counter {
+    display: inline-block;
+    width: 3em;
+  }
+  li.tag > span.description {
+    margin-left: 1.5em;
+}

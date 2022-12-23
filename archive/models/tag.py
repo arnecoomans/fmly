@@ -26,3 +26,8 @@ class Tag(models.Model):
 
   def get_absolute_url(self):
     return reverse_lazy('archive:tags')
+  
+  def get_images(self):
+    return self.images.all().filter(is_deleted=False, show_in_index=True)
+  def get_hidden_images(self):
+    return self.images.all().filter(is_deleted=False, show_in_index=False)

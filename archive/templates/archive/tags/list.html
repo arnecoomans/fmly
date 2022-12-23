@@ -14,8 +14,12 @@
         {% for tag in tag_list %}
         <li class="tag bi bi-tag-fill">
           <a href="{% url 'archive:image-with-tag' tag.slug %}" class="tag">{{ tag.title|title }}</a>
-          ({{ tag.images.all.count }})
+          <span class="image_counter">({{ tag.get_images.count }}{% if tag.get_hidden_images.count > 0 %}<i title="Verborgen afbeeldingen beschikbaar">*</i>{% endif %})</span>
           {% if perms.archive.change_tag %}<a class="bi bi-pencil-fill" href="{% url 'archive:edit-tag' tag.slug %}"> </a>{% endif %}
+          {% if tag.description %}
+            <br>
+            <span class="description">{{ tag.description }}</span>
+          {% endif %}
         </li>
         {% endfor %}
       </ul>
