@@ -104,7 +104,7 @@
           <h5>{{ person.last_name }}</h5>
           <ul class="people no-bullets" id="{{ person.last_name }}">
         {% endifchanged %}
-        <li>
+        <li class="list-person-details">
           {% include 'archive/snippets/person_link.html' %}
         </li>
       {% endfor %}

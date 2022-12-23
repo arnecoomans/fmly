@@ -212,3 +212,16 @@ h6:hover:has(a), h6:hover a, h6 a:hover {
   li.tag > span.description {
     margin-left: 1.5em;
 }
+/** People */
+.list-person-details:hover {
+  background-color: rgba(0,0,0,0.1);
+}
+.list-person-details > span {
+  display: inline-block;
+}
+.list-person-details > span.name {
+  min-width: 30em;
+}
+.list-person-details > span.date {
+  min-width: 8em;
+}
