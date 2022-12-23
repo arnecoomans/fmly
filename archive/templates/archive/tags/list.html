@@ -9,14 +9,16 @@
     ERROR: No tags to be shown
   {% endif %}
   {% if perms.archive.view_tag %}
-    <ul class="tags no-bullets">
-      {% for tag in tag_list %}
-      <li class="tag bi bi-tag-fill">
-        <a href="{% url 'archive:image-with-tag' tag.slug %}" class="tag">{{ tag.title|title }}</a>
-        ({{ tag.images.all.count }})
-        {% if perms.archive.change_tag %}<a class="bi bi-pencil-fill" href="{% url 'archive:edit-tag' tag.slug %}"> </a>{% endif %}
-      </li>
-      {% endfor %}
-    </ul>
+    <div class="objects">
+      <ul class="tags no-bullets">
+        {% for tag in tag_list %}
+        <li class="tag bi bi-tag-fill">
+          <a href="{% url 'archive:image-with-tag' tag.slug %}" class="tag">{{ tag.title|title }}</a>
+          ({{ tag.images.all.count }})
+          {% if perms.archive.change_tag %}<a class="bi bi-pencil-fill" href="{% url 'archive:edit-tag' tag.slug %}"> </a>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
   {% endif %}
 {% endblock %}
