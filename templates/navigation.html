@@ -40,34 +40,47 @@
               Profiel
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <!-- Personal Profile-->
               <li><a class="dropdown-item bi bi-person"> {{ user.first_name }} {{ user.last_name }} ({{ user }})</a></li>
-              <li><div class="dropdown-divider"></div></li>
               <li><a class="dropdown-item bi bi-images" href="{% url 'archive:image-by-uploader' user %}"> Mijn uploads</a></li>
               <li><div class="dropdown-divider"></div></li>
+            <!-- Objects -->
+              <!-- Images -->
               {% if perms.archive.add_document or perms.archive.add_image %}
                 <li><a class="dropdown-item bi bi-cloud-arrow-up" href="{% url 'archive:add-image' %}"> Afbeelding uploaden</a></li>
               {% endif %}
               {% if object and perms.archive.change_image %}
                 <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:image-edit' object.id %}"> Afbeelding bewerken</a></li>
               {% endif %}
+              <!-- People -->
               {% if perms.archive.add_person %}
                 <li><a class="dropdown-item bi bi-person-fill-add" href="{% url 'archive:add-person' %}"> Persoon aanmaken</a></li>
               {% endif %}
               {% if person and perms.archive.change_person %}
                 <li><a class="dropdown-item bi bi-person-fill" href="{% url 'archive:person-edit' person.id %}"> Persoon bewerken</a></li>
               {% endif %}
+              <!-- Tags -->
               {% if perms.archive.add_tag %}
                 <li><a class="dropdown-item bi bi-tag-fill" href="{% url 'archive:add-tag' %}"> Tag toevoegen</a></li>
               {% endif %}
               {% if tag and perms.archive.change_tag %}
                 <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:edit-tag' tag.slug %}"> Tag bewerken</a></li>
               {% endif %}
+              <!-- Notes -->
               {% if perms.archive.add_note %}
                 <li><a class="dropdown-item bi bi-file-earmark-arrow-up-fill" href="{% url 'archive:add-note' %}"> Notitie aanmaken</a></li>
               {% endif %}
-              {% if note %}
-                  <li><a class="dropdown-item bi bi-pencil-fill {% if user != note.user and not user.is_superuser %}disabled{% endif %}" href="{% url 'archive:note-edit' note.id %}"> Bewerk notitie</a></li>
+              {% if note and perms.archive.change_note %}
+                <li><a class="dropdown-item bi bi-pencil-fill {% if user != note.user and not user.is_superuser %}disabled{% endif %}" href="{% url 'archive:note-edit' note.id %}"> Bewerk notitie</a></li>
               {% endif %}
+              <!-- Attachments -->
+              {% if perms.archive.view_attachment %}
+                <li><a class="dropdown-item bi bi-paperclip" href="{% url 'archive:attachments' %}"> Attachments</a></li>
+              {% endif %}
+              {% if perms.archive.create_attachment %}
+                <li><a class="dropdown-item bi bi-paperclip disabled" href="{% url 'archive:attachments' %}"> Attachment toevoegen</a></li>
+              {% endif %}
+              <!-- Admin -->
               {% if user.is_staff %}
                 <li><div class="dropdown-divider"></div></li>
                 <li><a class="dropdown-item bi bi-wrench-adjustable-circle-fill" href="/admin"> Admin</a></li>
