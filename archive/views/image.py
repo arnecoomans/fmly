@@ -1,15 +1,19 @@
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView 
 
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 from django.template.defaultfilters import slugify
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
 
+from sendfile import sendfile
+
+
 from pathlib import Path
 from math import floor
+
 
 from archive.models import Image
 from archive.models import Group, Tag, Attachment, Person
@@ -266,3 +270,29 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
 
   def get_success_url(self):
     return reverse_lazy('archive:image', args=[self.object.id, slugify(self.object.title)])
+
+
+class AttachmentListView(PermissionRequiredMixin, ListView):
+  model = Attachment
+  permission_required = 'archive.view_attachment'
+  template_name = 'archive/attachments/list.html'
+
+  def get_queryset(self):
+    queryset = Attachment.objects.all().filter(is_deleted=False).order_by('user', 'description')
+    if 'user' in self.kwargs:
+      queryset = queryset.filter(user__username__iexact=self.kwargs['user'])
+    return queryset
+
+class AttachmentStreamView(PermissionRequiredMixin, DetailView):
+  ''' SendFile https://github.com/johnsensible/django-sendfile '''
+  model = Attachment
+  permission_required = 'archive.view_attachment'
+
+  def get(self, request, *arg, **kwargs):
+    file = Path(settings.MEDIA_ROOT).joinpath(str(self.get_object().file))
+    return sendfile(request, file)
+    return redirect(reverse('archive:attachments'))
+
+  
+  
+  

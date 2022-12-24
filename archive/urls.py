@@ -15,16 +15,16 @@ urlpatterns = [
   path('add/image/', views.AddImageView.as_view(), name='add-image'),
   # Special Image views
   path('objects/<int:decade>/', views.ImageListView.as_view(), {'columns': ('decade')}, name='images-by-decade'),
-  path('objects/<str:tag>', views.ImageListView.as_view(), {'columns': ('tag')}, name='image-with-tag'),
-  path('objects/by/<str:user>', views.ImageListView.as_view(), {'columns': ('user')}, name='image-by-uploader'),
+  path('objects/<str:tag>/', views.ImageListView.as_view(), {'columns': ('tag')}, name='image-with-tag'),
+  path('objects/by/<str:user>/', views.ImageListView.as_view(), {'columns': ('user')}, name='image-by-uploader'),
   path('objects/', views.ImageListView.as_view(), name='images'),
 
   # People
   path('people/', views.PersonListView.as_view(), name='people'),
   path('person/<int:pk>/', views.PersonRedirectView.as_view(), name='person-short'),
-  path('person/<int:pk>/edit', views.EditPersonView.as_view(), name='person-edit'),
+  path('person/<int:pk>/edit/', views.EditPersonView.as_view(), name='person-edit'),
   path('person/<int:pk>/<name>/', views.PersonView.as_view(), name='person'),
-  path('person/add', views.AddPersonView.as_view(), name='add-person'),
+  path('person/add/', views.AddPersonView.as_view(), name='add-person'),
   
   # Relationships
   path('person/<int:subject>/<str:type>:<int:removed_person>/delete/', views.PersonRemoveRelationView.as_view(), {'columns': ('up', 'relation', 'down')}, name='remove-relationship'),
@@ -46,6 +46,11 @@ urlpatterns = [
   path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='delete-comment'),
   path('comment/<int:pk>/undelete/', views.CommentUnDeleteView.as_view(), name='undelete-comment'),
   
+  # Attachments
+  path('attachments/', views.AttachmentListView.as_view(), name='attachments'),
+  path('attachments/<str:user>/', views.AttachmentListView.as_view(), name='user-attachments'),
+  
+  path('attachment/<str:slug>/', views.AttachmentStreamView.as_view(), name='attachment'),
   # Accounts
   path("sign-up", views.SignUpView.as_view(), name='signup'),
 ]

@@ -1,0 +1,30 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <header>
+    <h2>Attachments:</h2>
+    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+  </header>
+  {% if not attachment_list or attachment_list.all.count == 0 %}
+    ERROR: No Attachments to be shown
+  {% endif %}
+  {% if perms.archive.view_attachment %}
+    <div class="objects">
+      <ul class="tags no-bullets">
+        {% for attachment in attachment_list %}
+        {% ifchanged attachment.user %}
+          </ul>
+          <h5>{% if attachment.user.first_name or attachment.user.last_name %}{{ attachment.user.first_name }} {{ attachment.user.last_name }} ({% endif %}{{ attachment.user}}{% if attachment.user.first_name or attachment.user.last_name %}){% endif %}</h5>
+          <ul class="tags no-bullets">
+        {% endifchanged %}
+        <li class="tag bi bi-paperclip">
+          <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment">{{ attachment.description|title }}</a>
+          [{{ attachment.getSize }}]
+          ({{ attachment.uploaded_at|date:'d/m/y' }})
+          
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+{% endblock %}

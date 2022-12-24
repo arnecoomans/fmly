@@ -79,6 +79,10 @@ class Attachment(models.Model):
       description = f"[Deleted] { description }"
     return description
   
+  def get_absolute_url(self):
+      return reverse("archive:attachment", kwargs={"slug": self.slug})
+  
+  
   def extension(self):
     return Path(str(self.file)).suffix[1:].lower()
   def storeSize(self):
