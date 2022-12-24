@@ -74,10 +74,10 @@
                 <li><a class="dropdown-item bi bi-pencil-fill {% if user != note.user and not user.is_superuser %}disabled{% endif %}" href="{% url 'archive:note-edit' note.id %}"> Bewerk notitie</a></li>
               {% endif %}
               <!-- Attachments -->
-              {% if perms.archive.view_attachment %}
+              {% if perms.archive.view_attachment and user.is_superuser%}
                 <li><a class="dropdown-item bi bi-paperclip" href="{% url 'archive:attachments' %}"> Attachments</a></li>
               {% endif %}
-              {% if perms.archive.create_attachment %}
+              {% if perms.archive.create_attachment and user.is_superuser %}
                 <li><a class="dropdown-item bi bi-paperclip disabled" href="{% url 'archive:attachments' %}"> Attachment toevoegen</a></li>
               {% endif %}
               <!-- Admin -->
