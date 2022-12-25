@@ -18,7 +18,7 @@
           <ul class="tags no-bullets">
         {% endifchanged %}
         <li class="tag bi bi-paperclip">
-          <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment">{{ attachment.description|title }}</a>
+          <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment" target="_blank" rel="noopener noreferrer">{{ attachment.description|title }}</a>
           [{{ attachment.getSize }}]
           ({{ attachment.uploaded_at|date:'d/m/y' }})
           
