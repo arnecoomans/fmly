@@ -39,7 +39,14 @@ you do not need to deactivate it to proceed.
 ## Install modules within your virtual environment
 Install the Python dependancies within the virtual environment,
 
-> (fmly) $ python -m pip install django gunicorn markdown pillow
+> (fmly) $ python -m pip install django gunicorn markdown pillow django-sendfile2
+
+A per-module explenation of what to install:
+- django: the Django framework (https://www.djangoproject.com/)
+- gunicorn: A Python WSGI HTTP server (https://gunicorn.org/)
+- markdown: support for Markdown text to html (https://python-markdown.github.io/)
+- pillow: Python Image Library, used to create thumbnails and get image information (https://pillow.readthedocs.io/en/stable/)
+- django-sendfile2: Used for serving attachments after user verification (https://pypi.org/project/django-sendfile2/)
 
 ## Install FMLY codebase
 > $ git clone https://github.com/arnecoomans/fmly.git .

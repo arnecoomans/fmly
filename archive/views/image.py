@@ -270,7 +270,11 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
   def get_success_url(self):
     return reverse_lazy('archive:image', args=[self.object.id, slugify(self.object.title)])
 
+'''
+    ATTACHMENTS
+'''
 
+''' Show a list of Attachment by User '''
 class AttachmentListView(PermissionRequiredMixin, ListView):
   model = Attachment
   permission_required = 'archive.view_attachment'
@@ -279,12 +283,19 @@ class AttachmentListView(PermissionRequiredMixin, ListView):
 
   def get_queryset(self):
     queryset = Attachment.objects.all().filter(is_deleted=False).order_by('user', 'description')
+    ''' Allow to filter attachments per user '''
     if 'user' in self.kwargs:
       queryset = queryset.filter(user__username__iexact=self.kwargs['user'])
     return queryset
 
+''' Stream Attachment to User as download, but only if user is authenticated.
+    This aviods files being downloaded by non-users.
+    Requires django-sendfile2, add sendfile-settings in settings.py and support of
+    sendfile in nginx.
+    https://pypi.org/project/django-sendfile2/
+    See /documentation for more information
+'''
 class AttachmentStreamView(PermissionRequiredMixin, DetailView):
-  ''' SendFile https://github.com/johnsensible/django-sendfile '''
   model = Attachment
   permission_required = 'archive.view_attachment'
 
