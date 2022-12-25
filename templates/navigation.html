@@ -29,11 +29,6 @@
             <a class="nav-link bi bi-chat-text-fill{% if active_page == 'comments' %} active{% endif %}" href="{% url 'archive:comments' %}"  accesskey="r"> Reacties</a>
           </li>
         {% endif %}
-        {% if perms.archive.view_note %}
-          <li class="nav-item">
-            <a class="nav-link bi bi-stickies-fill{% if active_page == 'notes' %} active{% endif %}" href="{% url 'archive:notes' %}"  accesskey="n"> Notities</a>
-          </li>
-        {% endif %}
         {% if user.is_authenticated %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle bi bi-gear-fill" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -43,6 +38,15 @@
             <!-- Personal Profile-->
               <li><a class="dropdown-item bi bi-person"> {{ user.first_name }} {{ user.last_name }} ({{ user }})</a></li>
               <li><a class="dropdown-item bi bi-images" href="{% url 'archive:image-by-uploader' user %}"> Mijn uploads</a></li>
+              <li><div class="dropdown-divider"></div></li>
+              <!-- Notes -->
+              {% if perms.archive.view_note %}
+                <li><a class="dropdown-item bi bi-stickies-fill{% if active_page == 'notes' %} active{% endif %}" href="{% url 'archive:notes' %}"  accesskey="n"> Notities</a></li>
+              {% endif %}
+              <!-- Attachments -->
+              {% if perms.archive.view_attachment %}
+                <li><a class="dropdown-item bi bi-paperclip" href="{% url 'archive:attachments' %}"> Attachments</a></li>
+              {% endif %}
               <li><div class="dropdown-divider"></div></li>
             <!-- Objects -->
               <!-- Images -->
@@ -73,10 +77,7 @@
               {% if note and perms.archive.change_note %}
                 <li><a class="dropdown-item bi bi-pencil-fill {% if user != note.user and not user.is_superuser %}disabled{% endif %}" href="{% url 'archive:note-edit' note.id %}"> Bewerk notitie</a></li>
               {% endif %}
-              <!-- Attachments -->
-              {% if perms.archive.view_attachment %}
-                <li><a class="dropdown-item bi bi-paperclip" href="{% url 'archive:attachments' %}"> Attachments</a></li>
-              {% endif %}
+              <!-- Attachment -->
               {% if perms.archive.create_attachment %}
                 <li><a class="dropdown-item bi bi-paperclip disabled" href="{% url 'archive:attachments' %}"> Attachment toevoegen</a></li>
               {% endif %}

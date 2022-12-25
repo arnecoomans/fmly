@@ -270,7 +270,11 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
   def get_success_url(self):
     return reverse_lazy('archive:image', args=[self.object.id, slugify(self.object.title)])
 
+'''
+    ATTACHMENTS
+'''
 
+''' Show a list of Attachment by User '''
 class AttachmentListView(PermissionRequiredMixin, ListView):
   model = Attachment
   permission_required = 'archive.view_attachment'
@@ -279,19 +283,45 @@ class AttachmentListView(PermissionRequiredMixin, ListView):
 
   def get_queryset(self):
     queryset = Attachment.objects.all().filter(is_deleted=False).order_by('user', 'description')
+    ''' Allow to filter attachments per user '''
     if 'user' in self.kwargs:
       queryset = queryset.filter(user__username__iexact=self.kwargs['user'])
     return queryset
 
+''' Stream Attachment to User as download, but only if user is authenticated.
+    This aviods files being downloaded by non-users.
+    Requires django-sendfile2, add sendfile-settings in settings.py and support of
+    sendfile in nginx.
+    https://pypi.org/project/django-sendfile2/
+    See /documentation for more information
+'''
 class AttachmentStreamView(PermissionRequiredMixin, DetailView):
-  ''' SendFile https://github.com/johnsensible/django-sendfile '''
   model = Attachment
   permission_required = 'archive.view_attachment'
 
   def get(self, request, *arg, **kwargs):
-    file = Path(settings.MEDIA_ROOT).joinpath(str(self.get_object().file))
+    ''' Only allow for not-deleted files'''
+    file = self.get_object()
+    ''' Prepare filename '''
+    filename = Path(str(file.file))
+    if len(filename.stem) > 24:
+      filename = f"{filename.stem[:22]}..{filename.suffix}"
+    ''' Sanity Checks '''
+    if file.is_deleted:
+      ''' If file is marked as deleted, show an error message '''
+      ''' Send message that file is not available '''
+      messages.add_message(self.request, messages.WARNING, f"Bestand \"{ filename }\"is niet meer beschikbaar.")
+      ''' Return to Attachment List '''
+      return redirect(reverse('archive:attachments'))
+    elif not Path(str(file.file)).exists():
+      ''' Check if file exists on filesystem '''
+      ''' Send message that file is not available '''
+      messages.add_message(self.request, messages.ERROR, f"Bestand \"{ filename }\"is niet beschikbaar.")
+      ''' Return to Attachment List '''
+      return redirect(reverse('archive:attachments'))
+    ''' Allow download of file by user '''
+    file = Path(settings.MEDIA_ROOT).joinpath(str(file.file))
     return sendfile(request, file)
-    ''' Stop at "No module named 'sendfile'" '''
 
   
   
