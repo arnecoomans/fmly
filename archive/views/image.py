@@ -289,9 +289,28 @@ class AttachmentStreamView(PermissionRequiredMixin, DetailView):
   permission_required = 'archive.view_attachment'
 
   def get(self, request, *arg, **kwargs):
-    file = Path(settings.MEDIA_ROOT).joinpath(str(self.get_object().file))
+    ''' Only allow for not-deleted files'''
+    file = self.get_object()
+    ''' Prepare filename '''
+    filename = Path(str(file.file))
+    if len(filename.stem) > 24:
+      filename = f"{filename.stem[:22]}..{filename.suffix}"
+    ''' Sanity Checks '''
+    if file.is_deleted:
+      ''' If file is marked as deleted, show an error message '''
+      ''' Send message that file is not available '''
+      messages.add_message(self.request, messages.WARNING, f"Bestand \"{ filename }\"is niet meer beschikbaar.")
+      ''' Return to Attachment List '''
+      return redirect(reverse('archive:attachments'))
+    elif not Path(str(file.file)).exists():
+      ''' Check if file exists on filesystem '''
+      ''' Send message that file is not available '''
+      messages.add_message(self.request, messages.ERROR, f"Bestand \"{ filename }\"is niet beschikbaar.")
+      ''' Return to Attachment List '''
+      return redirect(reverse('archive:attachments'))
+    ''' Allow download of file by user '''
+    file = Path(settings.MEDIA_ROOT).joinpath(str(file.file))
     return sendfile(request, file)
-    ''' Stop at "No module named 'sendfile'" '''
 
   
   

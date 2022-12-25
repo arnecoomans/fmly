@@ -21,7 +21,6 @@
           <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment" target="_blank" rel="noopener noreferrer">{{ attachment.description|title }}</a>
           [{{ attachment.getSize }}]
           ({{ attachment.uploaded_at|date:'d/m/y' }})
-          
         </li>
         {% endfor %}
       </ul>
