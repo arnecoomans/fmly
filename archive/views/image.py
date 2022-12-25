@@ -10,7 +10,6 @@ from django.contrib import messages
 
 from django_sendfile import sendfile
 
-
 from pathlib import Path
 from math import floor
 
@@ -275,6 +274,7 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
 class AttachmentListView(PermissionRequiredMixin, ListView):
   model = Attachment
   permission_required = 'archive.view_attachment'
+  permission_denied_message = 'Geen rechten toegekend om Attachments te bekijken'
   template_name = 'archive/attachments/list.html'
 
   def get_queryset(self):
@@ -291,7 +291,7 @@ class AttachmentStreamView(PermissionRequiredMixin, DetailView):
   def get(self, request, *arg, **kwargs):
     file = Path(settings.MEDIA_ROOT).joinpath(str(self.get_object().file))
     return sendfile(request, file)
-    return redirect(reverse('archive:attachments'))
+    ''' Stop at "No module named 'sendfile'" '''
 
   
   
