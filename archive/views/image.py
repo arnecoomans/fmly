@@ -313,7 +313,7 @@ class AttachmentStreamView(PermissionRequiredMixin, DetailView):
       messages.add_message(self.request, messages.WARNING, f"Bestand \"{ filename }\"is niet meer beschikbaar.")
       ''' Return to Attachment List '''
       return redirect(reverse('archive:attachments'))
-    elif not Path(str(file.file)).exists():
+    elif not settings.MEDIA_ROOT.joinpath(str(file.file)).exists():
       ''' Check if file exists on filesystem '''
       ''' Send message that file is not available '''
       messages.add_message(self.request, messages.ERROR, f"Bestand \"{ filename }\"is niet beschikbaar.")
