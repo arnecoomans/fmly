@@ -17,10 +17,11 @@
           <h5>{% if attachment.user.first_name or attachment.user.last_name %}{{ attachment.user.first_name }} {{ attachment.user.last_name }} ({% endif %}{{ attachment.user}}{% if attachment.user.first_name or attachment.user.last_name %}){% endif %}</h5>
           <ul class="tags no-bullets">
         {% endifchanged %}
-        <li class="tag bi bi-paperclip">
+        <li class="tag bi bi-paperclip{% if request.GET.mark|lower == attachment.slug|lower %} marked{% endif %}">
           <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment" target="_blank" rel="noopener noreferrer">{{ attachment.description|title }}</a>
           [{{ attachment.getSize }}]
           ({{ attachment.uploaded_at|date:'d/m/y' }})
+          {% if attachment.user == request.user %} <a href="" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete attachment">[X]</a>{% endif %}
         </li>
         {% endfor %}
       </ul>

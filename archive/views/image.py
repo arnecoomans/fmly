@@ -288,6 +288,27 @@ class AttachmentListView(PermissionRequiredMixin, ListView):
       queryset = queryset.filter(user__username__iexact=self.kwargs['user'])
     return queryset
 
+''' AddAttachment '''
+class AttachmentAddView(PermissionRequiredMixin, CreateView):
+  model = Attachment
+  permission_required = 'archive.create_attachment'
+  template_name = 'archive/attachments/edit.html'
+  fields = ['file', 'description', ]
+
+  def form_invalid(self, form):
+    messages.add_message(self.request, messages.WARNING, f"Formulier kan niet worden ingediend vanwege de volgende fout(en): { form.errors }")
+    return super().form_invalid(form)
+
+  def form_valid(self, form):
+    form.instance.user = self.request.user
+    form.instance.slug = slugify(str(form.instance.file))
+    if not form.instance.description:
+      form.instance.description = str(form.instance.file)
+    return super().form_valid(form)
+  
+  def get_success_url(self):
+    return reverse('archive:attachments') + '?mark=' + self.object.slug
+
 ''' Stream Attachment to User as download, but only if user is authenticated.
     This aviods files being downloaded by non-users.
     Requires django-sendfile2, add sendfile-settings in settings.py and support of

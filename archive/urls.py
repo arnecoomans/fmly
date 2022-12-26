@@ -12,7 +12,7 @@ urlpatterns = [
   path('object/<int:pk>/edit/', views.EditImageView.as_view(), name='image-edit'),
   #path('object/<int:pk>/attach/', views.AddAttachmentToImageView.as_view(), name='image-add-attachment'),
   path('object/<int:pk>/<name>/', views.ImageView.as_view(), name='image'),
-  path('add/image/', views.AddImageView.as_view(), name='add-image'),
+  path('object/new/', views.AddImageView.as_view(), name='add-image'),
   # Special Image views
   path('objects/<int:decade>/', views.ImageListView.as_view(), {'columns': ('decade')}, name='images-by-decade'),
   path('objects/<str:tag>/', views.ImageListView.as_view(), {'columns': ('tag')}, name='image-with-tag'),
@@ -24,14 +24,14 @@ urlpatterns = [
   path('person/<int:pk>/', views.PersonRedirectView.as_view(), name='person-short'),
   path('person/<int:pk>/edit/', views.EditPersonView.as_view(), name='person-edit'),
   path('person/<int:pk>/<name>/', views.PersonView.as_view(), name='person'),
-  path('person/add/', views.AddPersonView.as_view(), name='add-person'),
+  path('person/new/', views.AddPersonView.as_view(), name='add-person'),
   
   # Relationships
   path('person/<int:subject>/<str:type>:<int:removed_person>/delete/', views.PersonRemoveRelationView.as_view(), {'columns': ('up', 'relation', 'down')}, name='remove-relationship'),
   path('person/add-relation/', views.PersonAddRelationView.as_view(), name='add-relationship'),
   # Tags 
   path('tags/', views.TagListView.as_view(), name='tags'),
-  path('tags/add/', views.AddTagView.as_view(), name='add-tag'),
+  path('tag/new/', views.AddTagView.as_view(), name='add-tag'),
   path('tag/<str:slug>/', views.EditTagView.as_view(), name='edit-tag'),
   # Notes
   path('note/', views.NotesListView.as_view(), name='notes'),
@@ -48,9 +48,10 @@ urlpatterns = [
   
   # Attachments
   path('attachments/', views.AttachmentListView.as_view(), name='attachments'),
+  path('attachments/new/', views.AttachmentAddView.as_view(), name='add-attachment'),
   path('attachments/<str:user>/', views.AttachmentListView.as_view(), name='user-attachments'),
-  
   path('attachment/<str:slug>/', views.AttachmentStreamView.as_view(), name='attachment'),
+  
   # Accounts
   path("sign-up", views.SignUpView.as_view(), name='signup'),
 ]
