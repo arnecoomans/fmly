@@ -11,7 +11,7 @@ urlpatterns = [
   path('object/<int:pk>/comment/', views.AddCommentView.as_view(), name='comment'),
   path('object/<int:pk>/edit/', views.EditImageView.as_view(), name='image-edit'),
   #path('object/<int:pk>/attach/', views.AddAttachmentToImageView.as_view(), name='image-add-attachment'),
-  path('object/<int:pk>/<name>/', views.ImageView.as_view(), name='image'),
+  path('object/<int:pk>/<slug>/', views.ImageView.as_view(), name='image'),
   path('object/new/', views.AddImageView.as_view(), name='add-image'),
   # Special Image views
   path('objects/<int:decade>/', views.ImageListView.as_view(), {'columns': ('decade')}, name='images-by-decade'),
@@ -50,9 +50,10 @@ urlpatterns = [
   path('attachments/', views.AttachmentListView.as_view(), name='attachments'),
   path('attachments/<str:user>/', views.AttachmentListView.as_view(), name='user-attachments'),
   path('attachment/new/', views.AttachmentAddView.as_view(), name='add-attachment'),
-  path('attachment/<str:slug>/delete', views.AttachmentDeleteView.as_view(), name='delete-attachment'),
+  path('attachment/<str:slug>/delete/', views.AttachmentDeleteView.as_view(), name='delete-attachment'),
+  path('attachment/<str:slug>/create-image/', views.CreateImageFromAttachmentView.as_view(), name='create-image-from-attachment'),
   path('attachment/<str:slug>/', views.AttachmentStreamView.as_view(), name='attachment'),
   
   # Accounts
-  path("sign-up", views.SignUpView.as_view(), name='signup'),
+  path("sign-up/", views.SignUpView.as_view(), name='signup'),
 ]
