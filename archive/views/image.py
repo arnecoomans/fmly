@@ -8,7 +8,9 @@ from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
 
+''' Required for streaming downloads to user '''
 from django_sendfile import sendfile
+''' Required for Attachment to Image '''
 
 from pathlib import Path
 from math import floor
@@ -265,10 +267,10 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
     else:
       ''' No changes are detected, redirect to image without saving. '''
       messages.add_message(self.request, messages.WARNING, f"Geen wijzigingen opgegeven.")
-      return redirect(reverse_lazy('archive:image', args=[form.instance.id, slugify(form.instance.title)]))
+      return redirect(reverse_lazy('archive:image', kwargs={'pk':form.instance.id, 'slug': slugify(form.instance.title)}))
 
   def get_success_url(self):
-    return reverse_lazy('archive:image', args=[self.object.id, slugify(self.object.title)])
+    return reverse_lazy('archive:image', kwargs={'pk': self.object.id, 'slug': slugify(self.object.title)})
 
 '''
     ATTACHMENTS
@@ -360,6 +362,47 @@ class AttachmentStreamView(PermissionRequiredMixin, DetailView):
     file = Path(settings.MEDIA_ROOT).joinpath(str(file.file))
     return sendfile(request, file)
 
-  
-  
-  
+class CreateImageFromAttachmentView(PermissionRequiredMixin, DetailView):
+  model = Attachment
+  permission_required = 'archive.create_image'
+
+  def get(self, request, *args, **kwargs):
+    attachment = self.get_object()
+    if attachment.extension() == 'pdf':
+      ''' For PDF attachment, create image of first page and create Image '''
+      
+      source = settings.MEDIA_ROOT.joinpath(str(attachment.file))
+      destination = settings.MEDIA_ROOT.joinpath(source.stem).with_suffix('.jpg')
+      ''' Check if source exists and destination does not already exist '''
+      if not source.exists() or destination.exists():
+        if not source.exists():
+          messages.add_message(request, messages.ERROR, f"Kan geen afbeelding maken van \"{ attachment }\". Bestand wordt niet gevonden.")
+        if destination.exists():
+          messages.add_message(request, messages.ERROR, f"Kan geen afbeelding maken van \"{ attachment }\". Doelbestand bestaat al.")
+        return redirect(reverse('archive:attachments'))
+      ''' Proceed with creating image of first page '''
+      import fitz
+      pdf = fitz.open(source)
+      page = pdf.load_page(0)
+      image_source = page.get_pixmap(matrix=fitz.Matrix(4, 4))
+      image_source.save(destination)
+      ''' Create new Image object '''
+      image = Image()
+      image.source.name = destination.name
+      ''' Set Image name to filename stem '''
+      image.title = source.stem
+      ''' Set Image user to current user '''
+      image.user = request.user
+      #''' Set attachment as source of document'''
+      # This links directly to the attachment, and is redundant if the attachment is linked. 
+      #image.document_source = 'https://' + request.get_host() + reverse('archive:attachment', kwargs={'slug': attachment.slug})
+      image.save()
+      ''' Link originating attachment to image'''
+      image.attachments.set([attachment])
+      image.save()
+      messages.add_message(request, messages.SUCCESS, f"Afbeelding van attachment \"{ str(source.name) }\" aangemaakt.")
+      return redirect(reverse_lazy('archive:image', kwargs={'pk': image.id, 'slug': slugify(image.title)}))
+    else:
+      messages.add_message(request, messages.WARNING, f"Kan geen afbeelding maken van \"{ attachment }\". Bestandstype \"{ attachment.extension }\" wordt niet ondersteund.")
+    pass
+    return redirect(reverse('archive:attachments'))
