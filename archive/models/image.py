@@ -65,7 +65,7 @@ class Group(models.Model):
 
 class Attachment(models.Model):
   slug                = models.CharField(max_length=255, unique=True)
-  file                = models.FileField(null=True, blank=True, upload_to='files', help_text='Possible to attach file to an image. Use for pdf, doc, excel, etc.')
+  file                = models.FileField(null=True, upload_to='files', help_text='Possible to attach file to an image. Use for pdf, doc, excel, etc.')
   description         = models.CharField(max_length=512, blank=True, null=True)
   # Meta
   size                = models.IntegerField(default=0)
@@ -74,10 +74,12 @@ class Attachment(models.Model):
   is_deleted          = models.BooleanField(default=False)
 
   def __str__(self) -> str:
-    description = self.description
+    description = str(self.description)
+    if len(description) < 1:
+      description = self.slug
     if self.is_deleted:
       description = f"[Deleted] { description }"
-    return description
+    return str(description)
   
   def get_absolute_url(self):
       return reverse("archive:attachment", kwargs={"slug": self.slug})

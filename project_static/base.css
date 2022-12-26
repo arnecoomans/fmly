@@ -211,7 +211,10 @@ h6:hover:has(a), h6:hover a, h6 a:hover {
   }
   li.tag > span.description {
     margin-left: 1.5em;
-}
+  }
+  li.marked {
+    background-color: var(--colour-highlight);
+  }
 /** People */
 .list-person-details:hover {
   background-color: rgba(0,0,0,0.1);

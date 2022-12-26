@@ -79,7 +79,7 @@
               {% endif %}
               <!-- Attachment -->
               {% if perms.archive.create_attachment %}
-                <li><a class="dropdown-item bi bi-paperclip disabled" href="{% url 'archive:attachments' %}"> Attachment toevoegen</a></li>
+                <li><a class="dropdown-item bi bi-paperclip " href="{% url 'archive:add-attachment' %}"> Attachment toevoegen</a></li>
               {% endif %}
               <!-- Admin -->
               {% if user.is_staff %}
