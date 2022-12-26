@@ -48,8 +48,9 @@ urlpatterns = [
   
   # Attachments
   path('attachments/', views.AttachmentListView.as_view(), name='attachments'),
-  path('attachments/new/', views.AttachmentAddView.as_view(), name='add-attachment'),
   path('attachments/<str:user>/', views.AttachmentListView.as_view(), name='user-attachments'),
+  path('attachment/new/', views.AttachmentAddView.as_view(), name='add-attachment'),
+  path('attachment/<str:slug>/delete', views.AttachmentDeleteView.as_view(), name='delete-attachment'),
   path('attachment/<str:slug>/', views.AttachmentStreamView.as_view(), name='attachment'),
   
   # Accounts
