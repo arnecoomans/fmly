@@ -309,6 +309,22 @@ class AttachmentAddView(PermissionRequiredMixin, CreateView):
   def get_success_url(self):
     return reverse('archive:attachments') + '?mark=' + self.object.slug
 
+''' Delete attachment '''
+class AttachmentDeleteView(PermissionRequiredMixin, DetailView):
+  model = Attachment
+  permission_required = 'archive.change_attachment'
+
+  def get(self, request, *args, **kwargs):
+    object = self.get_object()
+    if object.user == request.user:
+      object.is_deleted = True
+      object.save()
+      messages.add_message(self.request, messages.SUCCESS, f"Attachment \"{ object.file } ({ object.description })\" is verwijderd en is niet meer te downloaden.")
+      messages.add_message(self.request, messages.WARNING, f"Let op! Het bestand is niet verwijderd van de server. <br>Neem contact op met de beheerder als het bestand ook van de server moet worden verwijderd.")
+    else:
+      messages.add_message(self.request, messages.ERROR, f"Kan \"{ object.file }\" niet verwijderen. <br>Attachment kan alleen verwijderd worden door de attachment eigenaar en de site-beheerder.")
+    return redirect(reverse('archive:attachments'))
+
 ''' Stream Attachment to User as download, but only if user is authenticated.
     This aviods files being downloaded by non-users.
     Requires django-sendfile2, add sendfile-settings in settings.py and support of

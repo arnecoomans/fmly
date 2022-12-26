@@ -90,7 +90,7 @@ class AttachmentAdmin(admin.ModelAdmin):
     get_data = super(AttachmentAdmin, self).get_changeform_initial_data(request)
     get_data['user'] = request.user.pk
     return get_data
-  actions = [setSlug,]
+  actions = [setSlug, softdelete, softundelete]
 
 class NoteAdmin(admin.ModelAdmin):
   def get_changeform_initial_data(self, request):

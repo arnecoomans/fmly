@@ -1,4 +1,4 @@
-from django.views import generic
+from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.shortcuts import redirect
 from django.conf import settings
@@ -32,7 +32,7 @@ def get_comment_preview(comment):
   return ' '.join(comment)
 
 ''' List comments by date added newest first '''
-class CommentListView(generic.ListView):
+class CommentListView(ListView):
   model = Comment
   template_name = 'archive/comments/list.html'
   paginate_by = settings.PAGINATE
@@ -110,7 +110,7 @@ class CommentEditView(PermissionRequiredMixin, UpdateView):
 
 
 ''' Delete Comment '''
-class CommentDeleteView(PermissionRequiredMixin, generic.DetailView):
+class CommentDeleteView(PermissionRequiredMixin, DetailView):
   permission_required = 'archive.change_comment'
   model = Comment
     
@@ -131,7 +131,7 @@ class CommentDeleteView(PermissionRequiredMixin, generic.DetailView):
 ''' Comment Undelete
     When deleting a comment, the undo-option is available. 
 '''
-class CommentUnDeleteView(PermissionRequiredMixin, generic.DetailView):
+class CommentUnDeleteView(PermissionRequiredMixin, DetailView):
   permission_required = 'archive.change_comment'
   model = Comment
   
