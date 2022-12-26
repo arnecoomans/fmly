@@ -113,7 +113,7 @@
                 {% if form.user.errors %}<p>{{ form.user.errors }}</p>{% endif %}
               </dd>
           {% else %}
-            <input type="hidden" name="user" value="{{ request.user.id }}">
+            <input type="hidden" name="user" value="{% if image %}{{ image.user.id }}{% else %}{{ request.user.id }}{% endif %}">
           {% endif %}
           <dt>&nbsp;</dt>
             <dd><input type="submit" value="Verstuur wijzigingen">

@@ -97,7 +97,7 @@
               <dd>
                 {% for person in person.get_parents %}
                   {% include 'archive/snippets/person_link.html' %} 
-                  <a href="{% url 'archive:remove-relationship' me.id 'parent' person.id %}" title="Remove relationship">[x]</a>
+                  <a href="{% url 'archive:remove-relationship' me.id 'parent' person.id %}" title="Remove relationship" data-bs-toggle="tooltip" data-bs-placement="top">[x]</a>
                   {% if not forloop.last %}<br>{% endif %}
                 {% endfor %}
                 </dd>
@@ -108,7 +108,7 @@
                 <dd>
                   {% for person in person.get_partners %}
                   {% include 'archive/snippets/person_link.html' %} 
-                  <a href="{% url 'archive:remove-relationship' me.id 'partner' person.id %}" title="Remove relationship">[x]</a>
+                  <a href="{% url 'archive:remove-relationship' me.id 'partner' person.id %}" title="Remove relationship" data-bs-toggle="tooltip" data-bs-placement="top">[x]</a>
                   {% if not forloop.last %}<br>{% endif %}
                   {% endfor %}
                 </dd>
@@ -128,7 +128,7 @@
                 <dd>
                   {% for person in person.get_children %}
                   {% include 'archive/snippets/person_link.html' %} 
-                  <a href="{% url 'archive:remove-relationship' me.id 'child' person.id %}" title="Remove relationship">[x]</a>
+                  <a href="{% url 'archive:remove-relationship' me.id 'child' person.id %}" title="Remove relationship" data-bs-toggle="tooltip" data-bs-placement="top">[x]</a>
                   {% if not forloop.last %}<br>{% endif %}
                   {% endfor %}
                 </dd>
