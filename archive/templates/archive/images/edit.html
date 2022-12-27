@@ -108,7 +108,8 @@
                   {% endif %}
                 {% endfor%}
                 {% if portrait %}
-                  {% include 'archive/snippets/person_link.html' with person=portrait %} <a href="{% url 'archive:remove-portrait' portrait.id image.id %}">[X]</a>
+                  <input type="hidden" name="is_portrait_of" value="{{ portrait.id }}">
+                  {% include 'archive/snippets/person_link.html' with person=portrait %} <a href="{% url 'archive:remove-portrait' portrait.id image.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Verwijder afbeelding als portret van {{ portrait }}">[X]</a>
                 {% elif available_portraits.all.count > 0 %}
                   <select name="is_portrait_of" id="is_portrait_of">
                     <option value selected>---------</option>

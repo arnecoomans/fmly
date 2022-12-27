@@ -244,7 +244,6 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
     context['active_page'] = 'images'
     context['portrait'] = self.object.is_portrait_of
     context['available_portraits'] = self.object.people.all().filter(portrait=None)
-    #Person.objects.all().filter(portrait=None)
     return context
     
   def __init__(self, *args, **kwargs):

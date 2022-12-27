@@ -3,8 +3,8 @@
 {% if not suppress_icons %}
   <span class="icons">
     <!-- bio -->{% if person.bio %}<i class="bi bi-journal-text" title="{{ person.name }} heeft een biografie"></i>{% endif %}
-    <!-- images -->{% if person.images.all.count > 0 %} <i class="bi bi-image{% if person.images.all.count > 1 %}s{% endif %}" title="{{ person.images.all.count }} afbeeldingen met {{ person.name }}"></i>{{ person.images.all.count }}{% endif %}
-    <!-- notes -->{% if person.notes.all.count > 0 %} <i class="bi-stick{% if person.notes.all.count > 1 %}ies{% else %}y{% endif %}" title="{{ person.notes.all.count }} notities met {{ person.name }}"></i>{{ person.notes.all.count }}{% endif %}
-    <!-- comments -->{% if person.related_user.comments.all.count > 0 %} <a href="{% url 'archive:comments' %}?user={{ person.related_user.username }}" class="bi bi-chat" title="{{ person.related_user.comments.all.count }} reacties door {{ person.name }}">{{ person.related_user.comments.all.count }}</a>{% endif %}
+    <!-- images -->{% if person.images.all.count > 0 %} <i class="bi bi-image{% if person.images.all.count > 1 %}s{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.images.all.count }} afbeeldingen met {{ person.name }}"></i>{{ person.images.all.count }}{% endif %}
+    <!-- notes -->{% if person.notes.all.count > 0 %} <i class="bi-stick{% if person.notes.all.count > 1 %}ies{% else %}y{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.notes.all.count }} notities met {{ person.name }}"></i>{{ person.notes.all.count }}{% endif %}
+    <!-- comments -->{% if person.related_user.comments.all.count > 0 %} <a href="{% url 'archive:comments' %}?user={{ person.related_user.username }}" class="bi bi-chat" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.related_user.comments.all.count }} reacties door {{ person.name }}">{{ person.related_user.comments.all.count }}</a>{% endif %}
   </span>
 {% endif %}

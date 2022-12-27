@@ -238,6 +238,8 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
   model = Person
   permission_required = 'archive.change_person'
   template_name = 'archive/people/edit.html'
+  redirect_to_edit = False
+
   ''' Use get_fields() as general function in this file to maintain fields in one spot '''
   fields = get_fields()
   
@@ -254,6 +256,17 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
       self.fields.append('email')
     form = super(EditPersonView, self).get_form()
     return form
+
+  # def form_valid(self, form):
+  #   if hasattr(form.changed_data, 'people'):
+  #     self.redirect_to_edit = True
+  #   if hasattr(form.changed_data, 'is_portrait_of'):
+  #     self.redirect_to_edit = True
+
+  # def get_success_url(self):
+  #   if self.redirect_to_edit:
+  #     return reverse('archive:image-edit', kwargs={'pk': self.get_object().id})
+  #   return super().get_success_url()
 
 ''' Add Person view '''
 class AddPersonView(PermissionRequiredMixin, CreateView):
