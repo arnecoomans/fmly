@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.urls import reverse_lazy, reverse
 
 class Person(models.Model):
   ''' Model: Person
@@ -148,7 +149,7 @@ class Person(models.Model):
       should return URL with both name and slug
   '''
   def get_absolute_url(self):
-    return reverse('archive:person', kwargs={'pk':self.id, 'name': self.slug})
+    return reverse_lazy('archive:person', kwargs={'pk':self.id, 'name': self.slug})
   
 
   ''' Processing at save
