@@ -3,9 +3,9 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
-from math import floor
+from django.urls import reverse
 
-from archive.models import Image, Tag
+from archive.models import Tag
 
 
 ''' Tags
@@ -45,6 +45,9 @@ class AddTagView(PermissionRequiredMixin, CreateView):
     ''' Enforce user upon tag creation '''
     form.instance.user = self.request.user
     return super().form_valid(form)
+  
+  def get_success_url(self):
+    return reverse('archive:tags') + '?mark=' + self.object.slug
 
 class EditTagView(PermissionRequiredMixin, UpdateView):
   model = Tag
