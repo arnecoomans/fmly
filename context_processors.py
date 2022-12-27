@@ -8,4 +8,5 @@ def setting_data(request):
     'master_css': settings.MASTER_CSS,
     'families': settings.FAMILIES,
     'unauthenticated_welcome': settings.UNAUTHENTICATED_WELCOME,
+    'matomo_id': settings.MATOMO_TRACKING_ID,
   }
