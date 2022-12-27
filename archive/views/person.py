@@ -1,10 +1,11 @@
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView
-
+from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 from django.db.models import Q
 from django.conf import settings
 from django.contrib import messages
+from django.template.defaultfilters import slugify
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
@@ -407,3 +408,15 @@ class PersonRemoveRelationView(PermissionRequiredMixin, DetailView):
       else:
         messages.add_message(self.request, messages.SUCCESS, f"\"{ removed_person }\" verwijderd als partner van \"{ subject }\".")
     return redirect('archive:person-edit', subject.id )
+
+class RemovePortraitView(PermissionRequiredMixin, DetailView):
+  model = Person
+  permission_required = 'archive.change_person'
+
+  def get(self, request, *args, **kwargs):
+    person = Person.objects.get(pk=kwargs['subject'])
+    image = Image.objects.get(pk=kwargs['removed_image'])
+    image.is_portrait_of = None
+    image.save()
+    messages.add_message(self.request, messages.SUCCESS, f"\"{ image }\" verwijderd als portret van \"{ person }\".")
+    return redirect(reverse('archive:image-edit', kwargs={'pk':image.id}))
