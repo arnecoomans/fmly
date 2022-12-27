@@ -11,6 +11,7 @@ from django.contrib import messages
 ''' Required for streaming downloads to user '''
 from django_sendfile import sendfile
 ''' Required for Attachment to Image '''
+import fitz
 
 from pathlib import Path
 from math import floor
@@ -381,7 +382,7 @@ class CreateImageFromAttachmentView(PermissionRequiredMixin, DetailView):
           messages.add_message(request, messages.ERROR, f"Kan geen afbeelding maken van \"{ attachment }\". Doelbestand bestaat al.")
         return redirect(reverse('archive:attachments'))
       ''' Proceed with creating image of first page '''
-      import fitz
+      
       pdf = fitz.open(source)
       page = pdf.load_page(0)
       image_source = page.get_pixmap(matrix=fitz.Matrix(4, 4))
