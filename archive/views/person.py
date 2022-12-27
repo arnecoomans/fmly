@@ -1,10 +1,11 @@
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView
-
+from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 from django.db.models import Q
 from django.conf import settings
 from django.contrib import messages
+from django.template.defaultfilters import slugify
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
@@ -237,6 +238,8 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
   model = Person
   permission_required = 'archive.change_person'
   template_name = 'archive/people/edit.html'
+  redirect_to_edit = False
+
   ''' Use get_fields() as general function in this file to maintain fields in one spot '''
   fields = get_fields()
   
@@ -253,6 +256,17 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
       self.fields.append('email')
     form = super(EditPersonView, self).get_form()
     return form
+
+  # def form_valid(self, form):
+  #   if hasattr(form.changed_data, 'people'):
+  #     self.redirect_to_edit = True
+  #   if hasattr(form.changed_data, 'is_portrait_of'):
+  #     self.redirect_to_edit = True
+
+  # def get_success_url(self):
+  #   if self.redirect_to_edit:
+  #     return reverse('archive:image-edit', kwargs={'pk': self.get_object().id})
+  #   return super().get_success_url()
 
 ''' Add Person view '''
 class AddPersonView(PermissionRequiredMixin, CreateView):
@@ -407,3 +421,15 @@ class PersonRemoveRelationView(PermissionRequiredMixin, DetailView):
       else:
         messages.add_message(self.request, messages.SUCCESS, f"\"{ removed_person }\" verwijderd als partner van \"{ subject }\".")
     return redirect('archive:person-edit', subject.id )
+
+class RemovePortraitView(PermissionRequiredMixin, DetailView):
+  model = Person
+  permission_required = 'archive.change_person'
+
+  def get(self, request, *args, **kwargs):
+    person = Person.objects.get(pk=kwargs['subject'])
+    image = Image.objects.get(pk=kwargs['removed_image'])
+    image.is_portrait_of = None
+    image.save()
+    messages.add_message(self.request, messages.SUCCESS, f"\"{ image }\" verwijderd als portret van \"{ person }\".")
+    return redirect(reverse('archive:image-edit', kwargs={'pk':image.id}))

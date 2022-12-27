@@ -102,7 +102,26 @@
           {% if form.is_portrait_of %}
             <dt><label for="{{ form.is_portrait_of.id_for_label }}">Is portet van:</label></dt>
               <dd>
-                {{ form.is_portrait_of }}
+                {% for person in image.people.all %}
+                  {% if person.portrait and person.portrait != image %}
+                    {% include 'archive/snippets/person_link.html' with suppress_icons='true' %} heeft portret <a href="{% url 'archive:image' person.portrait.id person.portrait.title|slugify %}">{{ person.portrait }}</a>.<br>
+                  {% endif %}
+                {% endfor%}
+                {% if portrait %}
+                  <input type="hidden" name="is_portrait_of" value="{{ portrait.id }}">
+                  {% include 'archive/snippets/person_link.html' with person=portrait %} <a href="{% url 'archive:remove-portrait' portrait.id image.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Verwijder afbeelding als portret van {{ portrait }}">[X]</a>
+                {% elif available_portraits.all.count > 0 %}
+                  <select name="is_portrait_of" id="is_portrait_of">
+                    <option value selected>---------</option>
+                    {% for person in available_portraits %}
+                      <option value="{{ person.id }}">{{ person }}</option>
+                    {% endfor %}
+                  </select>
+                {% elif image.people.all.count == 0 %}
+                  Voeg eerst een persoon toe aan de foto en sla deze op.
+                {% else %}
+                  Om deze afbeelding portret te maken van een persoon, verwijder het huidige portret.
+                {% endif %}
                 {% if form.is_portrait_of.errors %}<p>{{ form.is_portrait_of.errors }}</p>{% endif %}
               </dd>
           {% endif %}
@@ -115,11 +134,14 @@
           {% else %}
             <input type="hidden" name="user" value="{% if image %}{{ image.user.id }}{% else %}{{ request.user.id }}{% endif %}">
           {% endif %}
+          {% if portrait or available_portraits.all.count > 0 %}
+          {% endif %}
           <dt>&nbsp;</dt>
             <dd><input type="submit" value="Verstuur wijzigingen">
               {% if image %} <a href="{% url 'archive:image' image.id image.title|slugify %}" type="button" class="btn btn-warning">Annuleren</a>{% endif %}
         </dl>
       </form>
+      {{ portrait }}
     </div>
     
     <!-- Meta information -->

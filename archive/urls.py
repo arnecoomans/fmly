@@ -25,10 +25,13 @@ urlpatterns = [
   path('person/<int:pk>/edit/', views.EditPersonView.as_view(), name='person-edit'),
   path('person/<int:pk>/<name>/', views.PersonView.as_view(), name='person'),
   path('person/new/', views.AddPersonView.as_view(), name='add-person'),
-  
+  # Portrait
+  path('person/<int:subject>/portrait:<int:removed_image>/delete/', views.RemovePortraitView.as_view(), name='remove-portrait'),
   # Relationships
   path('person/<int:subject>/<str:type>:<int:removed_person>/delete/', views.PersonRemoveRelationView.as_view(), {'columns': ('up', 'relation', 'down')}, name='remove-relationship'),
   path('person/add-relation/', views.PersonAddRelationView.as_view(), name='add-relationship'),
+  
+
   # Tags 
   path('tags/', views.TagListView.as_view(), name='tags'),
   path('tag/new/', views.AddTagView.as_view(), name='add-tag'),

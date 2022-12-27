@@ -242,6 +242,8 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'images'
+    context['portrait'] = self.object.is_portrait_of
+    context['available_portraits'] = self.object.people.all().filter(portrait=None)
     return context
     
   def __init__(self, *args, **kwargs):
