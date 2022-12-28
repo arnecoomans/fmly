@@ -4,6 +4,7 @@ from django.template.defaultfilters import slugify
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse_lazy, reverse
+from math import floor
 
 class Person(models.Model):
   ''' Model: Person
@@ -67,6 +68,13 @@ class Person(models.Model):
       call_sign = '(' + self.first_name + ') '
     return ' '.join([call_sign, self.given_names, self.last_name, self.married_name]).strip()
 
+  def century(self):
+    if self.year_of_birth:
+      return floor(self.year_of_birth/100)*100
+  def decade(self):
+    if self.year_of_birth:
+      return floor(self.year_of_birth/10)*10
+  
   def ageatdeath(self):
     if self.date_of_birth and self.date_of_death:
       age = self.date_of_death.year - self.date_of_birth.year

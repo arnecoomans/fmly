@@ -15,6 +15,13 @@
      That means that each filter requires hidden form fields if that option is selected.
   -->
       <div class="filters">
+        <!-- Order results by -->
+        <span class="option">
+          Sorteer resultaten op: 
+            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=last_name">Achternaam</a>
+            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=first_name">Voornaam</a>
+            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=year_of_birth">Geboortejaar</a>
+        </span>
         <!-- Filter Images Only With image -->
         <span class="option">
           <form method="get">
@@ -43,14 +50,14 @@
               <select name="family" onchange="this.form.submit()">
                 <option value="all">-----</option>
                 {% for family in available_families %}
-                  <option value="{{ family }}" {% if filters.family == family %} selected{% endif %}>{{ family }}</option>
+                  <option value="{{ family }}" {% if filters.family == family|lower %} selected{% endif %}>{{ family }}</option>
                 {% endfor %}
               </select>
             {% endif %}
           </form>
         </span>
         <!-- Decade filtering -->
-        {% if not filters.years and not filters.century and available_decades|length > 1%}
+        {% if not filters.years and not filters.century and available_decades|length > 0 %}
           <span class="option">
             <form method="get">
               {% with current='decade' %}
@@ -71,7 +78,7 @@
           </span>
         {% endif %}
         <!-- Century filtering -->
-        {% if not filters.years and not filters.decade and available_centuries|length > 1 %}
+        {% if not filters.years and not filters.decade and available_centuries|length > 0 %}
           <span class="option">
             <form method="get">
               {% with current='century' %}
@@ -96,14 +103,34 @@
 <!-- People -->
       {% for person in people %}
         {% if forloop.first %}
-          <h5>{{ person.last_name }}</h5>
+          {% if filters.order_by == 'last_name' %}
+            <h5>{{ person.last_name }}</h5>
+          {% elif filters.order_by == 'first_name' %}
+            <h5>{{ person.first_name.0|upper }}</h5>
+          {% elif filters.order_by == 'year_of_birth' %}
+            <h5>{{ person.century|default:'Geboortejaar onbekend' }}</h5>
+          {% endif %}
           <ul class="people no-bullets" id="{{ person.last_name }}>
         {% endif %}
-        {% ifchanged person.last_name %}
-          </ul>
-          <h5>{{ person.last_name }}</h5>
-          <ul class="people no-bullets" id="{{ person.last_name }}">
-        {% endifchanged %}
+        {% if filters.order_by == 'last_name' %}
+          {% ifchanged person.last_name %}
+            </ul>
+            <h5>{{ person.last_name }}</h5>
+            <ul class="people no-bullets" id="{{ person.last_name }}">
+          {% endifchanged %}
+        {% elif filters.order_by == 'first_name' %}
+          {% ifchanged person.first_name.0 %}
+            </ul>
+            <h5>{{ person.first_name.0|upper }}</h5>
+            <ul class="people no-bullets" id="{{ person.last_name }}">
+          {% endifchanged %}
+        {% elif filters.order_by == 'year_of_birth' %}
+          {% ifchanged person.century %}
+            </ul>
+            <h5>{{ person.century }}</h5>
+            <ul class="people no-bullets" id="{{ person.last_name }}">
+          {% endifchanged %}
+        {% endif %}
         <li class="list-person-details">
           {% include 'archive/snippets/person_link.html' %}
         </li>

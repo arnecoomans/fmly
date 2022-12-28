@@ -100,6 +100,12 @@ class PersonListView(ListView):
     'century': None,
     'family': None,
     'search': None,
+    'order_by': settings.PEOPLE_ORDERBY_DEFAULT,
+  }
+  translate_orderby = {
+    'last_name': 'achternaam',
+    'first_name': 'voornaam',
+    'year_of_birth': 'geboortejaar',
   }
 
   ''' getFilters
@@ -107,18 +113,18 @@ class PersonListView(ListView):
   '''
   def getFilters(self):
     filters = {}
-    ''' Loop through all available Filters configured in self.filters '''
-    for filter, default in self.filters.items():
-      ''' See if Filter is mentioned in the querystring '''
+    ''' Loop through available filters as configured in self.filters '''
+    for filter, default_value in self.filters.items():
+      ''' Check if filter is passed in querystring '''
       if self.request.GET.get(filter):
-        ''' Process special values '''
+        ''' Special Treatment '''
         if self.request.GET.get(filter).lower() == 'true':
           ''' Process string True as boolan value True'''
           filters[filter] = True
         elif self.request.GET.get(filter).lower() in ['false', 'none', 'all']:
           ''' Process string False, None or special value All as boolean value False '''
           filters[filter] = False
-        else: 
+        else:
           try:
             ''' Try to process Filter Value as Integer '''
             filters[filter] = int(self.request.GET.get(filter))
@@ -128,12 +134,20 @@ class PersonListView(ListView):
             elif filter =='century':
               filters[filter] = floor(filters[filter]/100)*100
           except:
-            ''' If processing as Integer failed, just accept the filter value '''
-            filters[filter] = self.request.GET.get(filter)
+            ''' Processing as integer failed, assume value is string ''' 
+            if filter == 'order_by':
+              if self.request.GET.get(filter).lower() in settings.PEOPLE_ORDERBY_OPTIONS:
+                filters[filter] = self.request.GET.get(filter).lower()
+              else:
+                filters[filter] = default_value
+            else:
+              filters[filter] = self.request.GET.get(filter).lower()
       else:
-        ''' If no filter has been passed in querystring, use default value '''
-        filters[filter] = default
+        ''' Filter does not appear in querystring
+            Use default values '''
+        filters[filter] = default_value
     return filters
+
 
   ''' Check if a current filters are different than default values '''
   def hasActiveFilters(self):
@@ -165,6 +179,8 @@ class PersonListView(ListView):
       context['page_description'] += f" in leven tussen {str(context['filters']['century'])} en {str(context['filters']['century']+99)}"
     if context['filters']['search']:
       context['page_description'] += f" en met zoekterm \"{ context['filters']['search'] }\""
+    if context['filters']['order_by']:
+      context['page_description'] += f" gesorteerd op \"{ self.translate_orderby[context['filters']['order_by']]}\""
     return context
 
   def get_queryset(self):
@@ -206,14 +222,21 @@ class PersonListView(ListView):
                  queryset.filter(married_name__icontains=filters['search']) | \
                   queryset.filter(nickname__icontains=filters['search']) | \
                  queryset.filter(bio__icontains=filters['search'])
-    ''' Overall ordering '''
-    queryset = queryset.order_by('last_name', 'first_name')
+    ''' Overall ordering 
+        Ordering is available in last-name, first-name and year of birth
+    '''
+    if filters['order_by'] == 'first_name':
+      queryset = queryset.order_by('first_name', 'last_name', 'year_of_birth')
+    elif filters['order_by'] == 'year_of_birth':
+      queryset = queryset.order_by('year_of_birth', 'month_of_birth', 'day_of_birth', 'last_name')
+    else:
+      ''' Default to last_name ordering, allows override in settings by use of correct field_name '''
+      queryset = queryset.order_by('last_name', 'first_name', 'year_of_birth')
     return queryset
 
   ''' Get a list of centuries of all People '''
   def get_centuries(self):
     centuries = []
-    #for year in Person.objects.all().values_list('year_of_birth'):
     for year in self.get_queryset().values_list('year_of_birth'):
       if year[0]:
         century = floor(int(year[0])/100)*100

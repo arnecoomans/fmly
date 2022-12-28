@@ -17,7 +17,7 @@ urlpatterns = [
   # Special Image views
   path('objects/<int:decade>/', views.ImageListView.as_view(), {'columns': ('decade')}, name='images-by-decade'),
   path('objects/<str:tag>/', views.ImageListView.as_view(), {'columns': ('tag')}, name='image-with-tag'),
-  path('objects/by/<str:user>/', views.ImageListView.as_view(), {'columns': ('user')}, name='image-by-uploader'),
+  path('objects/by:<str:user>/', views.ImageListView.as_view(), {'columns': ('user')}, name='image-by-uploader'),
   path('objects/', views.ImageListView.as_view(), name='images'),
 
   # People
@@ -52,8 +52,8 @@ urlpatterns = [
   
   # Attachments
   path('attachments/', views.AttachmentListView.as_view(), name='attachments'),
-  path('attachments/<str:user>/', views.AttachmentListView.as_view(), name='user-attachments'),
   path('attachment/new/', views.AttachmentAddView.as_view(), name='add-attachment'),
+  path('attachments/<str:user>/', views.AttachmentListView.as_view(), name='user-attachments'),
   path('attachment/<str:slug>/delete/', views.AttachmentDeleteView.as_view(), name='delete-attachment'),
   path('attachment/<str:slug>/create-image/', views.CreateImageFromAttachmentView.as_view(), name='create-image-from-attachment'),
   path('attachment/<str:slug>/', views.AttachmentStreamView.as_view(), name='attachment'),
