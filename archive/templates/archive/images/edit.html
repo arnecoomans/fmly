@@ -125,19 +125,20 @@
                 {% if form.is_portrait_of.errors %}<p>{{ form.is_portrait_of.errors }}</p>{% endif %}
               </dd>
           {% endif %}
-          {% if form.user %}
+          {% if form.user and request.user.is_staff %}
             <dt><label for="{{ form.user.id_for_label }}">User:</label></dt>
               <dd>
                 {{ form.user }}
                 {% if form.user.errors %}<p>{{ form.user.errors }}</p>{% endif %}
               </dd>
+          {% else %}
+          <input type="hidden" name="user" value="{{ image.user.id }}">
           {% endif %}
           <dt>&nbsp;</dt>
             <dd><input type="submit" value="Verstuur wijzigingen">
               {% if image %} <a href="{% url 'archive:image' image.id image.title|slugify %}" type="button" class="btn btn-warning">Annuleren</a>{% endif %}
         </dl>
       </form>
-      {{ portrait }}
     </div>
     
     <!-- Meta information -->
