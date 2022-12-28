@@ -200,15 +200,14 @@ class AddImageView(PermissionRequiredMixin, CreateView):
     context['active_page'] = 'images'
     return context
 
-    
   def get_form(self):
-    form = super(AddImageView, self).get_form()
     ''' Add additonal Fields as configured and/or with options available '''
     for field in get_additional_fields():
       self.fields.append(field)
     ''' Add User field for staff '''
     if self.request.user.is_staff == True:
       self.fields.append('user')
+    form = super(AddImageView, self).get_form()
     return form
     
   ''' Build initial form '''
@@ -253,14 +252,18 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
 
   ''' Build Form '''
   def get_form(self):
-    form = super(EditImageView, self).get_form()
     ''' Add additonal Fields as configured and/or with options available '''
     for field in get_additional_fields():
       self.fields.append(field)
     ''' Add User field for staff '''
     if self.request.user.is_staff == True:
       self.fields.append('user')
+    form = super(EditImageView, self).get_form()
     return form
+
+  def form_invalid(self, form):
+    messages.add_message(self.request, messages.WARNING, f"Formulier kan niet worden ingediend vanwege de volgende fout(en): { form.errors }")
+    return super().form_invalid(form)
     
   def form_valid(self, form):
     ''' Only allow user change by superuser '''
