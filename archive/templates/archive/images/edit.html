@@ -50,7 +50,10 @@
               {% endif %}
             </dd>
           <dt>&nbsp;</dt>
-            <dd><input type="submit" value="Verstuur wijzigingen"></dd>
+            <dd>
+              <input type="submit" value="Verstuur wijzigingen">
+              {% if image %} <a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">Annuleren en terug naar afbeelding</a>{% endif %}
+            </dd>
         </dl>
         <hr>
         <dl>
@@ -136,7 +139,8 @@
           {% endif %}
           <dt>&nbsp;</dt>
             <dd><input type="submit" value="Verstuur wijzigingen">
-              {% if image %} <a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">Annuleren</a>{% endif %}
+              {% if image %} <a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">Annuleren en terug naar afbeelding</a>{% endif %}
+            </dd>
         </dl>
       </form>
     </div>

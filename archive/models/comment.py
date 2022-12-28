@@ -23,4 +23,4 @@ class Comment(models.Model):
     return super(Comment, self).save(*args, **kwargs)
 
   def get_absolute_url(self):
-    return "/object/%i/" % self.image.id
+    return reverse('archive:image', kwargs={'slug': self.image.slug})

@@ -287,12 +287,17 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
       form.instance.user = self.request.user
     if len(form.changed_data) > 0:
       ''' Only if data has changed, save the Object '''
+      messages.add_message(self.request, messages.INFO, f"{ form.changed_data }")
       messages.add_message(self.request, messages.SUCCESS, f"Wijzigingen opgeslagen.")
-      return super().form_valid(form)
+      form.save()
+      if 'people' in form.changed_data or 'is_portrait_of' in form.changed_data or 'user' in form.changed_data:
+        return redirect(reverse_lazy('archive:image-edit', kwargs={'pk': self.object.id}))  
+      return redirect(reverse_lazy('archive:image', kwargs={'slug': self.object.slug}))
+      #return super().form_valid(form)
     else:
       ''' No changes are detected, redirect to image without saving. '''
       messages.add_message(self.request, messages.WARNING, f"Geen wijzigingen opgegeven.")
-      return redirect(reverse_lazy('archive:image', kwargs={'pk':form.instance.id, 'slug': slugify(form.instance.title)}))
+      return redirect(reverse_lazy('archive:image', kwargs={'slug': self.object.slug}))
 
   def get_success_url(self):
-    return reverse_lazy('archive:image', kwargs={'pk': self.object.id, 'slug': slugify(self.object.title)})
+    return reverse_lazy('archive:image', kwargs={'slug': self.object.slug})
