@@ -33,9 +33,19 @@
         {% endif %}
         <!-- Tags -->
         {% if perms.archive.view_tag and object.tag.all.count > 0 %}
-          {% for tag in object.tag.all %}
-            {% include 'archive/snippets/tag.html' with compact=True %}
-          {% endfor %}
+          {% if object.tag.all.count > 5 %}
+            {% for tag in object.tag.all %}
+              {% if forloop.counter < 6 %}
+                {% include 'archive/snippets/tag.html' with compact=True %}
+              {% elif forloop.counter == 6 %}
+                <li class="bi bi-tag"> ... {{ forloop.revcounter }} meer</li>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            {% for tag in object.tag.all %}
+              {% include 'archive/snippets/tag.html' with compact=True %}
+            {% endfor %}
+          {% endif %}
         {% endif %}
         <!-- Grouping -->
         {% if object.in_group.all.count > 0 %}
