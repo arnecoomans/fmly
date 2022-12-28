@@ -1,8 +1,8 @@
 {% if not object.is_deleted %}
   <div class="object{% if not object.show_in_index %} hidden{% endif %}" id="{{ object.title|slugify }}">
-    <h2><span class="object-id">#{{ object.id }}</span><a href="{% url 'archive:image' object.id object.title|default:'needs-a-title'|slugify %}" title="{{ object.title }}" tabindex="{{ forloop.counter }}">{{ object.title|truncatewords_html:3 }}</a></h2>
+    <h2><span class="object-id">#{{ object.id }}</span><a href="{% url 'archive:image' object.slug %}" title="{{ object.title }}" tabindex="{{ forloop.counter }}">{{ object.title|truncatewords_html:3 }}</a></h2>
     <div class="column left">
-      <a href="{% url 'archive:image' object.id object.title|default:'needs-a-title'|slugify %}" title="{{ object.title }}">
+      <a href="{% url 'archive:image' object.slug %}" title="{{ object.title }}">
         <img src="{{ object.thumbnail }}" alt="{{ object.title }}" title="{{ object.title }} - {{ object.description }}">
       </a>
     </div>
@@ -45,7 +45,7 @@
             {% endif %}
         <!-- Comments -->
         {% if perms.archive.view_comment and object.count_comments > 0 %}
-          <li class="comments bi bi-chat-right-fill"> <a href="{% url 'archive:image' object.id object.title|default:'needs-a-title'|slugify %}#comments" title="{{ object.title }}">{{ object.count_comments }} reactie{% if object.count_comments > 1 %}s{% endif %}</a></li>  
+          <li class="comments bi bi-chat-right-fill"> <a href="{% url 'archive:image' object.slug|default:'needs-a-title' %}#comments" title="{{ object.title }}">{{ object.count_comments }} reactie{% if object.count_comments > 1 %}s{% endif %}</a></li>  
         {% endif %}
         <!-- Attachments -->
         {% if perms.archive.view_attachment and object.count_attachments > 0 %}

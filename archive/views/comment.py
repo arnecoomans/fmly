@@ -106,7 +106,7 @@ class CommentEditView(PermissionRequiredMixin, UpdateView):
       return super().form_valid(form)
     else:
       messages.add_message(self.request, messages.WARNING, f"Geen wijzigingen opgegeven.")
-      return redirect(reverse('archive:image', args=[form.instance.image.id, slugify(form.instance.image.title)]))
+      return redirect(reverse('archive:image', args=[form.instance.image.slug]))
 
 
 ''' Delete Comment '''
