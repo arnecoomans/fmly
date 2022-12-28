@@ -287,7 +287,6 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
       form.instance.user = self.request.user
     if len(form.changed_data) > 0:
       ''' Only if data has changed, save the Object '''
-      messages.add_message(self.request, messages.INFO, f"{ form.changed_data }")
       messages.add_message(self.request, messages.SUCCESS, f"Wijzigingen opgeslagen.")
       form.save()
       if 'people' in form.changed_data or 'is_portrait_of' in form.changed_data or 'user' in form.changed_data:

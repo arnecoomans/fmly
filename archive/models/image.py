@@ -64,6 +64,9 @@ class Group(models.Model):
       self.title += ')'
     return title
 
+  def count_images(self):
+    return self.images.filter(is_deleted=False).count()
+
 class Attachment(models.Model):
   slug                = models.CharField(max_length=255, unique=True)
   file                = models.FileField(null=True, upload_to='files', help_text='Possible to attach file to an image. Use for pdf, doc, excel, etc.')
@@ -182,7 +185,18 @@ class Image(models.Model):
     return self.attachments.filter(is_deleted=False).count()
   def get_attachments(self):
     return self.attachments.filter(is_deleted=False)
-  
+  def get_groups(self):
+    groups = {}
+    for group in self.in_group.all():
+      if group.images.exclude(is_deleted=True).count() > 1:
+        groups[group.title] = group.images.exclude(is_deleted=True).count()
+    return groups
+  def get_grouped_images(self):
+    groups = {}
+    for group in self.in_group.all():
+      groups[group.title] = group.images.exclude(is_deleted=True).exclude(id=self.id)
+    return groups
+
   def count_tags(self):
     return self.tag.count()
   def count_people(self):
