@@ -126,7 +126,6 @@ class Image(models.Model):
   year                = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
   month               = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', choices=MONTHS)
   day                 = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', validators=[MaxValueValidator(31), MinValueValidator(1)])
-  #date                = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
   # Meta
   size                = models.IntegerField(default=0)
   width               = models.IntegerField(default=0)
