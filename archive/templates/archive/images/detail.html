@@ -103,12 +103,14 @@
       
       <!-- Grouped Images -->
       {% for name, objects in image.get_grouped_images.items %}
-        <div class="objects">
-          <h2>Groep: {{ name }} ({{ objects.all.count|add:'1' }})</h2>
-          {% for object in objects.all %}
-            {% include 'archive/snippets/image.html' %}
-          {% endfor %}
-        </div>
+        {% if objects.all.count > 0 %}
+          <div class="objects">
+            <h2>Groep: {{ name }} ({{ objects.all.count|add:'1' }})</h2>
+            {% for object in objects.all %}
+              {% include 'archive/snippets/image.html' %}
+            {% endfor %}
+          </div>
+        {% endif %}
       {% endfor %}
     {% else %}
       <p>ERROR: onvoldoende rechten om deze afbeelding te bekijken</p>

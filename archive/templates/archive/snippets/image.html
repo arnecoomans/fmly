@@ -20,7 +20,7 @@
         <!-- People -->
         {% if perms.archive.view_person and object.people.all.count > 0 and object.people.all.count < 6 %}
           {% for person in object.people.all %}
-            <li class="bi bi-person-fill"> <a href="{% url 'archive:person' person.id person.name %}" title="Bekijk gegevens van {{ person.full_name }}">{{ person.name }}</a></li>
+            <li class="bi bi-person-fill"> <a href="{% url 'archive:person' person.id person.name %}" data-bs-toggle="tooltip" title="Bekijk gegevens van {{ person.full_name }}">{{ person.name }}</a></li>
           {% endfor %}
         {% elif perms.archive.view_person and object.people.all.count > 6 %}
           {% for person in object.people.all %}
