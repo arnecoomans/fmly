@@ -1,8 +1,8 @@
-<span class="name"><a href="{% url 'archive:person' person.id person.slug|default:'details' %}" title="Bekijk details van {{ person.full_name }}">{{ person.full_name }}</a></span>
+<span class="name"><a href="{% url 'archive:person' person.id person.slug|default:'details' %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Bekijk details van {{ person.full_name }}">{{ person.full_name }}</a></span>
 <span class="date">{% if person.year_of_birth %}{{ person.year_of_birth }}{% elif person.year_of_death %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}{% if person.year_of_death or person.moment_of_death_unconfirmed %} - {% if person.year_of_death %}{{ person.year_of_death }}{% else %}?{% endif %}{% endif %}</span>
 {% if not suppress_icons %}
   <span class="icons">
-    <!-- bio -->{% if person.bio %}<i class="bi bi-journal-text" title="{{ person.name }} heeft een biografie"></i>{% endif %}
+    <!-- bio -->{% if person.bio %}<i class="bi bi-journal-text" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.name }} heeft een biografie"></i>{% endif %}
     <!-- images -->{% if person.images.all.count > 0 %} <i class="bi bi-image{% if person.images.all.count > 1 %}s{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.images.all.count }} afbeeldingen met {{ person.name }}"></i>{{ person.images.all.count }}{% endif %}
     <!-- notes -->{% if person.notes.all.count > 0 %} <i class="bi-stick{% if person.notes.all.count > 1 %}ies{% else %}y{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.notes.all.count }} notities met {{ person.name }}"></i>{{ person.notes.all.count }}{% endif %}
     <!-- comments -->{% if person.related_user.comments.all.count > 0 %} <a href="{% url 'archive:comments' %}?user={{ person.related_user.username }}" class="bi bi-chat" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.related_user.comments.all.count }} reacties door {{ person.name }}">{{ person.related_user.comments.all.count }}</a>{% endif %}
