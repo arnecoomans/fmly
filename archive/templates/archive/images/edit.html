@@ -104,7 +104,7 @@
               <dd>
                 {% for person in image.people.all %}
                   {% if person.portrait and person.portrait != image %}
-                    {% include 'archive/snippets/person_link.html' with suppress_icons='true' %} heeft portret <a href="{% url 'archive:image' person.portrait.id person.portrait.title|slugify %}">{{ person.portrait }}</a>.<br>
+                    {% include 'archive/snippets/person_link.html' with suppress_icons='true' %} heeft portret <a href="{% url 'archive:image' person.portrait.slug %}">{{ person.portrait }}</a>.<br>
                   {% endif %}
                 {% endfor%}
                 {% if portrait %}
@@ -136,7 +136,7 @@
           {% endif %}
           <dt>&nbsp;</dt>
             <dd><input type="submit" value="Verstuur wijzigingen">
-              {% if image %} <a href="{% url 'archive:image' image.id image.title|slugify %}" type="button" class="btn btn-warning">Annuleren</a>{% endif %}
+              {% if image %} <a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">Annuleren</a>{% endif %}
         </dl>
       </form>
     </div>

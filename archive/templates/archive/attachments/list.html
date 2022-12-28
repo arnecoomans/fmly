@@ -23,7 +23,7 @@
           ({{ attachment.uploaded_at|date:'d/m/y' }})
           {% if attachment.images.all.count > 0 %}
             {% for image in attachment.images.all %} 
-              <a href="{% url 'archive:image' image.id image.title|slugify %}" class="bi bi-image-fill" data-bs-toggle="tooltip" data-bs-placement="top" title="Bekijk gekoppelde afbeelding &quot;{{ image.title }}&quot;"></a>
+              <a href="{% url 'archive:image' image.slug %}" class="bi bi-image-fill" data-bs-toggle="tooltip" data-bs-placement="top" title="Bekijk gekoppelde afbeelding &quot;{{ image.title }}&quot;"></a>
             {% endfor %}
           {% else %}
             {% if attachment.extension == 'pdf' %}

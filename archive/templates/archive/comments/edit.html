@@ -8,7 +8,7 @@
     <div class="objects">
       {% include 'archive/snippets/image.html' with object=comment.image %}
       <div class="object">
-        <h5><a href="{% url 'archive:image' comment.image.id comment.image.title|slugify %}#comments">{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} over {{ comment.image.title }}</a></h5>
+        <h5><a href="{% url 'archive:image' comment.image.slug %}#comments">{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} over {{ comment.image.title }}</a></h5>
         <div class="column right">
           Op {{ comment.date_created|date:'m/d/y H:m' }}:<br>
           {{ comment.content|markdown|safe }}
