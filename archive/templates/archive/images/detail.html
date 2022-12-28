@@ -42,21 +42,15 @@
             {% endfor %}
           {% endif %}
           <!-- Grouping -->
-          {% if image.in_group.all.count > 0 %}
-            {% for group in image.in_group.all %}
-              <li class="bi bi-collection-fill"> {{ group.title }} ({{ group.images.all.count}})
-                {% if group.images.all.count > 1 %}
-                  <ul>
-                    {% for grouped_image in group.images.all %}
-                      {% if grouped_image != image %}
-                        <li class=" bi bi-image"> <a href="{% url 'archive:image' grouped_image.slug %}">{{ grouped_image.title }}</a></li>
-                      {% endif %}
-                    {% endfor %}
-                  </ul>
-                {% endif %}
-              </li>
-            {% endfor %}
-          {% endif %}
+          {% for name, objects in image.get_grouped_images.items %}
+            <li class="bi bi-collection-fill"> {{ name }} ({{ objects.all.count|add:'1'}})
+              <ul>
+                {% for object in objects.all %}
+                  <li class=" bi bi-image"> <a href="{% url 'archive:image' object.slug %}">{{ object.title }}</a></li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% endfor %}
           <!-- Attachments -->
           {% if perms.archive.view_attachment and image.attachments.all.count > 0 %}
             {% for attachment in image.get_attachments reversed %}
@@ -74,7 +68,7 @@
           <!-- Comments -->
           {% if perms.archive.view_comment and image.count_comments > 0 %}
             <a name="comments"></a>
-            <li class="bi bi-chat-right-text-fill" > {{ image.count_comments }} reactie{% if image.comments.all.count > 1 %}s{% endif %}</li>
+            <li class="bi bi-chat-right-text-fill" > {{ image.count_comments }} reactie{{ object.count_comments|pluralize:'s' }}</li>
           {% endif %}
           {% if perms.archive.add_comment %}
             <li class="bi bi-cursor-text">
@@ -104,9 +98,18 @@
               </li>
             {% endfor %}
           {% endif %}
-          <!-- Tasks -->
         </ul>
       </div>
+      
+      <!-- Grouped Images -->
+      {% for name, objects in image.get_grouped_images.items %}
+        <div class="objects">
+          <h2>Groep: {{ name }} ({{ objects.all.count|add:'1' }})</h2>
+          {% for object in objects.all %}
+            {% include 'archive/snippets/image.html' %}
+          {% endfor %}
+        </div>
+      {% endfor %}
     {% else %}
       <p>ERROR: onvoldoende rechten om deze afbeelding te bekijken</p>
     {% endif %}

@@ -126,7 +126,7 @@ class CommentDeleteView(PermissionRequiredMixin, DetailView):
       messages.add_message(self.request, messages.ERROR, f"Reactie \"{ get_comment_preview(comment) }\" op \"{comment.image.title}\" kan niet worden verwijderd. Is het wel jouw reactie?")
     comment.save()
     ''' Redirect to image, also listing comments '''
-    return redirect('archive:image', comment.image.id, slugify(comment.image.title))
+    return redirect('archive:image', comment.image.slug)
 
 ''' Comment Undelete
     When deleting a comment, the undo-option is available. 
@@ -146,4 +146,4 @@ class CommentUnDeleteView(PermissionRequiredMixin, DetailView):
       ''' Share errormessage that the comment cannot be modified '''
       messages.add_message(self.request, messages.ERROR, f"Reactie \"{ get_comment_preview(comment) }\" op \"{comment.image.title}\" kan niet worden hersteld. Is het wel jouw reactie?")
     comment.save()
-    return redirect('archive:image', comment.image.id, slugify(comment.image.title))
+    return redirect('archive:image', comment.image.slug)
