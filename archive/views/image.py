@@ -22,7 +22,15 @@ from archive.models import Group, Tag, Attachment, Person
 
 
 ''' View Shared Functions '''
-
+''' Get_fields
+    Returns the basic fieldset for editing or creating an Image
+'''
+def get_fields():
+  return ['source', 'title', 'description',
+          'document_source', 'day', 'month', 'year',
+          'people', 
+          'show_in_index', 'is_deleted',]
+          
 ''' Get_additional_fields
     Used by add/create view
     When building a form, it makes no sense to allow to select certain fields if there are
@@ -185,22 +193,23 @@ class AddImageView(PermissionRequiredMixin, CreateView):
   template_name = 'archive/images/edit.html'
   model = Image
   
-  fields = ['source', 'title', 'description',
-            'document_source', 'day', 'month', 'year',
-            'people', 
-            'show_in_index', 'is_deleted',
-            'user']
+  fields = get_fields()
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'images'
     return context
 
-  def __init__(self, *args, **kwargs):
-    super(AddImageView, self).__init__(*args, **kwargs)
-    ''' Only add additional fields if these have enough options to be useful '''
+    
+  def get_form(self):
+    form = super(AddImageView, self).get_form()
+    ''' Add additonal Fields as configured and/or with options available '''
     for field in get_additional_fields():
       self.fields.append(field)
+    ''' Add User field for staff '''
+    if self.request.user.is_staff == True:
+      self.fields.append('user')
+    return form
     
   ''' Build initial form '''
   def get_initial(self):
@@ -233,11 +242,7 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
   permission_required = 'archive.change_image'  
   template_name = 'archive/images/edit.html'
   model = Image
-  fields = ['source', 'title', 'description',
-            'document_source', 'day', 'month', 'year',
-            'people', 
-            'show_in_index', 'is_deleted',
-            'user']
+  fields = get_fields()
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
@@ -245,13 +250,18 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
     context['portrait'] = self.object.is_portrait_of
     context['available_portraits'] = self.object.people.all().filter(portrait=None)
     return context
-    
-  def __init__(self, *args, **kwargs):
-    super(EditImageView, self).__init__(*args, **kwargs)
-    ''' Only add additional fields if these have enough options to be useful '''
+
+  ''' Build Form '''
+  def get_form(self):
+    form = super(EditImageView, self).get_form()
+    ''' Add additonal Fields as configured and/or with options available '''
     for field in get_additional_fields():
       self.fields.append(field)
-
+    ''' Add User field for staff '''
+    if self.request.user.is_staff == True:
+      self.fields.append('user')
+    return form
+    
   def form_valid(self, form):
     ''' Only allow user change by superuser '''
     if not self.request.user.is_superuser and 'user' in form.changed_data: 
