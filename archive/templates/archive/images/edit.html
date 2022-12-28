@@ -125,16 +125,12 @@
                 {% if form.is_portrait_of.errors %}<p>{{ form.is_portrait_of.errors }}</p>{% endif %}
               </dd>
           {% endif %}
-          {% if user.is_superuser %}
+          {% if form.user %}
             <dt><label for="{{ form.user.id_for_label }}">User:</label></dt>
               <dd>
                 {{ form.user }}
                 {% if form.user.errors %}<p>{{ form.user.errors }}</p>{% endif %}
               </dd>
-          {% else %}
-            <input type="hidden" name="user" value="{% if image %}{{ image.user.id }}{% else %}{{ request.user.id }}{% endif %}">
-          {% endif %}
-          {% if portrait or available_portraits.all.count > 0 %}
           {% endif %}
           <dt>&nbsp;</dt>
             <dd><input type="submit" value="Verstuur wijzigingen">
