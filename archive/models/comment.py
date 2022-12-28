@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from .image import Image
+from django.urls import reverse
 
 
 class Comment(models.Model):

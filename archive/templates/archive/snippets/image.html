@@ -45,7 +45,7 @@
             {% endif %}
         <!-- Comments -->
         {% if perms.archive.view_comment and object.count_comments > 0 %}
-          <li class="comments bi bi-chat-right-fill"> <a href="{% url 'archive:image' object.slug|default:'needs-a-title' %}#comments" title="{{ object.title }}">{{ object.count_comments }} reactie{% if object.count_comments > 1 %}s{% endif %}</a></li>  
+          <li class="comments bi bi-chat-right-fill"> <a href="{% url 'archive:image' object.slug|default:'needs-a-title' %}#comments" title="{{ object.title }}">{{ object.count_comments }} reactie{{ object.count_comments|pluralize:'s' }}</a></li>  
         {% endif %}
         <!-- Attachments -->
         {% if perms.archive.view_attachment and object.count_attachments > 0 %}
