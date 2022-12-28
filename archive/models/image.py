@@ -7,6 +7,7 @@ from .person import Person
 from PIL import Image
 from pathlib import Path
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.template.defaultfilters import slugify
 
 # Create Thumbnail function
 def get_thumbnail(image):
@@ -107,8 +108,14 @@ class Attachment(models.Model):
     s = round(self.size / p, 2)
     return "%s %s" % (s, size_name[i])
 
+''' Use default random value when migrating to slug '''
+import random
+def random_string():
+  return str(random.randint(10000, 99999))
+
 class Image(models.Model):
   # Document details
+  slug                = models.CharField(max_length=255, unique=True, default=random_string)
   source              = models.ImageField()
   thumbnail           = models.CharField(max_length=2000, blank=True, null=True)
   title               = models.CharField(max_length=255, blank=True)
@@ -126,7 +133,6 @@ class Image(models.Model):
   year                = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
   month               = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', choices=MONTHS)
   day                 = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', validators=[MaxValueValidator(31), MinValueValidator(1)])
-  #date                = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
   # Meta
   size                = models.IntegerField(default=0)
   width               = models.IntegerField(default=0)
@@ -142,7 +148,22 @@ class Image(models.Model):
 
   def __str__(self):
     return self.get_indexed_name()
-    
+  
+  ''' Get Save Slug
+      Loop through existing slugs and append slug with counter if Unique contraint would fail
+  '''
+  def get_safe_slug(self, title, is_deleted):
+    slug = slugify(title).lower()
+    if is_deleted:
+      slug = f"[deleted]_{slug}"
+    images = Image.objects.all().values_list('slug')
+    if images.filter(slug=slug).count() > 0:
+      i = 1
+      while images.filter(slug=f"{slug}{str(i)}").count() > 0:
+        i += 1
+      slug = f"{slug}{str(i)}"
+    return slug
+
   def get_indexed_name(self):
     title = self.title if self.title != '' else '--no title--'
     id = str(self.id)
@@ -220,15 +241,21 @@ class Image(models.Model):
     # Enforce user
     if not self.user:
       self.user = request.user
+    ''' If no title is given, use source file name as title '''
     if not self.title:
-      self.title = Path(self.source).stem.replace('_', ' ')
-    # Generate thumbnail
+      self.title = str(self.source.name.replace('_', ' '))
+    ''' If no slug is given, base slug off title '''
+    if not self.slug:
+      self.slug = self.get_safe_slug(self.title, self.is_deleted)
+    if self.is_deleted and self.slug[:10] != '[deleted]_':
+      self.slug = '[deleted]_'+ self.title
+    ''' Generate thumbnail '''
     if self.source and not self.thumbnail:
       self.thumbnail = get_thumbnail(self.source)
-    # Store Dimensions and Orientation
+    ''' Store Dimensions and Orientation '''
     if self.height == 0 or self.width == 0:
       self.storeDimensions()
     if self.orientation == 'u':
       self.storeOrientation()
-    # Save
+    ''' Save '''
     return super(Image, self).save(*args, **kwargs)

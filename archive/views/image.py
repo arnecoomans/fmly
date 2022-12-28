@@ -195,6 +195,18 @@ class AddImageView(PermissionRequiredMixin, CreateView):
   
   fields = get_fields()
   
+  def get_safe_slug(self, title, is_deleted):
+    slug = slugify(title).lower()
+    if is_deleted:
+      slug = f"[deleted]_{slug}"
+    images = Image.objects.all().values_list('slug')
+    if images.filter(slug=slug).count() > 0:
+      i = 1
+      while images.filter(slug=f"{slug}{str(i)}").count() > 0:
+        i += 1
+      slug = f"{slug}{str(i)}"
+    return slug
+  
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'images'
@@ -230,6 +242,9 @@ class AddImageView(PermissionRequiredMixin, CreateView):
     ''' Grab title from filename if not supplied. Omit suffix '''
     if not form.instance.title:
       form.instance.title = Path(self.request.FILES['source'].name).stem.replace('_', ' ')
+    ''' Grab slug from title '''
+    if not hasattr(form.instance, 'slug') or form.instance.slug:
+      form.instance.slug = self.get_safe_slug(form.instance.title, False)
     messages.add_message(self.request, messages.SUCCESS, f"Afbeelding \"{ form.instance.title }\" geupload.")
     return super().form_valid(form)
 

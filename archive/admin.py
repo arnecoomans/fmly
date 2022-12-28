@@ -24,11 +24,15 @@ def setSlug(modeladmin, request, queryset):
   for attachment in queryset:
     attachment.slug = slugify(str(attachment.file).replace('files/', '')[:64])
     attachment.save()
-
 @admin.action(description='Set image dates from date field')
 def fixDate(modeladmin, request, queryset):
   for object in queryset:
     object.fixdate()
+@admin.action(description='Set slug from title')
+def setSlugFromTitle(modeladmin, request, queryset):
+  for object in queryset:
+    object.slug = None
+    object.save()
 
 @admin.action(description='Reset Image Dimensions')
 def resetDimensions(modeladmin, request, queryset):
@@ -72,11 +76,11 @@ class GroupAdmin(admin.ModelAdmin):
 
 
 class ImageAdmin(admin.ModelAdmin):
-  list_display = ['get_indexed_name', 'show_in_index', 'year']
+  list_display = ['get_indexed_name', 'slug', 'show_in_index', 'year']
   search_fields = ['title', 'description']
   exclude = ['thumbnail']
   empty_value_display = '---'
-  actions = [reset_thumbnail, show, hide, softdelete, resetDimensions, resetOrientation, resetSize ]
+  actions = [reset_thumbnail, show, hide, softdelete, resetDimensions, resetOrientation, resetSize, setSlugFromTitle ]
   list_filter = ['tag', 'show_in_index', 'people']
   def get_changeform_initial_data(self, request):
     get_data = super(ImageAdmin, self).get_changeform_initial_data(request)
