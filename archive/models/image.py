@@ -191,6 +191,8 @@ class Image(models.Model):
     return True if self.thumbnail else False
   def extension(self):
     return Path(str(self.source)).suffix[1:].lower()
+  
+  
   def get_absolute_url(self):
     return reverse('archive:image', kwargs={'slug': self.title })  
 
