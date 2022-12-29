@@ -1,12 +1,15 @@
 {% extends 'index.html' %}
+{% load i18n %}
 
 {% block content %}
   <header>
-    <h2>Tags:</h2>
+    <h2>{% translate 'Tags' %}:</h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
   </header>
   {% if not tag_list or tag_list.all.count == 0 %}
-    ERROR: No tags to be shown
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'there are no '%} {% translate 'tags'|lower %} {% translate 'available' %}.
+    </div>
   {% endif %}
   {% if perms.archive.view_tag %}
     <div class="objects">

@@ -1,12 +1,15 @@
 {% extends 'index.html' %}
+{% load i18n %}
 
 {% block content %}
   <header>
-    <h2>Notities:</h2>
+    <h2>{% translate 'Notes' %}:</h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
   </header>
   {% if not note_list %}
-    ERROR: No notes to be shown
+  <div class="alert alert-danger" role="alert">
+    {% translate 'An error occurred' %}: {% translate 'there are no '%} {% translate 'notes'|lower %} {% translate 'available' %}.
+  </div>
   {% endif %}
   {% if perms.archive.view_note %}
     <div class="objects">

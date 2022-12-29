@@ -1,12 +1,15 @@
 {% extends 'index.html' %}
+{% load i18n %}
 
 {% block content %}
   <header>
-    <h2>Reacties:</h2>
+    <h2>{% translate 'Comments' %}:</h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
   </header>
   {% if not comment_list %}
-    ERROR: No comments to be shown
+  <div class="alert alert-danger" role="alert">
+    {% translate 'An error occurred' %}: {% translate 'there are no '%} {% translate 'comments'|lower %} {% translate 'available' %}.
+  </div>
   {% endif %}
   {% if perms.archive.view_comment %}
     <!-- Pagination -->

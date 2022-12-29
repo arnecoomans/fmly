@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-29 17:06+0100\n"
-"PO-Revision-Date: 2022-12-29 17:08+0100\n"
+"POT-Creation-Date: 2022-12-29 17:26+0100\n"
+"PO-Revision-Date: 2022-12-29 17:26+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -17,6 +17,50 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.2.2\n"
+
+#: archive/templates/archive/attachments/list.html:6
+#: templates/navigation.html:49
+msgid "Attachments"
+msgstr "Bijlagen"
+
+#: archive/templates/archive/attachments/list.html:11
+#: archive/templates/archive/tags/list.html:11
+msgid "An error occurred"
+msgstr "Een fout heeft zich voorgedaan"
+
+#: archive/templates/archive/attachments/list.html:11
+#: archive/templates/archive/tags/list.html:11
+msgid "there are no "
+msgstr "er zijn geen"
+
+#: archive/templates/archive/attachments/list.html:11
+msgid "attachments"
+msgstr "Bijlagen"
+
+#: archive/templates/archive/attachments/list.html:11
+#: archive/templates/archive/tags/list.html:11
+msgid "available"
+msgstr "beschikbaar"
+
+#: archive/templates/archive/comments/list.html:6 templates/navigation.html:30
+msgid "Comments"
+msgstr "Reacties"
+
+#: archive/templates/archive/notes/list.html:6 templates/navigation.html:45
+msgid "Notes"
+msgstr "Notities"
+
+#: archive/templates/archive/people/list.html:6 templates/navigation.html:20
+msgid "People"
+msgstr "Mensen"
+
+#: archive/templates/archive/tags/list.html:6 templates/navigation.html:25
+msgid "Tags"
+msgstr ""
+
+#: archive/templates/archive/tags/list.html:11
+msgid "tags"
+msgstr ""
 
 #: family/settings.py:130
 msgid "English"
@@ -38,18 +82,6 @@ msgstr "Inloggen"
 msgid "Register"
 msgstr "Registreren"
 
-#: templates/navigation.html:20
-msgid "People"
-msgstr "Mensen"
-
-#: templates/navigation.html:25
-msgid "Tags"
-msgstr ""
-
-#: templates/navigation.html:30
-msgid "Comments"
-msgstr "Reacties"
-
 #: templates/navigation.html:36
 msgid "Profile"
 msgstr "Profiel"
@@ -57,14 +89,6 @@ msgstr "Profiel"
 #: templates/navigation.html:41
 msgid "My uploads"
 msgstr "Mijn uploads"
-
-#: templates/navigation.html:45
-msgid "Notes"
-msgstr "Notities"
-
-#: templates/navigation.html:49
-msgid "Attachments"
-msgstr ""
 
 #: templates/navigation.html:55
 msgid "Add image"
