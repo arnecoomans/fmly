@@ -1,0 +1,131 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-12-29 17:06+0100\n"
+"PO-Revision-Date: 2022-12-29 17:08+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.2.2\n"
+
+#: family/settings.py:130
+msgid "English"
+msgstr "Engels"
+
+#: family/settings.py:131
+msgid "Dutch"
+msgstr "Nederlands"
+
+#: templates/navigation.html:4
+msgid "Archive"
+msgstr "Archief"
+
+#: templates/navigation.html:12
+msgid "Log-in"
+msgstr "Inloggen"
+
+#: templates/navigation.html:15
+msgid "Register"
+msgstr "Registreren"
+
+#: templates/navigation.html:20
+msgid "People"
+msgstr "Mensen"
+
+#: templates/navigation.html:25
+msgid "Tags"
+msgstr ""
+
+#: templates/navigation.html:30
+msgid "Comments"
+msgstr "Reacties"
+
+#: templates/navigation.html:36
+msgid "Profile"
+msgstr "Profiel"
+
+#: templates/navigation.html:41
+msgid "My uploads"
+msgstr "Mijn uploads"
+
+#: templates/navigation.html:45
+msgid "Notes"
+msgstr "Notities"
+
+#: templates/navigation.html:49
+msgid "Attachments"
+msgstr ""
+
+#: templates/navigation.html:55
+msgid "Add image"
+msgstr "Afbeelding toevoegen"
+
+#: templates/navigation.html:58
+msgid "Edit this image"
+msgstr "Deze afbeelding bewerken"
+
+#: templates/navigation.html:62
+msgid "Add person"
+msgstr "Persoon toevoegen"
+
+#: templates/navigation.html:65
+msgid "Edit this person"
+msgstr "Deze persoon bewerken"
+
+#: templates/navigation.html:69
+msgid "Add tag"
+msgstr "Tag toevoegen"
+
+#: templates/navigation.html:72
+msgid "Edit this tag"
+msgstr "Deze tag bewerken"
+
+#: templates/navigation.html:76
+msgid "Add note"
+msgstr "Notitie toevoegen"
+
+#: templates/navigation.html:79
+msgid "Edit this note"
+msgstr "Deze notitie bewerken"
+
+#: templates/navigation.html:83
+msgid "Add Attachment"
+msgstr "Attachment toevoegen"
+
+#: templates/navigation.html:88
+msgid "Admin"
+msgstr ""
+
+#: templates/navigation.html:90
+msgid "Edit image in admin"
+msgstr "Bewerk deze afbeelding in admin"
+
+#: templates/navigation.html:91
+msgid "Edit image comments in admin"
+msgstr "Bewerk recties op deze afbeelding in admin"
+
+#: templates/navigation.html:93
+msgid "Edit person in admin"
+msgstr "Bewerk deze persoon in admin"
+
+#: templates/navigation.html:94
+msgid "Edit note in admin"
+msgstr "Bewerk deze notitie in admin"
+
+#: templates/navigation.html:97
+msgid "Log out"
+msgstr "Uitloggen"
+
+#: templates/navigation.html:113 templates/navigation.html:116
+msgid "Search"
+msgstr "Zoeken"
