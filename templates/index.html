@@ -14,7 +14,7 @@
       {% if image %}{{ image.title }} - {% endif %}
       {% if person %}{{ person.full_name }} - {% endif %}
       {% if note %}{{ note.title }} - {% endif %}
-      {{ website_title }}</title>
+      {{ website_title|default:"A FMLY archive" }}</title>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'archive/' %}{{ master_css }}" />
     <link rel="stylesheet" type="text/css" href="{% static 'base.css' %}" />
