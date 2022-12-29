@@ -1,0 +1,155 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-12-29 17:26+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: archive/templates/archive/attachments/list.html:6
+#: templates/navigation.html:49
+msgid "Attachments"
+msgstr ""
+
+#: archive/templates/archive/attachments/list.html:11
+#: archive/templates/archive/tags/list.html:11
+msgid "An error occurred"
+msgstr ""
+
+#: archive/templates/archive/attachments/list.html:11
+#: archive/templates/archive/tags/list.html:11
+msgid "there are no "
+msgstr ""
+
+#: archive/templates/archive/attachments/list.html:11
+msgid "attachments"
+msgstr ""
+
+#: archive/templates/archive/attachments/list.html:11
+#: archive/templates/archive/tags/list.html:11
+msgid "available"
+msgstr ""
+
+#: archive/templates/archive/comments/list.html:6 templates/navigation.html:30
+msgid "Comments"
+msgstr ""
+
+#: archive/templates/archive/notes/list.html:6 templates/navigation.html:45
+msgid "Notes"
+msgstr ""
+
+#: archive/templates/archive/people/list.html:6 templates/navigation.html:20
+msgid "People"
+msgstr ""
+
+#: archive/templates/archive/tags/list.html:6 templates/navigation.html:25
+msgid "Tags"
+msgstr ""
+
+#: archive/templates/archive/tags/list.html:11
+msgid "tags"
+msgstr ""
+
+#: family/settings.py:130
+msgid "English"
+msgstr ""
+
+#: family/settings.py:131
+msgid "Dutch"
+msgstr ""
+
+#: templates/navigation.html:4
+msgid "Archive"
+msgstr ""
+
+#: templates/navigation.html:12
+msgid "Log-in"
+msgstr ""
+
+#: templates/navigation.html:15
+msgid "Register"
+msgstr ""
+
+#: templates/navigation.html:36
+msgid "Profile"
+msgstr ""
+
+#: templates/navigation.html:41
+msgid "My uploads"
+msgstr ""
+
+#: templates/navigation.html:55
+msgid "Add image"
+msgstr ""
+
+#: templates/navigation.html:58
+msgid "Edit this image"
+msgstr ""
+
+#: templates/navigation.html:62
+msgid "Add person"
+msgstr ""
+
+#: templates/navigation.html:65
+msgid "Edit this person"
+msgstr ""
+
+#: templates/navigation.html:69
+msgid "Add tag"
+msgstr ""
+
+#: templates/navigation.html:72
+msgid "Edit this tag"
+msgstr ""
+
+#: templates/navigation.html:76
+msgid "Add note"
+msgstr ""
+
+#: templates/navigation.html:79
+msgid "Edit this note"
+msgstr ""
+
+#: templates/navigation.html:83
+msgid "Add Attachment"
+msgstr ""
+
+#: templates/navigation.html:88
+msgid "Admin"
+msgstr ""
+
+#: templates/navigation.html:90
+msgid "Edit image in admin"
+msgstr ""
+
+#: templates/navigation.html:91
+msgid "Edit image comments in admin"
+msgstr ""
+
+#: templates/navigation.html:93
+msgid "Edit person in admin"
+msgstr ""
+
+#: templates/navigation.html:94
+msgid "Edit note in admin"
+msgstr ""
+
+#: templates/navigation.html:97
+msgid "Log out"
+msgstr ""
+
+#: templates/navigation.html:113 templates/navigation.html:116
+msgid "Search"
+msgstr ""

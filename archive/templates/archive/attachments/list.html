@@ -1,12 +1,15 @@
 {% extends 'index.html' %}
+{% load i18n %}
 
 {% block content %}
   <header>
-    <h2>Attachments:</h2>
+    <h2>{% translate 'Attachments' %}:</h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
   </header>
   {% if not attachment_list or attachment_list.all.count == 0 %}
-    ERROR: No Attachments to be shown
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'there are no '%} {% translate 'attachments'|lower %} {% translate 'available' %}.
+    </div>
   {% endif %}
   {% if perms.archive.view_attachment %}
     <div class="objects">
