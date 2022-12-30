@@ -1,0 +1,5 @@
+{% load i18n %}
+<div class="alert alert-danger" role="alert">
+  {% translate 'An error occurred' %}:
+  {% blocktranslate %}the {{ object_type }} you are trying to view has been deleted.{% endblocktranslate %}
+</div>

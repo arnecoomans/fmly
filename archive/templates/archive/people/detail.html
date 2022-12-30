@@ -1,103 +1,93 @@
 {% extends 'index.html' %}
 {% load i18n %}
 {% block content %}
-{% if not perms.archive.view_person %}
-    <!-- Check if user has permissions -->
-    <div class="alert alert-danger" role="alert">
-      {% translate 'An error occurred' %}: {% translate 'you have no rights to add, view or edit this'%} {% translate 'person'|lower %}.<br>
-      {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
-    </div>
+  {% if not perms.archive.view_person %}
+    {% include  'archive/snippets/error_no_access.html' with object_type='people' %}
+  {% elif person.is_deleted %}
+    {% include  'archive/snippets/error_object_deleted.html' with object_type='person' %}
   {% else %}
     <section class="object person">
       <header>
         <h2>{{ person.full_name }}</h2>
       </header>
-      {% if not person %}
-        ERROR: No images to be shown
-      {% elif not perms.archive.view_person %}
-        ERROR: onvoldoende rechten om deze gegevens te bekijken
-      {% elif person.is_deleted %}
-        ERROR: afbeelding is niet beschikbaar
-      {% else %}
-        <!-- Portrait -->
-        <div class="column left">
-          {% if person.portrait %}
-            <a href="{% url 'archive:image-redirect' person.portrait.id %}"><img src="/documents/{{ person.portrait.source }}"></a>
-          {% endif %}
-          <ul class="metadata no-bullets">
-            {% if perms.archive.change_person %}<li class="bi bi-pencil-fill"> <a href="{% url 'archive:person-edit' person.id %}">Bewerk gegevens van {{ person.first_name }}</a></li>{% endif %}
-          </ul>
-        </div>
-        <!-- Collected data -->
-        <dl class="data column right">
-          {% if person.related_user %}
-            <dt>&nbsp;</dt><dd>Is {% if person.related_user.is_superuser %}beheerder{% else %}gebruiker{% endif %} van deze website</dd>
-          {% endif %}
-          {% if person.bio %}
-            <dt>Biografie:</dt><dd>{{ person.bio|markdown|safe }}</dd>
-          {% endif %}
-          {% if person.nickname %}
-            <dt>Bijnaam:</dt><dd>{{ person.nickname }}</dd>
-          {% endif %}
-          <dt>Voornaam</dt><dd>{% if person.first_name in person.given_names %}{{ person.given_names }}{% else %}({{ person.first_name }}) {{ person.given_names }}{% endif %}</dd>
-          <dt>Achternaam</dt><dd>{% if person.married_name %}<a href="{% url 'archive:people' %}?family={{ person.married_name }}">{{ person.married_name }}</a> (geboren: <a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>){% else %}<a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>{% endif %}</dd>
-          {% if person.year_of_birth or person.month_of_birth or person_day_of_birth or person.place_of_birth %}
-            <dt>Geboren</dt><dd>{{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}</dd>
-          {% endif %}
-          {% if person.year_of_death or person.month_of_death or person_day_of_death or moment_of_death_unconfirmed or person.place_of_death %}
-            <dt>Overleden</dt><dd>{{ person.day_of_death|default:'?' }}-{{ person.month_of_death|default:'?' }}-{{ person.year_of_death|default:'?' }} {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}{% if person.ageatdeath %} ({{ person.ageatdeath }}){% endif %}</dd>
-          {% endif %}
-          {% if person.get_parents %}
-            <dt>Ouder{% if person.get_parents|length > 1 %}s{% endif %}:</dt>
-            <dd>
-              {% for person in person.get_parents %}
-                {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
-              {% endfor %}
-              </dd>
-          {% endif %}
-          <!-- Partners -->
-          {% if person.get_partners %}
-            <dt>Partner{% if person.get_partners|length > 1 %}s{% endif %}:</dt>
-            <dd>
-              {% for person in person.get_partners %}
-              {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
-              {% endfor %}
-            </dd>
-          {% endif %}
-          <!-- Broer(s) en Zus(sen) -->
-          {% if person.get_siblings %}
-            <dt>Broer{% if person.get_siblings.all.count > 1 %}(s){% endif %}/Zus{% if person.get_siblings.all.count > 1 %}(sen){% endif %}:</dt>
-            <dd>
-              {% for person in person.get_siblings %}
-              {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
-              {% endfor %}
-            </dd>
-          {% endif %}
-          <!-- Kinderen -->
-          {% if person.get_children %}
-            <dt>Kind{% if person.get_children|length > 1 %}eren{% endif %}:</dt>
-            <dd>
-              {% for person in person.get_children %}
-              {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
-              {% endfor %}
-            </dd>
-          {% endif %}
-        </dl>
-        <!-- Related data -->
-        {% if person.images.all.count > 0 %}
-          <a name="images"></a>
-          <h3>{{ count_images }} Afbeelding{{ count_images|pluralize:'en' }} met {{ person.full_name }}:</h3>
-          {% include 'archive/snippets/toggle_hidden_images.html' %}
-          <!-- Pagination -->
-          {% include 'archive/snippets/pagination.html' with focus='images' %}
-          <div class="objects">
-            {% for object in image_list.all %}
-              {% include 'archive/snippets/image.html' %}
-            {% endfor %}
-          </div>
-          <!-- Pagination -->
-          {% include 'archive/snippets/pagination.html' %}
+      <!-- Portrait -->
+      <div class="column left">
+        {% if person.portrait %}
+          <a href="{% url 'archive:image-redirect' person.portrait.id %}"><img src="/documents/{{ person.portrait.source }}"></a>
         {% endif %}
+        <ul class="metadata no-bullets">
+          {% if perms.archive.change_person %}<li class="bi bi-pencil-fill"> <a href="{% url 'archive:person-edit' person.id %}">{% translate 'edit'|capfirst %} {% translate 'data of' %} {{ person.first_name }}</a></li>{% endif %}
+        </ul>
+      </div>
+      <!-- Collected data -->
+      <dl class="data column right">
+        {% if person.related_user %}
+          <dt>&nbsp;</dt><dd>{% translate 'is'|capfirst %} {% if person.related_user.is_superuser %}{% translate 'manager' %}{% else %}{% translate 'user' %}{% endif %} {% translate 'of this website' %}</dd>
+        {% endif %}
+        {% if person.bio %}
+          <dt>{% translate 'biography'|capfirst %}:</dt><dd>{{ person.bio|markdown|safe }}</dd>
+        {% endif %}
+        {% if person.nickname %}
+          <dt>{% translate 'nickname'|capfirst %}:</dt><dd>{{ person.nickname }}</dd>
+        {% endif %}
+        <dt>{% translate 'first name' %}</dt><dd>{% if person.first_name in person.given_names %}{{ person.given_names }}{% else %}({{ person.first_name }}) {{ person.given_names }}{% endif %}</dd>
+        <dt>{% translate 'last name' %}</dt><dd>{% if person.married_name %}<a href="{% url 'archive:people' %}?family={{ person.married_name }}">{{ person.married_name }}</a> ({% translate 'born' %}: <a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>){% else %}<a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>{% endif %}</dd>
+        {% if person.year_of_birth or person.month_of_birth or person_day_of_birth or person.place_of_birth %}
+          <dt>{% translate 'born'|capfirst %}</dt><dd>{{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}</dd>
+        {% endif %}
+        {% if person.year_of_death or person.month_of_death or person_day_of_death or moment_of_death_unconfirmed or person.place_of_death %}
+          <dt>{% translate 'died'|capfirst %}</dt><dd>{{ person.day_of_death|default:'?' }}-{{ person.month_of_death|default:'?' }}-{{ person.year_of_death|default:'?' }} {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}{% if person.ageatdeath %} ({{ person.ageatdeath }}){% endif %}</dd>
+        {% endif %}
+        {% if person.get_parents %}
+          <dt>{% translate 'parent'|capfirst %}:</dt>
+          <dd>
+            {% for person in person.get_parents %}
+              {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+            </dd>
+        {% endif %}
+        <!-- Partners -->
+        {% if person.get_partners %}
+          <dt>{% translate 'partner'|capfirst %}{% if person.get_partners|length > 1 %}s{% endif %}:</dt>
+          <dd>
+            {% for person in person.get_partners %}
+            {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+          </dd>
+        {% endif %}
+        <!-- Broer(s) en Zus(sen) -->
+        {% if person.get_siblings %}
+          <dt>{% blocktranslate count counter=person.get_siblings|length  %}Brother/Sister{% plural %}Brothers/Sisters{% endblocktranslate %}:</dt>
+          <dd>
+            {% for person in person.get_siblings %}
+            {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+          </dd>
+        {% endif %}
+        <!-- Kinderen -->
+        {% if person.get_children %}
+          <dt>{% blocktranslate count counter=person.get_children|length %}Child{% plural %}Children{% endblocktranslate %}:</dt>
+          <dd>
+            {% for person in person.get_children %}
+            {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+          </dd>
+        {% endif %}
+      </dl>
+      <!-- Related data -->
+      {% if person.images.all.count > 0 %}
+        <a name="images"></a>
+        <h3>{{ count_images }} {% blocktranslate count counter=count_images %}Image{% plural %}Images{% endblocktranslate %} {% translate 'with' %} {{ person.full_name }}:</h3>
+        {% include 'archive/snippets/toggle_hidden_images.html' %}
+        <!-- Pagination -->
+        {% include 'archive/snippets/pagination.html' with focus='images' %}
+        <div class="objects">
+          {% for object in image_list.all %}
+            {% include 'archive/snippets/image.html' %}
+          {% endfor %}
+        </div>
+        <!-- Pagination -->
+        {% include 'archive/snippets/pagination.html' %}
       {% endif %}
       <div class="clearfix"></div>
     </section>

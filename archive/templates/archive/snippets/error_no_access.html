@@ -1,0 +1,6 @@
+{% load i18n %}
+<div class="alert alert-danger" role="alert">
+  {% translate 'An error occurred' %}:
+  {% blocktranslate %}you have no permissions to add, view or edit {{ object_type }}.{% endblocktranslate %}<br>
+  {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
+</div>

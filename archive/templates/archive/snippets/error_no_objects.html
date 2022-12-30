@@ -1,0 +1,5 @@
+{% load i18n %}
+<div class="alert alert-danger" role="alert">
+  {% translate 'An error occurred' %}:
+  {% blocktranslate %}There are no {{ object_type }} to show.{% endblocktranslate %}<br>
+</div>

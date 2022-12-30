@@ -3,11 +3,7 @@
 
 {% block content %}
   {% if not perms.archive.view_note %}
-    <!-- Check if user has permissions -->
-    <div class="alert alert-danger" role="alert">
-      {% translate 'An error occurred' %}: {% translate 'you have no rights to add, view or edit this'%} {% translate 'note'|lower %}.<br>
-      {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
-    </div>
+    {% include  'archive/snippets/error_no_access.html' with object_type='notes' %}
   {% else %}
     <header>
       <h2>{{ note.title }}</h2>
@@ -26,21 +22,16 @@
         </ul>
       {% endif %}
       <ul class="metadata">
-        <li class="bi bi-pencil-fill"> <a href="{% url 'archive:note-edit' note.id %}">Bewerk notitie</a></li> 
+        <li class="bi bi-pencil-fill"> <a href="{% url 'archive:note-edit' note.id %}">{% translate 'edit'|capfirst %} {% translate 'note' %}</a></li> 
       </ul>
     </header>
     {% if perms.archive.view_note %}
+      <hr>
       <div class="note">
         {{ note.content|markdown|safe }}
       </div>
       <hr>
-      <div class="meta">
-          <ul class="metadata no-bullets">
-            <li>Door: {{ note.user }}</li>
-            <li>Aangemaakt: {{ note.date_created}}</li>
-            {% if note.date_created != note.date_modified %}<li>Voor het laatst aangepast: {{ note.date_modified }}</li>{% endif %}
-          </ul>
-      </div>
+      {% include 'archive/snippets/object_metadata.html' with object=note %}</div>
     {% endif %}
   {% endif %}
 {% endblock %}
