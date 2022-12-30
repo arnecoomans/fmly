@@ -4,119 +4,116 @@
 {% block content %}
   {% if not perms.archive.view_image %}
     {% include  'archive/snippets/error_no_access.html' with object_type='images' %}
+  {% elif image.is_deleted %}
+      {% include 'archive/snippets/error_object_deleted.html' with object_type='image' %}
   {% else %}
     <section class="object">
       <header>
         <h2><span class="object-id">#{{ object.id }}</span>{{ image.title }}:</h2>
       </header>
-      {% if not image %}
-        ERROR: No images to be shown
-      {% elif image.is_deleted %}
-        ERROR: afbeelding is niet beschikbaar
-      {% elif perms.archive.view_image %}
-        <div class="column left">
-          <a href="/documents/{{ image.source }}" title="" target="_blank">
-            <img src="/documents/{{ image.source }}" title="" alt="" />
-          </a>
-          {% if perms.archive.change_document or perms.archive.change_image %}
-            <br><br>
-            <ul class="no-bullets">
-              <li class="bi bi-pencil-fill"> <a href="{% url 'archive:image-edit' image.id %}">Bewerk afbeelding en gegevens</a></li>
-            </ul>
-          {% endif %}
-        </div>
-        <div class="column right">
-          <!-- Description -->
-          {% if image.description %}<p class="description">{{ image.description|markdown|safe }}</p>{% endif %}
-          <ul class="metadata no-bullets">
-            <!-- Source -->
-            {% if image.document_source %}<li class="bi bi-geo-fill"> {% if image.document_source|truncatechars:5 == "http…" %}<a href="{{ image.document_source }}" target="_blank" title="{{ image.document_source }}">{{ image.document_source|truncatechars:38 }}</a>{% else %}{{ image.document_source }}{% endif %}{% endif %}
-            <!-- Date -->
-            {% if image.year or image.month or image.day %}<li class="bi bi-calendar-event-fill"> {% if image.month or image.day %}{{ image.day|default:'?' }}-{{ image.month|default:'?' }}-{% endif %}<a href="{% url 'archive:images-by-decade' image.year %}" title="Bekijk alles uit {{ image.year }}">{{ image.year|default:'?' }}</a></li>{% endif %}
-            <!-- People -->
-            {% if perms.archive.view_person and image.people.all.count > 0 %}
-              {% for person in object.people.all %}
-                <li class=" bi bi-person-fill"> <a href="{% url 'archive:person' person.id person.name %}" title="Bekijk gegevens van {{ person.full_name }}">{{ person }}</a> {% if person == image.is_portrait_of %}<i class="bi bi-image-fill" title="Deze afbeelding is een portret van {{ person.first_name}} {{ person.last_name }}"></i>{% endif %}</li>
-              {% endfor %}
-            {% endif %}
-            <!-- Tags -->
-            {% if perms.archive.view_tag and image.tag.all.count > 0 %}
-              {% for tag in image.tag.all %}
-                {% include 'archive/snippets/tag.html' %}
-              {% endfor %}
-            {% endif %}
-            <!-- Grouping -->
-            {% for name, objects in image.get_grouped_images.items %}
-              <li class="bi bi-collection-fill"> {{ name }} ({{ objects.all.count|add:'1'}})
-                <ul>
-                  {% for object in objects.all %}
-                    <li class=" bi bi-image"> <a href="{% url 'archive:image' object.slug %}">{{ object.title }}</a></li>
-                  {% endfor %}
-                </ul>
-              </li>
+
+      <div class="column left">
+        <a href="/documents/{{ image.source }}" title="{{ image.title }}" target="_blank">
+          <img src="/documents/{{ image.source }}" title="{{ image.title }}" alt="{{ image.description }}" />
+        </a>
+        {% if perms.archive.change_document or perms.archive.change_image %}
+          <br><br>
+          <ul class="no-bullets">
+            <li class="bi bi-pencil-fill"> <a href="{% url 'archive:image-edit' image.id %}">{% translate 'edit'|capfirst %} {% translate 'image' %}</a></li>
+          </ul>
+        {% endif %}
+      </div>
+      <div class="column right">
+        <!-- Description -->
+        {% if image.description %}<p class="description">{{ image.description|markdown|safe }}</p>{% endif %}
+        <ul class="metadata no-bullets">
+          <!-- Source -->
+          {% if image.document_source %}<li class="bi bi-geo-fill"> {% if image.document_source|truncatechars:5 == "http…" %}<a href="{{ image.document_source }}" target="_blank" title="{{ image.document_source }}">{{ image.document_source|truncatechars:38 }}</a>{% else %}{{ image.document_source }}{% endif %}{% endif %}
+          <!-- Date -->
+          {% if image.year or image.month or image.day %}<li class="bi bi-calendar-event-fill"> {% if image.month or image.day %}{{ image.day|default:'?' }}-{{ image.month|default:'?' }}-{% endif %}<a href="{% url 'archive:images-by-decade' image.year %}" title="Bekijk alles uit {{ image.year }}">{{ image.year|default:'?' }}</a></li>{% endif %}
+          <!-- People -->
+          {% if perms.archive.view_person and image.people.all.count > 0 %}
+            {% for person in object.people.all %}
+              <li class=" bi bi-person-fill"> <a href="{% url 'archive:person' person.id person.name %}" title="{% translate 'Open profile of' %} {{ person.full_name }}">{{ person }}</a> {% if person == image.is_portrait_of %}<i class="bi bi-image-fill" title="{% translate 'This image is a portrait of' %} {{ person.first_name}} {{ person.last_name }}"></i>{% endif %}</li>
             {% endfor %}
-            <!-- Attachments -->
-            {% if perms.archive.view_attachment and image.attachments.all.count > 0 %}
-              {% for attachment in image.get_attachments reversed %}
-                <li class="bi-paperclip"> <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment" target="_blank" rel="noopener noreferrer" title="{{ attachment.description }}">{{ attachment.description|truncatechars:52 }}</a> {{ attachment.extension }}, {{ attachment.getSize }}</li>
-              {% endfor %}
-            {% endif %}
-            <!-- Meta info -->
-            {% if not image.show_in_index %}<li class="bi bi-info-circle-fill"> Verborgen</li>{% endif %}
-            <li class="bi bi-info-circle-fill"> {{ image.extension }}, {{ image.getSize }}</li>
-            <li class="bi bi-info-circle-fill"> {{ image.width }}x{{ image.height }} pixels, {{ image.get_orientation_display }}</li>
-            <li class="bi bi-person-fill-check"> 
-              Gedeeld door: <a href="{% url 'archive:image-by-uploader' image.user.username %}">{% if image.user.first_name %}{{ image.user.first_name }} {{ image.user.last_name }}{% else %} {{ image.user }}{% endif %}</a> 
-              op {{ image.uploaded_at|date:'d/m/y' }}<br>
+          {% endif %}
+          <!-- Tags -->
+          {% if perms.archive.view_tag and image.tag.all.count > 0 %}
+            {% for tag in image.tag.all %}
+              {% include 'archive/snippets/tag.html' %}
+            {% endfor %}
+          {% endif %}
+          <!-- Grouping -->
+          {% for name, objects in image.get_grouped_images.items %}
+            <li class="bi bi-collection-fill"> {{ name }} ({{ objects.all.count|add:'1'}})
+              <ul>
+                {% for object in objects.all %}
+                  <li class=" bi bi-image"> <a href="{% url 'archive:image' object.slug %}">{{ object.title }}</a></li>
+                {% endfor %}
+              </ul>
             </li>
-            <!-- Comments -->
-            {% if perms.archive.view_comment and image.count_comments > 0 %}
-              <a name="comments"></a>
-              <li class="bi bi-chat-right-text-fill" > {{ image.count_comments }} reactie{{ object.count_comments|pluralize:'s' }}</li>
+          {% endfor %}
+          <!-- Attachments -->
+          {% if perms.archive.view_attachment and image.attachments.all.count > 0 %}
+            {% for attachment in image.get_attachments reversed %}
+              <li class="bi-paperclip"> <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment" target="_blank" rel="noopener noreferrer" title="{{ attachment.description }}">{{ attachment.description|truncatechars:52 }}</a> {{ attachment.extension }}, {{ attachment.getSize }}</li>
+            {% endfor %}
+          {% endif %}
+          <!-- Meta info -->
+          {% if not image.show_in_index %}<li class="bi bi-info-circle-fill"> Verborgen</li>{% endif %}
+          <li class="bi bi-info-circle-fill"> {{ image.extension }}, {{ image.getSize }}</li>
+          <li class="bi bi-info-circle-fill"> {{ image.width }}x{{ image.height }} pixels, {{ image.get_orientation_display }}</li>
+          <li class="bi bi-person-fill-check"> 
+            {% translate 'created by'|capfirst %}: <a href="{% url 'archive:image-by-uploader' image.user.username %}">{% if image.user.first_name %}{{ image.user.first_name }} {{ image.user.last_name }}{% else %} {{ image.user }}{% endif %}</a> 
+            {% translate 'at' %} {{ image.uploaded_at|date:'d/m/y' }}<br>
+          </li>
+          <!-- Comments -->
+          {% if perms.archive.view_comment and image.count_comments > 0 %}
+            <a name="comments"></a>
+            <li class="bi bi-chat-right-text-fill" > {{ image.count_comments }} {% blocktranslate count counter=object.count_comments %}comment{% plural %}comments{% endblocktranslate %}</li>
+          {% endif %}
+          {% if perms.archive.add_comment %}
+            <li class="bi bi-cursor-text">
+              <div class="comment">
+                <form method="post" action="{% url 'archive:comment' image.id %}">
+                  {% csrf_token %}
+                  <textarea name="content" id="id_content" required=required style="height: 2em;" onfocus="this.style.height='8em'"></textarea>
+                  <input type="submit" value="Reageer">
+                </form>
+              </div>
+            </li>
             {% endif %}
-            {% if perms.archive.add_comment %}
-              <li class="bi bi-cursor-text">
+          {% if perms.archive.view_comment and image.count_comments > 0 %}
+            {% for comment in image.get_comments reversed %}
+              <li class="bi bi-chat-right-text">
                 <div class="comment">
-                  <form method="post" action="{% url 'archive:comment' image.id %}">
-                    {% csrf_token %}
-                    <textarea name="content" id="id_content" required=required style="height: 2em;" onfocus="this.style.height='8em'"></textarea>
-                    <input type="submit" value="Reageer">
-                  </form>
+                  <h4>{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} schreef op {{ comment.date_created|date:'d/m/Y' }}:</h4>
+                  {{ comment.content|markdown|safe }}
+                  {% if comment.user == user or user.is_staff %}
+                    <span class="actions">
+                      {% if comment.user == user %}<a href="{% url 'archive:edit-comment' comment.id %}">{% translate 'edit'|capfirst %} {% translate 'comment' %}</a>{% endif %}
+                      {% if user.is_staff %}<a href="/admin/archive/comment/{{ comment.id }}/change/">{% translate 'edit'|capfirst %} {% translate 'in admin' %}</a>{% endif %}
+                      {% if comment.user == user or user.is_staff %}<a href="{% url 'archive:delete-comment' comment.id %}">{% translate 'delete'|capfirst %} {% translate 'comment' %}</a>{% endif %}
+                    </span>
+                  {% endif %}
                 </div>
               </li>
-              {% endif %}
-            {% if perms.archive.view_comment and image.count_comments > 0 %}
-              {% for comment in image.get_comments reversed %}
-                <li class="bi bi-chat-right-text">
-                  <div class="comment">
-                    <h4>{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} schreef op {{ comment.date_created|date:'d/m/Y' }}:</h4>
-                    {{ comment.content|markdown|safe }}
-                    {% if comment.user == user or user.is_staff %}
-                      <span class="actions">
-                        {% if comment.user == user %}<a href="{% url 'archive:edit-comment' comment.id %}">Edit comment</a>{% endif %}
-                        {% if user.is_staff %}<a href="/admin/archive/comment/{{ comment.id }}/change/">Edit in admin</a>{% endif %}
-                        {% if comment.user == user or user.is_staff %}<a href="{% url 'archive:delete-comment' comment.id %}">Delete comment</a>{% endif %}
-                      </span>
-                    {% endif %}
-                  </div>
-                </li>
-              {% endfor %}
-            {% endif %}
-          </ul>
-        </div>
-        
-        <!-- Grouped Images -->
-        {% for name, objects in image.get_grouped_images.items %}
-          {% if objects.all.count > 0 %}
-            <div class="objects">
-              <h2>Groep: {{ name }} ({{ objects.all.count|add:'1' }})</h2>
-              {% for object in objects.all %}
-                {% include 'archive/snippets/image.html' %}
-              {% endfor %}
-            </div>
+            {% endfor %}
           {% endif %}
-        {% endfor %}
-      {% endif %}
+        </ul>
+      </div>
+      
+      <!-- Grouped Images -->
+      {% for name, objects in image.get_grouped_images.items %}
+        {% if objects.all.count > 0 %}
+          <div class="objects">
+            <h2>{% translate 'group'|capfirst %}: {{ name }} ({{ objects.all.count|add:'1' }})</h2>
+            {% for object in objects.all %}
+              {% include 'archive/snippets/image.html' %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
     </section>
   {% endif %}
 {% endblock %}

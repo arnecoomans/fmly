@@ -6,7 +6,7 @@
     {% include  'archive/snippets/error_no_access.html' with object_type='people' %}
   {% else %}
     <header>
-      <h2>{% if person %}{{ person.first_name }} {{ person.last_name }}{% else %}Persoon toevoegen:{% endif %}</h2>
+      <h2>{% if person %}{{ person.first_name }} {{ person.last_name }}{% else %}{% translate 'new'|capfirst %} {% translate 'person' %}:{% endif %}</h2>
       {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
     </header>
     <div class="edit note">
@@ -17,34 +17,34 @@
             <dt>Fout(en)</dt>
               <dd>{{ form.non_field_errors }}</dd>
           {% endif %}
-          <dt><label for="{{ form.first_name.id_for_label }}">Roepnaam:</label></dt>
+          <dt><label for="{{ form.first_name.id_for_label }}">{% translate 'nickname'|capfirst %}:</label></dt>
             <dd>
               {{ form.first_name }}
               {% if form.first_name.errors %}<p>{{ form.first_name.errors }}</p>{% endif %}
             </dd>
-          <dt><label for="{{ form.given_names.id_for_label }}">Voornamen:</label></dt>
+          <dt><label for="{{ form.given_names.id_for_label }}">{% translate 'first name'|capfirst %}:</label></dt>
             <dd>
               {{ form.given_names }}
               {% if form.given_names.errors %}<p>{{ form.given_names.errors }}</p>{% endif %}
             </dd>
-          <dt><label for="{{ form.last_name.id_for_label }}">Achternaam:</label></dt>
+          <dt><label for="{{ form.last_name.id_for_label }}">{% translate 'last name'|capfirst %}:</label></dt>
             <dd>
               {{ form.last_name }}
               {% if form.last_name.errors %}<p>{{ form.last_name.errors }}</p>{% endif %}
-              <p>Achternaam bij geboorte</p>
+              <p>{% translate 'first name'|capfirst %} {% translate 'at birth' %}</p>
             </dd>
-          <dt><label for="{{ form.married_name.id_for_label }}">Aangetrouwde naam:</label></dt>
+          <dt><label for="{{ form.married_name.id_for_label }}">{% translate 'married name'|capfirst %}:</label></dt>
             <dd>
               {{ form.married_name }}
               {% if form.married_name.errors %}<p>{{ form.married_name.errors }}</p>{% endif %}
-              <p>Achternaam van echtgenoot/echtgenote, indien aangenomen</p>
+              <p>{% translate 'Last name of partner, indien taken' %}</p>
             </dd>
-          <dt><label for="{{ form.nickname.id_for_label }}">Bijnaam:</label></dt>
+          <dt><label for="{{ form.nickname.id_for_label }}">{% translate 'nickname'|capfirst %}:</label></dt>
             <dd>
               {{ form.nickname }}
               {% if form.nickname.errors %}<p>{{ form.nickname.errors }}</p>{% endif %}
             </dd>
-          <dt>Geboren:</dt>
+          <dt>{% translate 'born'|capfirst %}:</dt>
             <dd class="date">
               {{ form.day_of_birth }}
               {{ form.month_of_birth }}
@@ -60,7 +60,7 @@
                 </p>
               {% endif %}
             </dd>
-          <dt>Overleden:</dt>
+          <dt>{% translate 'died'|capfirst %}:</dt>
             <dd class="date">
               {{ form.day_of_death }}
               {{ form.month_of_death }}
@@ -68,7 +68,7 @@
               <br>
               {{ form.place_of_death }}
               {% if not form.year_of_death.value %}
-                <label for="{{ form.moment_of_death_unconfirmed.id_for_label }}">Overleden, maar jaar van overlijden niet bekend:</label>
+                <label for="{{ form.moment_of_death_unconfirmed.id_for_label }}">{% translate 'Died, but exact moment of death unknown' %}:</label>
                 {{ form.moment_of_death_unconfirmed }}
               {% endif %}
               {% if form.day_of_death.errors or form.month_of_death.errors or form.year_of_death.errors or form.place_of_death.errors %}
@@ -80,7 +80,7 @@
                 </p>
               {% endif %}
             </dd>
-          <dt><label for="{{ form.bio.id_for_label }}">Bio:</label></dt>
+          <dt><label for="{{ form.bio.id_for_label }}">{% translate 'biography'|capfirst %}:</label></dt>
             <dd>
               {{ form.bio }}
               {% if form.bio.errors %}<p>{{ form.bio.errors }}</p>{% endif %}
@@ -96,7 +96,7 @@
           <dl>
             {% with me=person %}
               {% if person.get_parents %}
-              <dt>Ouder{% if person.get_parents|length > 1 %}s{% endif %}:</dt>
+              <dt>{% blocktranslate count counter=person.get_parents|length %}Parent{% plural %}Parents{% endblocktranslate %}:</dt>
               <dd>
                 {% for person in person.get_parents %}
                   {% include 'archive/snippets/person_link.html' %} 
@@ -107,7 +107,7 @@
               {% endif %}
               <!-- Partners -->
               {% if person.get_partners %}
-                <dt>Partner{% if person.get_partners|length > 1 %}s{% endif %}:</dt>
+                <dt>{% translate 'partner'|capfirst %}:</dt>
                 <dd>
                   {% for person in person.get_partners %}
                   {% include 'archive/snippets/person_link.html' %} 
@@ -118,7 +118,7 @@
               {% endif %}
               <!-- Broer(s) en Zus(sen) -->
               {% if person.get_siblings %}
-                <dt>Broer{% if person.get_siblings.all.count > 1 %}(s){% endif %}/Zus{% if person.get_siblings.all.count > 1 %}(sen){% endif %}:</dt>
+                <dt>{% blocktranslate count counter=person.get_siblings|length  %}Brother/Sister{% plural %}Brothers/Sisters{% endblocktranslate %}:</dt>
                 <dd>
                   {% for person in person.get_siblings %}
                   {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
@@ -127,7 +127,7 @@
               {% endif %}
               <!-- Kinderen -->
               {% if person.get_children %}
-                <dt>Kind{% if person.get_children|length > 1 %}eren{% endif %}:</dt>
+                <dt>{% blocktranslate count counter=person.get_children|length %}Child{% plural %}Children{% endblocktranslate %}:</dt>
                 <dd>
                   {% for person in person.get_children %}
                   {% include 'archive/snippets/person_link.html' %} 
@@ -141,11 +141,11 @@
         </form>
         <form method="post" action="{% url 'archive:add-relationship' %}">
           <dl>
-            <dt>Voeg relatie toe:</dt>
+            <dt>{% translate 'Add relation' %}:</dt>
               <dd>
                 {% csrf_token %}
                 <input type="hidden" name="subject" value="{{ person.id }}">
-                <select name="type"><option value="parent">Ouder</option><option value="child">Kind</option><option value="partner">Partner</option></select>
+                <select name="type"><option value="parent">{% translate 'parent'|capfirst %}</option><option value="child">{% translate 'child'|capfirst %}</option><option value="partner">{% translate 'partner'|capfirst %}</option></select>
                 <select name="person">
                   {% for person in available_relations %}
                     <option value="{{ person.id }}">{{ person }}</option>
@@ -153,7 +153,7 @@
                 </select>
               </dd>
             <dt>&nbsp;</dt>
-              <dd><input type="submit" value="Voeg relatie toe"></dd>
+              <dd><input type="submit" value="{% translate 'Add relation' %}"></dd>
           </dl>
         </form>
       {% endif %}

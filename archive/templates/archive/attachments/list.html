@@ -25,16 +25,16 @@
           ({{ attachment.uploaded_at|date:'d/m/y' }})
           {% if attachment.images.all.count > 0 %}
             {% for image in attachment.images.all %} 
-              <a href="{% url 'archive:image' image.slug %}" class="bi bi-image-fill" data-bs-toggle="tooltip" data-bs-placement="top" title="Bekijk gekoppelde afbeelding &quot;{{ image.title }}&quot;"></a>
+              <a href="{% url 'archive:image' image.slug %}" class="bi bi-image-fill" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'View linked image' %} &quot;{{ image.title }}&quot;"></a>
             {% endfor %}
           {% else %}
             {% if attachment.extension == 'pdf' %}
-              <a href="{% url 'archive:create-image-from-attachment' attachment.slug %}" class="bi bi-plus-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Maak afbeelding voor attachment"></a>
+              <a href="{% url 'archive:create-image-from-attachment' attachment.slug %}" class="bi bi-plus-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'Create image from' %} {% translate 'attachment' %}"></a>
             {% endif %}
           {% endif %}
           {% if attachment.user == request.user %}
-            <a href="" class="bi bi-pencil-fill" data-bs-toggle="tooltip" data-bs-placement="top" title="Bewerk attachment-gegevens"></a>
-            <a href="{% url 'archive:delete-attachment' attachment.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete attachment">[X]</a>
+            <a href="" class="bi bi-pencil-fill" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'attachment' %}"></a>
+            <a href="{% url 'archive:delete-attachment' attachment.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'delete'|capfirst %} {% translate 'attachment' %}">[X]</a>
           {% endif %}
         </li>
         {% endfor %}

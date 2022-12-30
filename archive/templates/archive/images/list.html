@@ -9,7 +9,7 @@
     {% include 'archive/snippets/toggle_hidden_images.html' %}
   {% else %}
     <header>
-      <h2>{{ count_images }} Afbeelding{{ count_images|pluralize:'en' }} {{ count_images|pluralize:'of,en' }} Document{{ count_images|pluralize:'en' }}:</h2>
+      <h2>{{ count_images }} {% blocktranslate count counter=count_images %}Image or document{% plural %}Images and documents{% endblocktranslate %}:</h2>
       {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
       {% include 'archive/snippets/toggle_hidden_images.html' %}
     </header>

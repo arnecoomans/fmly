@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-30 20:32+0100\n"
+"POT-Creation-Date: 2022-12-30 21:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,14 +19,18 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: archive/templates/archive/attachments/edit.html:9
-#: templates/navigation.html:55 templates/navigation.html:62
-#: templates/navigation.html:69 templates/navigation.html:76
-#: templates/navigation.html:83
+#: archive/templates/archive/images/edit.html:77
+#: archive/templates/archive/images/edit.html:98 templates/navigation.html:55
+#: templates/navigation.html:62 templates/navigation.html:69
+#: templates/navigation.html:76 templates/navigation.html:83
 msgid "add"
 msgstr ""
 
 #: archive/templates/archive/attachments/edit.html:9
-#: templates/navigation.html:83
+#: archive/templates/archive/attachments/list.html:32
+#: archive/templates/archive/attachments/list.html:36
+#: archive/templates/archive/attachments/list.html:37
+#: archive/templates/archive/images/edit.html:102 templates/navigation.html:83
 msgid "attachment"
 msgstr ""
 
@@ -35,7 +39,37 @@ msgstr ""
 msgid "attachments"
 msgstr ""
 
+#: archive/templates/archive/attachments/list.html:28
+msgid "View linked image"
+msgstr ""
+
+#: archive/templates/archive/attachments/list.html:32
+msgid "Create image from"
+msgstr ""
+
+#: archive/templates/archive/attachments/list.html:36
+#: archive/templates/archive/images/detail.html:22
+#: archive/templates/archive/images/detail.html:94
+#: archive/templates/archive/images/detail.html:95
+#: archive/templates/archive/notes/detail.html:25
+#: archive/templates/archive/people/detail.html:19
+msgid "edit"
+msgstr ""
+
+#: archive/templates/archive/attachments/list.html:37
+#: archive/templates/archive/images/detail.html:96
+#: archive/templates/archive/images/edit.html:118
+msgid "delete"
+msgstr ""
+
+#: archive/templates/archive/comments/edit.html:16
+#: archive/templates/archive/comments/list.html:26
+msgid "on"
+msgstr ""
+
 #: archive/templates/archive/comments/edit.html:32
+#: archive/templates/archive/images/edit.html:57
+#: archive/templates/archive/images/edit.html:144
 #: archive/templates/archive/snippets/form_basic.html:12
 #: archive/templates/archive/tags/edit.html:24
 msgid "submit changes"
@@ -46,8 +80,291 @@ msgstr ""
 msgid "comments"
 msgstr ""
 
+#: archive/templates/archive/images/detail.html:22
+#: archive/templates/archive/images/edit.html:118 templates/navigation.html:55
+#: templates/navigation.html:58 templates/navigation.html:90
+#: templates/navigation.html:91
+msgid "image"
+msgstr ""
+
+#: archive/templates/archive/images/detail.html:37
+msgid "Open profile of"
+msgstr ""
+
+#: archive/templates/archive/images/detail.html:37
+msgid "This image is a portrait of"
+msgstr ""
+
+#: archive/templates/archive/images/detail.html:67
+#: archive/templates/archive/snippets/object_metadata.html:4
+msgid "created by"
+msgstr ""
+
+#: archive/templates/archive/images/detail.html:68
+msgid "at"
+msgstr ""
+
+#: archive/templates/archive/images/detail.html:73
+#: archive/templates/archive/images/detail.html:94
+#: archive/templates/archive/images/detail.html:96
+msgid "comment"
+msgid_plural "comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: archive/templates/archive/images/detail.html:95 templates/navigation.html:90
+#: templates/navigation.html:91 templates/navigation.html:93
+msgid "in admin"
+msgstr ""
+
+#: archive/templates/archive/images/detail.html:110
+#: archive/templates/archive/images/edit.html:94
+#: archive/templates/archive/images/edit.html:98
+msgid "group"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:17
+msgid "error(s)"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:20
+msgid "sourcefile"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:25
+msgid "title"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:30
+msgid "description"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:34
+msgid "markdown allowed"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:36
+msgid "image source"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:40
+msgid "use website-link"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:40
+msgid "whenever possible"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:42
+msgid "date"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:58
+msgid "cancel"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:58
+msgid "and return to image "
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:63
+msgid "options"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:65
+msgid "Show in index"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:66
+msgid "Is deleted"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:70
+#: archive/templates/archive/images/edit.html:75 templates/navigation.html:20
+msgid "people"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:77
+#: archive/templates/archive/people/edit.html:9 templates/navigation.html:62
+#: templates/navigation.html:65 templates/navigation.html:93
+msgid "person"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:83
+#: archive/templates/archive/tags/list.html:11 templates/navigation.html:25
+msgid "tags"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:88
+#: archive/templates/archive/images/edit.html:89 templates/navigation.html:69
+#: templates/navigation.html:72
+msgid "tag"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:89
+#: archive/templates/archive/people/edit.html:9
+msgid "new"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:98
+msgid "groups"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:109
+msgid "is portrait of"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:113
+msgid "has portrait"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:118
+msgid "as portrait of"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:127
+msgid "Add a person first."
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:129
+msgid "To make this a portrait of a person, remove the current portrait"
+msgstr ""
+
+#: archive/templates/archive/images/edit.html:135
+#: archive/templates/archive/people/detail.html:25
+msgid "user"
+msgstr ""
+
+#: archive/templates/archive/images/list.html:12
+msgid "Image or document"
+msgid_plural "Images and documents"
+msgstr[0] ""
+msgstr[1] ""
+
+#: archive/templates/archive/notes/detail.html:25 templates/navigation.html:76
+#: templates/navigation.html:79
+msgid "note"
+msgstr ""
+
 #: archive/templates/archive/notes/list.html:11
 msgid "Notes"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:19
+msgid "data of"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:25
+msgid "is"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:25
+msgid "manager"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:25
+msgid "of this website"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:28
+#: archive/templates/archive/people/edit.html:83
+msgid "biography"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:31
+#: archive/templates/archive/people/edit.html:20
+#: archive/templates/archive/people/edit.html:42
+msgid "nickname"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:33
+#: archive/templates/archive/people/edit.html:25
+#: archive/templates/archive/people/edit.html:34
+#: archive/templates/archive/people/list.html:24
+msgid "first name"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:34
+#: archive/templates/archive/people/edit.html:30
+#: archive/templates/archive/people/list.html:23
+msgid "last name"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:34
+#: archive/templates/archive/people/detail.html:36
+#: archive/templates/archive/people/edit.html:47
+msgid "born"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:39
+#: archive/templates/archive/people/edit.html:63
+msgid "died"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:42
+#: archive/templates/archive/people/edit.html:148
+msgid "parent"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:51
+#: archive/templates/archive/people/edit.html:110
+#: archive/templates/archive/people/edit.html:148
+msgid "partner"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:60
+#: archive/templates/archive/people/edit.html:121
+msgid "Brother/Sister"
+msgid_plural "Brothers/Sisters"
+msgstr[0] ""
+msgstr[1] ""
+
+#: archive/templates/archive/people/detail.html:69
+#: archive/templates/archive/people/edit.html:130
+msgid "Child"
+msgid_plural "Children"
+msgstr[0] ""
+msgstr[1] ""
+
+#: archive/templates/archive/people/detail.html:80
+msgid "Image"
+msgid_plural "Images"
+msgstr[0] ""
+msgstr[1] ""
+
+#: archive/templates/archive/people/detail.html:80
+msgid "with"
+msgstr ""
+
+#: archive/templates/archive/people/edit.html:34
+msgid "at birth"
+msgstr ""
+
+#: archive/templates/archive/people/edit.html:36
+msgid "married name"
+msgstr ""
+
+#: archive/templates/archive/people/edit.html:40
+msgid "Last name of partner, indien taken"
+msgstr ""
+
+#: archive/templates/archive/people/edit.html:71
+msgid "Died, but exact moment of death unknown"
+msgstr ""
+
+#: archive/templates/archive/people/edit.html:99
+msgid "Parent"
+msgid_plural "Parents"
+msgstr[0] ""
+msgstr[1] ""
+
+#: archive/templates/archive/people/edit.html:144
+#: archive/templates/archive/people/edit.html:156
+msgid "Add relation"
+msgstr ""
+
+#: archive/templates/archive/people/edit.html:148
+msgid "child"
 msgstr ""
 
 #: archive/templates/archive/people/list.html:11
@@ -58,20 +375,13 @@ msgstr ""
 msgid "sort results by"
 msgstr ""
 
-#: archive/templates/archive/people/list.html:23
-msgid "last name"
-msgstr ""
-
-#: archive/templates/archive/people/list.html:24
-msgid "first name"
-msgstr ""
-
 #: archive/templates/archive/people/list.html:25
 msgid "date of birth"
 msgstr ""
 
 #: archive/templates/archive/snippets/error_no_access.html:3
 #: archive/templates/archive/snippets/error_no_objects.html:3
+#: archive/templates/archive/snippets/error_object_deleted.html:3
 msgid "An error occurred"
 msgstr ""
 
@@ -89,8 +399,9 @@ msgstr ""
 msgid "There are no %(object_type)s to show."
 msgstr ""
 
-#: archive/templates/archive/snippets/object_metadata.html:4
-msgid "created by"
+#: archive/templates/archive/snippets/error_object_deleted.html:4
+#, python-format
+msgid "the %(object_type)s you are trying to view has been deleted."
 msgstr ""
 
 #: archive/templates/archive/snippets/object_metadata.html:5
@@ -131,10 +442,6 @@ msgstr[1] ""
 msgid "to hide"
 msgstr ""
 
-#: archive/templates/archive/tags/list.html:11 templates/navigation.html:25
-msgid "tags"
-msgstr ""
-
 #: family/settings.py:130
 msgid "English"
 msgstr ""
@@ -155,10 +462,6 @@ msgstr ""
 msgid "register"
 msgstr ""
 
-#: templates/navigation.html:20
-msgid "people"
-msgstr ""
-
 #: templates/navigation.html:36
 msgid "profile"
 msgstr ""
@@ -171,11 +474,6 @@ msgstr ""
 msgid "notes"
 msgstr ""
 
-#: templates/navigation.html:55 templates/navigation.html:58
-#: templates/navigation.html:90 templates/navigation.html:91
-msgid "image"
-msgstr ""
-
 #: templates/navigation.html:58 templates/navigation.html:65
 #: templates/navigation.html:72 templates/navigation.html:79
 #: templates/navigation.html:90 templates/navigation.html:91
@@ -183,26 +481,8 @@ msgstr ""
 msgid "edit this"
 msgstr ""
 
-#: templates/navigation.html:62 templates/navigation.html:65
-#: templates/navigation.html:93
-msgid "person"
-msgstr ""
-
-#: templates/navigation.html:69 templates/navigation.html:72
-msgid "tag"
-msgstr ""
-
-#: templates/navigation.html:76 templates/navigation.html:79
-msgid "note"
-msgstr ""
-
 #: templates/navigation.html:88
 msgid "admin"
-msgstr ""
-
-#: templates/navigation.html:90 templates/navigation.html:91
-#: templates/navigation.html:93
-msgid "in admin"
 msgstr ""
 
 #: templates/navigation.html:94

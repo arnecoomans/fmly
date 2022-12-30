@@ -23,7 +23,7 @@
             </a>
           </div>
           <div class="column right">
-            Op {{ comment.date_created|date:'m/d/y H:m' }}:<br>
+            {% translate 'on'|capfirst %} {{ comment.date_created|date:'m/d/y H:m' }}:<br>
             {{ comment.content|markdown|safe }}
           </div>
         </div>

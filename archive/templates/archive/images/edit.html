@@ -14,32 +14,32 @@
         {% csrf_token %}
         <dl>
           {% if form.non_field_errors %}
-            <dt>Fout(en)</dt>
+            <dt>{% translate 'error(s)'|capfirst%}</dt>
               <dd>{{ form.non_field_errors }}</dd>
           {% endif %}
-          <dt><label for="{{ form.source.id_for_label }}">Bronbestand:</label></dt>
+          <dt><label for="{{ form.source.id_for_label }}">{% translate 'sourcefile'|title %}:</label></dt>
             <dd>
               {{ form.source }}
               {% if form.source.errors %}<p>{{ form.source.errors }}</p>{% endif %}
             </dd>
-          <dt><label for="{{ form.title.id_for_label }}">Titel:</label></dt>
+          <dt><label for="{{ form.title.id_for_label }}">{% translate 'title'|title %}:</label></dt>
             <dd>
               {{ form.title }}
               {% if form.title.errors %}<p>{{ form.title.errors }}</p>{% endif %}
             </dd>
-          <dt><label for="{{ form.description.id_for_label }}">Omschrijving:</label></dt>
+          <dt><label for="{{ form.description.id_for_label }}">{% translate 'description'|title %}:</label></dt>
             <dd>
               {{ form.description }}
               {% if form.description.errors %}<p>{{ form.description.errors }}</p>{% endif %}
-              <p>Markdown toegestaan</p>
+              <p>{% translate 'markdown allowed'|capfirst %}</p>
             </dd>
-          <dt><label for="{{ form.document_source.id_for_label }}">Bron:</label></dt>
+          <dt><label for="{{ form.document_source.id_for_label }}">{% translate 'image source'|title %}:</label></dt>
             <dd>
               {{ form.document_source }}
               {% if form.document_source.errors %}<p>{{ form.document_source.errors }}</p>{% endif %}
-              <p>Gebruik website-link indien mogelijk</p>
+              <p>{% translate 'use website-link'|capfirst %} {% translate 'whenever possible' %}</p>
             </dd>
-          <dt>Datum:</dt>
+          <dt>{% translate 'date'|title %}:</dt>
             <dd class="date">
               {{ form.day }}
               {{ form.month }}
@@ -54,68 +54,68 @@
             </dd>
           <dt>&nbsp;</dt>
             <dd>
-              <input type="submit" value="Verstuur wijzigingen">
-              {% if image %} <a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">Annuleren en terug naar afbeelding</a>{% endif %}
+              <input type="submit" value="{% translate 'submit changes'|title %}">
+              {% if image %} <a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">{% translate 'cancel'|capfirst %} {% translate 'and return to image '%}</a>{% endif %}
             </dd>
         </dl>
         <hr>
         <dl>
-          <dt>Opties:</dt>
+          <dt>{% translate 'options'|capfirst %}:</dt>
             <dd>
-              <label for="{{ form.show_in_index.id_for_label }}">Toon in overzicht: </label>{{ form.show_in_index }}
-              <label for="{{ form.is_deleted.id_for_label }}">Is verwijderd: </label>{{ form.is_deleted}}
+              <label for="{{ form.show_in_index.id_for_label }}">{% translate 'Show in index' %}: </label>{{ form.show_in_index }}
+              <label for="{{ form.is_deleted.id_for_label }}">{% translate 'Is deleted' %}: </label>{{ form.is_deleted}}
               {% if form.bio.errors %}<p>{{ form.bio.errors }}</p>{% endif %}
             </dd>
           {% if perms.archive.view_person %}
-            <dt><label for="{{ form.people.id_for_label }}">Personen:</label></dt>
+            <dt><label for="{{ form.people.id_for_label }}">{% translate 'people'|capfirst %}:</label></dt>
               <dd>
                 {{ form.people }}
                 {% if form.people.errors %}<p>{{ form.people.errors }}</p>{% endif %}
                 <p>
-                  <a class="bi bi-people-fill" href="{% url 'archive:people' %}"> Personen</a>
+                  <a class="bi bi-people-fill" href="{% url 'archive:people' %}"> {% translate 'people'|capfirst %}</a>
                   {% if perms.archive.add_person %}
-                    <a class="bi bi-person-fill-add" href="{% url 'archive:add-person' %}"> Persoon aanmaken</a>
+                    <a class="bi bi-person-fill-add" href="{% url 'archive:add-person' %}"> {% translate 'add' %} {% translate 'person' %}</a>
                   {% endif %}
                 </p>
               </dd>
           {% endif %}
           {% if perms.archive.view_tag and form.tag %}
-            <dt><label for="{{ form.tag.id_for_label }}">Tag(s):</label></dt>
+            <dt><label for="{{ form.tag.id_for_label }}">{% translate 'tags'|capfirst %}:</label></dt>
               <dd>
                 {{ form.tag }}
                 {% if form.tag.errors %}<p>{{ form.tag.errors }}</p>{% endif %}
                 <p>
-                  <a class="bi bi-tags-fill" href="{% url 'archive:tags' %}"> Tags</a>
-                  <a class="bi bi-tag" href="{% url 'archive:add-tag' %}">Tag toevoegen</a>
+                  <a class="bi bi-tags-fill" href="{% url 'archive:tags' %}"> {% translate 'tag' %}</a>
+                  <a class="bi bi-tag" href="{% url 'archive:add-tag' %}">{% translate 'new' %} {% translate 'tag' %}</a>
                 </p>
               </dd>
           {% endif %}
           {% if form.in_group %}
-            <dt><label for="{{ form.in_group.id_for_label }}">In groep:</label></dt>
+            <dt><label for="{{ form.in_group.id_for_label }}">{% translate 'group'|capfirst %}:</label></dt>
               <dd>
                 {{ form.in_group }}
                 {% if form.in_group.errors %}<p>{{ form.in_group.errors }}</p>{% endif %}
-                <p><s>Groepen - nieuwe groep</s></p>
+                <p><s>{% translate 'groups' %} - {% translate 'add' %} {% translate 'group' %}</s></p>
               </dd>
           {% endif %}
           {% if form.attachments %}
-            <dt><label for="{{ form.attachments.id_for_label }}">Attachment:</label></dt>
+            <dt><label for="{{ form.attachments.id_for_label }}">{% translate 'attachment'|capfirst %}:</label></dt>
               <dd>
                 {{ form.attachments }}
                 {% if form.attachments.errors %}<p>{{ form.attachments.errors }}</p>{% endif %}
               </dd>
           {% endif %}
           {% if form.is_portrait_of %}
-            <dt><label for="{{ form.is_portrait_of.id_for_label }}">Is portet van:</label></dt>
+            <dt><label for="{{ form.is_portrait_of.id_for_label }}">{% translate 'is portrait of'|capfirst %}:</label></dt>
               <dd>
                 {% for person in image.people.all %}
                   {% if person.portrait and person.portrait != image %}
-                    {% include 'archive/snippets/person_link.html' with suppress_icons='true' %} heeft portret <a href="{% url 'archive:image' person.portrait.slug %}">{{ person.portrait }}</a>.<br>
+                    {% include 'archive/snippets/person_link.html' with suppress_icons='true' %} {% translate 'has portrait' %} <a href="{% url 'archive:image' person.portrait.slug %}">{{ person.portrait }}</a>.<br>
                   {% endif %}
                 {% endfor%}
                 {% if portrait %}
                   <input type="hidden" name="is_portrait_of" value="{{ portrait.id }}">
-                  {% include 'archive/snippets/person_link.html' with person=portrait %} <a href="{% url 'archive:remove-portrait' portrait.id image.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Verwijder afbeelding als portret van {{ portrait }}">[X]</a>
+                  {% include 'archive/snippets/person_link.html' with person=portrait %} <a href="{% url 'archive:remove-portrait' portrait.id image.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'delete'|capfirst %} {% translate 'image' %} {% translate 'as portrait of' %} {{ portrait }}">[X]</a>
                 {% elif available_portraits.all.count > 0 %}
                   <select name="is_portrait_of" id="is_portrait_of">
                     <option value selected>---------</option>
@@ -124,15 +124,15 @@
                     {% endfor %}
                   </select>
                 {% elif image.people.all.count == 0 %}
-                  Voeg eerst een persoon toe aan de foto en sla deze op.
+                  {% translate 'Add a person first.' %}
                 {% else %}
-                  Om deze afbeelding portret te maken van een persoon, verwijder het huidige portret.
+                  {% translate 'To make this a portrait of a person, remove the current portrait' %}
                 {% endif %}
                 {% if form.is_portrait_of.errors %}<p>{{ form.is_portrait_of.errors }}</p>{% endif %}
               </dd>
           {% endif %}
           {% if form.user and request.user.is_staff %}
-            <dt><label for="{{ form.user.id_for_label }}">User:</label></dt>
+            <dt><label for="{{ form.user.id_for_label }}">{% translate 'user'|capfirst %}:</label></dt>
               <dd>
                 {{ form.user }}
                 {% if form.user.errors %}<p>{{ form.user.errors }}</p>{% endif %}
@@ -141,7 +141,7 @@
           <input type="hidden" name="user" value="{{ image.user.id }}">
           {% endif %}
           <dt>&nbsp;</dt>
-            <dd><input type="submit" value="Verstuur wijzigingen">
+            <dd><input type="submit" value="{% translate 'submit changes'|title %}">
               {% if image %} <a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">Annuleren en terug naar afbeelding</a>{% endif %}
             </dd>
         </dl>
