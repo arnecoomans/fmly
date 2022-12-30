@@ -3,16 +3,10 @@
 
 {% block content %}
   {% if not perms.archive.view_image %}
-    <!-- Check if user has permissions -->
-    <div class="alert alert-danger" role="alert">
-      {% translate 'An error occurred' %}: {% translate 'you have no rights to add, view or edit this'%} {% translate 'image'|lower %}.<br>
-      {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
-    </div>
+    {% include  'archive/snippets/error_no_access.html' with object_type='images' %}
   {% elif not images %}
-    <!-- Check if object has items to show -->
-    <div class="alert alert-danger" role="alert">
-      {% translate 'An error occurred' %}: {% translate 'there is no '%} {% translate 'image'%} {% translate 'available' %}.
-    </div>
+    {% include  'archive/snippets/error_no_objects.html' with object_type='images' %}<br>
+    {% include 'archive/snippets/toggle_hidden_images.html' %}
   {% else %}
     <header>
       <h2>{{ count_images }} Afbeelding{{ count_images|pluralize:'en' }} {{ count_images|pluralize:'of,en' }} Document{{ count_images|pluralize:'en' }}:</h2>

@@ -3,11 +3,7 @@
 
 {% block content %}
   {% if not perms.archive.view_image %}
-    <!-- Check if user has permissions -->
-    <div class="alert alert-danger" role="alert">
-      {% translate 'An error occurred' %}: {% translate 'you have no rights to add, view or edit this'%} {% translate 'image'|lower %}.<br>
-      {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
-    </div>
+    {% include  'archive/snippets/error_no_access.html' with object_type='images' %}
   {% else %}
     <section class="object">
       <header>
