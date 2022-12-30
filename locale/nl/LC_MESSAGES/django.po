@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-30 20:22+0100\n"
-"PO-Revision-Date: 2022-12-30 20:22+0100\n"
+"POT-Creation-Date: 2022-12-30 20:32+0100\n"
+"PO-Revision-Date: 2022-12-30 20:33+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -37,7 +37,7 @@ msgstr "bijlagen"
 
 #: archive/templates/archive/comments/edit.html:32
 #: archive/templates/archive/snippets/form_basic.html:12
-#: archive/templates/archive/tags/edit.html:28
+#: archive/templates/archive/tags/edit.html:24
 msgid "submit changes"
 msgstr "verstuur wijzigingen"
 
@@ -46,112 +46,34 @@ msgstr "verstuur wijzigingen"
 msgid "comments"
 msgstr "reacties"
 
-#: archive/templates/archive/images/detail.html:8
-#: archive/templates/archive/images/edit.html:8
-#: archive/templates/archive/notes/detail.html:8
-#: archive/templates/archive/notes/edit.html:8
-#: archive/templates/archive/notes/list.html:8
-#: archive/templates/archive/notes/list.html:14
-#: archive/templates/archive/people/detail.html:7
-#: archive/templates/archive/people/edit.html:8
-#: archive/templates/archive/people/list.html:8
-#: archive/templates/archive/people/list.html:14
-#: archive/templates/archive/snippets/error_no_access.html:3
-#: archive/templates/archive/snippets/error_no_objects.html:3
-#: archive/templates/archive/tags/edit.html:8
-#: archive/templates/archive/tags/list.html:8
-#: archive/templates/archive/tags/list.html:14
-msgid "An error occurred"
-msgstr "Een fout heeft zich voorgedaan"
-
-#: archive/templates/archive/images/detail.html:8
-#: archive/templates/archive/images/edit.html:8
-#: archive/templates/archive/notes/detail.html:8
-#: archive/templates/archive/notes/edit.html:8
-#: archive/templates/archive/notes/list.html:8
-#: archive/templates/archive/people/detail.html:7
-#: archive/templates/archive/people/edit.html:8
-#: archive/templates/archive/people/list.html:8
-#: archive/templates/archive/tags/edit.html:8
-#: archive/templates/archive/tags/list.html:8
-msgid "you have no rights to add, view or edit this"
-msgstr ""
-"je hebt onvoldoende rechten om het object aan te maken, bewerken of bekijken"
-
-#: archive/templates/archive/images/detail.html:8
-#: archive/templates/archive/images/edit.html:8 templates/navigation.html:55
-#: templates/navigation.html:58 templates/navigation.html:90
-#: templates/navigation.html:91
-msgid "image"
-msgstr "afbeelding"
-
-#: archive/templates/archive/images/detail.html:9
-#: archive/templates/archive/images/edit.html:9
-#: archive/templates/archive/notes/detail.html:9
-#: archive/templates/archive/notes/edit.html:9
-#: archive/templates/archive/notes/list.html:9
-#: archive/templates/archive/people/detail.html:8
-#: archive/templates/archive/people/edit.html:9
-#: archive/templates/archive/people/list.html:9
-#: archive/templates/archive/snippets/error_no_access.html:5
-#: archive/templates/archive/tags/edit.html:9
-#: archive/templates/archive/tags/list.html:9
-msgid "If you feel this error is incorrect, please inform the site admin"
-msgstr ""
-"Als je vindt dat deze melding onterecht is, neem contact op met de site-"
-"beheerder"
-
-#: archive/templates/archive/notes/detail.html:8
-#: archive/templates/archive/notes/edit.html:8
-#: archive/templates/archive/notes/list.html:8
-#: archive/templates/archive/notes/list.html:14 templates/navigation.html:76
-#: templates/navigation.html:79
-msgid "note"
-msgstr "notitie"
-
-#: archive/templates/archive/notes/list.html:14
-#: archive/templates/archive/people/list.html:14
-#: archive/templates/archive/tags/list.html:14
-msgid "there is no "
-msgstr "er is geen "
-
-#: archive/templates/archive/notes/list.html:14
-#: archive/templates/archive/people/list.html:14
-#: archive/templates/archive/tags/list.html:14
-msgid "available"
-msgstr "beschikbaar"
-
-#: archive/templates/archive/notes/list.html:18
+#: archive/templates/archive/notes/list.html:11
 msgid "Notes"
 msgstr "Notities"
 
-#: archive/templates/archive/people/detail.html:7
-#: archive/templates/archive/people/edit.html:8
-#: archive/templates/archive/people/list.html:8
-#: archive/templates/archive/people/list.html:14 templates/navigation.html:62
-#: templates/navigation.html:65 templates/navigation.html:93
-msgid "person"
-msgstr "persoon"
-
-#: archive/templates/archive/people/list.html:18
+#: archive/templates/archive/people/list.html:11
 msgid "People"
 msgstr "Mensen"
 
-#: archive/templates/archive/people/list.html:29
+#: archive/templates/archive/people/list.html:22
 msgid "sort results by"
 msgstr "sorteren op"
 
-#: archive/templates/archive/people/list.html:30
+#: archive/templates/archive/people/list.html:23
 msgid "last name"
 msgstr "achternaam"
 
-#: archive/templates/archive/people/list.html:31
+#: archive/templates/archive/people/list.html:24
 msgid "first name"
 msgstr "voornaam"
 
-#: archive/templates/archive/people/list.html:32
+#: archive/templates/archive/people/list.html:25
 msgid "date of birth"
 msgstr "geboortedatum"
+
+#: archive/templates/archive/snippets/error_no_access.html:3
+#: archive/templates/archive/snippets/error_no_objects.html:3
+msgid "An error occurred"
+msgstr "Een fout heeft zich voorgedaan"
 
 #: archive/templates/archive/snippets/error_no_access.html:4
 #, python-format
@@ -159,6 +81,12 @@ msgid "you have no permissions to add, view or edit %(object_type)s."
 msgstr ""
 "je hebt onvoldoende rechten om het %(object_type)s aan te maken, bewerken of "
 "bekijken."
+
+#: archive/templates/archive/snippets/error_no_access.html:5
+msgid "If you feel this error is incorrect, please inform the site admin"
+msgstr ""
+"Als je vindt dat deze melding onterecht is, neem contact op met de site-"
+"beheerder"
 
 #: archive/templates/archive/snippets/error_no_objects.html:4
 #, python-format
@@ -207,15 +135,8 @@ msgstr[1] "Herlaad de pagina zonder de verborgen afbeeldingen"
 msgid "to hide"
 msgstr "te verbergen"
 
-#: archive/templates/archive/tags/edit.html:8
-#: archive/templates/archive/tags/list.html:8
-#: archive/templates/archive/tags/list.html:14 templates/navigation.html:69
-#: templates/navigation.html:72
-msgid "tag"
-msgstr "tag"
-
-#: archive/templates/archive/tags/list.html:18
-msgid "Tags"
+#: archive/templates/archive/tags/list.html:11 templates/navigation.html:25
+msgid "tags"
 msgstr ""
 
 #: family/settings.py:130
@@ -242,10 +163,6 @@ msgstr "registreren"
 msgid "people"
 msgstr "mensen"
 
-#: templates/navigation.html:25
-msgid "tags"
-msgstr ""
-
 #: templates/navigation.html:36
 msgid "profile"
 msgstr "profiel"
@@ -258,12 +175,30 @@ msgstr "mijn uploads"
 msgid "notes"
 msgstr "notities"
 
+#: templates/navigation.html:55 templates/navigation.html:58
+#: templates/navigation.html:90 templates/navigation.html:91
+msgid "image"
+msgstr "afbeelding"
+
 #: templates/navigation.html:58 templates/navigation.html:65
 #: templates/navigation.html:72 templates/navigation.html:79
 #: templates/navigation.html:90 templates/navigation.html:91
 #: templates/navigation.html:93
 msgid "edit this"
 msgstr "bewerk deze"
+
+#: templates/navigation.html:62 templates/navigation.html:65
+#: templates/navigation.html:93
+msgid "person"
+msgstr "persoon"
+
+#: templates/navigation.html:69 templates/navigation.html:72
+msgid "tag"
+msgstr "tag"
+
+#: templates/navigation.html:76 templates/navigation.html:79
+msgid "note"
+msgstr "notitie"
 
 #: templates/navigation.html:88
 msgid "admin"
@@ -285,28 +220,3 @@ msgstr "Uitloggen"
 #: templates/navigation.html:113 templates/navigation.html:116
 msgid "Search"
 msgstr "Zoeken"
-
-#~ msgid "comment"
-#~ msgstr "reactie"
-
-#, fuzzy
-#~| msgid "you have no rights to add, view or edit this"
-#~ msgid "you have no rights to add, view or edit"
-#~ msgstr ""
-#~ "je hebt onvoldoende rechten om het object aan te maken, bewerken of "
-#~ "bekijken"
-
-#~ msgid "there are no "
-#~ msgstr "er zijn geen "
-
-#~ msgid "Add attachment"
-#~ msgstr "Attachment toevoegen"
-
-#~ msgid "Attachments"
-#~ msgstr "Bijlagen"
-
-#~ msgid "Comments"
-#~ msgstr "Reacties"
-
-#~ msgid "Edit person in admin"
-#~ msgstr "Bewerk deze persoon in admin"
