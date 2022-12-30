@@ -38,7 +38,7 @@ urlpatterns = [
   path('tag/new/', views.AddTagView.as_view(), name='add-tag'),
   path('tag/<str:slug>/', views.EditTagView.as_view(), name='edit-tag'),
   # Notes
-  path('note/', views.NotesListView.as_view(), name='notes'),
+  path('notes/', views.NotesListView.as_view(), name='notes'),
   path('note/<int:pk>/edit/', views.EditNoteView.as_view(), name='note-edit'),
   path('note/<int:pk>/', views.NoteView.as_view(), name='note'),
   path('note/<int:pk>/<title>/', views.NoteView.as_view(), name='note-with-name'),

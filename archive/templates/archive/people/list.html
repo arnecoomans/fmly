@@ -2,16 +2,22 @@
 {% load i18n %}
 
 {% block content %}
-  <header>
-    <h2>{% translate 'People' %}:</h2>
-    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
-  </header>
-  {% if not people %}
-  <div class="alert alert-danger" role="alert">
-    {% translate 'An error occurred' %}: {% translate 'there are no '%} {% translate 'people'|lower %} {% translate 'available' %}.
-  </div>
-  {% endif %}
-  {% if perms.archive.view_person %}
+  {% if not perms.archive.view_person %}
+    <!-- Check if user has permissions -->
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'you have no rights to add, view or edit this'%} {% translate 'person'|lower %}.<br>
+      {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
+    </div>
+  {% elif not people %}
+    <!-- Check if object has items to show -->
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'there is no '%} {% translate 'person'%} {% translate 'available' %}.
+    </div>
+  {% else %}
+    <header>
+      <h2>{% translate 'People' %}:</h2>
+      {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+    </header>
     <div class="people objects">
 <!-- Filters 
      Each filter has its own form, to avoid cluttering the url arguments.

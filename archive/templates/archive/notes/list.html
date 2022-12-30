@@ -2,16 +2,22 @@
 {% load i18n %}
 
 {% block content %}
-  <header>
-    <h2>{% translate 'Notes' %}:</h2>
-    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
-  </header>
-  {% if not note_list %}
-  <div class="alert alert-danger" role="alert">
-    {% translate 'An error occurred' %}: {% translate 'there are no '%} {% translate 'notes'|lower %} {% translate 'available' %}.
-  </div>
-  {% endif %}
-  {% if perms.archive.view_note %}
+  {% if not perms.archive.view_note %}
+    <!-- Check if user has permissions -->
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'you have no rights to add, view or edit this'%} {% translate 'note'|lower %}.<br>
+      {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
+    </div>
+  {% elif not note_list %}
+    <!-- Check if object has items to show -->
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'there is no '%} {% translate 'note'%} {% translate 'available' %}.
+    </div>
+  {% else %}
+    <header>
+      <h2>{% translate 'Notes' %}:</h2>
+      {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+    </header>
     <div class="objects">
       <ul class="no-bullets">
         {% for note in note_list %}

@@ -2,16 +2,20 @@
 {% load i18n %}
 
 {% block content %}
-  <header>
-    <h2>
-      {% if note %}{{ note.title }}{% else %}{% translate 'Add attachment'|title %}{% endif %}
-    </h2>
-    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
-  </header>
-  {% if perms.archive.change_attachment %}
+  {% if not perms.archive.view_attachment %}
+    <!-- Check if user has permissions -->
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'you have no rights to add, view or edit this'%} {% translate 'attachment'|lower %}.<br>
+      {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
+    </div>
+  {% else %}
+    <header>
+      <h2>{% if note %}{{ note.title }}{% else %}{% translate 'add'|capfirst %} {% translate 'attachment' %}{% endif %}</h2>
+      {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+    </header>
     <div class="edit attachment">
       <form method="post" class="attachment" enctype="multipart/form-data"> 
-        {% include 'archive/snippets/form_basic.html' %}
+        {% include 'archive/snippets/form_basic.html'%}
       </form>
     </div>
     <!-- Meta information -->

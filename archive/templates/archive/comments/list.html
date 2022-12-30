@@ -2,16 +2,22 @@
 {% load i18n %}
 
 {% block content %}
-  <header>
-    <h2>{% translate 'Comments' %}:</h2>
-    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
-  </header>
-  {% if not comment_list %}
-  <div class="alert alert-danger" role="alert">
-    {% translate 'An error occurred' %}: {% translate 'there are no '%} {% translate 'comments'|lower %} {% translate 'available' %}.
-  </div>
-  {% endif %}
-  {% if perms.archive.view_comment %}
+  {% if not perms.archive.view_comment %}
+    <!-- Check if user has permissions -->
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'you have no rights to add, view or edit this'%} {% translate 'comment'|lower %}.<br>
+      {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
+    </div>
+  {% elif not comment_list %}
+    <!-- Check if object has items to show -->
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'there is no '%} {% translate 'comment'%} {% translate 'available' %}.
+    </div>
+  {% else %}
+    <header>
+      <h2>{% translate 'comments' %}:</h2>
+      {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+    </header>
     <!-- Pagination -->
     {% include 'archive/snippets/pagination.html' %}
     <section class="objects">

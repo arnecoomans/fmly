@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-30 10:58+0100\n"
-"PO-Revision-Date: 2022-12-30 11:01+0100\n"
+"POT-Creation-Date: 2022-12-30 12:08+0100\n"
+"PO-Revision-Date: 2022-12-30 12:17+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -19,36 +19,58 @@ msgstr ""
 "X-Generator: Poedit 3.2.2\n"
 
 #: archive/templates/archive/attachments/edit.html:7
-msgid "Add attachment"
-msgstr "Attachment toevoegen"
+#: templates/navigation.html:55 templates/navigation.html:62
+#: templates/navigation.html:69 templates/navigation.html:76
+#: templates/navigation.html:83
+msgid "add"
+msgstr "nieuwe"
 
-#: archive/templates/archive/attachments/list.html:6
-msgid "Attachments"
-msgstr "Bijlagen"
+#: archive/templates/archive/attachments/edit.html:7
+#: archive/templates/archive/attachments/edit.html:14
+#: archive/templates/archive/attachments/list.html:13
+#: archive/templates/archive/attachments/list.html:19
+#: templates/navigation.html:83
+msgid "attachment"
+msgstr "bijlage"
 
-#: archive/templates/archive/attachments/list.html:11
-#: archive/templates/archive/comments/list.html:11
+#: archive/templates/archive/attachments/edit.html:14
+#: archive/templates/archive/attachments/list.html:13
+#: archive/templates/archive/attachments/list.html:19
+#: archive/templates/archive/comments/list.html:13
+#: archive/templates/archive/comments/list.html:19
 #: archive/templates/archive/notes/list.html:11
 #: archive/templates/archive/people/list.html:11
 #: archive/templates/archive/tags/list.html:11
 msgid "An error occurred"
 msgstr "Een fout heeft zich voorgedaan"
 
-#: archive/templates/archive/attachments/list.html:11
-#: archive/templates/archive/comments/list.html:11
-#: archive/templates/archive/notes/list.html:11
-#: archive/templates/archive/people/list.html:11
-#: archive/templates/archive/tags/list.html:11
-msgid "there are no "
-msgstr "er zijn geen "
+#: archive/templates/archive/attachments/edit.html:14
+#: archive/templates/archive/attachments/list.html:13
+#: archive/templates/archive/comments/list.html:13
+msgid "you have no rights to add, view or edit this"
+msgstr ""
+"je hebt onvoldoende rechten om het object aan te maken, bewerken of bekijken"
 
-#: archive/templates/archive/attachments/list.html:11
+#: archive/templates/archive/attachments/edit.html:15
+#: archive/templates/archive/attachments/list.html:14
+#: archive/templates/archive/comments/list.html:14
+msgid "If you feel this error is incorrect, please inform the site admin"
+msgstr ""
+"Als je vindt dat deze melding onterecht is, neem contact op met de site-"
+"beheerder"
+
+#: archive/templates/archive/attachments/list.html:6
 #: templates/navigation.html:49
 msgid "attachments"
 msgstr "bijlagen"
 
-#: archive/templates/archive/attachments/list.html:11
-#: archive/templates/archive/comments/list.html:11
+#: archive/templates/archive/attachments/list.html:19
+#: archive/templates/archive/comments/list.html:19
+msgid "there is no "
+msgstr "er is geen "
+
+#: archive/templates/archive/attachments/list.html:19
+#: archive/templates/archive/comments/list.html:19
 #: archive/templates/archive/notes/list.html:11
 #: archive/templates/archive/people/list.html:11
 #: archive/templates/archive/tags/list.html:11
@@ -62,18 +84,25 @@ msgstr "beschikbaar"
 msgid "submit changes"
 msgstr "verstuur wijzigingen"
 
-#: archive/templates/archive/comments/list.html:6
-msgid "Comments"
-msgstr "Reacties"
-
-#: archive/templates/archive/comments/list.html:11 templates/navigation.html:30
+#: archive/templates/archive/comments/list.html:6 templates/navigation.html:30
 #: templates/navigation.html:91
 msgid "comments"
 msgstr "reacties"
 
+#: archive/templates/archive/comments/list.html:13
+#: archive/templates/archive/comments/list.html:19
+msgid "comment"
+msgstr "reactie"
+
 #: archive/templates/archive/notes/list.html:6
 msgid "Notes"
 msgstr "Notities"
+
+#: archive/templates/archive/notes/list.html:11
+#: archive/templates/archive/people/list.html:11
+#: archive/templates/archive/tags/list.html:11
+msgid "there are no "
+msgstr "er zijn geen "
 
 #: archive/templates/archive/notes/list.html:11 templates/navigation.html:45
 msgid "notes"
@@ -131,12 +160,6 @@ msgstr "profiel"
 msgid "my uploads"
 msgstr "mijn uploads"
 
-#: templates/navigation.html:55 templates/navigation.html:62
-#: templates/navigation.html:69 templates/navigation.html:76
-#: templates/navigation.html:83
-msgid "add"
-msgstr "nieuwe"
-
 #: templates/navigation.html:55 templates/navigation.html:58
 #: templates/navigation.html:90 templates/navigation.html:91
 msgid "image"
@@ -145,10 +168,12 @@ msgstr "afbeelding"
 #: templates/navigation.html:58 templates/navigation.html:65
 #: templates/navigation.html:72 templates/navigation.html:79
 #: templates/navigation.html:90 templates/navigation.html:91
+#: templates/navigation.html:93
 msgid "edit this"
 msgstr "bewerk deze"
 
 #: templates/navigation.html:62 templates/navigation.html:65
+#: templates/navigation.html:93
 msgid "person"
 msgstr "persoon"
 
@@ -160,21 +185,14 @@ msgstr "tag"
 msgid "note"
 msgstr "notitie"
 
-#: templates/navigation.html:83
-msgid "attachment"
-msgstr "bijlage"
-
 #: templates/navigation.html:88
 msgid "admin"
 msgstr ""
 
 #: templates/navigation.html:90 templates/navigation.html:91
+#: templates/navigation.html:93
 msgid "in admin"
 msgstr ""
-
-#: templates/navigation.html:93
-msgid "Edit person in admin"
-msgstr "Bewerk deze persoon in admin"
 
 #: templates/navigation.html:94
 msgid "Edit note in admin"
@@ -187,3 +205,15 @@ msgstr "Uitloggen"
 #: templates/navigation.html:113 templates/navigation.html:116
 msgid "Search"
 msgstr "Zoeken"
+
+#~ msgid "Add attachment"
+#~ msgstr "Attachment toevoegen"
+
+#~ msgid "Attachments"
+#~ msgstr "Bijlagen"
+
+#~ msgid "Comments"
+#~ msgstr "Reacties"
+
+#~ msgid "Edit person in admin"
+#~ msgstr "Bewerk deze persoon in admin"

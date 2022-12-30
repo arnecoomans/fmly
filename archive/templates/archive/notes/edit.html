@@ -2,25 +2,20 @@
 {% load i18n %}
 
 {% block content %}
-  <header>
-    <h2>{{ note.title|default:'Nieuwe notitie' }}:</h2>
-    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
-  </header>
-  {% if perms.archive.view_note %}
+  {% if not perms.archive.change_note %}
+    <!-- Check if user has permissions -->
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'you have no rights to add, view or edit this'%} {% translate 'note'|lower %}.<br>
+      {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
+    </div>
+  {% else %}
+    <header>
+      <h2>{{ note.title|default:'Nieuwe notitie' }}:</h2>
+      {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+    </header>
     <div class="edit note">
       <form method="post" class="note">
-        {% csrf_token %}
-        <dl>
-          {% for field in form %}
-            <dt>{{ field.label_tag }}</dt>
-              <dd>
-                {{ field }}
-                {% if field.erros %}{{ field.errors }}{% endif %}
-              </dd>
-          {% endfor %}
-          <dt>&nbsp;</dt>
-            <dd><input type="submit" value="{% translate 'submit changes'%}"></dd>
-        </dl>
+        {% include 'archive/snippets/form_basic.html'%}
       </form>
     </div>
     <!-- Meta information -->

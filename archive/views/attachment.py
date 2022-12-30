@@ -22,7 +22,7 @@ from archive.models import Image, Attachment
 '''
 
 ''' Show a list of Attachment by User '''
-class AttachmentListView(PermissionRequiredMixin, ListView):
+class AttachmentListView(ListView):
   model = Attachment
   permission_required = 'archive.view_attachment'
   permission_denied_message = 'Geen rechten toegekend om Attachments te bekijken'

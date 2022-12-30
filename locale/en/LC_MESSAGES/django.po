@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-30 10:58+0100\n"
+"POT-Creation-Date: 2022-12-30 12:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,36 +19,55 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: archive/templates/archive/attachments/edit.html:7
-msgid "Add attachment"
+#: templates/navigation.html:55 templates/navigation.html:62
+#: templates/navigation.html:69 templates/navigation.html:76
+#: templates/navigation.html:83
+msgid "add"
 msgstr ""
 
-#: archive/templates/archive/attachments/list.html:6
-msgid "Attachments"
+#: archive/templates/archive/attachments/edit.html:7
+#: archive/templates/archive/attachments/edit.html:14
+#: archive/templates/archive/attachments/list.html:13
+#: archive/templates/archive/attachments/list.html:19
+#: templates/navigation.html:83
+msgid "attachment"
 msgstr ""
 
-#: archive/templates/archive/attachments/list.html:11
-#: archive/templates/archive/comments/list.html:11
+#: archive/templates/archive/attachments/edit.html:14
+#: archive/templates/archive/attachments/list.html:13
+#: archive/templates/archive/attachments/list.html:19
+#: archive/templates/archive/comments/list.html:13
+#: archive/templates/archive/comments/list.html:19
 #: archive/templates/archive/notes/list.html:11
 #: archive/templates/archive/people/list.html:11
 #: archive/templates/archive/tags/list.html:11
 msgid "An error occurred"
 msgstr ""
 
-#: archive/templates/archive/attachments/list.html:11
-#: archive/templates/archive/comments/list.html:11
-#: archive/templates/archive/notes/list.html:11
-#: archive/templates/archive/people/list.html:11
-#: archive/templates/archive/tags/list.html:11
-msgid "there are no "
+#: archive/templates/archive/attachments/edit.html:14
+#: archive/templates/archive/attachments/list.html:13
+#: archive/templates/archive/comments/list.html:13
+msgid "you have no rights to add, view or edit this"
 msgstr ""
 
-#: archive/templates/archive/attachments/list.html:11
+#: archive/templates/archive/attachments/edit.html:15
+#: archive/templates/archive/attachments/list.html:14
+#: archive/templates/archive/comments/list.html:14
+msgid "If you feel this error is incorrect, please inform the site admin"
+msgstr ""
+
+#: archive/templates/archive/attachments/list.html:6
 #: templates/navigation.html:49
 msgid "attachments"
 msgstr ""
 
-#: archive/templates/archive/attachments/list.html:11
-#: archive/templates/archive/comments/list.html:11
+#: archive/templates/archive/attachments/list.html:19
+#: archive/templates/archive/comments/list.html:19
+msgid "there is no "
+msgstr ""
+
+#: archive/templates/archive/attachments/list.html:19
+#: archive/templates/archive/comments/list.html:19
 #: archive/templates/archive/notes/list.html:11
 #: archive/templates/archive/people/list.html:11
 #: archive/templates/archive/tags/list.html:11
@@ -62,17 +81,24 @@ msgstr ""
 msgid "submit changes"
 msgstr ""
 
-#: archive/templates/archive/comments/list.html:6
-msgid "Comments"
-msgstr ""
-
-#: archive/templates/archive/comments/list.html:11 templates/navigation.html:30
+#: archive/templates/archive/comments/list.html:6 templates/navigation.html:30
 #: templates/navigation.html:91
 msgid "comments"
 msgstr ""
 
+#: archive/templates/archive/comments/list.html:13
+#: archive/templates/archive/comments/list.html:19
+msgid "comment"
+msgstr ""
+
 #: archive/templates/archive/notes/list.html:6
 msgid "Notes"
+msgstr ""
+
+#: archive/templates/archive/notes/list.html:11
+#: archive/templates/archive/people/list.html:11
+#: archive/templates/archive/tags/list.html:11
+msgid "there are no "
 msgstr ""
 
 #: archive/templates/archive/notes/list.html:11 templates/navigation.html:45
@@ -131,12 +157,6 @@ msgstr ""
 msgid "my uploads"
 msgstr ""
 
-#: templates/navigation.html:55 templates/navigation.html:62
-#: templates/navigation.html:69 templates/navigation.html:76
-#: templates/navigation.html:83
-msgid "add"
-msgstr ""
-
 #: templates/navigation.html:55 templates/navigation.html:58
 #: templates/navigation.html:90 templates/navigation.html:91
 msgid "image"
@@ -145,10 +165,12 @@ msgstr ""
 #: templates/navigation.html:58 templates/navigation.html:65
 #: templates/navigation.html:72 templates/navigation.html:79
 #: templates/navigation.html:90 templates/navigation.html:91
+#: templates/navigation.html:93
 msgid "edit this"
 msgstr ""
 
 #: templates/navigation.html:62 templates/navigation.html:65
+#: templates/navigation.html:93
 msgid "person"
 msgstr ""
 
@@ -160,20 +182,13 @@ msgstr ""
 msgid "note"
 msgstr ""
 
-#: templates/navigation.html:83
-msgid "attachment"
-msgstr ""
-
 #: templates/navigation.html:88
 msgid "admin"
 msgstr ""
 
 #: templates/navigation.html:90 templates/navigation.html:91
-msgid "in admin"
-msgstr ""
-
 #: templates/navigation.html:93
-msgid "Edit person in admin"
+msgid "in admin"
 msgstr ""
 
 #: templates/navigation.html:94
