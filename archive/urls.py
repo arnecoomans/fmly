@@ -16,8 +16,8 @@ urlpatterns = [
   path('object/<str:slug>/', views.ImageView.as_view(), name='image'),
   # Special Image views
   path('objects/<int:decade>/', views.ImageListView.as_view(), {'columns': ('decade')}, name='images-by-decade'),
-  path('objects/<str:tag>/', views.ImageListView.as_view(), {'columns': ('tag')}, name='image-with-tag'),
   path('objects/by:<str:user>/', views.ImageListView.as_view(), {'columns': ('user')}, name='image-by-uploader'),
+  path('objects/<str:tag>/', views.ImageListView.as_view(), {'columns': ('tag')}, name='image-with-tag'),
   path('objects/', views.ImageListView.as_view(), name='images'),
 
   # People
