@@ -157,12 +157,6 @@
     </div>
     <!-- Meta information -->
     <hr>
-    <div class="meta">
-      <ul class="metadata">
-        <li>Door: {{ person.user }}</li>
-        <li>Aangemaakt: {{ person.date_created}}</li>
-        {% if person.date_created != person.date_modified %}<li>Voor het laatst aangepast: {{ person.date_modified }}</li>{% endif %}
-      </ul>
-    </div>
+    {% include 'archive/snippets/object_metadata.html' with object=person %}
   {% endif %}
 {% endblock %}

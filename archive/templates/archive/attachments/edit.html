@@ -1,35 +1,21 @@
 {% extends 'index.html' %}
+{% load i18n %}
 
 {% block content %}
   <header>
-    <h2>{{ note.title|default:'Nieuwe Attachment' }}:</h2>
+    <h2>
+      {% if note %}{{ note.title }}{% else %}{% translate 'Add attachment'|title %}{% endif %}
+    </h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
   </header>
   {% if perms.archive.change_attachment %}
     <div class="edit attachment">
       <form method="post" class="attachment" enctype="multipart/form-data"> 
-        {% csrf_token %}
-        <dl>
-          {% for field in form %}
-            <dt>{{ field.label_tag }}</dt>
-              <dd>
-                {{ field }}
-                {% if field.erros %}{{ field.errors }}{% endif %}
-              </dd>
-          {% endfor %}
-          <dt>&nbsp;</dt>
-            <dd><input type="submit" value="Verstuur wijzigingen"></dd>
-        </dl>
+        {% include 'archive/snippets/form_basic.html' %}
       </form>
     </div>
     <!-- Meta information -->
     <hr>
-    <div class="meta">
-      <ul class="metadata no-bullets">
-        <li>Door: {{ note.user }}</li>
-        <li>Aangemaakt: {{ note.date_created}}</li>
-        {% if note.date_created != note.date_modified %}<li>Voor het laatst aangepast: {{ note.date_modified }}</li>{% endif %}
-      </ul>
-    </div>
+    {% include 'archive/snippets/object_metadata.html' with object=attachment %}
   {% endif %}
 {% endblock %}
