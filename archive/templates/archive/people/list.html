@@ -26,10 +26,10 @@
       <div class="filters">
         <!-- Order results by -->
         <span class="option">
-          Sorteer resultaten op: 
-            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=last_name">Achternaam</a>
-            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=first_name">Voornaam</a>
-            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=year_of_birth">Geboortejaar</a>
+          {% translate 'sort results by'|capfirst %}: 
+            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=last_name">{% translate 'last name' %}</a>
+            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=first_name">{% translate 'first name' %}</a>
+            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=year_of_birth">{% translate 'date of birth' %}</a>
         </span>
         <!-- Filter Images Only With image -->
         <span class="option">
@@ -58,6 +58,9 @@
               <label for="family">Familie: </label>
               <select name="family" onchange="this.form.submit()">
                 <option value="all">-----</option>
+                {% if filters.family and filters.family  not in available_families %}
+                  <option value="{{ family }}" selected>{{ filters.family|title }}</option>
+                {% endif %}
                 {% for family in available_families %}
                   <option value="{{ family }}" {% if filters.family == family|lower %} selected{% endif %}>{{ family }}</option>
                 {% endfor %}
