@@ -1,9 +1,22 @@
+{% load i18n %}
 {% if images_hidden %}
   <p class="bi bi-info-circle-fill">
-    {% if images_hidden > 0 %}
-      Er {{ images_hidden|pluralize:'is,zijn' }} ook <a href="?{% include 'archive/snippets/fixparams.html' with ignore='hidden' %}hidden=True" title="Toon ook de {{ images_hidden }} afbeelding{{ images_hidden|pluralize:'en' }}">{{ images_hidden }} verborgen afbeelding{{ images_hidden|pluralize:'en' }}</a> te tonen.
+    {% blocktranslate count counter=images_hidden %}There is{% plural %}There are{% endblocktranslate %}
+    <!-- Images can be shown -->
+    {% if images_hidden >  0%}
+      <a href="?{% include 'archive/snippets/fixparams.html' with ignore='hidden' %}hidden=True" 
+         title="{% blocktranslate count counter=images_hidden %}Reload the page, also showing the hidden image{% plural %}Reload the page, also showing {{ images_hidden }} hidden images{% endblocktranslate %}"
+         >
+          {{ images_hidden }} 
+          {% blocktranslate count counter=images_hidden %}hidden image{% plural %}hidden images{% endblocktranslate %}</a>
+      {% translate 'to show' %}.
     {% elif images_hidden < 0 %}
-    Er {{ images_hidden|abs|pluralize:'is,zijn' }} <a href="?{% include 'archive/snippets/fixparams.html' with ignore='hidden' %}hidden=False" title="Verberg de {{ images_hidden }} afbeelding{{ images_hidden|abs|pluralize:'en' }}">{{ images_hidden|abs }} afbeelding{{ images_hidden|abs|pluralize:'en' }}</a> te verbergen.
+      <a href="?{% include 'archive/snippets/fixparams.html' with ignore='hidden' %}hidden=False" 
+         title="{% blocktranslate count counter=images_hidden|abs %}Reload the page, hiding the hidden image{% plural %}Reload the page, without the hidden images{% endblocktranslate %}"
+          >
+          {{ images_hidden|abs }}
+          {% blocktranslate count counter=images_hidden %}hidden image{% plural %}images{% endblocktranslate %}</a>
+      {% translate 'to hide' %}.
     {% endif %}
   </p>
 {% endif %}
