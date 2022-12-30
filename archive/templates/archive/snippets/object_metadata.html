@@ -1,0 +1,8 @@
+{% load i18n %}
+<div class="meta">
+  <ul class="metadata">
+    <li>{% translate 'created by'|capfirst %}: {% if object %}{{ object.user }}{% else %} {{ request.user }}{% endif %}</li>
+    <li>{% translate 'created at'|capfirst %}: {{ object.date_created}}</li>
+    {% if object.date_created != object.date_modified %}<li>Voor het laatst aangepast: {{ object.date_modified }}</li>{% endif %}
+  </ul>
+</div>

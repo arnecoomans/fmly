@@ -1,0 +1,13 @@
+{% load i18n %}
+{% csrf_token %}
+  <dl>
+    {% for field in form %}
+      <dt>{% translate field.label_tag %} ({{ field.label_tag }})</dt>
+        <dd>
+          {{ field }}
+          {% if field.erros %}{{ field.errors }}{% endif %}
+        </dd>
+    {% endfor %}
+    <dt>&nbsp;</dt>
+      <dd><input type="submit" value="{% translate 'submit changes'%}"></dd>
+  </dl>

@@ -2,16 +2,22 @@
 {% load i18n %}
 
 {% block content %}
-  <header>
-    <h2>{% translate 'People' %}:</h2>
-    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
-  </header>
-  {% if not people %}
-  <div class="alert alert-danger" role="alert">
-    {% translate 'An error occurred' %}: {% translate 'there are no '%} {% translate 'people'|lower %} {% translate 'available' %}.
-  </div>
-  {% endif %}
-  {% if perms.archive.view_person %}
+  {% if not perms.archive.view_person %}
+    <!-- Check if user has permissions -->
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'you have no rights to add, view or edit this'%} {% translate 'person'|lower %}.<br>
+      {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
+    </div>
+  {% elif not people %}
+    <!-- Check if object has items to show -->
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'there is no '%} {% translate 'person'%} {% translate 'available' %}.
+    </div>
+  {% else %}
+    <header>
+      <h2>{% translate 'People' %}:</h2>
+      {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+    </header>
     <div class="people objects">
 <!-- Filters 
      Each filter has its own form, to avoid cluttering the url arguments.
@@ -20,10 +26,10 @@
       <div class="filters">
         <!-- Order results by -->
         <span class="option">
-          Sorteer resultaten op: 
-            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=last_name">Achternaam</a>
-            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=first_name">Voornaam</a>
-            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=year_of_birth">Geboortejaar</a>
+          {% translate 'sort results by'|capfirst %}: 
+            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=last_name">{% translate 'last name' %}</a>
+            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=first_name">{% translate 'first name' %}</a>
+            <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=year_of_birth">{% translate 'date of birth' %}</a>
         </span>
         <!-- Filter Images Only With image -->
         <span class="option">
@@ -52,6 +58,9 @@
               <label for="family">Familie: </label>
               <select name="family" onchange="this.form.submit()">
                 <option value="all">-----</option>
+                {% if filters.family and filters.family  not in available_families %}
+                  <option value="{{ family }}" selected>{{ filters.family|title }}</option>
+                {% endif %}
                 {% for family in available_families %}
                   <option value="{{ family }}" {% if filters.family == family|lower %} selected{% endif %}>{{ family }}</option>
                 {% endfor %}

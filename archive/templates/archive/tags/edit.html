@@ -1,11 +1,18 @@
 {% extends 'index.html' %}
+{% load i18n %}
 
 {% block content %}
-  <header>
-    <h2>{{ tag.title|default:'Nieuwe tag' }}:</h2>
-    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
-  </header>
-  {% if perms.archive.view_tag %}
+  {% if not perms.archive.view_person %}
+    <!-- Check if user has permissions -->
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'you have no rights to add, view or edit this'%} {% translate 'tag'|lower %}.<br>
+      {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
+    </div>
+  {% else %}
+    <header>
+      <h2>{{ tag.title|default:'Nieuwe tag' }}:</h2>
+      {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+    </header>
     <div class="edit tag">
       <form method="post" class="tag">
         {% csrf_token %}
@@ -18,18 +25,12 @@
               </dd>
           {% endfor %}
           <dt>&nbsp;</dt>
-            <dd><input type="submit" value="Verstuur wijzigingen"></dd>
+            <dd><input type="submit" value="{% translate 'submit changes'%}"></dd>
         </dl>
       </form>
     </div>
     <!-- Meta information -->
     <hr>
-    <div class="meta">
-      <ul class="metadata">
-        <li>Door: {{ tag.user }}</li>
-        <li>Aangemaakt: {{ tag.date_created}}</li>
-        {% if tag.date_created != tag.date_modified %}<li>Voor het laatst aangepast: {{ tag.date_modified }}</li>{% endif %}
-      </ul>
-    </div>
+    {% include 'archive/snippets/object_metadata.html' with object=tag %}
   {% endif %}
 {% endblock %}

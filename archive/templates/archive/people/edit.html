@@ -1,11 +1,18 @@
 {% extends 'index.html' %}
+{% load i18n %}
 
 {% block content %}
-  <header>
-    <h2>{% if person %}{{ person.first_name }} {{ person.last_name }}{% else %}Persoon toevoegen:{% endif %}</h2>
-    {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
-  </header>
-  {% if perms.archive.view_note %}
+  {% if not perms.archive.change_person %}
+    <!-- Check if user has permissions -->
+    <div class="alert alert-danger" role="alert">
+      {% translate 'An error occurred' %}: {% translate 'you have no rights to add, view or edit this'%} {% translate 'person'|lower %}.<br>
+      {% translate 'If you feel this error is incorrect, please inform the site admin' %}.
+    </div>
+  {% else %}
+    <header>
+      <h2>{% if person %}{{ person.first_name }} {{ person.last_name }}{% else %}Persoon toevoegen:{% endif %}</h2>
+      {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+    </header>
     <div class="edit note">
       <form method="post" class="note">
         {% csrf_token %}
@@ -157,12 +164,6 @@
     </div>
     <!-- Meta information -->
     <hr>
-    <div class="meta">
-      <ul class="metadata">
-        <li>Door: {{ person.user }}</li>
-        <li>Aangemaakt: {{ person.date_created}}</li>
-        {% if person.date_created != person.date_modified %}<li>Voor het laatst aangepast: {{ person.date_modified }}</li>{% endif %}
-      </ul>
-    </div>
+    {% include 'archive/snippets/object_metadata.html' with object=person %}
   {% endif %}
 {% endblock %}
