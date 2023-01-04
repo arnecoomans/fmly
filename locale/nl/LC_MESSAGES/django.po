@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-30 21:38+0100\n"
-"PO-Revision-Date: 2022-12-30 21:41+0100\n"
+"PO-Revision-Date: 2022-12-30 21:54+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -115,7 +115,7 @@ msgstr[1] "reacties"
 #: archive/templates/archive/images/detail.html:95 templates/navigation.html:90
 #: templates/navigation.html:91 templates/navigation.html:93
 msgid "in admin"
-msgstr ""
+msgstr "in admin"
 
 #: archive/templates/archive/images/detail.html:110
 #: archive/templates/archive/images/edit.html:94
@@ -193,7 +193,7 @@ msgstr "persoon"
 #: archive/templates/archive/images/edit.html:83
 #: archive/templates/archive/tags/list.html:11 templates/navigation.html:25
 msgid "tags"
-msgstr ""
+msgstr "tags"
 
 #: archive/templates/archive/images/edit.html:88
 #: archive/templates/archive/images/edit.html:89 templates/navigation.html:69
