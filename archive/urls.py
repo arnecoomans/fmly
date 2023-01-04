@@ -31,7 +31,8 @@ urlpatterns = [
   # Relationships
   path('person/<int:subject>/<str:type>:<int:removed_person>/delete/', views.PersonRemoveRelationView.as_view(), {'columns': ('up', 'relation', 'down')}, name='remove-relationship'),
   path('person/add-relation/', views.PersonAddRelationView.as_view(), name='add-relationship'),
-  
+  # Tree
+  path('tree/', views.CreateTreeView.as_view(), name="tree"),
 
   # Tags 
   path('tags/', views.TagListView.as_view(), name='tags'),

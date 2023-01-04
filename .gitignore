@@ -23,6 +23,9 @@ custom_*.css
 /gunicorn
 /run
 
+# Experiment with familytreemaker
+/familytreemaker
+
 # Keep mac-folders outside repo
 .DS_Store
 

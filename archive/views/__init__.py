@@ -5,3 +5,4 @@ from .note import *
 from .person import *
 from .tag import *
 from .usermanagement import *
+from .tree import *
