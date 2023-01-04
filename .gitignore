@@ -14,6 +14,10 @@ family/urls.py
 /public/static
 /public/documents/*
 /public/documents/files/*
+
+# allow for custom css's
+custom_*.css
+
 # Keep logs outside repo
 /logs
 /gunicorn
