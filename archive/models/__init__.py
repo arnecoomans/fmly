@@ -4,3 +4,4 @@ from .image import *
 from .comment import *
 from .note import *
 from .preference import *
+from .tree import Tree
