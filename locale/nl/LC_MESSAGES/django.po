@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-30 21:38+0100\n"
-"PO-Revision-Date: 2022-12-30 21:54+0100\n"
+"POT-Creation-Date: 2023-01-07 07:55+0100\n"
+"PO-Revision-Date: 2023-01-07 07:55+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -368,6 +368,10 @@ msgstr "Relatie toevoegen"
 #: archive/templates/archive/people/edit.html:148
 msgid "child"
 msgstr "kind"
+
+#: archive/templates/archive/people/edit.html:148
+msgid "sibling"
+msgstr "broer/zus"
 
 #: archive/templates/archive/people/list.html:11
 msgid "People"

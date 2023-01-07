@@ -240,6 +240,7 @@ class PersonAddRelationView(PermissionRequiredMixin, CreateView):
       'parent': 'ouder',
       'child': 'kind',
       'partner': 'partner',
+      'sibling': 'broer/zus',
     }
     ''' Creating relations is caught in a try, to catch restrictions such as existing relations 
         The exception triggers a message to the user and a redirect to the edit page, not saving changes.
@@ -291,6 +292,17 @@ class PersonAddRelationView(PermissionRequiredMixin, CreateView):
       except:
         messages.add_message(self.request, messages.ERROR, f"Kan \"{ person }\" niet als kind toevoegen van \"{ subject }\".")
         return redirect('archive:person-edit', subject.id )
+    elif type == 'sibling':
+      ''' Add Sibling relation by adding shared parents '''
+      for parent in person.get_parents():
+        try:
+          relation = FamilyRelations(up_id=parent.id, down_id=subject.id, type='parent')
+          relation.save()
+          messages.add_message(self.request, messages.SUCCESS, f"\"{ parent }\" is nu ouder van \"{ subject }\".")
+        except:
+          messages.add_message(self.request, messages.ERROR, f"Kan \"{ parent }\" niet als ouder toevoegen van \"{ subject }\".")
+          return redirect('archive:person-edit', subject.id )
+
     elif type == 'partner':
       ''' Add Partner relation'''
       ''' Check if both person and subject were alive during their relationship '''
@@ -335,6 +347,8 @@ class PersonRemoveRelationView(PermissionRequiredMixin, DetailView):
         relation.delete()
       except:
         messages.add_message(self.request, messages.WARNING, f"Fout! Kan relatie tussen \"{ removed_person }\" en \"{ subject }\" niet verwijderen.")
+    elif type == 'sibling':
+      pass # @TODO
     elif type == 'partner':
       try:
         relation = FamilyRelations.objects.get(up_id=removed_person.id, down_id=subject.id, type=type)
