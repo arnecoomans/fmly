@@ -170,7 +170,7 @@ class ImageRedirectView(DetailView):
     ''' Get title or use default '''
     title = 'needs a title' if image.title == '' else image.title
     ''' Redirect to proper view '''
-    return redirect('archive:image', image.id, slugify(title) )
+    return redirect('archive:image', image.slug)
 
 ''' ImageView'''
 class ImageView(DetailView):
