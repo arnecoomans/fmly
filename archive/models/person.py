@@ -133,9 +133,11 @@ class Person(models.Model):
             partners.append(parent)
       ''' Partner is also found by relation type=partner '''
       for partner in person.relation_up.filter(type='partner'):
-        partners.append(partner.up)
+        if partner.up not in partners:
+          partners.append(partner.up)
       for partner in person.relation_down.filter(type='partner'):
-        partners.append(partner.down)
+        if partner.down not in partners:
+          partners.append(partner.down)
       return partners
 
   ''' get_siblings
