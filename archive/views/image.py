@@ -289,7 +289,9 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
       ''' Only if data has changed, save the Object '''
       messages.add_message(self.request, messages.SUCCESS, f"Wijzigingen opgeslagen.")
       form.save()
-      if 'people' in form.changed_data or 'is_portrait_of' in form.changed_data or 'user' in form.changed_data:
+      if 'is_deleted' in form.changed_data:
+        return redirect(reverse_lazy('archive:images'))
+      elif 'people' in form.changed_data or 'is_portrait_of' in form.changed_data or 'user' in form.changed_data:
         return redirect(reverse_lazy('archive:image-edit', kwargs={'pk': self.object.id}))  
       return redirect(reverse_lazy('archive:image', kwargs={'slug': self.object.slug}))
       #return super().form_valid(form)
