@@ -145,7 +145,7 @@
               <dd>
                 {% csrf_token %}
                 <input type="hidden" name="subject" value="{{ person.id }}">
-                <select name="type"><option value="parent">{% translate 'parent'|capfirst %}</option><option value="child">{% translate 'child'|capfirst %}</option><option value="partner">{% translate 'partner'|capfirst %}</option></select>
+                <select name="type"><option value="parent">{% translate 'parent'|capfirst %}</option><option value="child">{% translate 'child'|capfirst %}</option><option value="sibling">{% translate 'sibling'|capfirst %}</option><option value="partner">{% translate 'partner'|capfirst %}</option></select>
                 <select name="person">
                   {% for person in available_relations %}
                     <option value="{{ person.id }}">{{ person }}</option>
