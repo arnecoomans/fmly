@@ -3,50 +3,68 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.template.defaultfilters import slugify
 
 from django.http import HttpResponse
-from django.utils.html import escape
+# from django.utils.html import escape
 
 from ..utils import get_person_filters, get_person_queryset
 
+# import string
+from datetime import date
 import graphviz
-
-''' Thoughts on development:
-    - use queryset id's as base list
-    - fetch all person details from person list
-    - Add marriages, children to queryset
-    - Make people in queryset stand out using line colour, bold, whatever
-    - add year of birth/death
-    - It is easier to import from souce than to build it itself
-'''
-
 
 from archive.models import Person
 
 class CreateTreeView(View):
-    
   
+  # def get_free_node_name(self):
+  #   if not hasattr(self, 'free_names'):
+  #     ltrs = string.ascii_uppercase
+  #     self.free_names = [''.join([a,b]) for a in ltrs for b in ltrs]
+  #   free_name = self.free_names[0]
+  #   self.free_names.remove(free_name)
+  #   return free_name
+
+  
+  ''' add_person
+      Adds person to list of featured people. 
+  '''
   def add_person(self, person_id):
+    ''' Ensure placeholder exists '''
     if not hasattr(self, 'people'):
       self.people = {}
     ''' Add Person id as Key in Dict to avoid doubles since person id is always unique '''
     self.people[person_id] = True
     
+  ''' store_partner_relation 
+      a partner-relation consists of one extra node on the same level
+      and one relationship on the same level
+  '''
   def store_partner_relation(self, person_id, related_person_id):
+    ''' Ensure placeholders exist '''
     if not hasattr(self, 'relations'):
       self.relations = {}
     if not hasattr(self, 'relation_points'):
       self.relation_points = {}
-    ''' Sort key by lowest_id:highest_id'''
+    if not hasattr(self, 'people_data'):
+      self.people_data = Person.objects.all()
+    ''' Create relation key
+        Key is used to store relations and node points
+        Sort key by lowest_id:highest_id '''
     if person_id < related_person_id:
-      key = f"{ str(person_id).zfill(4) }{ str(related_person_id).zfill(4) }"
+      key = f"{ str(person_id) }{ str(related_person_id) }"
     else:
-      key = f"{ str(related_person_id).zfill(4) }{ str(person_id).zfill(4) }"
-    value = False
-    ''' Store relation as parent->child '''
-    self.relation_points[key] = 'shape=circle,label="",height=0.01,width=0.1;'
-    # {rank=same; Abraham -> a1 -> Mona};
-    value = f"{{rank=same; { str(person_id) } -> { key } -> { str(related_person_id) }}}"
-    self.relations[key] = f"{ value }"
-
+      key = f"{ str(related_person_id) }{ str(person_id) }"
+    ''' Add relationship-point and relation on the same level '''
+    self.relation_points[key] = 'shape=circle,label="",height=0.01,width=0.01;'
+    self.relations[key] = f"{{rank=same; { str(person_id) } -> { key } -> { str(related_person_id) }}}"
+    ''' Add Relationship mountpoint one level below '''
+    if person_id < related_person_id:
+      mount = f"{ str(person_id).zfill(4) }{ str(related_person_id).zfill(4) }"
+    else:
+      mount = f"{ str(related_person_id).zfill(4) }{ str(person_id).zfill(4) }"
+    if len(self.people_data.get(pk=person_id).get_children()) > 0:
+      self.relation_points[key] = 'shape=invis,label="",height=0.01,width=0.01;'
+      self.relations[mount] = f"{ str(key) } -> { mount }"
+    
   def store_child_relation(self, child_id):
     if not hasattr(self, 'relations'):
       self.relations = {}
@@ -64,10 +82,9 @@ class CreateTreeView(View):
         self.relations[str(parents[0]).zfill(4) + str(child_id).zfill(4)] = f'{ parents[0]} -> { child_id }'
       elif len(parents) > 1:
         parents_relationpoint = ''.join(str(parent).zfill(4) for parent in parents)
-        #  a1 -> b2
-        if parents_relationpoint in self.relation_points:
-          self.relations[str(parents_relationpoint) + str(child_id).zfill(4)] = f'{ parents_relationpoint } -> { child_id }'
-      
+        ''' Add Relation '''
+        self.relations[str(parents_relationpoint) + str(child_id).zfill(4)] = f"{ parents_relationpoint } -> { child_id }"
+
 
 
 
@@ -82,15 +99,29 @@ class CreateTreeView(View):
     self.graph.append('')
     self.graph.append('  # List People')
     for person in self.people.keys():
+      ''' Prepare year-of-birth and year-of-death neatly '''
       data = self.people_data.get(pk=person)
+      yob = str(data.year_of_birth) if data.year_of_birth else ''
+      if data.year_of_death:
+        yod = str(data.year_of_death)
+      else:
+        if data.year_of_birth:
+          if date.today().year - data.year_of_birth > 90:
+            yod = '?'
+          else:
+            yod = ''
+        else:
+          yod = ''
+      ''' Set Attributes of person '''
       attributes = {
-        'label': f'"{ data.full_name() }"',
+        'label': f'"{ data.full_name() }\n{ yob }-{ yod }"',
         'shape': '"box"',
         'regular': '0',
         'color': '"black"',
         'style': '"filled"',
         'fillcolor': '"lightgrey"',
       }
+      ''' If person is in queryset, make bold to distinct from partners/children '''
       if self.queryset.filter(pk=person).count() > 0:
         attributes['style'] = '"bold, filled"'
       attribute_list = ''
@@ -100,7 +131,8 @@ class CreateTreeView(View):
       attribute_list = attribute_list[:-2]
       ''' Write person details to graph '''
       self.graph.append(f'  "{ str(person) }" [{ attribute_list }]')
-    
+  
+  ''' A relation point is between two people that share children '''
   def populate_relation_points(self):
     if not hasattr(self, 'relation_points'):
       self.relation_points = {}
@@ -142,6 +174,7 @@ class CreateTreeView(View):
     self.graph.append('digraph G {')
     self.graph.append('  edge [dir=none];')
     self.graph.append('  node [shape=box];')
+    self.graph.append('  splines=false;')
     self.populate_people()
     self.populate_relation_points()
     self.populate_relations()
