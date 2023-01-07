@@ -51,7 +51,7 @@
               <label for="family">Familie: </label>
               <select name="family" onchange="this.form.submit()">
                 <option value="all">-----</option>
-                {% if filters.family and filters.family  not in available_families %}
+                {% if filters.family and filters.family  not in available_families|lower %}
                   <option value="{{ family }}" selected>{{ filters.family|title }}</option>
                 {% endif %}
                 {% for family in available_families %}
