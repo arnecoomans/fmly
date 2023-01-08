@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.contrib import messages
 from django.urls import reverse
-from django.template.defaultfilters import slugify
+from django.utils.translation import gettext as _
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
@@ -76,7 +76,7 @@ class AddCommentView(PermissionRequiredMixin, CreateView):
     form.instance.user = self.request.user
     ''' Link Image Instance to comment '''
     form.instance.image = Image.objects.get(pk=self.kwargs['pk'])
-    messages.add_message(self.request, messages.SUCCESS, f"Reactie toegevoegd aan \"{form.instance.image.title}\"")
+    messages.add_message(self.request, messages.SUCCESS, f"{ _('Comment added to') } \"{form.instance.image.title}\"")
     return super().form_valid(form)
 
 ''' Edit Comment '''
@@ -98,14 +98,14 @@ class CommentEditView(PermissionRequiredMixin, UpdateView):
         produce an errormessage '''
     if self.request.user != comment.user:
       form.instance.user = comment.user
-      messages.add_message(self.request, messages.WARNING, f"Reactie op \"{form.instance.image.title}\" kan niet worden bewerkt: de gebruiker kan niet worden aan")
+      messages.add_message(self.request, messages.WARNING, f"{ _('Comment on') } \"{form.instance.image.title}\" { _('cannot be edited') }: { _('this is not your comment')}")
       return False
     ''' Only store comment if changes have been made. If not, keep orignial modified_data '''
     if len(form.changed_data) > 0:
-      messages.add_message(self.request, messages.SUCCESS, f"Wijzigingen opgeslagen.")
+      messages.add_message(self.request, messages.SUCCESS, f"{ _('Changes saved') }.")
       return super().form_valid(form)
     else:
-      messages.add_message(self.request, messages.WARNING, f"Geen wijzigingen opgegeven.")
+      messages.add_message(self.request, messages.WARNING, f"{ _('No changes made') }.")
       return redirect(reverse('archive:image', args=[form.instance.image.slug]))
 
 
@@ -120,10 +120,10 @@ class CommentDeleteView(PermissionRequiredMixin, DetailView):
     if change_is_allowed(self.request.user, comment):
       ''' Mark comment as deleted '''
       comment.is_deleted = True
-      messages.add_message(self.request, messages.SUCCESS, f"Reactie \"{ get_comment_preview(comment) }\" op \"{comment.image.title}\" verwijderd. <a href=\"{reverse('archive:undelete-comment', args=[comment.id])}\">Ongedaan maken</a>.")
+      messages.add_message(self.request, messages.SUCCESS, f"{ _('Comment') } \"{ get_comment_preview(comment) }\" { _('on') } \"{comment.image.title}\" { _('has been removed')}. <a href=\"{reverse('archive:undelete-comment', args=[comment.id])}\">{ _('Undo') }</a>.")
     else:
       ''' Share errormessage that the comment cannot be modified '''
-      messages.add_message(self.request, messages.ERROR, f"Reactie \"{ get_comment_preview(comment) }\" op \"{comment.image.title}\" kan niet worden verwijderd. Is het wel jouw reactie?")
+      messages.add_message(self.request, messages.ERROR, f"{ _('Comment') } \"{ get_comment_preview(comment) }\" { _('on') } \"{comment.image.title}\" { _('cannot be removed')}. { _('this is not your comment')}")
     comment.save()
     ''' Redirect to image, also listing comments '''
     return redirect('archive:image', comment.image.slug)
@@ -141,9 +141,9 @@ class CommentUnDeleteView(PermissionRequiredMixin, DetailView):
     if change_is_allowed(self.request.user, comment):
       ''' Mark comment as restored'''
       comment.is_deleted = False
-      messages.add_message(self.request, messages.SUCCESS, f"Reactie \"{ get_comment_preview(comment) }\" op \"{comment.image.title}\" hersteld.")
+      messages.add_message(self.request, messages.SUCCESS, f"{ _('Comment') } \"{ get_comment_preview(comment) }\" { _('on') } \"{comment.image.title}\" { _('restored') }.")
     else:
       ''' Share errormessage that the comment cannot be modified '''
-      messages.add_message(self.request, messages.ERROR, f"Reactie \"{ get_comment_preview(comment) }\" op \"{comment.image.title}\" kan niet worden hersteld. Is het wel jouw reactie?")
+      messages.add_message(self.request, messages.ERROR, f"{ _('Comment') } \"{ get_comment_preview(comment) }\" { _('on') } \"{comment.image.title}\" { _('cannot be restored') }. { _('this is not your comment')}")
     comment.save()
     return redirect('archive:image', comment.image.slug)
