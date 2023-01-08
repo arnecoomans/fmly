@@ -82,10 +82,10 @@ class AttachmentDeleteView(PermissionRequiredMixin, DetailView):
     if object.user == request.user:
       object.is_deleted = True
       object.save()
-      messages.add_message(self.request, messages.SUCCESS, f"Attachment \"{ object.file } ({ object.description })\" is verwijderd en is niet meer te downloaden.")
-      messages.add_message(self.request, messages.WARNING, f"Let op! Het bestand is niet verwijderd van de server. <br>Neem contact op met de beheerder als het bestand ook van de server moet worden verwijderd.")
+      messages.add_message(self.request, messages.SUCCESS, f"{ _('Attachment') }  \"{ object.file } ({ object.description })\" { _('has been deleted and cannot be downloaded') }")
+      messages.add_message(self.request, messages.WARNING, f"{ _('Attention! The file has not been removed from filesystem.') }<br>{ _('Contact the') } { _('site administrator') } { _('if the file has to be removed from filesystem') }")
     else:
-      messages.add_message(self.request, messages.ERROR, f"Kan \"{ object.file }\" niet verwijderen. <br>Attachment kan alleen verwijderd worden door de attachment eigenaar en de site-beheerder.")
+      messages.add_message(self.request, messages.ERROR, f"{ _('Cannot remove attachment') }\"{ object.file }\". <br>{ _('Attachment can only be removed by attachment-owner or') } { _('site administrator') }.")
     return redirect(reverse('archive:attachments'))
 
 ''' Stream Attachment to User as download, but only if user is authenticated.
@@ -110,13 +110,13 @@ class AttachmentStreamView(PermissionRequiredMixin, DetailView):
     if file.is_deleted:
       ''' If file is marked as deleted, show an error message '''
       ''' Send message that file is not available '''
-      messages.add_message(self.request, messages.WARNING, f"Bestand \"{ filename }\"is niet meer beschikbaar.")
+      messages.add_message(self.request, messages.WARNING, f"{ _('File') } \"{ filename }\" { _('is no longer available') }.")
       ''' Return to Attachment List '''
       return redirect(reverse('archive:attachments'))
     elif not settings.MEDIA_ROOT.joinpath(str(file.file)).exists():
       ''' Check if file exists on filesystem '''
       ''' Send message that file is not available '''
-      messages.add_message(self.request, messages.ERROR, f"Bestand \"{ filename }\"is niet beschikbaar.")
+      messages.add_message(self.request, messages.ERROR, f"{ _('File') } \"{ filename }\" { _('is not available') }.")
       ''' Return to Attachment List '''
       return redirect(reverse('archive:attachments'))
     ''' Allow download of file by user '''
@@ -137,9 +137,9 @@ class CreateImageFromAttachmentView(PermissionRequiredMixin, DetailView):
       ''' Check if source exists and destination does not already exist '''
       if not source.exists() or destination.exists():
         if not source.exists():
-          messages.add_message(request, messages.ERROR, f"Kan geen afbeelding maken van \"{ attachment }\". Bestand wordt niet gevonden.")
+          messages.add_message(request, messages.ERROR, f"{ _('Unable to process attachment to image') } \"{ attachment }\". { _('File not found') }.")
         if destination.exists():
-          messages.add_message(request, messages.ERROR, f"Kan geen afbeelding maken van \"{ attachment }\". Doelbestand bestaat al.")
+          messages.add_message(request, messages.ERROR, f"{ _('Unable to process attachment to image') } \"{ attachment }\". { _('Image file already exists') }.")
         return redirect(reverse('archive:attachments'))
       ''' Proceed with creating image of first page '''
       
@@ -158,9 +158,9 @@ class CreateImageFromAttachmentView(PermissionRequiredMixin, DetailView):
       ''' Link originating attachment to image'''
       image.attachments.set([attachment])
       image.save()
-      messages.add_message(request, messages.SUCCESS, f"Afbeelding van attachment \"{ str(source.name) }\" aangemaakt.")
+      messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully created image of attachment') } \"{ str(source.name) }\".")
       return redirect(reverse_lazy('archive:image', kwargs={'pk': image.id, 'slug': slugify(image.title)}))
     else:
-      messages.add_message(request, messages.WARNING, f"Kan geen afbeelding maken van \"{ attachment }\". Bestandstype \"{ attachment.extension }\" wordt niet ondersteund.")
+      messages.add_message(request, messages.WARNING, f"{ _('Unable to process attachment to image') } \"{ attachment }\". { _('Filetype is not supported') } \"{ attachment.extension }\".")
     pass
     return redirect(reverse('archive:attachments'))
