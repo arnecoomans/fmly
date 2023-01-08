@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
+from django.utils.translation import gettext as _
 
 ''' Required for streaming downloads to user '''
 from django_sendfile import sendfile
@@ -35,6 +36,21 @@ class AttachmentListView(ListView):
       queryset = queryset.filter(user__username__iexact=self.kwargs['user'])
     return queryset
 
+class AttachmentEditView(PermissionRequiredMixin, UpdateView):
+  model = Attachment
+  permission_required = 'archive.change_attachment'
+
+  fields = ['description']
+
+  def get_success_url(self):
+    return reverse('archive:attachments')
+
+  def form_valid(self, form):
+    if form.instance.description == '' or form.instance.description == None:
+      form.instance.description = str(self.object.file).replace('files/', '').replace('_', ' ')
+    messages.add_message(self.request, messages.SUCCESS, f"{ _('Saved changes to') } \"{ form.instance.description }\".")
+    return super().form_valid(form)
+
 ''' AddAttachment '''
 class AttachmentAddView(PermissionRequiredMixin, CreateView):
   model = Attachment
@@ -43,7 +59,7 @@ class AttachmentAddView(PermissionRequiredMixin, CreateView):
   fields = ['file', 'description', ]
 
   def form_invalid(self, form):
-    messages.add_message(self.request, messages.WARNING, f"Formulier kan niet worden ingediend vanwege de volgende fout(en): { form.errors }")
+    messages.add_message(self.request, messages.WARNING, f"{ _('Form cannot be saved because of the following error(s)') }:: { form.errors }")
     return super().form_invalid(form)
 
   def form_valid(self, form):

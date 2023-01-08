@@ -14,29 +14,37 @@
     <div class="objects">
       <ul class="tags no-bullets">
         {% for attachment in attachment_list %}
-        {% ifchanged attachment.user %}
-          </ul>
-          <h5>{% if attachment.user.first_name or attachment.user.last_name %}{{ attachment.user.first_name }} {{ attachment.user.last_name }} ({% endif %}{{ attachment.user}}{% if attachment.user.first_name or attachment.user.last_name %}){% endif %}</h5>
-          <ul class="tags no-bullets">
-        {% endifchanged %}
-        <li class="tag bi bi-paperclip{% if request.GET.mark|lower == attachment.slug|lower %} marked{% endif %}">
-          <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment" target="_blank" rel="noopener noreferrer">{{ attachment.description|title }}</a>
-          [{{ attachment.getSize }}]
-          ({{ attachment.uploaded_at|date:'d/m/y' }})
-          {% if attachment.images.all.count > 0 %}
-            {% for image in attachment.images.all %} 
-              <a href="{% url 'archive:image' image.slug %}" class="bi bi-image-fill" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'View linked image' %} &quot;{{ image.title }}&quot;"></a>
-            {% endfor %}
-          {% else %}
-            {% if attachment.extension == 'pdf' %}
-              <a href="{% url 'archive:create-image-from-attachment' attachment.slug %}" class="bi bi-plus-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'Create image from' %} {% translate 'attachment' %}"></a>
+          {% ifchanged attachment.user %}
+            </ul>
+            <h5>{% if attachment.user.first_name or attachment.user.last_name %}{{ attachment.user.first_name }} {{ attachment.user.last_name }} ({% endif %}{{ attachment.user}}{% if attachment.user.first_name or attachment.user.last_name %}){% endif %}</h5>
+            <ul class="tags no-bullets">
+          {% endifchanged %}
+          <li class="tag bi bi-paperclip{% if request.GET.mark|lower == attachment.slug|lower %} marked{% endif %}">
+            <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment" target="_blank" rel="noopener noreferrer">{{ attachment.description|title }}</a>
+            [{{ attachment.getSize }}]
+            ({{ attachment.uploaded_at|date:'d/m/y' }})
+            {% if attachment.images.all.count > 0 %}
+              {% for image in attachment.images.all %} 
+                <a href="{% url 'archive:image' image.slug %}" class="bi bi-image-fill" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'View linked image' %} &quot;{{ image.title }}&quot;"></a>
+              {% endfor %}
+            {% else %}
+              {% if attachment.extension == 'pdf' %}
+                <a href="{% url 'archive:create-image-from-attachment' attachment.slug %}" class="bi bi-plus-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'Create image from' %} {% translate 'attachment' %}"></a>
+              {% endif %}
             {% endif %}
-          {% endif %}
-          {% if attachment.user == request.user %}
-            <a href="" class="bi bi-pencil-fill" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'attachment' %}"></a>
-            <a href="{% url 'archive:delete-attachment' attachment.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'delete'|capfirst %} {% translate 'attachment' %}">[X]</a>
-          {% endif %}
-        </li>
+            {% if attachment.user == request.user %}
+              <a href="?edit={{ attachment.slug }}" class="bi bi-pencil-fill" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'attachment' %}"></a>
+              <a href="{% url 'archive:delete-attachment' attachment.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'delete'|capfirst %} {% translate 'attachment' %}">[X]</a>
+            {% endif %}
+            {% if request.GET.edit == attachment.slug %}
+              <br>
+              <form method="post" action="{% url 'archive:edit-attachment' attachment.slug %}">
+                {% csrf_token %}
+                <input name="description" value="{{ attachment.description }}">
+                <input type="submit" value="opslaan">
+              </form>
+            {% endif %}
+          </li>
         {% endfor %}
       </ul>
     </div>
