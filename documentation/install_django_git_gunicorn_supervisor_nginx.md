@@ -4,6 +4,10 @@
 This instruction assumes you have a Linux environment with Nginx and Supervisor. 
 In the examples, Ubuntu is used.
 
+## Required software
+- Graphviz
+> sudo apt-get install graphviz
+
 ## Create location for application
 This instruction assumes you want to host your files from /data/www. However, this may
 change according to your setup and personal preferences.
@@ -39,7 +43,7 @@ you do not need to deactivate it to proceed.
 ## Install modules within your virtual environment
 Install the Python dependancies within the virtual environment,
 
-> (fmly) $ python -m pip install django gunicorn markdown pillow django-sendfile2 pymupdf
+> (fmly) $ python -m pip install django gunicorn markdown pillow django-sendfile2 pymupdf graphviz
 
 A per-module explenation of what to install:
 - django: the Django framework (https://www.djangoproject.com/)
@@ -48,6 +52,7 @@ A per-module explenation of what to install:
 - pillow: Python Image Library, used to create thumbnails and get image information (https://pillow.readthedocs.io/en/stable/)
 - django-sendfile2: Used for serving attachments after user verification (https://pypi.org/project/django-sendfile2/)
 - pymupdf: PDF to Image (https://github.com/pymupdf/PyMuPDF)
+- graphviz: Generate graph used for family tree (https://graphviz.org/)
 
 ## Install FMLY codebase
 > $ git clone https://github.com/arnecoomans/fmly.git .
