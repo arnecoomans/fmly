@@ -40,8 +40,8 @@ class CommentListView(ListView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'comments'
-    context['page_scope'] = 'Reacties op foto\'s'
-    context['page_description'] = 'Om een reactie te plaatsen, open de foto en plaats je reactie.'
+    context['page_scope'] = f"{ _('Comments on photos') }."
+    context['page_description'] = f"{ _('To add a comment, first open the photo') }."
     return context
   
   def get_queryset(self):

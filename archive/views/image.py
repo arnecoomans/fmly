@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
+from django.utils.translation import gettext as _
 
 from pathlib import Path
 from math import floor
@@ -73,17 +74,17 @@ class ImageListView(ListView):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'images'
     ''' Default page description '''
-    context['page_description'] = 'Afbeeldingen en documenten'
+    context['page_description'] = f"{ _('Images and documents') }"
     ''' If user filter is active, add user details '''
     if 'user' in self.kwargs:
-      context['page_description'] = f"Afbeeldingen en documenten van { self.kwargs['user'] }"
+      context['page_description'] += f" { _('from') } { self.kwargs['user'] }"
     ''' If decade filter is active, add decade details '''
     if 'decade' in self.kwargs:
-      context['page_description'] = f"Documenten in periode {str(self.get_decade())} - {str(self.get_decade() + 9)}, gesorteerd op jaartal, nieuwste eerst. <br />"  + \
-                                    f"Kijk ook eens bij <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()-10])}\">{ str(self.get_decade()-10) } - { str(self.get_decade()-1) }</a> of <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()+10])}\">{ str(self.get_decade()+10) } - { str(self.get_decade()+20) }</a>"
+      context['page_description'] += f" {_('in the period') } {str(self.get_decade())} - {str(self.get_decade() + 9)}, { _('sorted on date, newest first') }. <br />"  + \
+                                    f"{ _('You can also check out')} <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()-10])}\">{ str(self.get_decade()-10) } - { str(self.get_decade()-1) }</a> { _('or') } <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()+10])}\">{ str(self.get_decade()+10) } - { str(self.get_decade()+20) }</a>"
     ''' If search string is passed '''
     if self.request.GET.get('search'):
-      context['page_description'] += f" met zoekwoord \"{ self.request.GET.get('search') }\""
+      context['page_description'] += f" { _('searching for') } \"{ self.request.GET.get('search') }\""
     ''' Added context, can be placed by get_queryset() '''
     if len(self.added_context) > 0:
       for key in self.added_context:
@@ -226,7 +227,7 @@ class AddImageView(PermissionRequiredMixin, CreateView):
 
   ''' Catch form validation errors '''
   def form_invalid(self, form):
-    messages.add_message(self.request, messages.WARNING, f"Formulier kan niet worden ingediend vanwege de volgende fout(en): { form.errors }")
+    messages.add_message(self.request, messages.WARNING, f"{ _('Form cannot be saved because of the following error(s)') }: { form.errors }")
     return super().form_invalid(form)
 
   def form_valid(self, form):
@@ -239,7 +240,7 @@ class AddImageView(PermissionRequiredMixin, CreateView):
     ''' Grab slug from title '''
     if not hasattr(form.instance, 'slug') or form.instance.slug:
       form.instance.slug = self.get_safe_slug(form.instance.title, False)
-    messages.add_message(self.request, messages.SUCCESS, f"Afbeelding \"{ form.instance.title }\" geupload.")
+    messages.add_message(self.request, messages.SUCCESS, f"{ _('Image') } \"{ form.instance.title }\" { _('has been uploaded') }.")
     return super().form_valid(form)
 
   def get_success_url(self):
@@ -271,7 +272,7 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
     return form
 
   def form_invalid(self, form):
-    messages.add_message(self.request, messages.WARNING, f"Formulier kan niet worden ingediend vanwege de volgende fout(en): { form.errors }")
+    messages.add_message(self.request, messages.WARNING, f"{ _('Form cannot be saved because of the following error(s)') }: { form.errors }")
     return super().form_invalid(form)
     
   def form_valid(self, form):
@@ -281,13 +282,13 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
           Fetch user from stored object and retain'''
       original = Image.objects.get(pk=self.kwargs['pk'])
       form.instance.user = original.user
-      messages.add_message(self.request, messages.WARNING, f"Gebruiker kan niet worden gewijzigd! { original.user } blijft gebruiker.")
+      messages.add_message(self.request, messages.WARNING, f"{ _('User cannot be changed, keeping user') } { original.user }.")
     elif not form.instance.user:
       ''' If for some reason no user it set, set user to current user '''
       form.instance.user = self.request.user
     if len(form.changed_data) > 0:
       ''' Only if data has changed, save the Object '''
-      messages.add_message(self.request, messages.SUCCESS, f"Wijzigingen opgeslagen.")
+      messages.add_message(self.request, messages.SUCCESS, f"{ _('Changes saved') }.")
       form.save()
       if 'is_deleted' in form.changed_data:
         return redirect(reverse_lazy('archive:images'))
@@ -297,7 +298,7 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
       #return super().form_valid(form)
     else:
       ''' No changes are detected, redirect to image without saving. '''
-      messages.add_message(self.request, messages.WARNING, f"Geen wijzigingen opgegeven.")
+      messages.add_message(self.request, messages.WARNING, f"{ _('No changed made') }.")
       return redirect(reverse_lazy('archive:image', kwargs={'slug': self.object.slug}))
 
   def get_success_url(self):

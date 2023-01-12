@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-07 07:55+0100\n"
+"POT-Creation-Date: 2023-01-08 21:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,12 +105,16 @@ msgid "at"
 msgstr ""
 
 #: archive/templates/archive/images/detail.html:73
-#: archive/templates/archive/images/detail.html:94
-#: archive/templates/archive/images/detail.html:96
+msgctxt "plural"
 msgid "comment"
 msgid_plural "comments"
 msgstr[0] ""
 msgstr[1] ""
+
+#: archive/templates/archive/images/detail.html:94
+#: archive/templates/archive/images/detail.html:96
+msgid "comment"
+msgstr ""
 
 #: archive/templates/archive/images/detail.html:95 templates/navigation.html:90
 #: templates/navigation.html:91 templates/navigation.html:93
