@@ -106,3 +106,26 @@ def get_person_queryset(filters):
     ''' Default to last_name ordering, allows override in settings by use of correct field_name '''
     queryset = queryset.order_by('last_name', 'first_name', 'year_of_birth')
   return queryset
+
+
+''' Get a list of centuries of all People '''
+def get_centuries(queryset):
+  centuries = []
+  for year in queryset.values_list('year_of_birth'):
+    if year[0]:
+      century = floor(int(year[0])/100)*100
+      if not century in centuries:
+        centuries.append(century)
+  centuries.sort()
+  return centuries
+  
+''' Get a list of all decades a Person has been born in '''
+def get_decades(queryset):
+  decades = []
+  for year in queryset.values_list('year_of_birth'):
+    if year[0]:
+      year = floor(int(year[0])/10)*10
+      if not year in decades:
+        decades.append(year)
+  decades.sort()
+  return decades
