@@ -70,7 +70,7 @@
           <!-- Comments -->
           {% if perms.archive.view_comment and image.count_comments > 0 %}
             <a name="comments"></a>
-            <li class="bi bi-chat-right-text-fill" > {{ image.count_comments }} {% blocktranslate count counter=object.count_comments %}comment{% plural %}comments{% endblocktranslate %}</li>
+            <li class="bi bi-chat-right-text-fill" > {{ image.count_comments }} {% blocktranslate count counter=object.count_comments context "plural" %}comment{% plural %}comments{% endblocktranslate %}</li>
           {% endif %}
           {% if perms.archive.add_comment %}
             <li class="bi bi-cursor-text">
