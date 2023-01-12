@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from math import floor
 
-from ..utils import get_person_filters, get_person_queryset
+from ..person_utils import get_person_filters, get_person_queryset, get_centuries, get_decades
 
 from archive.models import Person, FamilyRelations, Image
 
@@ -104,16 +104,9 @@ class PersonListView(ListView):
     'year_of_birth': 'geboortejaar',
   }
 
-  ''' getFilters
-      Returns dict of active filters
-  '''
-  def getFilters(self):
-    return get_person_filters(self.request)
-
-
   ''' Check if a current filters are different than default values '''
   def hasActiveFilters(self):
-    for key, value in self.getFilters().items():
+    for value in self.getFilters().values():
       if value not in [False, None]:
         return True
     return False
@@ -121,10 +114,12 @@ class PersonListView(ListView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'people'
-    context['filters'] = self.getFilters()
-    context['available_centuries'] = self.get_centuries()
-    context['available_decades'] = self.get_decades()
+    context['filters'] = get_person_filters(self.request)
+    context['deactivated_filters'] = []
+    context['available_centuries'] = get_centuries(self.get_queryset())
+    context['available_decades'] = get_decades(self.get_queryset())
     context['available_families'] = settings.FAMILIES
+    #context['all_people'] = Person.objects.all()
     ''' Page description
         is dynamically describing active filters
     '''
@@ -146,29 +141,8 @@ class PersonListView(ListView):
     return context
 
   def get_queryset(self):
-    return get_person_queryset(filters=self.getFilters())
+    return get_person_queryset(filters=get_person_filters(self.request))
 
-  ''' Get a list of centuries of all People '''
-  def get_centuries(self):
-    centuries = []
-    for year in self.get_queryset().values_list('year_of_birth'):
-      if year[0]:
-        century = floor(int(year[0])/100)*100
-        if not century in centuries:
-          centuries.append(century)
-    centuries.sort()
-    return centuries
-    
-  ''' Get a list of all decades a Person has been born in '''
-  def get_decades(self):
-    decades = []
-    for year in self.get_queryset().values_list('year_of_birth'):
-      if year[0]:
-        year = floor(int(year[0])/10)*10
-        if not year in decades:
-          decades.append(year)
-    decades.sort()
-    return decades
 
 ''' Edit Person '''
 class EditPersonView(PermissionRequiredMixin, UpdateView):
