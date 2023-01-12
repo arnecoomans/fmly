@@ -1,0 +1,99 @@
+{% load i18n %}
+<div class="filters">
+  <!-- Order results by -->
+  {% if 'order_by' not in deactivated_filters %}
+    <span class="option">
+      {% translate 'sort results by'|capfirst %}: 
+        <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=last_name">{% translate 'last name' %}</a>
+        <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=first_name">{% translate 'first name' %}</a>
+        <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=year_of_birth">{% translate 'date of birth' %}</a>
+    </span>
+  {% endif %}
+  <!-- Filter Images Only With image -->
+  {% if 'has_photo' not in deactivated_filters %}
+    <span class="option">
+      <form method="get">
+        {% with current='has_photo' %}
+          {% for key, value in filters.items %}
+            {% if value and key != current %}
+              <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endif %}
+          {% endfor %}
+        {% endwith %}
+        <label for="has_photo">Met afbeelding</label><input type="checkbox" name="has_photo" value="true" {% if filters.has_photo %} checked{% endif %} onchange="this.form.submit()">
+      </form>
+    </span>
+  {% endif %}
+  <!-- Filter Families -->
+  {% if 'family' not in deactivated_filters %}
+    <span class="option">
+      <form method="get">
+        {% with current='family' %}
+          {% for key, value in filters.items %}
+            {% if value and key != current %}
+              <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endif %}
+          {% endfor %}
+        {% endwith %}
+        {% if available_families|length > 1 %}
+          <label for="family">Familie: </label>
+          <select name="family" onchange="this.form.submit()">
+            <option value="all">-----</option>
+            {% if filters.family and filters.family  not in available_families|lower %}
+              <option value="{{ family }}" selected>{{ filters.family|title }}</option>
+            {% endif %}
+            {% for family in available_families %}
+              <option value="{{ family }}" {% if filters.family == family|lower %} selected{% endif %}>{{ family }}</option>
+            {% endfor %}
+          </select>
+        {% endif %}
+      </form>
+    </span>
+  {% endif %}
+  <!-- Decade filtering -->
+  {% if decade not in deactivated_filters %}
+    {% if not filters.years and not filters.century and available_decades|length > 0 %}
+      <span class="option">
+        <form method="get">
+          {% with current='decade' %}
+          {% for key, value in filters.items %}
+            {% if value and key != current %}
+              <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endif %}
+          {% endfor %}
+        {% endwith %}
+        <label for="decade">Decennium: </label>
+          <select name="decade" onchange="this.form.submit()">
+            <option value="all">-----</option>
+            {% for decade in available_decades %}
+              <option value="{{ decade }}"{% if decade == filters.decade %} selected{% endif %}>{{ decade }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </span>
+    {% endif %}
+  {% endif %}
+  <!-- Century filtering -->
+  {% if century not in deactivated_filters %}
+    {% if not filters.years and not filters.decade and available_centuries|length > 0 %}
+      <span class="option">
+        <form method="get">
+          {% with current='century' %}
+          {% for key, value in filters.items %}
+            {% if value and key != current %}
+              <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endif %}
+          {% endfor %}
+        {% endwith %}
+          <label for="century">Eeuw: </label>
+          <select name="century" onchange="this.form.submit()">
+            <option value="all">-----</option>
+            {% for century in available_centuries %}
+              <option value="{{ century }}"{% if century == filters.century %} selected{% endif %}>{{ century }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </span>
+    {% endif %}
+  {% endif %}
+</div>
