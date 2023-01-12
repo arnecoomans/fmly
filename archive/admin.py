@@ -33,7 +33,9 @@ def setSlugFromTitle(modeladmin, request, queryset):
   for object in queryset:
     object.slug = None
     object.save()
-
+@admin.action(description='Set gender Female')
+def setGenderFemale(modeladmin, request, queryset):
+  queryset.update(gender='f')
 @admin.action(description='Reset Image Dimensions')
 def resetDimensions(modeladmin, request, queryset):
   for image in queryset:
@@ -62,7 +64,7 @@ class PersonAdmin(admin.ModelAdmin):
                          'given_names': ('first_name',),}
   list_filter = ['last_name', 'images']
   inlines = [FamilyRelationsInline,]
-  actions=[fixDate]
+  actions=[fixDate, setGenderFemale]
   def get_changeform_initial_data(self, request):
     get_data = super(PersonAdmin, self).get_changeform_initial_data(request)
     get_data['user'] = request.user.pk

@@ -20,6 +20,11 @@ class Person(models.Model):
   nickname            = models.CharField(max_length=255, blank=True, verbose_name='Bijnaam')
   email               = models.EmailField(blank=True, help_text='Dit veld is alleen zichtbaar voor jou en voor de site-beheerder(s). Vul je e-mailadres in zodat we je een wachtwoord-reset email kunnen sturen als je niet langer kan inloggen.')
   slug                = models.CharField(max_length=255, unique=True)
+  
+  # Gender (required for family tree)
+  GENDERS = [('m', 'male'), ('f', 'female')]
+  gender              = models.CharField(max_length=1, choices=GENDERS)
+  
   # Information
   place_of_birth      = models.CharField(max_length=255, blank=True)
   place_of_death      = models.CharField(max_length=255, blank=True)
@@ -103,7 +108,15 @@ class Person(models.Model):
       for parent in person.relation_up.filter(type='parent').order_by('up__year_of_birth'):
         parents.append(parent.up)
       return parents
-
+  def get_father(self):
+    if self.relation_up:
+      for parent in self.relation_up.filter(type='parent', up__gender='m').order_by('up__year_of_birth'):
+        return parent.up
+  def get_mother(self):
+    if self.relation_up:
+      for parent in self.relation_up.filter(type='parent', up__gender='f').order_by('up__year_of_birth'):
+        return parent.up
+  
   ''' get_children()
       Childern have a simple relation
       down is child of parent up
