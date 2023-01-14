@@ -1,191 +1,242 @@
-from django.views.generic import ListView, DetailView, View
-from django.views.generic.edit import CreateView, UpdateView
-from django.template.defaultfilters import slugify
+from django.views.generic import DetailView, ListView
+#from django.conf import settings
 
-from django.http import HttpResponse
-# from django.utils.html import escape
+#from django.http import HttpResponse
+from django.utils.html import escape
 
-from ..utils import get_person_filters, get_person_queryset
+#from ..person_utils import get_person_filters, get_person_queryset, get_centuries, get_decades
 
-# import string
-from datetime import date
 import graphviz
+from math import floor
 
 from archive.models import Person
 
-class CreateTreeView(View):
-  
-  # def get_free_node_name(self):
-  #   if not hasattr(self, 'free_names'):
-  #     ltrs = string.ascii_uppercase
-  #     self.free_names = [''.join([a,b]) for a in ltrs for b in ltrs]
-  #   free_name = self.free_names[0]
-  #   self.free_names.remove(free_name)
-  #   return free_name
-
-  
-  ''' add_person
-      Adds person to list of featured people. 
+class Tree:
+  ''' Initialize Graphviz Family Tree
+      1. Collect Scope of Family Tree (list of featured people)
   '''
-  def add_person(self, person_id):
-    ''' Ensure placeholder exists '''
-    if not hasattr(self, 'people'):
-      self.people = {}
-    ''' Add Person id as Key in Dict to avoid doubles since person id is always unique '''
-    self.people[person_id] = True
+  def __init__(self, ancestor, direction='down') -> None:
+    ''' Configurations '''
+    self.indent = 0
+    self.spacer = 8
+    self.gender_colours = {'m': 'lightblue', 'f': 'pink'}
+    ''' Tree Components '''
+    self.people = {}
+    self.relations =[]
+    self.processed_relations = []
+    self.ranks = {}
+    self.nodes = {}
+    self.mountpoints = {}
+    ''' Initialize Tree'''
+    self.populate(ancestor)
+    self.get_people()
+    self.set_relations(ancestor)
+    self.get_relations()
+    self.close()
+    self.get_tree_source(ancestor)
     
-  ''' store_partner_relation 
-      a partner-relation consists of one extra node on the same level
-      and one relationship on the same level
-  '''
-  def store_partner_relation(self, person_id, related_person_id):
-    ''' Ensure placeholders exist '''
-    if not hasattr(self, 'relations'):
-      self.relations = {}
-    if not hasattr(self, 'relation_points'):
-      self.relation_points = {}
-    if not hasattr(self, 'people_data'):
-      self.people_data = Person.objects.all()
-    ''' Create relation key
-        Key is used to store relations and node points
-        Sort key by lowest_id:highest_id '''
-    if person_id < related_person_id:
-      key = f"{ str(person_id) }{ str(related_person_id) }"
-    else:
-      key = f"{ str(related_person_id) }{ str(person_id) }"
-    ''' Add relationship-point and relation on the same level '''
-    self.relation_points[key] = 'shape=circle,label="",height=0.01,width=0.01;'
-    self.relations[key] = f"{{rank=same; { str(person_id) } -> { key } -> { str(related_person_id) }}}"
-    ''' Add Relationship mountpoint one level below '''
-    if person_id < related_person_id:
-      mount = f"{ str(person_id).zfill(4) }{ str(related_person_id).zfill(4) }"
-    else:
-      mount = f"{ str(related_person_id).zfill(4) }{ str(person_id).zfill(4) }"
-    if len(self.people_data.get(pk=person_id).get_children()) > 0:
-      self.relation_points[key] = 'shape=invis,label="",height=0.01,width=0.01;'
-      self.relations[mount] = f"{ str(key) } -> { mount }"
-    
-  def store_child_relation(self, child_id):
-    if not hasattr(self, 'relations'):
-      self.relations = {}
-    if not hasattr(self, 'relation_points'):
-      self.relation_points = {}
-    if not hasattr(self, 'people_data'):
-      self.people_data = Person.objects.all()
-    if self.people_data.filter(pk=child_id).count() > 0:
-      child = self.people_data.get(pk=child_id)
-      parents = []
-      for parent in child.get_parents():
-        parents.append(parent.id)
-      parents.sort()
-      if len(parents) == 1:
-        self.relations[str(parents[0]).zfill(4) + str(child_id).zfill(4)] = f'{ parents[0]} -> { child_id }'
-      elif len(parents) > 1:
-        parents_relationpoint = ''.join(str(parent).zfill(4) for parent in parents)
-        ''' Add Relation '''
-        self.relations[str(parents_relationpoint) + str(child_id).zfill(4)] = f"{ parents_relationpoint } -> { child_id }"
 
-
-
-
-  ''' populate_people():
-      Build a Node listing of all gathered people
-  '''
-  def populate_people(self):
-    if not hasattr(self, 'people'):
-      self.people = {}
-    if not hasattr(self, 'people_data'):
-      self.people_data = Person.objects.all()
-    self.graph.append('')
-    self.graph.append('  # List People')
-    for person in self.people.keys():
-      ''' Prepare year-of-birth and year-of-death neatly '''
-      data = self.people_data.get(pk=person)
-      yob = str(data.year_of_birth) if data.year_of_birth else ''
-      if data.year_of_death:
-        yod = str(data.year_of_death)
-      else:
-        if data.year_of_birth:
-          if date.today().year - data.year_of_birth > 90:
-            yod = '?'
-          else:
-            yod = ''
-        else:
-          yod = ''
-      ''' Set Attributes of person '''
-      attributes = {
-        'label': f'"{ data.full_name() }\n{ yob }-{ yod }"',
-        'shape': '"box"',
-        'regular': '0',
-        'color': '"black"',
-        'style': '"filled"',
-        'fillcolor': '"lightgrey"',
+  def populate(self, person):
+    if person.id not in self.people:
+      ''' Person has not been processed yet, so can be created '''
+      ''' Store Person in People '''
+      self.people[person.id] = {
+        'label':     f"<<b>{ person.full_name() }</b><BR/> { person.get_lifespan() }>",
+        #'label':     f"\"{ person.full_name() }\"",
+        'gender':    f"\"{ person.get_gender_display() }\"",
+        'color':     f"\"{ self.gender_colours[person.gender] if person.gender in self.gender_colours else 'black' }\"",
       }
-      ''' If person is in queryset, make bold to distinct from partners/children '''
-      if self.queryset.filter(pk=person).count() > 0:
-        attributes['style'] = '"bold, filled"'
-      attribute_list = ''
-      for key, value in attributes.items():
-        attribute_list += f'{ key }={ str(value) }, '
-      ''' Remove trailing ', ' from attribute list '''
-      attribute_list = attribute_list[:-2]
-      ''' Write person details to graph '''
-      self.graph.append(f'  "{ str(person) }" [{ attribute_list }]')
-  
-  ''' A relation point is between two people that share children '''
-  def populate_relation_points(self):
-    if not hasattr(self, 'relation_points'):
-      self.relation_points = {}
-    self.graph.append('')
-    self.graph.append('  # Relation centerpoints')
-    for relation_point in self.relation_points:
-      self.graph.append(f'  { relation_point } [{ self.relation_points[relation_point] }]')
-
-  def populate_relations(self):
-    if not hasattr(self, 'relations'):
-      self.relations = {}
-    self.graph.append('')
-    self.graph.append('  # Relations')
-    for relation in self.relations.values():
-      self.graph.append(f'  {relation}')
-
-  def get(self, request):
-    debug = []
-    ''' Fetch Active Filters '''
-    self.filters = get_person_filters(request)
-    ''' Fetch Queryset '''
-    self.queryset = get_person_queryset(self.filters)
-    ''' Populate Person List '''
-    for person in self.queryset:
-      ''' Store Person'''
-      self.add_person(person.id)
-      ''' Store Partner Relations '''
+      ''' Add Related People '''
       for partner in person.get_partners():
-        self.add_person(partner.id)
-        self.store_partner_relation(person.id, partner.id)
-      ''' Store Child Relations '''
+        self.populate(partner)
       for child in person.get_children():
-        debug.append(str(child))
-        self.add_person(child.id)
-        self.store_child_relation(child.id)
+        self.populate(child)
 
-    ''' Start Building Graph Source '''
-    self.graph = []
-    self.graph.append('digraph G {')
-    self.graph.append('  edge [dir=none];')
-    self.graph.append('  node [shape=box];')
-    self.graph.append('  splines=false;')
-    self.populate_people()
-    self.populate_relation_points()
-    self.populate_relations()
-    self.graph.append('}')
-    
-    ''' Pipe Graph list into newline seperated string '''
-    result = str('\n'.join(str(line) for line in self.graph))
+  def set_relations(self, person):
+    ''' Check if Person Partner Relations need to be set '''
+    self.relations.append(f"subgraph cluster_{ person.id } {{")
+    self.relations.append(f"style=\"invis\";")
+    if len(person.get_partners()) > 0:
+      ''' Person has relation(s): Build relationship '''
+      reverse = False
+      for partner in person.get_partners():
+        relation_id = self.get_relation_id([person, partner])
+        relation = ['P' + str(person.id), 'P' + str(partner.id)]
+        if relation_id not in self.processed_relations:
+          if self.share_children(person, partner):
+            mountpoint = 'P'+relation_id
+            self.set_mountpoint(mountpoint, [person, partner, relation_id])
+            relation.insert(floor(len(relation)/2), mountpoint)
+          self.ranks[relation_id] = relation
+          if reverse:
+            relation.reverse()
+          self.relations.append(' -> '.join(relation))
+          reverse = False if reverse else True
+          self.processed_relations.append(relation_id)
+    else:
+      ''' Person has no relation '''
+      self.set_mountpoint('P'+str(person.id), person)
+    ''' Process Person's Children '''
+    for child in person.get_children():
+      mountpoint = 'P' + self.get_relation_id(child.get_parents())
+      self.relations.append(' -> '.join([mountpoint, 'P'+str(child.id)]))
+      ''' Add Child information to node as well '''
+      self.set_relations(child)
+    self.relations.append('}')
 
-    dot = graphviz.Source(result)
+      
+  
+  def get_tree_source(self, ancestor):
+    newline = '\n'
+    graph = ''
+    graph = newline.join(self.tree)
+    dot = graphviz.Source(graph)
     dot.name = 'fmly-tree'
     dot.format = 'svg'
+    dot.filename = str(ancestor.id)
     dot.render(directory='public/documents/forest/')
-    response = f"<img width=\"100%\" height=\"100%\" src=\"/documents/forest/Source.gv.svg\">"
-    return HttpResponse(response)
+    return f"<pre>{ newline }{ graph }{ newline }</pre>"
+
+  ''' open()
+      The starting lines to open the digraph
+  '''
+  def open(self):
+    self.add('digraph G {')
+    attributes = [
+      'edge [dir=none];',
+      'node [shape=box];',
+      'splines=false;',
+      'newrank=true;',
+      'ratio="compress"',
+    ]
+    self.add(attributes)
+  def close(self):
+    self.add('}')
+  
+  ''' add()
+      Add a line to the data buffer. Accepts lists and dicts, ints and strings, 
+      but only stores content as a string.
+  '''
+  def add(self, data):
+    if not hasattr(self, 'tree'):
+      self.tree = []
+      self.open()
+    if type(data) is list:
+      for line in data:
+        self.add(line)
+    elif type(data) is dict:
+      for line in data.values():
+        self.add(line)
+    elif type(data) is int:
+      self.add(str(data))
+    elif type(data) is str:
+      if data == '}':
+        self.indent += -2
+      self.tree.append(' '*self.indent + data)
+      if '{' in data:
+        self.indent += 2
+    if '}' in data and data != '}':
+        self.indent += -2
+
+
+  def get_relation_id(self, people):
+    relation = []
+    for person in people:
+      relation.append(person.id)
+    relation.sort()
+    return str('x'.join(str(id) for id in relation))
+  ''' Get Shared Children '''
+  def share_children(self, person, partner):
+    for child in person.get_children():
+      if child in partner.get_children():
+        return True
+    return False
+  def get_shared_children(self, person, partner=None):
+    children = []
+    if type(person) == list:
+      if len(person) > 1:
+        partner = person[1]
+      person = person[0]
+    for child in person.get_children():
+      if child not in children and partner in child.get_parents():
+        children.append(child)
+    if partner:
+      for child in partner.get_children():
+        if child not in children and person in child.get_parents():
+          children.append(child)
+    return children
+  ''' Mountpoints '''
+  def get_mountpoint(self, person):
+    if type(person) == list:
+      person = 'x'.join(str(id.id) for id in person)
+      self.add(f'# --> { person }')
+    if type(person) != str:
+      person = person.id
+    if person in self.mountpoints:
+      return self.mountpoints[person]
+    return 'P' + str(person)
+  def set_mountpoint(self, mountpoint, person):
+    if type(person) == list:
+      for p in person:
+        self.set_mountpoint(mountpoint, p)
+    else:
+      if type(person) != str:
+        person = str(person.id)
+      self.mountpoints[person] = mountpoint
+
+
+  ''' Populate_people() '''
+  def get_people(self):
+    self.add('# People featured in tree')
+    self.add('node[shape=box,fontname="sans-serif",fontsize=8;color="black",width=1,height=0.5,style=filled]')
+    for id, person in self.people.items():
+      spacer = ' '*(self.spacer - len(str(id)))
+      person_line = []
+      for key, value in person.items():
+        person_line.append(f"{ key }={ value }")
+      self.add(f"\"P{ str(id)}\"{ spacer } [ { ', '.join(person_line) } ]")
+
+  ''' populate_relations() '''
+  def get_relations(self):
+    self.add('# Relations')
+    self.add('node[label="", width=0, height=0];')
+    for id, rank in self.ranks.items():
+      if len(rank) > 1:
+        self.add(f"{{ rank=same; { '; '.join(rank) } }} # { id }")
+    for relation in self.relations:
+      if type(relation) is list:
+        for line in relation:
+          self.add(line)
+      else:
+        self.add(relation)
+    self.add('# Mountpoints ')
+    for line in self.mountpoints:
+      self.add('# ' + str(line) + ': ' + str(self.mountpoints[line]))
+    self.add('# Processed Relations')
+    for line in self.processed_relations:
+      self.add('# ' + str(line))
+  
+''' End of class Tree '''
+
+
+
+
+class TreeView(DetailView):
+  model = Person
+  template_name = 'archive/people/tree.html'
+  context_object_name = 'person'
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['active_page'] = 'people'
+    ''' Tree '''
+    tree =  Tree(ancestor=self.get_object())
+    context['tree'] = tree
+    return context
+
+
+
+
+
+
+
