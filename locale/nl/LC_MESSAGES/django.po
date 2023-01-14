@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 21:47+0100\n"
-"PO-Revision-Date: 2023-01-07 07:55+0100\n"
+"POT-Creation-Date: 2023-01-14 16:18+0100\n"
+"PO-Revision-Date: 2023-01-14 16:19+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -105,9 +105,6 @@ msgid "at"
 msgstr "op"
 
 #: archive/templates/archive/images/detail.html:73
-#, fuzzy
-#| msgid "comment"
-#| msgid_plural "comments"
 msgctxt "plural"
 msgid "comment"
 msgid_plural "comments"
@@ -116,9 +113,6 @@ msgstr[1] "reacties"
 
 #: archive/templates/archive/images/detail.html:94
 #: archive/templates/archive/images/detail.html:96
-#, fuzzy
-#| msgid "comment"
-#| msgid_plural "comments"
 msgid "comment"
 msgstr "reactie"
 
@@ -292,13 +286,13 @@ msgstr "bijnaam"
 #: archive/templates/archive/people/detail.html:33
 #: archive/templates/archive/people/edit.html:25
 #: archive/templates/archive/people/edit.html:34
-#: archive/templates/archive/people/list.html:24
+#: archive/templates/archive/snippets/people_filters.html:8
 msgid "first name"
 msgstr "voornaam"
 
 #: archive/templates/archive/people/detail.html:34
 #: archive/templates/archive/people/edit.html:30
-#: archive/templates/archive/people/list.html:23
+#: archive/templates/archive/snippets/people_filters.html:7
 msgid "last name"
 msgstr "achternaam"
 
@@ -338,13 +332,17 @@ msgid_plural "Children"
 msgstr[0] "Kind"
 msgstr[1] "Kinderen"
 
-#: archive/templates/archive/people/detail.html:80
+#: archive/templates/archive/people/detail.html:77
+msgid "See family tree of"
+msgstr "Zie de stamboom van"
+
+#: archive/templates/archive/people/detail.html:82
 msgid "Image"
 msgid_plural "Images"
 msgstr[0] "Afbeelding"
 msgstr[1] "Afbeeldingen"
 
-#: archive/templates/archive/people/detail.html:80
+#: archive/templates/archive/people/detail.html:82
 msgid "with"
 msgstr "met"
 
@@ -383,17 +381,41 @@ msgstr "kind"
 msgid "sibling"
 msgstr "broer/zus"
 
-#: archive/templates/archive/people/list.html:11
+#: archive/templates/archive/people/list.html:6
 msgid "People"
 msgstr "Mensen"
 
-#: archive/templates/archive/people/list.html:22
-msgid "sort results by"
-msgstr "sorteren op"
+#: archive/templates/archive/people/tree.html:6
+msgid "Family Tree"
+msgstr "Stamboom"
 
-#: archive/templates/archive/people/list.html:25
-msgid "date of birth"
-msgstr "geboortedatum"
+#: archive/templates/archive/people/tree.html:22
+#: archive/templates/archive/people/tree.html:26
+#: archive/templates/archive/people/tree.html:27
+msgid "Family tree"
+msgstr "Stamboom"
+
+#: archive/templates/archive/people/tree.html:22
+#: archive/templates/archive/people/tree.html:26
+#: archive/templates/archive/people/tree.html:27
+msgid "of"
+msgstr "van"
+
+#: archive/templates/archive/people/tree.html:25
+msgid "related"
+msgstr "Verwante"
+
+#: archive/templates/archive/people/tree.html:25
+msgid "family trees"
+msgstr "stambomen"
+
+#: archive/templates/archive/people/tree.html:26
+msgid "parent(s)"
+msgstr "ouder(s)"
+
+#: archive/templates/archive/people/tree.html:27
+msgid "sibling(s)"
+msgstr "broer/zus"
 
 #: archive/templates/archive/snippets/error_no_access.html:3
 #: archive/templates/archive/snippets/error_no_objects.html:3
@@ -427,6 +449,14 @@ msgstr "de %(object_type)s die je probeert te bekijken is verwijderd."
 #: archive/templates/archive/snippets/object_metadata.html:5
 msgid "created at"
 msgstr "aangemaakt op"
+
+#: archive/templates/archive/snippets/people_filters.html:6
+msgid "sort results by"
+msgstr "sorteren op"
+
+#: archive/templates/archive/snippets/people_filters.html:9
+msgid "date of birth"
+msgstr "geboortedatum"
 
 #: archive/templates/archive/snippets/toggle_hidden_images.html:4
 msgid "There is"
