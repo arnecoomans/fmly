@@ -3,7 +3,7 @@
 
 {% block content %}
   <header>
-    <h2>{% translate 'People' %}:</h2>
+    <h2>{% translate 'Family Tree' %}:</h2>
     {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
   </header>
   <div class="people objects">
@@ -19,9 +19,12 @@
     {% include  'archive/snippets/error_no_objects.html' with object_type='people' %}
   {% else %}
 <!-- Tree Building -->
-      <h3>Family tree of {{ person }}:</h3>
+      <h3>{% translate 'Family tree' %} {% translate 'of' %} <a href="{% url 'archive:person' person.id person.full_name|slugify %}">{{ person }}</a>:</h3>
       <a href="/documents/forest/{{ person.id }}.svg" target="_blank"><img width="100%" height="100%" src="/documents/forest/{{ person.id }}.svg"></a>
-      
+      <br><br><br><br>
+      {% if person.get_parents or person.get_siblings %}<h3>{% translate 'related'|capfirst %} {% translate 'family trees'|title %}</h3>{% endif %}
+      {% if person.get_parents %}{% translate 'Family tree' %} {% translate 'of' %} {% translate 'parent(s)' %}: {% for parent in person.get_parents %}<a href="{% url 'archive:tree' parent.id %}">{{ parent.full_name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}<br>{% endif %}
+      {% if person.get_siblings %}{% translate 'Family tree' %} {% translate 'of' %} {% translate 'sibling(s)' %}: {% for sibling in person.get_siblings %}<a href="{% url 'archive:tree' sibling.id %}">{{ sibling.full_name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% endif%}
     </div>
   {% endif %}
 {% endblock %}

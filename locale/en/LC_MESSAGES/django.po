@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 21:47+0100\n"
+"POT-Creation-Date: 2023-01-14 16:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -284,13 +284,13 @@ msgstr ""
 #: archive/templates/archive/people/detail.html:33
 #: archive/templates/archive/people/edit.html:25
 #: archive/templates/archive/people/edit.html:34
-#: archive/templates/archive/people/list.html:24
+#: archive/templates/archive/snippets/people_filters.html:8
 msgid "first name"
 msgstr ""
 
 #: archive/templates/archive/people/detail.html:34
 #: archive/templates/archive/people/edit.html:30
-#: archive/templates/archive/people/list.html:23
+#: archive/templates/archive/snippets/people_filters.html:7
 msgid "last name"
 msgstr ""
 
@@ -330,13 +330,17 @@ msgid_plural "Children"
 msgstr[0] ""
 msgstr[1] ""
 
-#: archive/templates/archive/people/detail.html:80
+#: archive/templates/archive/people/detail.html:77
+msgid "See family tree of"
+msgstr ""
+
+#: archive/templates/archive/people/detail.html:82
 msgid "Image"
 msgid_plural "Images"
 msgstr[0] ""
 msgstr[1] ""
 
-#: archive/templates/archive/people/detail.html:80
+#: archive/templates/archive/people/detail.html:82
 msgid "with"
 msgstr ""
 
@@ -375,16 +379,40 @@ msgstr ""
 msgid "sibling"
 msgstr ""
 
-#: archive/templates/archive/people/list.html:11
+#: archive/templates/archive/people/list.html:6
 msgid "People"
 msgstr ""
 
-#: archive/templates/archive/people/list.html:22
-msgid "sort results by"
+#: archive/templates/archive/people/tree.html:6
+msgid "Family Tree"
 msgstr ""
 
-#: archive/templates/archive/people/list.html:25
-msgid "date of birth"
+#: archive/templates/archive/people/tree.html:22
+#: archive/templates/archive/people/tree.html:26
+#: archive/templates/archive/people/tree.html:27
+msgid "Family tree"
+msgstr ""
+
+#: archive/templates/archive/people/tree.html:22
+#: archive/templates/archive/people/tree.html:26
+#: archive/templates/archive/people/tree.html:27
+msgid "of"
+msgstr ""
+
+#: archive/templates/archive/people/tree.html:25
+msgid "related"
+msgstr ""
+
+#: archive/templates/archive/people/tree.html:25
+msgid "family trees"
+msgstr ""
+
+#: archive/templates/archive/people/tree.html:26
+msgid "parent(s)"
+msgstr ""
+
+#: archive/templates/archive/people/tree.html:27
+msgid "sibling(s)"
 msgstr ""
 
 #: archive/templates/archive/snippets/error_no_access.html:3
@@ -414,6 +442,14 @@ msgstr ""
 
 #: archive/templates/archive/snippets/object_metadata.html:5
 msgid "created at"
+msgstr ""
+
+#: archive/templates/archive/snippets/people_filters.html:6
+msgid "sort results by"
+msgstr ""
+
+#: archive/templates/archive/snippets/people_filters.html:9
+msgid "date of birth"
 msgstr ""
 
 #: archive/templates/archive/snippets/toggle_hidden_images.html:4
