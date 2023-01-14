@@ -57,11 +57,8 @@ class Person(models.Model):
   def __str__(self):
     ''' Return the name of the person with year of birth and death '''
     name = self.full_name()
-    if self.year_of_birth or self.year_of_death or self.moment_of_death_unconfirmed:
-      name += f" ({ str(self.year_of_birth) if self.year_of_birth else ' ' }"
-      if self.year_of_death or self.moment_of_death_unconfirmed:
-        name += f" - { self.year_of_death if self.year_of_death else '?' }"
-      name += f")"
+    if len(self.get_lifespan()) > 0:
+      name += f" ({ self.get_lifespan() })"
     return name
 
   def name(self):
@@ -80,6 +77,16 @@ class Person(models.Model):
     if self.year_of_birth:
       return floor(self.year_of_birth/10)*10
   
+  def get_lifespan(self):
+    lifespan = ''
+    if self.year_of_birth:
+      lifespan += str(self.year_of_birth)
+    if self.year_of_death or self.moment_of_death_unconfirmed:
+      lifespan += ' - '
+    if self.year_of_death:
+      lifespan += str(self.year_of_death)
+    return lifespan
+
   def ageatdeath(self):
     if self.date_of_birth and self.date_of_death:
       age = self.date_of_death.year - self.date_of_birth.year

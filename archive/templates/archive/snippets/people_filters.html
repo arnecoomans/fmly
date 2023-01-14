@@ -10,7 +10,7 @@
     </span>
   {% endif %}
   <!-- Filter Images Only With image -->
-  {% if 'has_photo' not in deactivated_filters %}
+  {% if deactivated_filters and 'has_photo' not in deactivated_filters %}
     <span class="option">
       <form method="get">
         {% with current='has_photo' %}

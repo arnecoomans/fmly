@@ -15,44 +15,13 @@
   <!-- End of filters -->
   {% if not perms.archive.view_person %}
     {% include  'archive/snippets/error_no_access.html' with object_type='people' %}
-  {% elif not people %}
+  {% elif not person %}
     {% include  'archive/snippets/error_no_objects.html' with object_type='people' %}
   {% else %}
-<!-- People -->
-      {% for person in people %}
-        {% if forloop.first %}
-          {% if filters.order_by == 'last_name' %}
-            <h5>{{ person.last_name }}</h5>
-          {% elif filters.order_by == 'first_name' %}
-            <h5>{{ person.first_name.0|upper }}</h5>
-          {% elif filters.order_by == 'year_of_birth' %}
-            <h5>{{ person.century|default:'Geboortejaar onbekend' }}</h5>
-          {% endif %}
-          <ul class="people no-bullets" id="{{ person.last_name }}>
-        {% endif %}
-        {% if filters.order_by == 'last_name' %}
-          {% ifchanged person.last_name %}
-            </ul>
-            <h5>{{ person.last_name }}</h5>
-            <ul class="people no-bullets" id="{{ person.last_name }}">
-          {% endifchanged %}
-        {% elif filters.order_by == 'first_name' %}
-          {% ifchanged person.first_name.0 %}
-            </ul>
-            <h5>{{ person.first_name.0|upper }}</h5>
-            <ul class="people no-bullets" id="{{ person.last_name }}">
-          {% endifchanged %}
-        {% elif filters.order_by == 'year_of_birth' %}
-          {% ifchanged person.century %}
-            </ul>
-            <h5>{{ person.century }}</h5>
-            <ul class="people no-bullets" id="{{ person.last_name }}">
-          {% endifchanged %}
-        {% endif %}
-        <li class="list-person-details">
-          {% include 'archive/snippets/person_link.html' %}
-        </li>
-      {% endfor %}
+<!-- Tree Building -->
+      <h3>Family tree of {{ person }}:</h3>
+      <a href="/documents/forest/{{ person.id }}.svg" target="_blank"><img width="100%" height="100%" src="/documents/forest/{{ person.id }}.svg"></a>
+      
     </div>
   {% endif %}
 {% endblock %}

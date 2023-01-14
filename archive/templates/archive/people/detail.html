@@ -73,6 +73,8 @@
             {% endfor %}
           </dd>
         {% endif %}
+        <dt>&nbsp;</dt>
+          <dd><a href="{% url 'archive:tree' person.id %}">{% translate 'See family tree of'%} {{ person.full_name }}</a></dd>
       </dl>
       <!-- Related data -->
       {% if person.images.all.count > 0 %}

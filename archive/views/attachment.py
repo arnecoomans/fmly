@@ -59,7 +59,7 @@ class AttachmentAddView(PermissionRequiredMixin, CreateView):
   fields = ['file', 'description', ]
 
   def form_invalid(self, form):
-    messages.add_message(self.request, messages.WARNING, f"{ _('Form cannot be saved because of the following error(s)') }:: { form.errors }")
+    messages.add_message(self.request, messages.WARNING, f"{ _('Form cannot be saved because of the following error(s)') }: { form.errors }")
     return super().form_invalid(form)
 
   def form_valid(self, form):

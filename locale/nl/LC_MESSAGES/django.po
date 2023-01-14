@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-07 07:55+0100\n"
+"POT-Creation-Date: 2023-01-08 21:47+0100\n"
 "PO-Revision-Date: 2023-01-07 07:55+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -105,12 +105,22 @@ msgid "at"
 msgstr "op"
 
 #: archive/templates/archive/images/detail.html:73
-#: archive/templates/archive/images/detail.html:94
-#: archive/templates/archive/images/detail.html:96
+#, fuzzy
+#| msgid "comment"
+#| msgid_plural "comments"
+msgctxt "plural"
 msgid "comment"
 msgid_plural "comments"
 msgstr[0] "reactie"
 msgstr[1] "reacties"
+
+#: archive/templates/archive/images/detail.html:94
+#: archive/templates/archive/images/detail.html:96
+#, fuzzy
+#| msgid "comment"
+#| msgid_plural "comments"
+msgid "comment"
+msgstr "reactie"
 
 #: archive/templates/archive/images/detail.html:95 templates/navigation.html:90
 #: templates/navigation.html:91 templates/navigation.html:93
