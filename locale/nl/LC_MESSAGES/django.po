@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-15 09:58+0100\n"
-"PO-Revision-Date: 2023-01-15 09:59+0100\n"
+"PO-Revision-Date: 2023-01-15 13:26+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -32,7 +32,7 @@ msgstr "Zet Slug aan de hand van bestandsnaam"
 
 #: archive/admin.py:25
 msgid "Succesfully set attachment slug to "
-msgstr "Succesvo attachment slug aangepast naar"
+msgstr "Succesvol attachment slug aangepast naar "
 
 #: archive/admin.py:65
 msgid "Toggle show on index"
