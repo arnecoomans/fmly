@@ -84,7 +84,7 @@ class Attachment(models.Model):
     if self.is_deleted:
       description = f"[Deleted] { description }"
     return str(description)
-  
+    
   def get_absolute_url(self):
       return reverse("archive:attachment", kwargs={"slug": self.slug})
   
