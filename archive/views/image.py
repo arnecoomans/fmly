@@ -295,7 +295,6 @@ class EditImageView(PermissionRequiredMixin, UpdateView):
       elif 'people' in form.changed_data or 'is_portrait_of' in form.changed_data or 'user' in form.changed_data:
         return redirect(reverse_lazy('archive:image-edit', kwargs={'pk': self.object.id}))  
       return redirect(reverse_lazy('archive:image', kwargs={'slug': self.object.slug}))
-      #return super().form_valid(form)
     else:
       ''' No changes are detected, redirect to image without saving. '''
       messages.add_message(self.request, messages.WARNING, f"{ _('No changed made') }.")

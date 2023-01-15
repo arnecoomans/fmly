@@ -1,19 +1,29 @@
 from django.views.generic import DetailView, ListView
-#from django.conf import settings
-
-#from django.http import HttpResponse
 from django.utils.html import escape
-
-#from ..person_utils import get_person_filters, get_person_queryset, get_centuries, get_decades
 
 import graphviz
 from math import floor
 
 from archive.models import Person
 
+
+''' Tree
+    Builds a family tree based off an ancestor.
+    Requires a Person-object with the following methods:
+    ## Displaying
+    - full_name - Returns the persons displayable full name
+    - get_lifespan - Returns a string with the persons 
+      year of birth and -death, if known or applicable
+    ## Logic
+    - get_partners() - Returns a list of people-objects that have a
+      partner-like relationship, either partner, ex-partner or share
+      kids.
+    - get_children() - Returns a list of people-objects who are children of this person
+    - get_siblings() - Returns a list of people-objects that share at
+      least one parent
+'''
 class Tree:
   ''' Initialize Graphviz Family Tree
-      1. Collect Scope of Family Tree (list of featured people)
   '''
   def __init__(self, ancestor, direction='down') -> None:
     ''' Configurations '''
@@ -27,7 +37,11 @@ class Tree:
     self.ranks = {}
     self.nodes = {}
     self.mountpoints = {}
-    ''' Initialize Tree'''
+    ''' Initialize Tree '''
+    ''' Populate adds one person, the partner and the children 
+        of this person to the list, then initiates the same process
+        for each child.
+    '''
     self.populate(ancestor)
     self.get_people()
     self.set_relations(ancestor)
@@ -42,7 +56,6 @@ class Tree:
       ''' Store Person in People '''
       self.people[person.id] = {
         'label':     f"<<b>{ person.full_name() }</b><BR/> { person.get_lifespan() }>",
-        #'label':     f"\"{ person.full_name() }\"",
         'gender':    f"\"{ person.get_gender_display() }\"",
         'color':     f"\"{ self.gender_colours[person.gender] if person.gender in self.gender_colours else 'black' }\"",
       }
@@ -220,7 +233,10 @@ class Tree:
 
 
 
-
+''' TreeView 
+    Uses DetailView to select an ancestor, then initiates the
+    tree building process from this ancestor.
+'''
 class TreeView(DetailView):
   model = Person
   template_name = 'archive/people/tree.html'

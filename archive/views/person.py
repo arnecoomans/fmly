@@ -40,7 +40,11 @@ class PersonView(ListView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'people'
-    ''' Add Person to the context '''
+    ''' Add Person to the context
+        In a normal situation you'd expect this to be a DetailView. But the larger part 
+        of the person detail view is the related images view. 
+        So this is where the person-object is added to the related data.
+    '''
     context['person'] = Person.objects.get(pk=self.kwargs['pk'])
     ''' Add additional context created by the get_queryset actions'''
     if len(self.added_context) > 0:
