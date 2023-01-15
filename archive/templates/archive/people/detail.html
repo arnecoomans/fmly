@@ -73,11 +73,13 @@
             {% endfor %}
           </dd>
         {% endif %}
-        <dt>&nbsp;</dt>
-          <dd><a href="{% url 'archive:tree' person.id %}">{% translate 'See family tree of'%} {{ person.full_name }}</a></dd>
+        {% if not person.private %}
+          <dt>&nbsp;</dt>
+            <dd><a href="{% url 'archive:tree' person.id %}">{% translate 'See family tree of'%} {{ person.full_name }}</a></dd>
+        {% endif %}
       </dl>
       <!-- Related data -->
-      {% if person.images.all.count > 0 %}
+      {% if not person.private and person.images.all.count > 0 %}
         <a name="images"></a>
         <h3>{{ count_images }} {% blocktranslate count counter=count_images %}Image{% plural %}Images{% endblocktranslate %} {% translate 'with' %} {{ person.full_name }}:</h3>
         {% include 'archive/snippets/toggle_hidden_images.html' %}
