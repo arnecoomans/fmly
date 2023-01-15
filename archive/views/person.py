@@ -19,11 +19,11 @@ from archive.models import Person, FamilyRelations, Image
     Returns a list of fields to use in formsets
 '''
 def get_fields():
-  return ['first_name', 'given_names', 'last_name', 'married_name', 'nickname', 
+  return ['first_name', 'given_names', 'last_name', 'married_name', 'nickname', 'gender',
           'day_of_birth', 'month_of_birth', 'year_of_birth', 'place_of_birth', 
           'day_of_death', 'month_of_death', 'year_of_death', 'place_of_death',
           'moment_of_death_unconfirmed',
-          'bio',]
+          'bio', 'private']
 
 
 ''' PersonView
