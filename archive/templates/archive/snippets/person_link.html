@@ -1,4 +1,5 @@
-<span class="name"><a href="{% url 'archive:person' person.id person.slug|default:'details' %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Bekijk details van {{ person.full_name }}">{{ person.full_name }}</a></span>
+<span class="name">
+  {% if not person.private %}<a href="{% url 'archive:person' person.id person.slug|default:'details' %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Bekijk details van {{ person.full_name }}">{% endif %}{{ person.full_name }}{% if not person.private %}</a>{% endif %}</span>
 <span class="date">{% if person.year_of_birth %}{{ person.year_of_birth }}{% elif person.year_of_death %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}{% if person.year_of_death or person.moment_of_death_unconfirmed %} - {% if person.year_of_death %}{{ person.year_of_death }}{% else %}?{% endif %}{% endif %}</span>
 {% if not suppress_icons %}
   <span class="icons">

@@ -44,6 +44,7 @@ class Person(models.Model):
   # Bio
   bio                 = models.TextField(blank=True, help_text='Markdown supported')
   # Meta
+  private             = models.BooleanField(default=False, help_text="Private Mode limits the information being shared")
   related_user        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='related_person')
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
   date_modified       = models.DateTimeField(auto_now=True)
@@ -65,10 +66,14 @@ class Person(models.Model):
     return ' '.join([self.first_name, self.last_name])
 
   def full_name(self):
-    call_sign = ''
-    if self.first_name and  self.first_name not in self.given_names.split(' '):
-      call_sign = '(' + self.first_name + ') '
-    return ' '.join([call_sign, self.given_names, self.last_name, self.married_name]).strip()
+    if self.private:
+      return ' '.join([self.first_name, self.last_name]).strip()
+    else:
+      call_sign = ''
+      if self.first_name and  self.first_name not in self.given_names.split(' '):
+        call_sign = '(' + self.first_name + ') '
+      return ' '.join([call_sign, self.given_names, self.last_name, self.married_name]).strip()
+    
 
   def century(self):
     if self.year_of_birth:
