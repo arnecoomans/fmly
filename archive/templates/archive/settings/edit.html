@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+{% load i18n %}
+
+{% block content %}
+  {% if not perms.archive.change_preference %}
+    {% include  'archive/snippets/error_no_access.html' with object_type='notes' %}
+  {% else %}
+    <header>
+      <h2>{% translate 'Edit Preferences' %} {% translate 'for' %} "{{ request.user }}":</h2>
+    </header>
+    <div class="edit note">
+      <form method="post" class="note">
+        {% include 'archive/snippets/form_basic.html'%}
+      </form>
+    </div>
+  {% endif %}
+{% endblock %}

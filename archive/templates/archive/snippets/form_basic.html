@@ -4,8 +4,14 @@
     {% for field in form %}
       <dt>{% translate field.label_tag %} ({{ field.label_tag }})</dt>
         <dd>
-          {{ field }}
-          {% if field.erros %}{{ field.errors }}{% endif %}
+          {% if field.field.widget.input_type == 'checkbox' %}
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" name="{{ field.name }}" id="id_{{ field.name }}" {% if field.value %}checked{% endif %}>
+            </div>
+          {% else  %}
+            {{ field }} 
+            {% if field.erros %}{{ field.errors }}{% endif %}
+          {% endif %}
         </dd>
     {% endfor %}
     <dt>&nbsp;</dt>

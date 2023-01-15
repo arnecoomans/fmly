@@ -60,5 +60,6 @@ urlpatterns = [
   path('attachment/<str:slug>/', views.AttachmentStreamView.as_view(), name='attachment'),
   
   # Accounts
+  path('settings/', views.PreferencesView.as_view(), name='settings'),
   path("sign-up/", views.SignUpView.as_view(), name='signup'),
 ]
