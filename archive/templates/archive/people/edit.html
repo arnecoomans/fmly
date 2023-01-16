@@ -17,12 +17,12 @@
             <dt>Fout(en)</dt>
               <dd>{{ form.non_field_errors }}</dd>
           {% endif %}
-          <dt><label for="{{ form.first_name.id_for_label }}">{% translate 'nickname'|capfirst %}:</label></dt>
+          <dt><label for="{{ form.first_name.id_for_label }}">{% translate 'name'|capfirst %}:</label></dt>
             <dd>
               {{ form.first_name }}
               {% if form.first_name.errors %}<p>{{ form.first_name.errors }}</p>{% endif %}
             </dd>
-          <dt><label for="{{ form.given_names.id_for_label }}">{% translate 'first name'|capfirst %}:</label></dt>
+          <dt><label for="{{ form.given_names.id_for_label }}">{% translate 'given name(s)'|capfirst %}:</label></dt>
             <dd>
               {{ form.given_names }}
               {% if form.given_names.errors %}<p>{{ form.given_names.errors }}</p>{% endif %}
