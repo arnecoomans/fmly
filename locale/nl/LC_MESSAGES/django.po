@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-15 09:58+0100\n"
-"PO-Revision-Date: 2023-01-15 13:26+0100\n"
+"POT-Creation-Date: 2023-01-16 14:32+0100\n"
+"PO-Revision-Date: 2023-01-16 14:33+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -43,8 +43,8 @@ msgid "Toggle Gender"
 msgstr "Geslacht wisselen"
 
 #: archive/templates/archive/attachments/edit.html:9
-#: archive/templates/archive/images/edit.html:77
-#: archive/templates/archive/images/edit.html:98 templates/navigation.html:55
+#: archive/templates/archive/images/edit.html:91
+#: archive/templates/archive/images/edit.html:114 templates/navigation.html:55
 #: templates/navigation.html:62 templates/navigation.html:69
 #: templates/navigation.html:76 templates/navigation.html:83
 msgid "add"
@@ -54,7 +54,7 @@ msgstr "nieuwe"
 #: archive/templates/archive/attachments/list.html:32
 #: archive/templates/archive/attachments/list.html:36
 #: archive/templates/archive/attachments/list.html:37
-#: archive/templates/archive/images/edit.html:102 templates/navigation.html:83
+#: archive/templates/archive/images/edit.html:119 templates/navigation.html:83
 msgid "attachment"
 msgstr "bijlage"
 
@@ -82,7 +82,7 @@ msgstr "bewerk"
 
 #: archive/templates/archive/attachments/list.html:37
 #: archive/templates/archive/images/detail.html:96
-#: archive/templates/archive/images/edit.html:118
+#: archive/templates/archive/images/edit.html:136
 msgid "delete"
 msgstr "verwijder"
 
@@ -92,9 +92,9 @@ msgid "on"
 msgstr "in"
 
 #: archive/templates/archive/comments/edit.html:32
-#: archive/templates/archive/images/edit.html:57
-#: archive/templates/archive/images/edit.html:144
-#: archive/templates/archive/snippets/form_basic.html:12
+#: archive/templates/archive/images/edit.html:63
+#: archive/templates/archive/images/edit.html:164
+#: archive/templates/archive/snippets/form_basic.html:18
 #: archive/templates/archive/tags/edit.html:24
 msgid "submit changes"
 msgstr "verstuur wijzigingen"
@@ -105,7 +105,7 @@ msgid "comments"
 msgstr "reacties"
 
 #: archive/templates/archive/images/detail.html:22
-#: archive/templates/archive/images/edit.html:118 templates/navigation.html:55
+#: archive/templates/archive/images/edit.html:136 templates/navigation.html:55
 #: templates/navigation.html:58 templates/navigation.html:90
 #: templates/navigation.html:91
 msgid "image"
@@ -146,8 +146,8 @@ msgid "in admin"
 msgstr "in admin"
 
 #: archive/templates/archive/images/detail.html:110
-#: archive/templates/archive/images/edit.html:94
-#: archive/templates/archive/images/edit.html:98
+#: archive/templates/archive/images/edit.html:110
+#: archive/templates/archive/images/edit.html:114
 msgid "group"
 msgstr "groep"
 
@@ -155,112 +155,114 @@ msgstr "groep"
 msgid "error(s)"
 msgstr "fout(en)"
 
-#: archive/templates/archive/images/edit.html:20
+#: archive/templates/archive/images/edit.html:21
 msgid "sourcefile"
 msgstr "bronbestand"
 
-#: archive/templates/archive/images/edit.html:25
+#: archive/templates/archive/images/edit.html:27
 msgid "title"
 msgstr "titel"
 
-#: archive/templates/archive/images/edit.html:30
+#: archive/templates/archive/images/edit.html:33
 msgid "description"
 msgstr "beschrijving"
 
-#: archive/templates/archive/images/edit.html:34
+#: archive/templates/archive/images/edit.html:37
 msgid "markdown allowed"
 msgstr "markdown toegestaan"
 
-#: archive/templates/archive/images/edit.html:36
+#: archive/templates/archive/images/edit.html:40
 msgid "image source"
 msgstr "bron van bestand"
 
-#: archive/templates/archive/images/edit.html:40
+#: archive/templates/archive/images/edit.html:44
 msgid "use website-link"
 msgstr "gebruik website-link"
 
-#: archive/templates/archive/images/edit.html:40
+#: archive/templates/archive/images/edit.html:44
 msgid "whenever possible"
 msgstr "indien mogelijk"
 
-#: archive/templates/archive/images/edit.html:42
+#: archive/templates/archive/images/edit.html:47
 msgid "date"
 msgstr "datum"
 
-#: archive/templates/archive/images/edit.html:58
+#: archive/templates/archive/images/edit.html:64
 msgid "cancel"
 msgstr "annuleren"
 
-#: archive/templates/archive/images/edit.html:58
+#: archive/templates/archive/images/edit.html:64
 msgid "and return to image "
 msgstr "en terug naar de afbeelding "
 
-#: archive/templates/archive/images/edit.html:63
+#: archive/templates/archive/images/edit.html:70
 msgid "options"
 msgstr "opties"
 
-#: archive/templates/archive/images/edit.html:65
+#: archive/templates/archive/images/edit.html:74
 msgid "Show in index"
 msgstr "Toon in overzicht"
 
-#: archive/templates/archive/images/edit.html:66
+#: archive/templates/archive/images/edit.html:78
 msgid "Is deleted"
 msgstr "Is verwijderd"
 
-#: archive/templates/archive/images/edit.html:70
-#: archive/templates/archive/images/edit.html:75 templates/navigation.html:20
+#: archive/templates/archive/images/edit.html:84
+#: archive/templates/archive/images/edit.html:89 templates/navigation.html:20
 msgid "people"
 msgstr "mensen"
 
-#: archive/templates/archive/images/edit.html:77
+#: archive/templates/archive/images/edit.html:91
 #: archive/templates/archive/people/edit.html:9 templates/navigation.html:62
 #: templates/navigation.html:65 templates/navigation.html:93
 msgid "person"
 msgstr "persoon"
 
-#: archive/templates/archive/images/edit.html:83
+#: archive/templates/archive/images/edit.html:98
 #: archive/templates/archive/tags/list.html:11 templates/navigation.html:25
 msgid "tags"
 msgstr "tags"
 
-#: archive/templates/archive/images/edit.html:88
-#: archive/templates/archive/images/edit.html:89 templates/navigation.html:69
+#: archive/templates/archive/images/edit.html:103
+#: archive/templates/archive/images/edit.html:104 templates/navigation.html:69
 #: templates/navigation.html:72
 msgid "tag"
 msgstr "tag"
 
-#: archive/templates/archive/images/edit.html:89
+#: archive/templates/archive/images/edit.html:104
 #: archive/templates/archive/people/edit.html:9
 msgid "new"
 msgstr "nieuwe"
 
-#: archive/templates/archive/images/edit.html:98
+#: archive/templates/archive/images/edit.html:114
 msgid "groups"
 msgstr "groepen"
 
-#: archive/templates/archive/images/edit.html:109
+#: archive/templates/archive/images/edit.html:127
 msgid "is portrait of"
 msgstr "is portret van"
 
-#: archive/templates/archive/images/edit.html:113
+#: archive/templates/archive/images/edit.html:131
 msgid "has portrait"
 msgstr "heeft portret"
 
-#: archive/templates/archive/images/edit.html:118
+#: archive/templates/archive/images/edit.html:136
 msgid "as portrait of"
 msgstr "als portret van"
 
-#: archive/templates/archive/images/edit.html:127
+#: archive/templates/archive/images/edit.html:145
 msgid "Add a person first."
 msgstr "Voeg eerst een persoon toe aan de foto en sla deze op."
 
-#: archive/templates/archive/images/edit.html:129
-msgid "To make this a portrait of a person, remove the current portrait"
+#: archive/templates/archive/images/edit.html:147
+msgid ""
+"To make this a portrait of a person, remove the current portrait of tagged "
+"person"
 msgstr ""
 "Om deze afbeelding portret te maken van een persoon, verwijder het huidige "
-"portret"
+"portret van getagged persoon"
 
-#: archive/templates/archive/images/edit.html:135
+#: archive/templates/archive/images/edit.html:154
 #: archive/templates/archive/people/detail.html:25
 msgid "user"
 msgstr "gebruiker"
@@ -297,18 +299,16 @@ msgid "of this website"
 msgstr "van deze website"
 
 #: archive/templates/archive/people/detail.html:28
-#: archive/templates/archive/people/edit.html:83
+#: archive/templates/archive/people/edit.html:87
 msgid "biography"
 msgstr "biografie"
 
 #: archive/templates/archive/people/detail.html:31
-#: archive/templates/archive/people/edit.html:20
 #: archive/templates/archive/people/edit.html:42
 msgid "nickname"
 msgstr "bijnaam"
 
 #: archive/templates/archive/people/detail.html:33
-#: archive/templates/archive/people/edit.html:25
 #: archive/templates/archive/people/edit.html:34
 #: archive/templates/archive/snippets/people_filters.html:8
 msgid "first name"
@@ -322,35 +322,35 @@ msgstr "achternaam"
 
 #: archive/templates/archive/people/detail.html:34
 #: archive/templates/archive/people/detail.html:36
-#: archive/templates/archive/people/edit.html:47
+#: archive/templates/archive/people/edit.html:51
 msgid "born"
 msgstr "geboren"
 
 #: archive/templates/archive/people/detail.html:39
-#: archive/templates/archive/people/edit.html:63
+#: archive/templates/archive/people/edit.html:67
 msgid "died"
 msgstr "overleden"
 
 #: archive/templates/archive/people/detail.html:42
-#: archive/templates/archive/people/edit.html:148
+#: archive/templates/archive/people/edit.html:159
 msgid "parent"
 msgstr "ouder"
 
 #: archive/templates/archive/people/detail.html:51
-#: archive/templates/archive/people/edit.html:110
-#: archive/templates/archive/people/edit.html:148
+#: archive/templates/archive/people/edit.html:121
+#: archive/templates/archive/people/edit.html:159
 msgid "partner"
 msgstr "partner"
 
 #: archive/templates/archive/people/detail.html:60
-#: archive/templates/archive/people/edit.html:121
+#: archive/templates/archive/people/edit.html:132
 msgid "Brother/Sister"
 msgid_plural "Brothers/Sisters"
 msgstr[0] "Broer/Zus"
 msgstr[1] "Broeren/Zussen"
 
 #: archive/templates/archive/people/detail.html:69
-#: archive/templates/archive/people/edit.html:130
+#: archive/templates/archive/people/edit.html:141
 msgid "Child"
 msgid_plural "Children"
 msgstr[0] "Kind"
@@ -370,6 +370,14 @@ msgstr[1] "Afbeeldingen"
 msgid "with"
 msgstr "met"
 
+#: archive/templates/archive/people/edit.html:20
+msgid "name"
+msgstr "naam"
+
+#: archive/templates/archive/people/edit.html:25
+msgid "given name(s)"
+msgstr "voornaam/namen"
+
 #: archive/templates/archive/people/edit.html:34
 msgid "at birth"
 msgstr "bij geboorte"
@@ -382,26 +390,34 @@ msgstr "aangetrouwde naam"
 msgid "Last name of partner, indien taken"
 msgstr "Achternaam van partner, indien aangenomen"
 
-#: archive/templates/archive/people/edit.html:71
+#: archive/templates/archive/people/edit.html:47
+msgid "gender"
+msgstr "geslacht"
+
+#: archive/templates/archive/people/edit.html:75
 msgid "Died, but exact moment of death unknown"
 msgstr "Overleden, maar datum van overlijden niet bekend"
 
-#: archive/templates/archive/people/edit.html:99
+#: archive/templates/archive/people/edit.html:96
+msgid "privacy mode"
+msgstr "privacy modus"
+
+#: archive/templates/archive/people/edit.html:110
 msgid "Parent"
 msgid_plural "Parents"
 msgstr[0] "Ouder"
 msgstr[1] "Ouders"
 
-#: archive/templates/archive/people/edit.html:144
-#: archive/templates/archive/people/edit.html:156
+#: archive/templates/archive/people/edit.html:155
+#: archive/templates/archive/people/edit.html:167
 msgid "Add relation"
 msgstr "Relatie toevoegen"
 
-#: archive/templates/archive/people/edit.html:148
+#: archive/templates/archive/people/edit.html:159
 msgid "child"
 msgstr "kind"
 
-#: archive/templates/archive/people/edit.html:148
+#: archive/templates/archive/people/edit.html:159
 msgid "sibling"
 msgstr "broer/zus"
 
@@ -440,6 +456,14 @@ msgstr "ouder(s)"
 #: archive/templates/archive/people/tree.html:27
 msgid "sibling(s)"
 msgstr "broer/zus"
+
+#: archive/templates/archive/settings/edit.html:9
+msgid "Edit Preferences"
+msgstr "Voorkeuren bewerken"
+
+#: archive/templates/archive/settings/edit.html:9
+msgid "for"
+msgstr "voor"
 
 #: archive/templates/archive/snippets/error_no_access.html:3
 #: archive/templates/archive/snippets/error_no_objects.html:3
