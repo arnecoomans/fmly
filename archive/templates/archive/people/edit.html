@@ -31,7 +31,7 @@
             <dd>
               {{ form.last_name }}
               {% if form.last_name.errors %}<p>{{ form.last_name.errors }}</p>{% endif %}
-              <p>{% translate 'first name'|capfirst %} {% translate 'at birth' %}</p>
+              <p>{% translate 'last name'|capfirst %} {% translate 'at birth' %}</p>
             </dd>
           <dt><label for="{{ form.married_name.id_for_label }}">{% translate 'married name'|capfirst %}:</label></dt>
             <dd>
