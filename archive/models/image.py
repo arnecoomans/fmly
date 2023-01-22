@@ -17,29 +17,16 @@ def get_thumbnail(image):
     # There is an image ready that reads Format Not Supported. This is a
     # friendly way to inform the user of the error.
     return 'documents/format_not_supported.jpg'
-  import base64
-  from io import BytesIO
-  from PIL import ImageOps, Image
-  Image.MAX_IMAGE_PIXELS = 933120000
-
-  thumbnail_size = 150, 300
-  try:
-    data_img = BytesIO()
-    tiny_img = Image.open(image)
-    tiny_img = ImageOps.exif_transpose(tiny_img)
-    tiny_img.thumbnail(thumbnail_size)
-    tiny_img.save(data_img, format="BMP")
-    tiny_img.close()
-  except:
-    return 'documents/decode_error.jpg'
-  try:
-      return "data:image/jpg;base64,{}".format(
-          base64.b64encode(data_img.getvalue()).decode("utf-8")
-      )
-  except UnicodeDecodeError:
-    # There is an image ready that reads Decode Error. This is a
-    # friendly way to inform the user.
-    return 'documents/decode_error.jpg'
+  from PIL import Image
+  tgt_width = 300
+  tgt_file = 'thumbnails/' + str(image.name)
+  with Image.open(image.path) as img:
+    width, height = img.size
+    ratio = width / height
+    tgt_height = int(tgt_width / ratio)
+    img = img.resize((tgt_width, tgt_height), Image.ANTIALIAS)
+    img.save(settings.MEDIA_ROOT.joinpath(tgt_file))
+    return tgt_file
 
 class Group(models.Model):
   title               = models.CharField(max_length=255, blank=True)
@@ -91,6 +78,7 @@ class Attachment(models.Model):
   
   def extension(self):
     return Path(str(self.file)).suffix[1:].lower()
+
   def storeSize(self):
     from os import stat
     file_stats = stat(settings.MEDIA_ROOT.joinpath(str(self.file  )))
@@ -218,6 +206,7 @@ class Image(models.Model):
     file_stats = stat(settings.MEDIA_ROOT.joinpath(str(self.source)))
     self.size = file_stats.st_size
     self.save()
+
   ''' Display Image File size. Calculate if not stored yet '''
   def getSize(self):
     ''' https://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python '''
@@ -234,8 +223,6 @@ class Image(models.Model):
 
   def save(self, *args, **kwargs):
     # Enforce user
-    if not self.user:
-      self.user = request.user
     ''' If no title is given, use source file name as title '''
     if not self.title:
       self.title = str(self.source.name.replace('_', ' '))

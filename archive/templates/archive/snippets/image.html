@@ -3,7 +3,7 @@
     <h2><span class="object-id">#{{ object.id }}</span><a href="{% url 'archive:image' object.slug %}" title="{{ object.title }}" tabindex="{{ forloop.counter }}">{{ object.title|truncatewords_html:3 }}</a></h2>
     <div class="column left">
       <a href="{% url 'archive:image' object.slug %}" title="{{ object.title }}">
-        <img src="{{ object.thumbnail }}" alt="{{ object.title }}" title="{{ object.title }} - {{ object.description }}">
+        <img src="/documents/{{ object.thumbnail }}" alt="{{ object.title }}" title="{{ object.title }} - {{ object.description }}">
       </a>
     </div>
     <div class="column right">

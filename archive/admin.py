@@ -78,17 +78,20 @@ class ImageAdmin(admin.ModelAdmin):
 
   @admin.action(description='Reset thumbnails')
   def reset_thumbnail(modeladmin, request, queryset):
-    queryset.update(thumbnail=None)
+    # queryset.update(thumbnail=None)
+    for object in queryset:
+      object.thumbnail = None
+      object.save()
   
-  @admin.action(description='Reset Image Dimensions')
-  def resetDimensions(modeladmin, request, queryset):
-    for image in queryset:
-      image.storeDimensions()
-  @admin.action(description='Reset Image Orientation')
-  def resetOrientation(modeladmin, request, queryset):
-    for image in queryset:
-      image.storeOrientation()
-  @admin.action(description='Reset File Size')
+  # @admin.action(description='Reset Image Dimensions')
+  # def resetDimensions(modeladmin, request, queryset):
+  #   for image in queryset:
+  #     image.storeDimensions()
+  # @admin.action(description='Reset Image Orientation')
+  # def resetOrientation(modeladmin, request, queryset):
+  #   for image in queryset:
+  #     image.storeOrientation()
+  # @admin.action(description='Reset File Size')
   def resetSize(modeladmin, request, queryset):
     for object in queryset:
       object.storeSize()
@@ -96,9 +99,9 @@ class ImageAdmin(admin.ModelAdmin):
 
   list_display = ['get_indexed_name', 'slug', 'show_in_index', 'year']
   search_fields = ['title', 'description']
-  exclude = ['thumbnail']
+  exclude = []
   empty_value_display = '---'
-  actions = [toggle_show, softdelete, softundelete, setSlugFromTitle, reset_thumbnail, resetDimensions, resetOrientation, resetSize,  ]
+  actions = [toggle_show, softdelete, softundelete, setSlugFromTitle, reset_thumbnail, resetSize,  ]
   list_filter = ['tag', 'show_in_index', 'people']
   def get_changeform_initial_data(self, request):
     get_data = super(ImageAdmin, self).get_changeform_initial_data(request)
