@@ -83,21 +83,14 @@ class ImageAdmin(admin.ModelAdmin):
       object.thumbnail = None
       object.save()
   
-  # @admin.action(description='Reset Image Dimensions')
-  # def resetDimensions(modeladmin, request, queryset):
-  #   for image in queryset:
-  #     image.storeDimensions()
-  # @admin.action(description='Reset Image Orientation')
-  # def resetOrientation(modeladmin, request, queryset):
-  #   for image in queryset:
-  #     image.storeOrientation()
-  # @admin.action(description='Reset File Size')
+  @admin.action(description='Reset File Size')
   def resetSize(modeladmin, request, queryset):
     for object in queryset:
       object.storeSize()
 
 
-  list_display = ['get_indexed_name', 'slug', 'show_in_index', 'year']
+  list_display = ['id', 'slug', 'has_thumbnail', 'show_in_index', 'year']
+  list_display_links =['slug',]
   search_fields = ['title', 'description']
   exclude = []
   empty_value_display = '---'

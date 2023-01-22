@@ -17,16 +17,22 @@ def get_thumbnail(image):
     # There is an image ready that reads Format Not Supported. This is a
     # friendly way to inform the user of the error.
     return 'documents/format_not_supported.jpg'
-  from PIL import Image
+  #from PIL import Image
+  import PIL
+  PIL.Image.MAX_IMAGE_PIXELS = 933120000
+
   tgt_width = 300
   tgt_file = 'thumbnails/' + str(image.name)
-  with Image.open(image.path) as img:
-    width, height = img.size
-    ratio = width / height
-    tgt_height = int(tgt_width / ratio)
-    img = img.resize((tgt_width, tgt_height), Image.ANTIALIAS)
-    img.save(settings.MEDIA_ROOT.joinpath(tgt_file))
-    return tgt_file
+  try:
+    with PIL.Image.open(image.path) as img:
+      width, height = img.size
+      ratio = width / height
+      tgt_height = int(tgt_width / ratio)
+      img = img.resize((tgt_width, tgt_height), PIL.Image.ANTIALIAS)
+      img.save(settings.MEDIA_ROOT.joinpath(tgt_file))
+      return tgt_file
+  except:
+    return None
 
 class Group(models.Model):
   title               = models.CharField(max_length=255, blank=True)
