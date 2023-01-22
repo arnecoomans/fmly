@@ -161,7 +161,7 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'people'
-    context['available_relations'] = Person.objects.all()
+    context['available_relations'] = Person.objects.exclude(pk=self.object.id)
     return context
 
   ''' Build form '''
