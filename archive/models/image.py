@@ -119,7 +119,7 @@ def random_string():
 class Image(models.Model):
   # Document details
   slug                = models.CharField(max_length=255, unique=True, default=random_string)
-  source              = models.ImageField()
+  source              = models.ImageField(height_field='height', width_field='width')
   thumbnail           = models.CharField(max_length=2000, blank=True, null=True)
   title               = models.CharField(max_length=255, blank=True)
   description         = models.TextField(blank=True, help_text='Markdown supported')
@@ -127,7 +127,6 @@ class Image(models.Model):
   # Relations
   people              = models.ManyToManyField(Person, blank=True, related_name='images', help_text='Tag people that are on the photo')
   tag                 = models.ManyToManyField(Tag, blank=True, related_name='images')
-  #attachment          = models.FileField(null=True, blank=True, upload_to='files', help_text='Possible to attach file to an image. Use for pdf, doc, excel, etc.')
   attachments         = models.ManyToManyField(Attachment, blank=True, related_name='images')
   is_portrait_of      = models.OneToOneField(Person, on_delete=models.CASCADE, related_name='portrait', blank=True, null=True)
   in_group            = models.ManyToManyField(Group, blank=True, related_name='images', help_text='Group images')
@@ -140,8 +139,8 @@ class Image(models.Model):
   size                = models.IntegerField(default=0)
   width               = models.IntegerField(default=0)
   height              = models.IntegerField(default=0)
-  ORIENTATION_CHOICES = [('p', 'portrait'), ('l', 'landscape'), ('s', 'square'), ('u', 'unknown')]
-  orientation         = models.CharField(max_length=1, choices=ORIENTATION_CHOICES, default='u')
+  # ORIENTATION_CHOICES = [('p', 'portrait'), ('l', 'landscape'), ('s', 'square'), ('u', 'unknown')]
+  # orientation         = models.CharField(max_length=1, choices=ORIENTATION_CHOICES, default='u')
   
   uploaded_at         = models.DateTimeField(auto_now_add=True)
   date_modified       = models.DateTimeField(auto_now=True)
@@ -213,26 +212,6 @@ class Image(models.Model):
   ''' Cache Metadata 
       Image Metadata is sometimes displayed as nice-to-have. To minimize file system calls, this information is cached in the database.
   '''
-  ''' Store image width and height '''
-  def storeDimensions(self):
-    from PIL import Image
-    try:
-      image = Image.open(self.source)
-      self.width, self.height = image.size
-      self.save()
-    except:
-      return None
-  ''' Store square, portrait or landscape orientation '''
-  def storeOrientation(self):
-    if self.width == 0 or self.height == 0:
-      self.storeDimensions()
-    if self.width == self.height:
-      self.orientation = 's'
-    elif self.width > self.height:
-      self.orientation = 'l'
-    else:
-      self.orientation = 'p'
-    self.save()
   ''' Store Image File Size '''
   def storeSize(self):
     from os import stat
@@ -268,10 +247,5 @@ class Image(models.Model):
     ''' Generate thumbnail '''
     if self.source and not self.thumbnail:
       self.thumbnail = get_thumbnail(self.source)
-    ''' Store Dimensions and Orientation '''
-    if self.height == 0 or self.width == 0:
-      self.storeDimensions()
-    if self.orientation == 'u':
-      self.storeOrientation()
     ''' Save '''
     return super(Image, self).save(*args, **kwargs)
