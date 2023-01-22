@@ -30,7 +30,7 @@
         {% if person.nickname %}
           <dt>{% translate 'nickname'|capfirst %}:</dt><dd>{{ person.nickname }}</dd>
         {% endif %}
-        <dt>{% translate 'first name' %}</dt><dd>{% if person.first_name in person.given_names %}{{ person.given_names }}{% else %}({{ person.first_name }}) {{ person.given_names }}{% endif %}</dd>
+        <dt>{% translate 'first name'|capfirst %}</dt><dd>{% if person.first_name in person.given_names %}{{ person.given_names }}{% else %}({{ person.first_name }}) {{ person.given_names }}{% endif %}</dd>
         <dt>{% translate 'last name' %}</dt><dd>{% if person.married_name %}<a href="{% url 'archive:people' %}?family={{ person.married_name }}">{{ person.married_name }}</a> ({% translate 'born' %}: <a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>){% else %}<a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>{% endif %}</dd>
         {% if person.year_of_birth or person.month_of_birth or person_day_of_birth or person.place_of_birth %}
           <dt>{% translate 'born'|capfirst %}</dt><dd>{{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}</dd>

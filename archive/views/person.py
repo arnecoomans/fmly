@@ -161,7 +161,7 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'people'
-    context['available_relations'] = Person.objects.all()
+    context['available_relations'] = Person.objects.exclude(pk=self.object.id)
     return context
 
   ''' Build form '''
@@ -188,6 +188,9 @@ class AddPersonView(PermissionRequiredMixin, CreateView):
   def form_valid(self, form):
     form.instance.user = self.request.user
     return super().form_valid(form)
+  
+  def get_success_url(self):
+    return reverse_lazy('archive:person-edit', kwargs={'pk': self.object.id})
 
 ''' Redirect View
     Redirect calls to person by only id to id and slug
