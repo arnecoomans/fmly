@@ -19,7 +19,7 @@
           <h5><a href="{% url 'archive:image' comment.image.slug %}#comments">{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} over {{ comment.image.title }}</a></h5>
           <div class="column left">
             <a href="{% url 'archive:image' comment.image.slug %}" title="{{ comment.image.title }}">
-              <img src="{{ comment.image.thumbnail }}" alt="{{ comment.image.title }}" title="{{ comment.image.title }} - {{ comment.image.description }}">
+              <img src="/documents/{{ comment.image.thumbnail }}" alt="{{ comment.image.title }}" title="{{ comment.image.title }} - {{ comment.image.description }}">
             </a>
           </div>
           <div class="column right">

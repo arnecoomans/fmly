@@ -89,7 +89,7 @@ class ImageAdmin(admin.ModelAdmin):
       object.storeSize()
 
 
-  list_display = ['id', 'slug', 'has_thumbnail', 'show_in_index', 'year']
+  list_display = ['id', 'slug', 'has_thumbnail', 'getSize', 'show_in_index', 'year']
   list_display_links =['slug',]
   search_fields = ['title', 'description']
   exclude = []
