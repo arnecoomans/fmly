@@ -25,6 +25,7 @@
     {% for file in load_css %}
     <link rel="stylesheet" type="text/css" href="{% static file %}" />
     {% endfor %}
+    <style type="css">{% block css %}{% endblock %}</style>
   </head>
   <body>
 <!-- Header -->
@@ -34,7 +35,7 @@
 {% include 'messages.html' %}
 <!-- Content -->
 <section class="container" id="wrapper">
-  {% if user.is_authenticated or login %}
+  {% if user.is_authenticated or login or public %}
     {% block content %}{% endblock %}
   {% elif register %}
     {% block register %}{% endblock %}
