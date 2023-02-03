@@ -1,0 +1,76 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% load dictkey %}
+{% block css %}
+  .checkbox.green { color: green; }
+  .checkbox.red { color: red }
+{% endblock %}
+
+{% block content %}
+  <h2>{% translate 'event'|capfirst %}: {{ event.title }}</h2>
+  <div class="edit attendance">
+    <p>{{ event.description }}</p>
+    <p>{% translate 'location'|capfirst %}: {{ event.location }}</p>
+
+    <!-- Attance by date -->
+    <table>
+      <thead>
+        <tr>
+          <th>{% translate 'date'|capfirst %}</th>
+          <th>{% translate 'start time' %}</th>
+          <th>{% translate 'end time' %}</th>
+          <th>{% translate 'confirmed attendees' %}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tdata>
+        {% for option in event.options.all %}
+          <tr>
+            <td>{{ option.event_start|date:'l j F y' }}</td>
+            <td style="text-align: right;">{{ option.event_start|time }}</td>
+            <td style="text-align: right;">{{ option.event_end|time }}</td>
+            <td style="text-align: right;">{{ option.totalAttendees.amount__sum|default:'0' }}</td>
+            <td><td>
+          </tr>
+        {% endfor %}  
+      </tdata>
+    </table>
+    
+    <p>&nbsp;</p>
+    <!-- Attance by person -->
+    <table>
+      <thead>
+        <tr>
+          <th>{% translate 'attendee'|capfirst %}</th>
+          {% for option in event.options.all %}
+            <th>{{ option.event_start|date:'j F y' }} </th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tdata>
+        {% for attendee, data in attendees.items %}
+        <tr>
+          <td>{{ attendee }}</td>
+          {% for option in event.options.all %}
+            <td style="text-align: center;">
+              {% if option in data %}
+                {% if data|dictkey:option|dictkey:'status' == 'Y'%}
+                  <i class="bi bi-check-lg" title="{{ attendee }} {% translate 'attends with' %} {{ data|dictkey:option|dictkey:'amount' }} {% translate 'people' %}" data-bs-toggle="tooltip" data-bs-placement="top"></i>
+                {% elif data|dictkey:option|dictkey:'status' == 'N'%}
+                  <i class="bi bi-x-lg"></i>
+                {% elif data|dictkey:option|dictkey:'status' == 'M'%}
+                <i class="bi bi-question-lg"></i>
+                {% endif %}
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tdata>
+    </table>
+
+    <p>&nbsp;</p>
+    <!-- Add Attance -->
+    <a href="{% url 'datepicker:attendance' event.slug %}">{% translate 'add attendance'|capfirst %}</a>
+  </div>
+{% endblock %}

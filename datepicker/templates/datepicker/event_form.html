@@ -1,0 +1,54 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% load dictkey %}
+{% block css %}
+  .checkbox.green { color: green; }
+  .checkbox.red { color: red }
+{% endblock %}
+
+{% block content %}
+  <h2>{% translate 'event'|capfirst %}: {{ event.title }}</h2>
+  <div class="edit attendance">
+    <p>{{ event.description }}</p>
+    <p>{% translate 'location'|capfirst %}: {{ event.location }}</p>
+    <h3>{% translate 'add or edit'|capfirst %} {% translate 'attendance' %}:</h3>
+    <p>{% translate 'To change attendance, use the exact same e-mail as your original submission. To change a single entry, contact the site administrator and have it fixed for you' %}.</p>
+    <form method="post" action="{% url 'datepicker:attendance' event.slug%}" class="row g-3">
+      {% csrf_token %}
+      <input type="hidden" name="slug" value="{{ event.slug }}">
+      <!-- Attendee -->
+      <div class="col-md-12">
+        <label for="attendee__name" class="form-label">{% translate 'name'|capfirst %}</label>
+        <input type="text" class="form-control" name="attendee__name" required placeholder="{% translate 'your name'|title %}" {% if user.is_authenticated %}value="{{ user.get_full_name }}"{% endif %}>
+      </div>
+      <div class="col-md-12">
+        <label for="attendee__email" class="form-label">{% translate 'email address'|capfirst %}</label>
+        <input type="email" class="form-control" name="attendee__email" required placeholder="name@example.com" {% if user.email %}value="{{ user.email }}"{% endif %}>
+      </div>
+      <!-- Options -->
+      {% for option in event.options.all %}
+      <div class="col-md-4 input-group">
+          <label for="option-{{ option.id }}-status">{{ option.event_start|date:'l j F y' }} {{ option.event_start|time }} - {{ option.event_end|time }}:</label>
+          <select class="form-select" name="option-{{ option.id }}-status">
+            <option value="Y">{% translate 'yes'|capfirst %}</option>
+            <option value="N">{% translate 'no'|capfirst %}</option>
+            <option value="M" selected>{% translate 'maybe'|capfirst %}</option>
+            <option value="U">{% translate 'unknown'|capfirst %}</option>
+          </select>
+        {% comment %} </div>
+        <div class="col-md-6 input-group"> {% endcomment %}
+          <input type="number" name="option-{{ option.id }}-amount" value="1" aria-describedby="basic-addon-{{ option.id }}">
+          <span class="input-group-text" id="basic-addon-{{ option.id }}">{% translate 'people' %}</span>
+        </div>
+      {% endfor %}
+      <!-- Submit -->
+      <div class="col-md-6">
+        <input type="submit" value="{% translate 'submit changes'|capfirst %}">
+      </div>
+      <div class="col-md-6">
+        <a href="{% url 'datepicker:event' event.slug %}">{% translate 'back to' %} {% translate 'event' %}: {{ event }}</a>
+      </div>
+    </form>
+  </div>
+  
+{% endblock %}

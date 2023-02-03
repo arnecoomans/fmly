@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+{% load i18n %}
+
+{% block content %}
+  <h2>{% translate 'datepicker'|capfirst %}:</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>{% translate 'event'|capfirst %}</th>
+        <th>{% translate 'options'|capfirst %}</th>
+        <th>{% translate 'attendees'|capfirst %}</th>
+    </thead>
+    <tdata>
+      {% for event in event_list %}
+        <tr>
+          <td><a href="{% url 'datepicker:event' event.slug %}">{{ event.title }}</a></td>
+          <td>{{ event.options.count }}</td>
+          <td>?</td>
+        <tr>
+      {% empty %}
+        <tr>
+          <td colspan=3>{% translate 'no events planned'|capfirst %}</td>
+      {% endfor %}
+    </tdata>
+  </table>
+{% endblock %}
