@@ -38,12 +38,16 @@ class AttendanceForm(UpdateView):
   fields = ['slug']
 
   def get_success_url(self) -> str:
-    return reverse_lazy('datepicker:attendance', kwargs={ 'slug': self.get_object().slug })
+    return reverse_lazy('datepicker:event', kwargs={ 'slug': self.get_object().slug })
   
   def get_context_data(self,*args, **kwargs):
     context = super().get_context_data(**kwargs)
     context['public'] = True
-    context['dev'] = kwargs
+    if self.request.user.is_authenticated:
+      stored = AttendeeOptions.objects.filter(attendee__email=self.request.user.email)
+    else:
+      stored = None
+    context['stored'] = stored
     return context
 
   ''' Catch form validation errors '''
@@ -82,10 +86,6 @@ class AttendanceForm(UpdateView):
         option.save()
         messages.add_message(self.request, messages.INFO, f"Option: { option }: saved with status { status } and amount { amount }")
         pass
-      
-      #messages.add_message(self.request, messages.WARNING, f"Hello { self.request.POST.get('attendee__name') }")  
-      #messages.add_message(self.request, messages.WARNING, f"Option: { escape(option) } ") 
-    #messages.add_message(self.request, messages.WARNING, f"Hello { self.request.POST.get('attendee__name') }")
     return super().form_valid(form)
 
 

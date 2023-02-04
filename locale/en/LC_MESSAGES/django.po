@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-16 14:32+0100\n"
+"POT-Creation-Date: 2023-02-04 07:44+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgstr ""
 msgid "Toggle show on index"
 msgstr ""
 
-#: archive/admin.py:120
+#: archive/admin.py:116
 msgid "Toggle Gender"
 msgstr ""
 
@@ -96,6 +96,7 @@ msgstr ""
 #: archive/templates/archive/images/edit.html:164
 #: archive/templates/archive/snippets/form_basic.html:18
 #: archive/templates/archive/tags/edit.html:24
+#: datepicker/templates/datepicker/event_form.html:46
 msgid "submit changes"
 msgstr ""
 
@@ -184,6 +185,7 @@ msgid "whenever possible"
 msgstr ""
 
 #: archive/templates/archive/images/edit.html:47
+#: datepicker/templates/datepicker/event_detail.html:19
 msgid "date"
 msgstr ""
 
@@ -196,6 +198,7 @@ msgid "and return to image "
 msgstr ""
 
 #: archive/templates/archive/images/edit.html:70
+#: datepicker/templates/datepicker/event_list.html:10
 msgid "options"
 msgstr ""
 
@@ -208,7 +211,10 @@ msgid "Is deleted"
 msgstr ""
 
 #: archive/templates/archive/images/edit.html:84
-#: archive/templates/archive/images/edit.html:89 templates/navigation.html:20
+#: archive/templates/archive/images/edit.html:89
+#: datepicker/templates/datepicker/event_detail.html:58
+#: datepicker/templates/datepicker/event_form.html:41
+#: templates/navigation.html:20
 msgid "people"
 msgstr ""
 
@@ -307,13 +313,13 @@ msgid "nickname"
 msgstr ""
 
 #: archive/templates/archive/people/detail.html:33
-#: archive/templates/archive/people/edit.html:34
 #: archive/templates/archive/snippets/people_filters.html:8
 msgid "first name"
 msgstr ""
 
 #: archive/templates/archive/people/detail.html:34
 #: archive/templates/archive/people/edit.html:30
+#: archive/templates/archive/people/edit.html:34
 #: archive/templates/archive/snippets/people_filters.html:7
 msgid "last name"
 msgstr ""
@@ -369,6 +375,7 @@ msgid "with"
 msgstr ""
 
 #: archive/templates/archive/people/edit.html:20
+#: datepicker/templates/datepicker/event_form.html:21
 msgid "name"
 msgstr ""
 
@@ -534,11 +541,102 @@ msgstr[1] ""
 msgid "to hide"
 msgstr ""
 
-#: family/settings.py:130
+#: datepicker/templates/datepicker/event_detail.html:10
+#: datepicker/templates/datepicker/event_form.html:10
+#: datepicker/templates/datepicker/event_form.html:49
+#: datepicker/templates/datepicker/event_list.html:9
+msgid "event"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_detail.html:13
+#: datepicker/templates/datepicker/event_form.html:13
+msgid "location"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_detail.html:20
+msgid "start time"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_detail.html:21
+msgid "end time"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_detail.html:22
+msgid "confirmed attendees"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_detail.html:44
+msgid "attendee"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_detail.html:58
+msgid "attends with"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_detail.html:74
+msgid "add attendance"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_form.html:14
+msgid "add or edit"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_form.html:14
+msgid "attendance"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_form.html:15
+msgid ""
+"To change attendance, use the exact same e-mail as your original submission. "
+"To change a single entry, contact the site administrator and have it fixed "
+"for you"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_form.html:22
+msgid "your name"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_form.html:25
+msgid "email address"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_form.html:35
+msgid "yes"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_form.html:36
+msgid "no"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_form.html:37
+msgid "maybe"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_form.html:38
+msgid "unknown"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_form.html:49
+msgid "back to"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_list.html:5
+msgid "datepicker"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_list.html:11
+msgid "attendees"
+msgstr ""
+
+#: datepicker/templates/datepicker/event_list.html:22
+msgid "no events planned"
+msgstr ""
+
+#: family/settings.py:132
 msgid "English"
 msgstr ""
 
-#: family/settings.py:131
+#: family/settings.py:133
 msgid "Dutch"
 msgstr ""
 

@@ -27,17 +27,15 @@
       </div>
       <!-- Options -->
       {% for option in event.options.all %}
-      <div class="col-md-4 input-group">
-          <label for="option-{{ option.id }}-status">{{ option.event_start|date:'l j F y' }} {{ option.event_start|time }} - {{ option.event_end|time }}:</label>
-          <select class="form-select" name="option-{{ option.id }}-status">
-            <option value="Y">{% translate 'yes'|capfirst %}</option>
-            <option value="N">{% translate 'no'|capfirst %}</option>
-            <option value="M" selected>{% translate 'maybe'|capfirst %}</option>
-            <option value="U">{% translate 'unknown'|capfirst %}</option>
+        <div class="col-md-4 input-group">
+          <label for="option-{{ option.id }}-status" style="width: 50%;">{{ option.event_start|date:'l j F y' }} {{ option.event_start|time }} - {{ option.event_end|time }}:</label>
+          <select class="form-select" name="option-{{ option.id }}-status" >
+            <option value="Y" {% for item in stored %}{% if item.option == option and item.status == 'Y' %}selected{% endif %}{% endfor %}>{% translate 'yes'|capfirst %}</option>
+            <option value="N" {% for item in stored %}{% if item.option == option and item.status == 'N' %}selected{% endif %}{% endfor %}>{% translate 'no'|capfirst %}</option>
+            <option value="M" {% for item in stored %}{% if item.option == option and item.status == 'M' %}selected{% endif %}{% endfor %} >{% translate 'maybe'|capfirst %}</option>
+            <option value="U" {% for item in stored %}{% if item.option == option and item.status == 'U' %}selected{% endif %}{% endfor %}>{% translate 'unknown'|capfirst %}</option>
           </select>
-        {% comment %} </div>
-        <div class="col-md-6 input-group"> {% endcomment %}
-          <input type="number" name="option-{{ option.id }}-amount" value="1" aria-describedby="basic-addon-{{ option.id }}">
+          <input type="number" name="option-{{ option.id }}-amount" value="{% if user.is_authenticated %}{% for item in stored %}{% if item.option == option%}{{ item.amount }}{% endif %}{% endfor %}{% else %}1{% endif %}" aria-describedby="basic-addon-{{ option.id }}">
           <span class="input-group-text" id="basic-addon-{{ option.id }}">{% translate 'people' %}</span>
         </div>
       {% endfor %}

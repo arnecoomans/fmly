@@ -25,3 +25,6 @@ class Option(models.Model):
   
   def totalAttendees(self):
     return self.confirmedAttendees().aggregate(Sum('amount'))
+
+  class Meta:
+    ordering = ['-event_start']
