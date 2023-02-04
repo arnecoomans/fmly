@@ -8,12 +8,14 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         {% if not user.is_authenticated %}
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'login' %}"> {% translate 'log-in'|title %}</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'archive:signup' %}"> {% translate 'register'|title %}</a>
-        </li>
+          {% if public %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}"> {% translate 'log-in'|title %}</a>
+            </li>
+            {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'archive:signup' %}"> {% translate 'register'|title %}</a>
+          </li>
         {% endif %}
         {% if perms.archive.view_person %}
           <li class="nav-item">
