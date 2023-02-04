@@ -1,22 +1,24 @@
+{% load i18n %}
 <div class="registration node">
-    <h3>Login</h3>
-    <p>Je bent niet ingelogd. Om de inhoud van de site te kunnen bekijken moet je een account hebben en inloggen. Heb je nog geen account, kan je je <a href="{% url 'archive:signup' %}">registreren</a>.</p>
+    <h3>{% translate 'login'|capfirst %}</h3>
+    <p>{% translate 'You are currently not logged in' %}. {% translate 'To view the contents of the site, you need to have an account and log in' %}.</p>
+    <p>{% translate 'If you do not have an account, you can' %} <a href="{% url 'archive:signup' %}">{% translate 'register here' %}</a>.</p>
     {% if unauthenticated_welcome %}
       <p>{{ unauthenticated_welcome|safe }}</p>
     {% endif %}
     <form method="POST" action="{% url 'login' %}?next={{request.path}}">
       {% csrf_token %}
-      <p>
-      <label for="id_username">Username:</label>
-      <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required id="id_username">
-    </p>
-    <p>
-      <label for="id_password">Password:</label>
-      <input type="password" name="password" autocomplete="current-password" required id="id_password">
-    </p>                    
+      <div class="form-floating mb-3 col-md-6">
+        <input type="text" class="form-control" name="username" id="id_username" placeholder="{% translate 'your username' %}">
+        <label for="id_username">{% translate 'username'|capfirst %}</label>
+      </div>
+      <div class="form-floating mb-3 col-md-6">
+        <input type="password" class="form-control" id="id_password" name="password" placeholder="{% translate 'password'|capfirst %}">
+        <label for="id_password">{% translate 'password'|capfirst %}</label>
+      </div>
       <button class="btn btn-primary" type="submit">Log in</button>
     </form>
-    <p class="text-center">Heb je nog geen account, <a href="{% url 'archive:signup' %}">registreer</a> je.</p>
+    
   </div>
 
     
