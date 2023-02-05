@@ -1,6 +1,5 @@
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView 
-
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.template.defaultfilters import slugify

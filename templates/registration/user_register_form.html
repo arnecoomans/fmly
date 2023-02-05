@@ -1,17 +1,49 @@
 {% extends "index.html" %}
-
-{% block pagetitle %}Aanmelden{% endblock %}
-
-{% block css %}{% endblock %}
+{% load i18n %}
 
 {% block register %}
   <div class="registration node">
-    <h3>Aanmelden</h3>
+    <h3>{% translate 'register'|capfirst %}</h3>
     <form method="POST">
       {% csrf_token %}
-      {{ form.as_p }}                    
-      <button class="btn btn-primary" type="submit">Register</button>
+      <div class="form-floating mb-3">
+        <input type="email" class="form-control" name="email" id="id_email" placeholder="name@example.com" required autofocus>
+        <label for="id_email">{% translate 'email address'|capfirst %}*</label>
+      </div>
+      <div class="row mb-3 g-2">
+        <div class="col-md">
+          <div class="form-floating">
+            <input type="text" class="form-control" name="first_name" id="id_first_name" placeholder="John">
+            <label for="id_first_name">{% translate 'first name'|capfirst %}</label>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="form-floating">
+            <input type="text" class="form-control" name="last_name" id="id_last_name" placeholder="Doe">
+            <label for="id_last_name">{% translate 'last name'|capfirst %}</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-3 g-2">
+        <div class="col-md">
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" name="password" id="id_password" placeholder="Password" required>
+            <label for="id_password">{% translate 'password'|capfirst %}*</label>
+          </div>
+        </div>
+        <div class="col-md">
+          {% translate 'your password must meet the following requirements' %}:
+          <ul>
+            <li>{% translate 'your password'|capfirst %} {% translate 'may not look like your personal details'|capfirst %}</li>
+            <li>{% translate 'your password'|capfirst %} {% translate 'has 8 characters or more' %}</li>
+            <li>{% translate 'your password'|capfirst %} {% translate 'is not a widely used password' %}</li>
+            <li>{% translate 'your password'|capfirst %} {% translate 'may not only contain numbers' %}</li>
+          </ul>
+        </div>
+      </div>
+      <button class="btn btn-primary" type="submit">{% translate 'register'|capfirst %}</button>
     </form>
-    <p class="text-center">If you already have an account, <a href="/login">login</a> instead.</p>
+    <p class="text-center">{% translate 'If you already have an account' %}, <a href="/login">{% translate 'login here' %}</a>.</p>
   </div>
 {% endblock %}
