@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-04 07:44+0100\n"
+"POT-Creation-Date: 2023-02-05 16:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,9 +44,9 @@ msgstr ""
 
 #: archive/templates/archive/attachments/edit.html:9
 #: archive/templates/archive/images/edit.html:91
-#: archive/templates/archive/images/edit.html:114 templates/navigation.html:55
-#: templates/navigation.html:62 templates/navigation.html:69
-#: templates/navigation.html:76 templates/navigation.html:83
+#: archive/templates/archive/images/edit.html:114 templates/navigation.html:57
+#: templates/navigation.html:64 templates/navigation.html:71
+#: templates/navigation.html:78 templates/navigation.html:85
 msgid "add"
 msgstr ""
 
@@ -54,12 +54,12 @@ msgstr ""
 #: archive/templates/archive/attachments/list.html:32
 #: archive/templates/archive/attachments/list.html:36
 #: archive/templates/archive/attachments/list.html:37
-#: archive/templates/archive/images/edit.html:119 templates/navigation.html:83
+#: archive/templates/archive/images/edit.html:119 templates/navigation.html:85
 msgid "attachment"
 msgstr ""
 
 #: archive/templates/archive/attachments/list.html:11
-#: templates/navigation.html:49
+#: templates/navigation.html:51
 msgid "attachments"
 msgstr ""
 
@@ -96,19 +96,19 @@ msgstr ""
 #: archive/templates/archive/images/edit.html:164
 #: archive/templates/archive/snippets/form_basic.html:18
 #: archive/templates/archive/tags/edit.html:24
-#: datepicker/templates/datepicker/event_form.html:46
+#: datepicker/templates/datepicker/event_form.html:43
 msgid "submit changes"
 msgstr ""
 
-#: archive/templates/archive/comments/list.html:11 templates/navigation.html:30
-#: templates/navigation.html:91
+#: archive/templates/archive/comments/list.html:11 templates/navigation.html:32
+#: templates/navigation.html:93
 msgid "comments"
 msgstr ""
 
 #: archive/templates/archive/images/detail.html:22
-#: archive/templates/archive/images/edit.html:136 templates/navigation.html:55
-#: templates/navigation.html:58 templates/navigation.html:90
-#: templates/navigation.html:91
+#: archive/templates/archive/images/edit.html:136 templates/navigation.html:57
+#: templates/navigation.html:60 templates/navigation.html:92
+#: templates/navigation.html:93
 msgid "image"
 msgstr ""
 
@@ -141,8 +141,8 @@ msgstr[1] ""
 msgid "comment"
 msgstr ""
 
-#: archive/templates/archive/images/detail.html:95 templates/navigation.html:90
-#: templates/navigation.html:91 templates/navigation.html:93
+#: archive/templates/archive/images/detail.html:95 templates/navigation.html:92
+#: templates/navigation.html:93 templates/navigation.html:95
 msgid "in admin"
 msgstr ""
 
@@ -213,25 +213,25 @@ msgstr ""
 #: archive/templates/archive/images/edit.html:84
 #: archive/templates/archive/images/edit.html:89
 #: datepicker/templates/datepicker/event_detail.html:58
-#: datepicker/templates/datepicker/event_form.html:41
-#: templates/navigation.html:20
+#: datepicker/templates/datepicker/event_form.html:38
+#: templates/navigation.html:22
 msgid "people"
 msgstr ""
 
 #: archive/templates/archive/images/edit.html:91
-#: archive/templates/archive/people/edit.html:9 templates/navigation.html:62
-#: templates/navigation.html:65 templates/navigation.html:93
+#: archive/templates/archive/people/edit.html:9 templates/navigation.html:64
+#: templates/navigation.html:67 templates/navigation.html:95
 msgid "person"
 msgstr ""
 
 #: archive/templates/archive/images/edit.html:98
-#: archive/templates/archive/tags/list.html:11 templates/navigation.html:25
+#: archive/templates/archive/tags/list.html:11 templates/navigation.html:27
 msgid "tags"
 msgstr ""
 
 #: archive/templates/archive/images/edit.html:103
-#: archive/templates/archive/images/edit.html:104 templates/navigation.html:69
-#: templates/navigation.html:72
+#: archive/templates/archive/images/edit.html:104 templates/navigation.html:71
+#: templates/navigation.html:74
 msgid "tag"
 msgstr ""
 
@@ -277,8 +277,8 @@ msgid_plural "Images and documents"
 msgstr[0] ""
 msgstr[1] ""
 
-#: archive/templates/archive/notes/detail.html:25 templates/navigation.html:76
-#: templates/navigation.html:79
+#: archive/templates/archive/notes/detail.html:25 templates/navigation.html:78
+#: templates/navigation.html:81
 msgid "note"
 msgstr ""
 
@@ -314,6 +314,7 @@ msgstr ""
 
 #: archive/templates/archive/people/detail.html:33
 #: archive/templates/archive/snippets/people_filters.html:8
+#: templates/registration/user_register_form.html:17
 msgid "first name"
 msgstr ""
 
@@ -321,6 +322,7 @@ msgstr ""
 #: archive/templates/archive/people/edit.html:30
 #: archive/templates/archive/people/edit.html:34
 #: archive/templates/archive/snippets/people_filters.html:7
+#: templates/registration/user_register_form.html:23
 msgid "last name"
 msgstr ""
 
@@ -375,7 +377,7 @@ msgid "with"
 msgstr ""
 
 #: archive/templates/archive/people/edit.html:20
-#: datepicker/templates/datepicker/event_form.html:21
+#: datepicker/templates/datepicker/event_form.html:20
 msgid "name"
 msgstr ""
 
@@ -541,15 +543,21 @@ msgstr[1] ""
 msgid "to hide"
 msgstr ""
 
+#: archive/views/usermanagement.py:79
+msgid ""
+"Succesfully registered your account. Please log in with your e-mail address "
+"and chosen password. "
+msgstr ""
+
 #: datepicker/templates/datepicker/event_detail.html:10
-#: datepicker/templates/datepicker/event_form.html:10
-#: datepicker/templates/datepicker/event_form.html:49
+#: datepicker/templates/datepicker/event_form.html:8
+#: datepicker/templates/datepicker/event_form.html:46
 #: datepicker/templates/datepicker/event_list.html:9
 msgid "event"
 msgstr ""
 
 #: datepicker/templates/datepicker/event_detail.html:13
-#: datepicker/templates/datepicker/event_form.html:13
+#: datepicker/templates/datepicker/event_form.html:11
 msgid "location"
 msgstr ""
 
@@ -577,46 +585,40 @@ msgstr ""
 msgid "add attendance"
 msgstr ""
 
-#: datepicker/templates/datepicker/event_form.html:14
+#: datepicker/templates/datepicker/event_form.html:12
 msgid "add or edit"
 msgstr ""
 
-#: datepicker/templates/datepicker/event_form.html:14
+#: datepicker/templates/datepicker/event_form.html:12
 msgid "attendance"
 msgstr ""
 
-#: datepicker/templates/datepicker/event_form.html:15
-msgid ""
-"To change attendance, use the exact same e-mail as your original submission. "
-"To change a single entry, contact the site administrator and have it fixed "
-"for you"
-msgstr ""
-
-#: datepicker/templates/datepicker/event_form.html:22
+#: datepicker/templates/datepicker/event_form.html:21
 msgid "your name"
 msgstr ""
 
-#: datepicker/templates/datepicker/event_form.html:25
+#: datepicker/templates/datepicker/event_form.html:24
+#: templates/registration/user_register_form.html:11
 msgid "email address"
 msgstr ""
 
-#: datepicker/templates/datepicker/event_form.html:35
+#: datepicker/templates/datepicker/event_form.html:32
 msgid "yes"
 msgstr ""
 
-#: datepicker/templates/datepicker/event_form.html:36
+#: datepicker/templates/datepicker/event_form.html:33
 msgid "no"
 msgstr ""
 
-#: datepicker/templates/datepicker/event_form.html:37
+#: datepicker/templates/datepicker/event_form.html:34
 msgid "maybe"
 msgstr ""
 
-#: datepicker/templates/datepicker/event_form.html:38
+#: datepicker/templates/datepicker/event_form.html:35
 msgid "unknown"
 msgstr ""
 
-#: datepicker/templates/datepicker/event_form.html:49
+#: datepicker/templates/datepicker/event_form.html:46
 msgid "back to"
 msgstr ""
 
@@ -644,45 +646,117 @@ msgstr ""
 msgid "archive"
 msgstr ""
 
-#: templates/navigation.html:12
+#: templates/navigation.html:13
 msgid "log-in"
 msgstr ""
 
-#: templates/navigation.html:15
+#: templates/navigation.html:17
+#: templates/registration/user_register_form.html:6
+#: templates/registration/user_register_form.html:45
 msgid "register"
 msgstr ""
 
-#: templates/navigation.html:36
+#: templates/navigation.html:38
 msgid "profile"
 msgstr ""
 
-#: templates/navigation.html:41
+#: templates/navigation.html:43
 msgid "my uploads"
 msgstr ""
 
-#: templates/navigation.html:45
+#: templates/navigation.html:47
 msgid "notes"
 msgstr ""
 
-#: templates/navigation.html:58 templates/navigation.html:65
-#: templates/navigation.html:72 templates/navigation.html:79
-#: templates/navigation.html:90 templates/navigation.html:91
-#: templates/navigation.html:93
+#: templates/navigation.html:60 templates/navigation.html:67
+#: templates/navigation.html:74 templates/navigation.html:81
+#: templates/navigation.html:92 templates/navigation.html:93
+#: templates/navigation.html:95
 msgid "edit this"
 msgstr ""
 
-#: templates/navigation.html:88
+#: templates/navigation.html:90
 msgid "admin"
 msgstr ""
 
-#: templates/navigation.html:94
+#: templates/navigation.html:96
 msgid "Edit note in admin"
 msgstr ""
 
-#: templates/navigation.html:97
+#: templates/navigation.html:99
 msgid "Log out"
 msgstr ""
 
-#: templates/navigation.html:113 templates/navigation.html:116
+#: templates/navigation.html:115 templates/navigation.html:118
 msgid "Search"
+msgstr ""
+
+#: templates/registration/inline_login.html:3
+msgid "login"
+msgstr ""
+
+#: templates/registration/inline_login.html:4
+msgid "You are currently not logged in"
+msgstr ""
+
+#: templates/registration/inline_login.html:4
+msgid ""
+"To view the contents of the site, you need to have an account and log in"
+msgstr ""
+
+#: templates/registration/inline_login.html:5
+msgid "If you do not have an account, you can"
+msgstr ""
+
+#: templates/registration/inline_login.html:5
+msgid "register here"
+msgstr ""
+
+#: templates/registration/inline_login.html:12
+msgid "your username"
+msgstr ""
+
+#: templates/registration/inline_login.html:13
+msgid "username"
+msgstr ""
+
+#: templates/registration/inline_login.html:16
+#: templates/registration/inline_login.html:17
+#: templates/registration/user_register_form.html:32
+msgid "password"
+msgstr ""
+
+#: templates/registration/user_register_form.html:36
+msgid "your password must meet the following requirements"
+msgstr ""
+
+#: templates/registration/user_register_form.html:38
+#: templates/registration/user_register_form.html:39
+#: templates/registration/user_register_form.html:40
+#: templates/registration/user_register_form.html:41
+msgid "your password"
+msgstr ""
+
+#: templates/registration/user_register_form.html:38
+msgid "may not look like your personal details"
+msgstr ""
+
+#: templates/registration/user_register_form.html:39
+msgid "has 8 characters or more"
+msgstr ""
+
+#: templates/registration/user_register_form.html:40
+msgid "is not a widely used password"
+msgstr ""
+
+#: templates/registration/user_register_form.html:41
+msgid "may not only contain numbers"
+msgstr ""
+
+#: templates/registration/user_register_form.html:47
+msgid "If you already have an account"
+msgstr ""
+
+#: templates/registration/user_register_form.html:47
+msgid "login here"
 msgstr ""
