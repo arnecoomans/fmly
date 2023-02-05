@@ -9,7 +9,7 @@
 {% block content %}
   <h2>{% translate 'event'|capfirst %}: {{ event.title }}</h2>
   <div class="edit attendance">
-    <p>{{ event.description }}</p>
+    <p>{{ event.description|markdown|safe }}</p>
     <p>{% translate 'location'|capfirst %}: {{ event.location }}</p>
 
     <!-- Attance by date -->

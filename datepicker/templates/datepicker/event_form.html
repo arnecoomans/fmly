@@ -2,17 +2,16 @@
 {% load i18n %}
 {% load dictkey %}
 {% block css %}
-  .checkbox.green { color: green; }
-  .checkbox.red { color: red }
 {% endblock %}
 
 {% block content %}
   <h2>{% translate 'event'|capfirst %}: {{ event.title }}</h2>
   <div class="edit attendance">
-    <p>{{ event.description }}</p>
+    <p>{{ event.description|markdown|safe }}</p>
     <p>{% translate 'location'|capfirst %}: {{ event.location }}</p>
     <h3>{% translate 'add or edit'|capfirst %} {% translate 'attendance' %}:</h3>
-    <p>{% translate 'To change attendance, use the exact same e-mail as your original submission. To change a single entry, contact the site administrator and have it fixed for you' %}.</p>
+    <p>To change attendance, use the exact same e-mail as your original submission. To change a single entry, contact the site administrator and have it fixed for you.</p>
+    {% if not user.is_authenticated %}<p>If you are <a href="{% url 'login' %}">logged in</a>, your preferences will be linked to your account.</p>{% endif %}
     <form method="post" action="{% url 'datepicker:attendance' event.slug%}" class="row g-3">
       {% csrf_token %}
       <input type="hidden" name="slug" value="{{ event.slug }}">
