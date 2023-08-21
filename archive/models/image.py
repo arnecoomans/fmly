@@ -28,10 +28,10 @@ def get_thumbnail(image):
       width, height = img.size
       ratio = width / height
       tgt_height = int(tgt_width / ratio)
-      img = img.resize((tgt_width, tgt_height), PIL.Image.ANTIALIAS)
+      img = img.resize((tgt_width, tgt_height), PIL.Image.Resampling.LANCZOS)
       img.save(settings.MEDIA_ROOT.joinpath(tgt_file))
       return tgt_file
-  except:
+  except Exception as e:
     return None
 
 class Group(models.Model):
@@ -115,7 +115,7 @@ class Image(models.Model):
   slug                = models.CharField(max_length=255, unique=True, default=random_string)
   source              = models.ImageField(height_field='height', width_field='width')
   thumbnail           = models.CharField(max_length=2000, blank=True, null=True)
-  title               = models.CharField(max_length=255, blank=True)
+  title               = models.CharField(max_length=255)
   description         = models.TextField(blank=True, help_text='Markdown supported')
   document_source     = models.CharField(max_length=255, blank=True, help_text='Link or textual description of source')
   # Relations
@@ -133,8 +133,6 @@ class Image(models.Model):
   size                = models.IntegerField(default=0)
   width               = models.IntegerField(default=0)
   height              = models.IntegerField(default=0)
-  # ORIENTATION_CHOICES = [('p', 'portrait'), ('l', 'landscape'), ('s', 'square'), ('u', 'unknown')]
-  # orientation         = models.CharField(max_length=1, choices=ORIENTATION_CHOICES, default='u')
   
   uploaded_at         = models.DateTimeField(auto_now_add=True)
   date_modified       = models.DateTimeField(auto_now=True)
