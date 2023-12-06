@@ -31,7 +31,7 @@ python -m venv ~/.venv/fmly
 source ~/.venv/fmly/bin/activate
 
 '''
-$ python -m pip install django gunicorn markdown pillow
+$ python -m pip install -r requirements.txt
 '''
 
 Clone the git project to this location

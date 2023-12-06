@@ -1,0 +1,13 @@
+# Python
+pip >= 23.2.1
+
+# Django
+Django >= 4.2.4
+Pillow >= 10.0.0
+gunicorn >= 21.2.0
+
+# Markdown
+Markdown >= 3.4.4
+
+# Heic to JPG
+#pillow-heif >= 0.13.1%
