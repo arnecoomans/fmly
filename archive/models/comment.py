@@ -19,8 +19,8 @@ class Comment(models.Model):
     return self.user.username + ' on ' + self.image.title + deleted
   
   def save(self, *args, **kwargs):
-    if not self.user:
-      self.user = request.user
+    # if not self.user:
+    #   self.user = request.user
     return super(Comment, self).save(*args, **kwargs)
 
   def get_absolute_url(self):
