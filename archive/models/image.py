@@ -20,9 +20,15 @@ def get_thumbnail(image):
   #from PIL import Image
   import PIL
   PIL.Image.MAX_IMAGE_PIXELS = 933120000
-
+  ''' Store Target Information '''
   tgt_width = 300
-  tgt_file = 'thumbnails/' + str(image.name)
+  tgt_path = settings.MEDIA_ROOT.joinpath('thumbnails/')
+  tgt_file = str(image.name)
+  ''' Check if thumbnails_dir exists '''
+  if not tgt_path.exists():
+    tgt_path.mkdir(parents=True, exist_ok=True)
+  ''' Set destination '''
+  
   try:
     with PIL.Image.open(image.path) as img:
       width, height = img.size
