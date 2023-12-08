@@ -20,7 +20,9 @@
 <!-- Source-file -->
           <dt><label for="{{ form.source.id_for_label }}">{% translate 'sourcefile'|title %}:</label></dt>
             <dd>
-              {{ form.source }}
+              {% comment %} {{ form.source }} {% endcomment %}
+              <input class="form-control" type="file" id="id_source" name="source" accept="image/png, image/gif, image/jpeg, image/heic" required value="{{ form.source.value }}">
+              {% comment %} <input type="file" name="source" accept="image/*" required id="id_source"> {% endcomment %}
               {% if form.source.errors %}<p>{{ form.source.errors }}</p>{% endif %}
             </dd>
 <!-- Image Title -->
