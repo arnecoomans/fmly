@@ -52,111 +52,111 @@ def get_additional_fields():
       fields.append('is_portrait_of')
     return fields
 
-''' List Views
-    Default home view:
-    List Images By Date Uploaded, newest first, paginated
-''' 
-class ImageListView(ListView):
-  template_name = 'archive/images/list.html'
-  context_object_name = 'images'
-  paginate_by = settings.PAGINATE
-  added_context = {}
+# ''' List Views
+#     Default home view:
+#     List Images By Date Uploaded, newest first, paginated
+# ''' 
+# class ImageListView(ListView):
+#   template_name = 'archive/images/list.html'
+#   context_object_name = 'images'
+#   paginate_by = settings.PAGINATE
+#   added_context = {}
 
-  ''' get_decade 
-      returns the decade start year of querystring Decade.
-      For example; ?decade=1981 returns 1980.
-  '''
-  def get_decade(self, **kwargs):
-    return floor(int(self.kwargs['decade']) / 10) * 10
+#   ''' get_decade 
+#       returns the decade start year of querystring Decade.
+#       For example; ?decade=1981 returns 1980.
+#   '''
+#   def get_decade(self, **kwargs):
+#     return floor(int(self.kwargs['decade']) / 10) * 10
   
-  def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    context['active_page'] = 'images'
-    ''' Default page description '''
-    context['page_description'] = f"{ _('Images and documents') }"
-    ''' If user filter is active, add user details '''
-    if 'user' in self.kwargs:
-      context['page_description'] += f" { _('from') } { self.kwargs['user'] }"
-    ''' If decade filter is active, add decade details '''
-    if 'decade' in self.kwargs:
-      context['page_description'] += f" {_('in the period') } {str(self.get_decade())} - {str(self.get_decade() + 9)}, { _('sorted on date, newest first') }. <br />"  + \
-                                    f"{ _('You can also check out')} <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()-10])}\">{ str(self.get_decade()-10) } - { str(self.get_decade()-1) }</a> { _('or') } <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()+10])}\">{ str(self.get_decade()+10) } - { str(self.get_decade()+20) }</a>"
-    ''' If search string is passed '''
-    if self.request.GET.get('search'):
-      context['page_description'] += f" { _('searching for') } \"{ self.request.GET.get('search') }\""
-    ''' Added context, can be placed by get_queryset() '''
-    if len(self.added_context) > 0:
-      for key in self.added_context:
-        context[key] = self.added_context[key]
-    return context
+#   def get_context_data(self, **kwargs):
+#     context = super().get_context_data(**kwargs)
+#     context['active_page'] = 'images'
+#     ''' Default page description '''
+#     context['page_description'] = f"{ _('Images and documents') }"
+#     ''' If user filter is active, add user details '''
+#     if 'user' in self.kwargs:
+#       context['page_description'] += f" { _('from') } { self.kwargs['user'] }"
+#     ''' If decade filter is active, add decade details '''
+#     if 'decade' in self.kwargs:
+#       context['page_description'] += f" {_('in the period') } {str(self.get_decade())} - {str(self.get_decade() + 9)}, { _('sorted on date, newest first') }. <br />"  + \
+#                                     f"{ _('You can also check out')} <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()-10])}\">{ str(self.get_decade()-10) } - { str(self.get_decade()-1) }</a> { _('or') } <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()+10])}\">{ str(self.get_decade()+10) } - { str(self.get_decade()+20) }</a>"
+#     ''' If search string is passed '''
+#     if self.request.GET.get('search'):
+#       context['page_description'] += f" { _('searching for') } \"{ self.request.GET.get('search') }\""
+#     ''' Added context, can be placed by get_queryset() '''
+#     if len(self.added_context) > 0:
+#       for key in self.added_context:
+#         context[key] = self.added_context[key]
+#     return context
   
-  ''' Showing hidden files 
-      Returns True when
-      1. User preference says hidden files should be shown
-      2. URL argument ?hidden=true is supplied
-      Returns False when URL argument ?hidden=false is supplied
-    '''
-  def show_hidden_files(self) -> bool:
-    result = False
-    ''' Check Preferences '''
-    if hasattr(self.request.user, 'preference'):
-      if self.request.user.preference.show_hidden_files == True:
-        result = True
-    ''' Check querystring argument, overriding pereference '''
-    if self.request.GET.get('hidden'):
-      if self.request.GET.get('hidden').lower() == 'true':
-        result = True
-      else:
-        result = False
-    return result
+#   ''' Showing hidden files 
+#       Returns True when
+#       1. User preference says hidden files should be shown
+#       2. URL argument ?hidden=true is supplied
+#       Returns False when URL argument ?hidden=false is supplied
+#     '''
+#   def show_hidden_files(self) -> bool:
+#     result = False
+#     ''' Check Preferences '''
+#     if hasattr(self.request.user, 'preference'):
+#       if self.request.user.preference.show_hidden_files == True:
+#         result = True
+#     ''' Check querystring argument, overriding pereference '''
+#     if self.request.GET.get('hidden'):
+#       if self.request.GET.get('hidden').lower() == 'true':
+#         result = True
+#       else:
+#         result = False
+#     return result
 
-  ''' Get queryset
-  '''
-  def get_queryset(self):
-    queryset = Image.objects.all()
-    ''' Remove deleted images '''
-    queryset = queryset.filter(is_deleted=False)
-    ''' Image search 
-        Free text search in Image title, description, filename
-        Person names,
-        Tag title,
-        Attachment title
-    '''
-    if self.request.GET.get('search'):
-      search_text = self.request.GET.get('search').lower()
-      queryset = queryset.filter(title__icontains=search_text) | \
-                 queryset.filter(description__icontains=search_text) | \
-                 queryset.filter(source__icontains=search_text) | \
-                 queryset.filter(people__first_name__icontains=search_text) | \
-                 queryset.filter(people__given_names__icontains=search_text) | \
-                 queryset.filter(people__last_name__icontains=search_text) | \
-                 queryset.filter(people__married_name__icontains=search_text) | \
-                 queryset.filter(tag__title__icontains=search_text) | \
-                 queryset.filter(attachments__file__icontains=search_text) | \
-                 queryset.filter(attachments__description__icontains=search_text)
-    ''' Show images by a single user '''
-    if 'user' in self.kwargs:
-      queryset = queryset.filter(user_id__username=self.kwargs['user'])
-    ''' Show images with a tag '''
-    if 'tag' in self.kwargs:
-      queryset = queryset.filter(tag__slug=self.kwargs['tag'])
-    ''' Show images in a decade '''
-    if 'decade' in self.kwargs:
-      queryset = queryset.filter(year__gte=self.get_decade()).filter(year__lte=self.get_decade()+9)
-    ''' Show or hide hidden files '''
-    if not self.show_hidden_files():
-      if queryset.filter(show_in_index=False).count() > 0:
-        self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count()
-        queryset = queryset.exclude(show_in_index=False)
-      else:
-        self.added_context['images_hidden'] =  False
-    else:
-      self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count() * -1
-    ''' Order images '''
-    queryset = queryset.distinct().order_by('-uploaded_at')
-    self.added_context['count_images'] = queryset.count()
-    ''' Return result '''
-    return queryset
+#   ''' Get queryset
+#   '''
+#   def get_queryset(self):
+#     queryset = Image.objects.all()
+#     ''' Remove deleted images '''
+#     queryset = queryset.filter(is_deleted=False)
+#     ''' Image search 
+#         Free text search in Image title, description, filename
+#         Person names,
+#         Tag title,
+#         Attachment title
+#     '''
+#     if self.request.GET.get('search'):
+#       search_text = self.request.GET.get('search').lower()
+#       queryset = queryset.filter(title__icontains=search_text) | \
+#                  queryset.filter(description__icontains=search_text) | \
+#                  queryset.filter(source__icontains=search_text) | \
+#                  queryset.filter(people__first_name__icontains=search_text) | \
+#                  queryset.filter(people__given_names__icontains=search_text) | \
+#                  queryset.filter(people__last_name__icontains=search_text) | \
+#                  queryset.filter(people__married_name__icontains=search_text) | \
+#                  queryset.filter(tag__title__icontains=search_text) | \
+#                  queryset.filter(attachments__file__icontains=search_text) | \
+#                  queryset.filter(attachments__description__icontains=search_text)
+#     ''' Show images by a single user '''
+#     if 'user' in self.kwargs:
+#       queryset = queryset.filter(user_id__username=self.kwargs['user'])
+#     ''' Show images with a tag '''
+#     if 'tag' in self.kwargs:
+#       queryset = queryset.filter(tag__slug=self.kwargs['tag'])
+#     ''' Show images in a decade '''
+#     if 'decade' in self.kwargs:
+#       queryset = queryset.filter(year__gte=self.get_decade()).filter(year__lte=self.get_decade()+9)
+#     ''' Show or hide hidden files '''
+#     if not self.show_hidden_files():
+#       if queryset.filter(show_in_index=False).count() > 0:
+#         self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count()
+#         queryset = queryset.exclude(show_in_index=False)
+#       else:
+#         self.added_context['images_hidden'] =  False
+#     else:
+#       self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count() * -1
+#     ''' Order images '''
+#     queryset = queryset.distinct().order_by('-uploaded_at')
+#     self.added_context['count_images'] = queryset.count()
+#     ''' Return result '''
+#     return queryset
 
 ''' ImageRedirectView
     Redirects calls to object/{id} to object/{id}/{slug}/ for seo purposes
