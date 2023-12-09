@@ -69,26 +69,26 @@ def get_additional_fields():
 #   def get_decade(self, **kwargs):
 #     return floor(int(self.kwargs['decade']) / 10) * 10
   
-#   def get_context_data(self, **kwargs):
-#     context = super().get_context_data(**kwargs)
-#     context['active_page'] = 'images'
-#     ''' Default page description '''
-#     context['page_description'] = f"{ _('Images and documents') }"
-#     ''' If user filter is active, add user details '''
-#     if 'user' in self.kwargs:
-#       context['page_description'] += f" { _('from') } { self.kwargs['user'] }"
-#     ''' If decade filter is active, add decade details '''
-#     if 'decade' in self.kwargs:
-#       context['page_description'] += f" {_('in the period') } {str(self.get_decade())} - {str(self.get_decade() + 9)}, { _('sorted on date, newest first') }. <br />"  + \
-#                                     f"{ _('You can also check out')} <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()-10])}\">{ str(self.get_decade()-10) } - { str(self.get_decade()-1) }</a> { _('or') } <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()+10])}\">{ str(self.get_decade()+10) } - { str(self.get_decade()+20) }</a>"
-#     ''' If search string is passed '''
-#     if self.request.GET.get('search'):
-#       context['page_description'] += f" { _('searching for') } \"{ self.request.GET.get('search') }\""
-#     ''' Added context, can be placed by get_queryset() '''
-#     if len(self.added_context) > 0:
-#       for key in self.added_context:
-#         context[key] = self.added_context[key]
-#     return context
+  # def get_context_data(self, **kwargs):
+  #   context = super().get_context_data(**kwargs)
+  #   context['active_page'] = 'images'
+  #   ''' Default page description '''
+  #   context['page_description'] = f"{ _('Images and documents') }"
+  #   ''' If user filter is active, add user details '''
+  #   if 'user' in self.kwargs:
+  #     context['page_description'] += f" { _('from') } { self.kwargs['user'] }"
+  #   ''' If decade filter is active, add decade details '''
+  #   if 'decade' in self.kwargs:
+  #     context['page_description'] += f" {_('in the period') } {str(self.get_decade())} - {str(self.get_decade() + 9)}, { _('sorted on date, newest first') }. <br />"  + \
+  #                                   f"{ _('You can also check out')} <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()-10])}\">{ str(self.get_decade()-10) } - { str(self.get_decade()-1) }</a> { _('or') } <a href=\"{reverse_lazy('archive:images-by-decade', args=[self.get_decade()+10])}\">{ str(self.get_decade()+10) } - { str(self.get_decade()+20) }</a>"
+  #   ''' If search string is passed '''
+  #   if self.request.GET.get('search'):
+  #     context['page_description'] += f" { _('searching for') } \"{ self.request.GET.get('search') }\""
+  #   ''' Added context, can be placed by get_queryset() '''
+  #   if len(self.added_context) > 0:
+  #     for key in self.added_context:
+  #       context[key] = self.added_context[key]
+  #   return context
   
 #   ''' Showing hidden files 
 #       Returns True when
@@ -158,28 +158,25 @@ def get_additional_fields():
 #     ''' Return result '''
 #     return queryset
 
-''' ImageRedirectView
-    Redirects calls to object/{id} to object/{id}/{slug}/ for seo purposes
-'''
-class ImageRedirectView(DetailView):
-  model = Image
-  context_object_name = 'images'
-  def get(self, request, *args, **kwargs):
-    ''' Fetch image to read title '''
-    image = Image.objects.get(pk=self.kwargs['pk'])
-    ''' Get title or use default '''
-    title = 'needs a title' if image.title == '' else image.title
-    ''' Redirect to proper view '''
-    return redirect('archive:image', image.slug)
+# class ImageRedirectView(DetailView):
+#   model = Image
+#   context_object_name = 'images'
+#   def get(self, request, *args, **kwargs):
+#     ''' Fetch image to read title '''
+#     image = Image.objects.get(pk=self.kwargs['pk'])
+#     ''' Get title or use default '''
+#     title = 'needs a title' if image.title == '' else image.title
+#     ''' Redirect to proper view '''
+#     return redirect('archive:image', image.slug)
 
-''' ImageView'''
-class ImageView(DetailView):
-  model = Image
-  template_name = 'archive/images/detail.html'
-  def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    context['active_page'] = 'images'
-    return context
+# ''' ImageView'''
+# class ImageView(DetailView):
+#   model = Image
+#   template_name = 'archive/images/detail.html'
+#   def get_context_data(self, **kwargs):
+#     context = super().get_context_data(**kwargs)
+#     context['active_page'] = 'images'
+#     return context
 
 ''' Add Images '''
 class AddImageView(PermissionRequiredMixin, CreateView):
