@@ -178,123 +178,123 @@ def get_additional_fields():
 #     context['active_page'] = 'images'
 #     return context
 
-''' Add Images '''
-class AddImageView(PermissionRequiredMixin, CreateView):
-  permission_required = 'archive.add_image'
-  template_name = 'archive/images/edit.html'
-  model = Image
+# ''' Add Images '''
+# class AddImageView(PermissionRequiredMixin, CreateView):
+#   permission_required = 'archive.add_image'
+#   template_name = 'archive/images/edit.html'
+#   model = Image
   
-  fields = get_fields()
+#   fields = get_fields()
   
-  def get_safe_slug(self, title, is_deleted):
-    slug = slugify(title).lower()
-    if is_deleted:
-      slug = f"[deleted]_{slug}"
-    images = Image.objects.all().values_list('slug')
-    if images.filter(slug=slug).count() > 0:
-      i = 1
-      while images.filter(slug=f"{slug}{str(i)}").count() > 0:
-        i += 1
-      slug = f"{slug}{str(i)}"
-    return slug
+#   def get_safe_slug(self, title, is_deleted):
+#     slug = slugify(title).lower()
+#     if is_deleted:
+#       slug = f"[deleted]_{slug}"
+#     images = Image.objects.all().values_list('slug')
+#     if images.filter(slug=slug).count() > 0:
+#       i = 1
+#       while images.filter(slug=f"{slug}{str(i)}").count() > 0:
+#         i += 1
+#       slug = f"{slug}{str(i)}"
+#     return slug
   
-  def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    context['active_page'] = 'images'
-    return context
+#   def get_context_data(self, **kwargs):
+#     context = super().get_context_data(**kwargs)
+#     context['active_page'] = 'images'
+#     return context
 
-  def get_form(self):
-    ''' Add additonal Fields as configured and/or with options available '''
-    for field in get_additional_fields():
-      self.fields.append(field)
-    ''' Add User field for staff '''
-    if self.request.user.is_staff == True:
-      self.fields.append('user')
-    form = super(AddImageView, self).get_form()
-    return form
+#   def get_form(self):
+#     ''' Add additonal Fields as configured and/or with options available '''
+#     for field in get_additional_fields():
+#       self.fields.append(field)
+#     ''' Add User field for staff '''
+#     if self.request.user.is_staff == True:
+#       self.fields.append('user')
+#     form = super(AddImageView, self).get_form()
+#     return form
     
-  ''' Build initial form '''
-  def get_initial(self):
-    initial = {'user': self.request.user }
-    ''' Only if user has preferences stored, set field to preference '''
-    if hasattr(self.request.user, 'preference'):
-      initial['show_in_index'] = self.request.user.preference.show_new_uploads
-    return initial
+#   ''' Build initial form '''
+#   def get_initial(self):
+#     initial = {'user': self.request.user }
+#     ''' Only if user has preferences stored, set field to preference '''
+#     if hasattr(self.request.user, 'preference'):
+#       initial['show_in_index'] = self.request.user.preference.show_new_uploads
+#     return initial
 
-  ''' Catch form validation errors '''
-  def form_invalid(self, form):
-    messages.add_message(self.request, messages.WARNING, f"{ _('Form cannot be saved because of the following error(s)') }: { form.errors }")
-    return super().form_invalid(form)
+#   ''' Catch form validation errors '''
+#   def form_invalid(self, form):
+#     messages.add_message(self.request, messages.WARNING, f"{ _('Form cannot be saved because of the following error(s)') }: { form.errors }")
+#     return super().form_invalid(form)
 
-  def form_valid(self, form):
-    ''' Force user '''
-    if not hasattr(form.instance, 'user'):
-      form.instance.user = self.request.user
-    ''' Grab title from filename if not supplied. Omit suffix '''
-    if not form.instance.title:
-      form.instance.title = Path(self.request.FILES['source'].name).stem.replace('_', ' ')
-    ''' Grab slug from title '''
-    if not hasattr(form.instance, 'slug') or form.instance.slug:
-      form.instance.slug = self.get_safe_slug(form.instance.title, False)
-    messages.add_message(self.request, messages.SUCCESS, f"{ _('Image') } \"{ form.instance.title }\" { _('has been uploaded') }.")
-    return super().form_valid(form)
+#   def form_valid(self, form):
+#     ''' Force user '''
+#     if not hasattr(form.instance, 'user'):
+#       form.instance.user = self.request.user
+#     ''' Grab title from filename if not supplied. Omit suffix '''
+#     if not form.instance.title:
+#       form.instance.title = Path(self.request.FILES['source'].name).stem.replace('_', ' ')
+#     ''' Grab slug from title '''
+#     if not hasattr(form.instance, 'slug') or form.instance.slug:
+#       form.instance.slug = self.get_safe_slug(form.instance.title, False)
+#     messages.add_message(self.request, messages.SUCCESS, f"{ _('Image') } \"{ form.instance.title }\" { _('has been uploaded') }.")
+#     return super().form_valid(form)
 
-  def get_success_url(self):
-    return reverse_lazy('archive:image-redirect', args=[self.object.id])
+#   def get_success_url(self):
+#     return reverse_lazy('archive:image-redirect', args=[self.object.id])
 
-''' Edit Image '''
-class EditImageView(PermissionRequiredMixin, UpdateView):
-  permission_required = 'archive.change_image'  
-  template_name = 'archive/images/edit.html'
-  model = Image
-  fields = get_fields()
+# ''' Edit Image '''
+# class EditImageView(PermissionRequiredMixin, UpdateView):
+#   permission_required = 'archive.change_image'  
+#   template_name = 'archive/images/edit.html'
+#   model = Image
+#   fields = get_fields()
   
-  def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    context['active_page'] = 'images'
-    context['portrait'] = self.object.is_portrait_of
-    context['available_portraits'] = self.object.people.all().filter(portrait=None, private=False)
-    return context
+#   def get_context_data(self, **kwargs):
+#     context = super().get_context_data(**kwargs)
+#     context['active_page'] = 'images'
+#     context['portrait'] = self.object.is_portrait_of
+#     context['available_portraits'] = self.object.people.all().filter(portrait=None, private=False)
+#     return context
 
-  ''' Build Form '''
-  def get_form(self):
-    ''' Add additonal Fields as configured and/or with options available '''
-    for field in get_additional_fields():
-      self.fields.append(field)
-    ''' Add User field for staff '''
-    if self.request.user.is_staff == True:
-      self.fields.append('user')
-    form = super(EditImageView, self).get_form()
-    return form
+#   ''' Build Form '''
+#   def get_form(self):
+#     ''' Add additonal Fields as configured and/or with options available '''
+#     for field in get_additional_fields():
+#       self.fields.append(field)
+#     ''' Add User field for staff '''
+#     if self.request.user.is_staff == True:
+#       self.fields.append('user')
+#     form = super(EditImageView, self).get_form()
+#     return form
 
-  def form_invalid(self, form):
-    messages.add_message(self.request, messages.WARNING, f"{ _('Form cannot be saved because of the following error(s)') }: { form.errors }")
-    return super().form_invalid(form)
+#   def form_invalid(self, form):
+#     messages.add_message(self.request, messages.WARNING, f"{ _('Form cannot be saved because of the following error(s)') }: { form.errors }")
+#     return super().form_invalid(form)
     
-  def form_valid(self, form):
-    ''' Only allow user change by superuser '''
-    if not self.request.user.is_superuser and 'user' in form.changed_data: 
-      ''' User change is initiated by non_superuser. 
-          Fetch user from stored object and retain'''
-      original = Image.objects.get(pk=self.kwargs['pk'])
-      form.instance.user = original.user
-      messages.add_message(self.request, messages.WARNING, f"{ _('User cannot be changed, keeping user') } { original.user }.")
-    elif not form.instance.user:
-      ''' If for some reason no user it set, set user to current user '''
-      form.instance.user = self.request.user
-    if len(form.changed_data) > 0:
-      ''' Only if data has changed, save the Object '''
-      messages.add_message(self.request, messages.SUCCESS, f"{ _('Changes saved') }.")
-      form.save()
-      if 'is_deleted' in form.changed_data:
-        return redirect(reverse_lazy('archive:images'))
-      elif 'people' in form.changed_data or 'is_portrait_of' in form.changed_data or 'user' in form.changed_data:
-        return redirect(reverse_lazy('archive:image-edit', kwargs={'pk': self.object.id}))  
-      return redirect(reverse_lazy('archive:image', kwargs={'slug': self.object.slug}))
-    else:
-      ''' No changes are detected, redirect to image without saving. '''
-      messages.add_message(self.request, messages.WARNING, f"{ _('No changed made') }.")
-      return redirect(reverse_lazy('archive:image', kwargs={'slug': self.object.slug}))
+#   def form_valid(self, form):
+#     ''' Only allow user change by superuser '''
+#     if not self.request.user.is_superuser and 'user' in form.changed_data: 
+#       ''' User change is initiated by non_superuser. 
+#           Fetch user from stored object and retain'''
+#       original = Image.objects.get(pk=self.kwargs['pk'])
+#       form.instance.user = original.user
+#       messages.add_message(self.request, messages.WARNING, f"{ _('User cannot be changed, keeping user') } { original.user }.")
+#     elif not form.instance.user:
+#       ''' If for some reason no user it set, set user to current user '''
+#       form.instance.user = self.request.user
+#     if len(form.changed_data) > 0:
+#       ''' Only if data has changed, save the Object '''
+#       messages.add_message(self.request, messages.SUCCESS, f"{ _('Changes saved') }.")
+#       form.save()
+#       if 'is_deleted' in form.changed_data:
+#         return redirect(reverse_lazy('archive:images'))
+#       elif 'people' in form.changed_data or 'is_portrait_of' in form.changed_data or 'user' in form.changed_data:
+#         return redirect(reverse_lazy('archive:image-edit', kwargs={'pk': self.object.id}))  
+#       return redirect(reverse_lazy('archive:image', kwargs={'slug': self.object.slug}))
+#     else:
+#       ''' No changes are detected, redirect to image without saving. '''
+#       messages.add_message(self.request, messages.WARNING, f"{ _('No changed made') }.")
+#       return redirect(reverse_lazy('archive:image', kwargs={'slug': self.object.slug}))
 
-  def get_success_url(self):
-    return reverse_lazy('archive:image', kwargs={'slug': self.object.slug})
+#   def get_success_url(self):
+#     return reverse_lazy('archive:image', kwargs={'slug': self.object.slug})

@@ -1,8 +1,15 @@
 form {
   padding: 10px;
 }
+form > div.row {
+  padding: 10px 0;
+}
+form > div.row > div.col-3:first-child {
+  font-weight: bold;
+}
 form > dl {
 }
+
 
 form > dl > dt, 
 form > dl > dd {
