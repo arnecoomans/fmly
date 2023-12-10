@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from .tag import Tag
 from .person import Person
-from PIL import Image
+from PIL import Image as PIL
 from pathlib import Path
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.template.defaultfilters import slugify
@@ -28,7 +28,6 @@ def get_thumbnail(image):
   if not tgt_path.exists():
     tgt_path.mkdir(parents=True, exist_ok=True)
   ''' Set destination '''
-  
   try:
     with PIL.Image.open(image.path) as img:
       width, height = img.size
@@ -119,7 +118,7 @@ def random_string():
 class Image(models.Model):
   # Document details
   slug                = models.CharField(max_length=255, unique=True, default=random_string)
-  source              = models.ImageField(height_field='height', width_field='width')
+  source              = models.FileField()
   thumbnail           = models.CharField(max_length=2000, blank=True, null=True)
   title               = models.CharField(max_length=255)
   description         = models.TextField(blank=True, help_text='Markdown supported')
@@ -231,16 +230,22 @@ class Image(models.Model):
     s = round(self.size / p, 2)
     return "%s %s" % (s, size_name[i])
 
+  def get_image_dimensions(self):
+    height = 0
+    width = 0
+    try:
+      with PIL.open(self.source) as img:
+        width, height = img.size
+    except Exception as e:
+      return None
+    return height, width
+  
   def save(self, *args, **kwargs):
-    # Enforce user
     ''' If no title is given, use source file name as title '''
     if not self.title:
       self.title = str(self.source.name.replace('_', ' '))
-    ''' If no slug is given, base slug off title '''
-    if not self.slug:
-      self.slug = self.get_safe_slug(self.title, self.is_deleted)
-    if self.is_deleted and self.slug[:10] != '[deleted]_':
-      self.slug = '[deleted]_'+ self.title
+    ''' Store Image Dimensions '''
+    self.height, self.width = self.get_image_dimensions()
     ''' Generate thumbnail '''
     if self.source and not self.thumbnail:
       self.thumbnail = get_thumbnail(self.source)

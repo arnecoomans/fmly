@@ -10,4 +10,4 @@ gunicorn >= 21.2.0
 Markdown >= 3.4.4
 
 # Heic to JPG
-#pillow-heif >= 0.13.1%
+pillow-heif >= 0.13.1%

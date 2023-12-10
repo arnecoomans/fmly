@@ -12,158 +12,227 @@
     <div class="edit image">
       <form method="post" class="image" enctype="multipart/form-data">
         {% csrf_token %}
-        <dl>
-          {% if form.non_field_errors %}
-            <dt>{% translate 'error(s)'|capfirst%}</dt>
-              <dd>{{ form.non_field_errors }}</dd>
-          {% endif %}
+        {% if form.non_field_errors %}
+          <div class="row">
+            <div class="col-3">{% translate 'error(s)'|capfirst%}</div>
+            <div class="col-9">{{ form.non_field_errors }}</div>
+          </div>
+        {% endif %}
 <!-- Source-file -->
-          <dt><label for="{{ form.source.id_for_label }}">{% translate 'sourcefile'|title %}:</label></dt>
-            <dd>
-              {{ form.source }}
-              {% if form.source.errors %}<p>{{ form.source.errors }}</p>{% endif %}
-            </dd>
-<!-- Image Title -->
-          <dt><label for="{{ form.title.id_for_label }}">{% translate 'title'|title %}:</label></dt>
-            <dd>
-              {{ form.title }}
-              {% if form.title.errors %}<p>{{ form.title.errors }}</p>{% endif %}
-            </dd>
-<!-- Image Description -->
-          <dt><label for="{{ form.description.id_for_label }}">{% translate 'description'|title %}:</label></dt>
-            <dd>
-              {{ form.description }}
-              {% if form.description.errors %}<p>{{ form.description.errors }}</p>{% endif %}
-              <p>{% translate 'markdown allowed'|capfirst %}</p>
-            </dd>
-<!-- Image Source: where does the image originate? -->
-          <dt><label for="{{ form.document_source.id_for_label }}">{% translate 'image source'|title %}:</label></dt>
-            <dd>
-              {{ form.document_source }}
-              {% if form.document_source.errors %}<p>{{ form.document_source.errors }}</p>{% endif %}
-              <p>{% translate 'use website-link'|capfirst %} {% translate 'whenever possible' %}</p>
-            </dd>
-<!-- Image Dating -->
-          <dt>{% translate 'date'|title %}:</dt>
-            <dd class="date">
-              {{ form.day }}
-              {{ form.month }}
-              {{ form.year }}
-              {% if form.day.errors or form.month.errors or form.year.errors %}
-                <p>
-                  {{ form.day.errors }}
-                  {{ form.month.errors }}
-                  {{ form.year.errors }}
-                </p>
-              {% endif %}
-            </dd>
-<!-- Save Changes halfway -->
-          <dt>&nbsp;</dt>
-            <dd>
-              <input type="submit" value="{% translate 'submit changes'|title %}">
-              {% if image %} <a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">{% translate 'cancel'|capfirst %} {% translate 'and return to image '%}</a>{% endif %}
-            </dd>
-        </dl>
-        <hr>
-        <dl>
-<!-- Special Options -->
-          <dt>{% translate 'options'|capfirst %}:</dt>
-            <dd>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" name="{{ form.show_in_index.name }}" id="{{ form.show_in_index.id_for_label }}" {% if form.show_in_index.value %}checked{% endif %}>
-                <label class="form-check-label" for="{{ form.show_in_index.id_for_label }}">{% translate 'Show in index' %}</label>
-                <br>
-                </label>
-                <input class="form-check-input" type="checkbox" name="{{ form.is_deleted.name }}" id="{{ form.is_deleted.id_for_label }}" {% if form.is_deleted.value %}checked{% endif %}>
-                <label class="form-check-label" for="{{ form.is_deleted.id_for_label }}">{% translate 'Is deleted' %}</label>
-                <br><br>
+        <div class="row">
+          <div class="col-3"><label for="{{ form.source.id_for_label }}">{% translate 'sourcefile'|title %}:</label></div>
+          <div class="col-9">
+            {% if image.source %}
+              <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">{% translate 'selected file'|capfirst %}</span>
+                <input type="text" class="form-control" aria-describedby="basic-addon1" name="source" id="id_source" value="{{ image.source }}" disabled>
               </div>
-            </dd>
+            {% else %}
+              <input class="form-control" type="file" id="id_source" name="source" accept="image/png, image/gif, image/jpeg, image/heic" {% if 'source' in form %}required value="{{ form.source.value }}{% endif %}">
+            {% endif %}
+            {% if form.source.errors %}<p>{{ form.source.errors }}</p>{% endif %}
+          </div>
+        </div>
+<!-- Image Title -->
+        <div class="row">
+          <div class="col-3"><label for="{{ form.title.id_for_label }}">{% translate 'title'|title %}:</label></div>
+          <div class="col-9">
+            <input type="text" name="title" id="id_title" class="form-control" value="{{ form.title.value|default:'' }}">
+            {% if form.title.errors %}<p>{{ form.title.errors }}</p>{% endif %}
+          </div>
+        </div>
+<!-- Image Description -->
+        <div class="row">
+          <div class="col-3"><label for="{{ form.description.id_for_label }}">{% translate 'description'|title %}:</label></div>
+          <div class="col-9">
+            <textarea class="form-control" id="id_description" name="description" rows="8">{{ form.description.value|default:'' }}</textarea>
+            {% if form.description.errors %}<p>{{ form.description.errors }}</p>{% endif %}
+            <p>{% translate 'markdown allowed'|capfirst %}</p>
+          </div>
+        </div>
+<!-- Image Source: where does the image originate? -->
+        <div class="row">
+          <div class="col-3"><label for="{{ form.document_source.id_for_label }}">{% translate 'image source'|title %}:</label></div>
+          <div class="col-9">
+            <input type="text" class="form-control" name="document_source" id="id_document_source" value="{{ form.document_source.value|default:'' }}">
+            {% if form.document_source.errors %}<p>{{ form.document_source.errors }}</p>{% endif %}
+            <p>{% translate 'use website-link'|capfirst %} {% translate 'whenever possible' %}</p>
+          </div>
+        </div>
+<!-- Image Dating -->
+        <div class="row">
+          <div class="col-3">{% translate 'date'|title %}:</div>
+          <div class="col-2">
+            <input type="number" min="1" max="31" class="form-control" name="day" id="id_day" value="{{ form.day.value|default:'' }}" placeholder="{% translate 'day'|capfirst %}">
+          </div>
+          <div class="col-3">
+            <select class="form-control" name="month" id="id_month">
+              {% for key, value in form.fields.month.choices %}
+                <option value="{{ key }}" {% if key == form.month.value %}selected{% endif %}>{{ value|capfirst }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-2">
+            <input type="number" min="1000" max="{% now "Y" %}" class="form-control" name="year" id="id_year" value="{{ form.year.value|default:'' }}" placeholder="{% translate 'year'|capfirst %}">
+          </div>
+          <div class="col-2"></div>
+        </div>
+        {% if form.day.errors or form.month.errors or form.year.errors %}
+          <div class="row">
+            <div class="col-3"></div>
+            <div class="col-9">
+              {{ form.day.errors }}
+              {{ form.month.errors }}
+              {{ form.year.errors }}
+            </div>
+          </div>
+        {% endif %}
+<!-- Save Changes halfway -->
+        <div class="row">
+          <div class="col-3"></div>
+          <div class="col-3">
+            <input type="submit" value="{% translate 'submit changes'|title %}" class="form-control">
+          </div>
+          <div class="col-3">
+            {% if image %} <a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">{% translate 'cancel'|capfirst %} {% translate 'and return to image '%}</a>{% endif %}
+          </div>
+          <div class="col-3"></div>
+        </div>
+        <hr>
+<!-- Special Options -->
+        <div class="row">
+          <div class="col-3">{% translate 'options'|capfirst %}:</div>
+          <div class="col-9">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" name="{{ form.show_in_index.name }}" id="{{ form.show_in_index.id_for_label }}" {% if form.show_in_index.value %}checked{% endif %}>
+              <label class="form-check-label" for="{{ form.show_in_index.id_for_label }}">{% translate 'Show in index' %}</label>
+              <br>
+              </label>
+              <input class="form-check-input" type="checkbox" name="{{ form.is_deleted.name }}" id="{{ form.is_deleted.id_for_label }}" {% if form.is_deleted.value %}checked{% endif %}>
+              <label class="form-check-label" for="{{ form.is_deleted.id_for_label }}">{% translate 'Is deleted' %}</label>
+              <br><br>
+            </div>
+          </div>
+        </div>
 <!-- Tagged People -->
-            {% if perms.archive.view_person %}
-            <dt><label for="{{ form.people.id_for_label }}">{% translate 'people'|capfirst %}:</label></dt>
-              <dd>
-                {{ form.people }}
-                {% if form.people.errors %}<p>{{ form.people.errors }}</p>{% endif %}
-                <p>
-                  <a class="bi bi-people-fill" href="{% url 'archive:people' %}"> {% translate 'people'|capfirst %}</a>
-                  {% if perms.archive.add_person %}
-                    <a class="bi bi-person-fill-add" href="{% url 'archive:add-person' %}"> {% translate 'add' %} {% translate 'person' %}</a>
-                  {% endif %}
-                </p>
-              </dd>
-          {% endif %}
-<!-- Tagged Tags -->
-          {% if perms.archive.view_tag and form.tag %}
-            <dt><label for="{{ form.tag.id_for_label }}">{% translate 'tags'|capfirst %}:</label></dt>
-              <dd>
-                {{ form.tag }}
-                {% if form.tag.errors %}<p>{{ form.tag.errors }}</p>{% endif %}
-                <p>
-                  <a class="bi bi-tags-fill" href="{% url 'archive:tags' %}"> {% translate 'tag' %}</a>
-                  <a class="bi bi-tag" href="{% url 'archive:add-tag' %}">{% translate 'new' %} {% translate 'tag' %}</a>
-                </p>
-              </dd>
-          {% endif %}
-<!-- Image Grouping -->
-          {% if form.in_group %}
-            <dt><label for="{{ form.in_group.id_for_label }}">{% translate 'group'|capfirst %}:</label></dt>
-              <dd>
-                {{ form.in_group }}
-                {% if form.in_group.errors %}<p>{{ form.in_group.errors }}</p>{% endif %}
-                <p><s>{% translate 'groups' %} - {% translate 'add' %} {% translate 'group' %}</s></p>
-              </dd>
-          {% endif %}
-<!-- Attachments -->
-          {% if form.attachments %}
-            <dt><label for="{{ form.attachments.id_for_label }}">{% translate 'attachment'|capfirst %}:</label></dt>
-              <dd>
-                {{ form.attachments }}
-                {% if form.attachments.errors %}<p>{{ form.attachments.errors }}</p>{% endif %}
-              </dd>
-          {% endif %}
-<!-- Image is portrait of -->
-          {% if form.is_portrait_of %}
-            <dt><label for="{{ form.is_portrait_of.id_for_label }}">{% translate 'is portrait of'|capfirst %}:</label></dt>
-              <dd>
-                {% for person in image.people.all %}
-                  {% if person.portrait and person.portrait != image %}
-                    {% include 'archive/snippets/person_link.html' with suppress_icons='true' %} {% translate 'has portrait' %} <a href="{% url 'archive:image' person.portrait.slug %}">{{ person.portrait }}</a>.<br>
-                  {% endif %}
-                {% endfor%}
-                {% if portrait %}
-                  <input type="hidden" name="is_portrait_of" value="{{ portrait.id }}">
-                  {% include 'archive/snippets/person_link.html' with person=portrait %} <a href="{% url 'archive:remove-portrait' portrait.id image.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'delete'|capfirst %} {% translate 'image' %} {% translate 'as portrait of' %} {{ portrait }}">[X]</a>
-                {% elif available_portraits.all.count > 0 %}
-                  <select name="is_portrait_of" id="is_portrait_of">
-                    <option value selected>---------</option>
-                    {% for person in available_portraits %}
-                      <option value="{{ person.id }}">{{ person }}</option>
-                    {% endfor %}
-                  </select>
-                {% elif image.people.all.count == 0 %}
-                  {% translate 'Add a person first.' %}
-                {% else %}
-                  {% translate 'To make this a portrait of a person, remove the current portrait of tagged person' %}
+        {% if perms.archive.view_person %}
+          <div class="row">
+            <div class="col-3"><label for="{{ form.people.id_for_label }}">{% translate 'people'|capfirst %}:</label></div>
+            <div class="col-9">
+              <select class="form-control" id="id_people" name="people" multiple {% if form.fields.people.choices|length > 15 %}size="12"{% endif %}>
+                {% for key, value in form.fields.people.choices %}
+                  <option value="{{ key }}" {% if key in form.people.value %}selected{% endif %}>{{ value|capfirst }}</option>
+                {% endfor %}
+              </select>
+              {% if form.people.errors %}<p>{{ form.people.errors }}</p>{% endif %}
+              <p>
+                <a class="bi bi-people-fill" href="{% url 'archive:people' %}"> {% translate 'people'|capfirst %}</a>
+                {% if perms.archive.add_person %}
+                  <a class="bi bi-person-fill-add" href="{% url 'archive:add-person' %}"> {% translate 'add' %} {% translate 'person' %}</a>
                 {% endif %}
-                {% if form.is_portrait_of.errors %}<p>{{ form.is_portrait_of.errors }}</p>{% endif %}
-              </dd>
-          {% endif %}
+              </p>
+            </div>
+          </div>
+        {% endif %}
+<!-- Tagged Tags -->
+        {% if perms.archive.view_tag and form.tag %}
+          <div class="row">
+            <div class="col-3"><label for="{{ form.tag.id_for_label }}">{% translate 'tags'|capfirst %}:</label></div>
+            <div class="col-9">
+              <select class="form-control" name="tag" id="id_tag" multiple {% if form.fields.tag.choices|length > 15 %}size="12"{% endif %}>
+                {% for key, value in form.fields.tag.choices %}
+                  <option value="{{ key }}" {% if key in form.tag.value %}selected{% endif %}>{{ value|capfirst }}</option>
+                {% endfor %}
+              </select>
+              {% if form.tag.errors %}<p>{{ form.tag.errors }}</p>{% endif %}
+              <p>
+                <a class="bi bi-tags-fill" href="{% url 'archive:tags' %}"> {% translate 'tag' %}</a>
+                <a class="bi bi-tag" href="{% url 'archive:add-tag' %}">{% translate 'new' %} {% translate 'tag' %}</a>
+              </p>
+            </div>
+          </div>
+        {% endif %}
+<!-- Image Grouping -->
+        {% if form.in_group %}
+          <div class="row">
+            <div class="col-3"><label for="{{ form.in_group.id_for_label }}">{% translate 'group'|capfirst %}:</label></div>
+            <div class="col-9">
+              <select class="form-control" name="in_group" id="id_in_group" multiple {% if form.fields.in_group.choices|length > 15 %}size="12"{% endif %}>
+                {% for key, value in form.fields.in_group.choices %}
+                  <option value="{{ key }}" {% if key in form.in_group.value %}selected{% endif %}>{{ value|capfirst }}</option>
+                {% endfor %}
+              </select>
+              {% if form.in_group.errors %}<p>{{ form.in_group.errors }}</p>{% endif %}
+              <p><s>{% translate 'groups' %} - {% translate 'add' %} {% translate 'group' %}</s></p>
+            </div>
+          </div>
+        {% endif %}
+<!-- Attachments -->
+        {% if form.attachments %}
+          <div class="row">
+            <div class="col-3"><label for="{{ form.attachments.id_for_label }}">{% translate 'attachment'|capfirst %}:</label></div>
+            <div class="col-9">
+              <select class="form-control" name="attachments" id="id_attachments" multiple {% if form.fields.attachments.choices|length > 15 %}size="12"{% endif %}>
+                {% for key, value in form.fields.attachments.choices %}
+                  <option value="{{ key }}" {% if key in form.attachments.value %}selected{% endif %}>{{ value|capfirst }}</option>
+                {% endfor %}
+              </select>
+              {% if form.attachments.errors %}<p>{{ form.attachments.errors }}</p>{% endif %}
+            </div>
+          </div>
+        {% endif %}
+<!-- Image is portrait of -->
+        {% if form.is_portrait_of %}
+          <div class="row">
+            <div class="col-3"><label for="{{ form.is_portrait_of.id_for_label }}">{% translate 'is portrait of'|capfirst %}:</label></div>
+            <div class="col-9">
+              {% for person in image.people.all %}
+                {% if person.portrait and person.portrait != image %}
+                  {% include 'archive/snippets/person_link.html' with suppress_icons='true' %} {% translate 'has portrait' %} <a href="{% url 'archive:image' person.portrait.slug %}">{{ person.portrait }}</a>.<br>
+                {% endif %}
+              {% endfor%}
+              {% if portrait %}
+                <input type="hidden" name="is_portrait_of" value="{{ portrait.id }}">
+                {% include 'archive/snippets/person_link.html' with person=portrait %} <a href="{% url 'archive:remove-portrait' portrait.id image.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'delete'|capfirst %} {% translate 'image' %} {% translate 'as portrait of' %} {{ portrait }}">[X]</a>
+              {% elif available_portraits.all.count > 0 %}
+                <select name="is_portrait_of" id="is_portrait_of">
+                  <option value selected>---------</option>
+                  {% for person in available_portraits %}
+                    <option value="{{ person.id }}">{{ person }}</option>
+                  {% endfor %}
+                </select>
+              {% elif image.people.all.count == 0 %}
+                {% translate 'Add a person first.' %}
+              {% else %}
+                {% translate 'To make this a portrait of a person, remove the current portrait of tagged person' %}
+              {% endif %}
+              {% if form.is_portrait_of.errors %}<p>{{ form.is_portrait_of.errors }}</p>{% endif %}
+            </div>
+          </div>
+        {% endif %}
 <!-- Admin tasks -->
-          {% if form.user and request.user.is_staff %}
-            <dt><label for="{{ form.user.id_for_label }}">{% translate 'user'|capfirst %}:</label></dt>
-              <dd>
-                {{ form.user }}
-                {% if form.user.errors %}<p>{{ form.user.errors }}</p>{% endif %}
-              </dd>
-          {% else %}
-          <input type="hidden" name="user" value="{{ image.user.id }}">
-          {% endif %}
-          <dt>&nbsp;</dt>
+        <div class="row">
+          <div class="col-3"><label for="{{ form.user.id_for_label }}">{% translate 'user'|capfirst %}:</label></div>
+          <div class="col-9">
+            {% if form.user and request.user.is_staff %}
+              <select class="form-control" name="user" id="id_user">
+                {% for key, value in form.fields.user.choices %}
+                  <option value="{{ key }}" {% if key == form.user.value %}selected{% elif not image and key == request.user.id %}selected{% endif %}>{{ value|capfirst }}</option>
+                {% endfor %}
+              </select>
+              {% if form.user.errors %}<p>{{ form.user.errors }}</p>{% endif %}
+            {% else %}
+              <input type="hidden" name="user" value="{{ image.user.id }}">
+            {% endif %}
+          </div>
+        </div>
 <!-- Submit -->
-            <dd><input type="submit" value="{% translate 'submit changes'|title %}">
-              {% if image %} <a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">Annuleren en terug naar afbeelding</a>{% endif %}
-            </dd>
+        <div class="row">
+          <div class="col-3"></div>
+          <div class="col-3"><input type="submit" value="{% translate 'submit changes'|title %}" class="form-control"></div>
+          <div class="col-3">{% if image %}<a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">Annuleren en terug naar afbeelding</a>{% endif %}</div>
+          <div class="col-3"></div>
+          </div>
         </dl>
       </form>
     </div>
