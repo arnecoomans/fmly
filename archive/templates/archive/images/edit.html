@@ -115,7 +115,7 @@
           </div>
         </div>
 <!-- Tagged People -->
-        {% if perms.archive.view_person %}
+        {% if image and perms.archive.view_person %}
           <div class="row">
             <div class="col-3"><label for="{{ form.people.id_for_label }}">{% translate 'people'|capfirst %}:</label></div>
             <div class="col-9">
@@ -135,7 +135,7 @@
           </div>
         {% endif %}
 <!-- Tagged Tags -->
-        {% if perms.archive.view_tag and form.tag %}
+        {% if image and perms.archive.view_tag and form.tag %}
           <div class="row">
             <div class="col-3"><label for="{{ form.tag.id_for_label }}">{% translate 'tags'|capfirst %}:</label></div>
             <div class="col-9">
@@ -153,7 +153,7 @@
           </div>
         {% endif %}
 <!-- Image Grouping -->
-        {% if form.in_group %}
+        {% if image and form.in_group %}
           <div class="row">
             <div class="col-3"><label for="{{ form.in_group.id_for_label }}">{% translate 'group'|capfirst %}:</label></div>
             <div class="col-9">
@@ -168,7 +168,7 @@
           </div>
         {% endif %}
 <!-- Attachments -->
-        {% if form.attachments %}
+        {% if image and form.attachments %}
           <div class="row">
             <div class="col-3"><label for="{{ form.attachments.id_for_label }}">{% translate 'attachment'|capfirst %}:</label></div>
             <div class="col-9">
@@ -182,7 +182,7 @@
           </div>
         {% endif %}
 <!-- Image is portrait of -->
-        {% if form.is_portrait_of %}
+        {% if image and form.is_portrait_of %}
           <div class="row">
             <div class="col-3"><label for="{{ form.is_portrait_of.id_for_label }}">{% translate 'is portrait of'|capfirst %}:</label></div>
             <div class="col-9">
