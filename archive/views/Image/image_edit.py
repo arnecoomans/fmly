@@ -35,7 +35,6 @@ class EditImageMaster:
     context['active_page'] = 'images'
     context['portrait'] = self.object.is_portrait_of
     context['available_portraits'] = self.object.people.all().filter(portrait=None, private=False)
-
     return context
   
   ''' Catch form validation errors '''
