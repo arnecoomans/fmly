@@ -29,10 +29,13 @@ class EditImageMaster:
       self.fields.append('user')
     form = super(EditImageMaster, self).get_form()
     return form
-
+ 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'images'
+    context['portrait'] = self.object.is_portrait_of
+    context['available_portraits'] = self.object.people.all().filter(portrait=None, private=False)
+
     return context
   
   ''' Catch form validation errors '''
