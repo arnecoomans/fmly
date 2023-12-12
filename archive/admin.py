@@ -119,13 +119,18 @@ class PersonAdmin(admin.ModelAdmin):
       item.gender = 'f' if item.gender == 'm' else 'm'
       item.save()
       messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully marked items as') } { _(item.get_gender_display()) }: { item.full_name() }")
-      
+  @admin.action(description='Purge given name')
+  def purge_given_name(modeladmin, request, queryset):
+    queryset.update(given_name='')
+    messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully marked items as') } { _('not deleted') }.")
+
+
   list_display = ['first_names', 'given_name', 'last_name', 'nickname', 'slug']
   prepopulated_fields = {'slug': ('first_names', 'last_name',), 
                          }
   list_filter = ['last_name', 'images']
   inlines = [FamilyRelationsInline,]
-  actions=[toggleGender]
+  actions = [toggleGender, purge_given_name]
 
   def get_changeform_initial_data(self, request):
     get_data = super(PersonAdmin, self).get_changeform_initial_data(request)
