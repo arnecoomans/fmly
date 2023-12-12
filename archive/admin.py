@@ -124,7 +124,6 @@ class PersonAdmin(admin.ModelAdmin):
     queryset.update(given_name='')
     messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully marked items as') } { _('not deleted') }.")
 
-
   list_display = ['first_names', 'given_name', 'last_name', 'nickname', 'slug']
   prepopulated_fields = {'slug': ('first_names', 'last_name',), 
                          }
