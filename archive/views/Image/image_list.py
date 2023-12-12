@@ -108,12 +108,12 @@ class ImageListView(ListView):
     ''' Show or hide hidden images '''
     if self.show_hidden_files():
       ''' Show how many images can be hidden'''
-      self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count() * -1
+      self.added_context['images_hidden'] = queryset.filter(visibility_frontpage=False).count() * -1
     else:
-      if queryset.filter(show_in_index=False).count() > 0:
+      if queryset.filter(visibility_frontpage=False).count() > 0:
         ''' Show how many images are hidden '''
-        self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count()
-        queryset = queryset.exclude(show_in_index=False)
+        self.added_context['images_hidden'] = queryset.filter(visibility_frontpage=False).count()
+        queryset = queryset.exclude(visibility_frontpage=False)
       else:
         ''' No images available to hide '''
         self.added_context['images_hidden'] =  False

@@ -132,7 +132,7 @@ class EditImageView(EditImageMaster, UpdateView):
   fields = ['source', 'title', 'description',
             'document_source', 'day', 'month', 'year',
             'people',
-            'show_in_index', 'is_deleted',
+            'visibility_frontpage', 'visibility_person_page', 'is_deleted',
             'tag', 'in_group', 'attachments', 'is_portrait_of',]
 
   def get_failure_url(self):
@@ -144,7 +144,7 @@ class AddImageView(EditImageMaster, CreateView):
   fields = ['source', 'title', 'description',
             'document_source', 'day', 'month', 'year',
             'people',
-            'show_in_index', 'is_deleted',
+            'visibility_frontpage', 'visibility_person_page', 'is_deleted',
             'tag', 'in_group', 'attachments', 'is_portrait_of',]
 
   def form_valid(self, form):

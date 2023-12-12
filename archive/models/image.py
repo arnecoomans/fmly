@@ -142,8 +142,11 @@ class Image(models.Model):
   uploaded_at         = models.DateTimeField(auto_now_add=True)
   date_modified       = models.DateTimeField(auto_now=True)
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
-  show_in_index       = models.BooleanField(default=True)
   is_deleted          = models.BooleanField(default=False)
+
+  visibility_frontpage     = models.BooleanField(default=True)
+  visibility_person_page   = models.BooleanField(default=True)
+  
 
   def __str__(self):
     return self.get_indexed_name()

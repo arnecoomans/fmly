@@ -1,5 +1,5 @@
 {% if not object.is_deleted %}
-  <div class="object{% if not object.show_in_index %} hidden{% endif %}" id="{{ object.title|slugify }}">
+  <div class="object{% if not object.visibility_frontpage or not object.visibility_person_page %} hidden{% endif %}" id="{{ object.title|slugify }}">
     <h2><span class="object-id">#{{ object.id }}</span><a href="{% url 'archive:image' object.slug %}" title="{{ object.title }}" tabindex="{{ forloop.counter }}">{{ object.title|truncatewords_html:3 }}</a></h2>
     <div class="column left">
       <a href="{% url 'archive:image' object.slug %}" title="{{ object.title }}">
@@ -16,7 +16,7 @@
             {% if object.day %}{{ object.day }}-{% if not object.month %}?-{% endif %}{% endif %}{% if object.month %}{{ object.month }}-{% if not object.year %}?{% endif %}{% endif %}{% if object.year %}<a href="{% url 'archive:images-by-decade' object.year %}" title="Bekijk alles uit {{ object.year }}">{{ object.year }}</a>{% endif %}</li>
         {% endif %}
         <!-- Image is hidden -->
-        {% if not object.show_in_index %}<li class="bi bi-info-circle-fill"> Verborgen</li>{% endif %}
+        {% if not object.visibility_frontpage %}<li class="bi bi-info-circle-fill"> Verborgen</li>{% endif %}
         <!-- People -->
         {% if perms.archive.view_person and object.people.all.count > 0 and object.people.all.count < 6 %}
           {% for person in object.people.all %}

@@ -28,6 +28,6 @@ class Tag(models.Model):
     return reverse_lazy('archive:tags')
   
   def get_images(self):
-    return self.images.all().filter(is_deleted=False, show_in_index=True)
+    return self.images.all().filter(is_deleted=False, visibility_frontpage=True)
   def get_hidden_images(self):
-    return self.images.all().filter(is_deleted=False, show_in_index=False)
+    return self.images.all().filter(is_deleted=False, visibility_frontpage=False)
