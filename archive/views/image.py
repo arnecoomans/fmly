@@ -1,56 +1,56 @@
-from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView 
-from django.urls import reverse_lazy
-from django.shortcuts import redirect
-from django.template.defaultfilters import slugify
-from django.conf import settings
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.contrib import messages
-from django.utils.translation import gettext as _
+# from django.views.generic import ListView, DetailView
+# from django.views.generic.edit import CreateView, UpdateView 
+# from django.urls import reverse_lazy
+# from django.shortcuts import redirect
+# from django.template.defaultfilters import slugify
+# from django.conf import settings
+# from django.contrib.auth.mixins import PermissionRequiredMixin
+# from django.contrib import messages
+# from django.utils.translation import gettext as _
 
-from pathlib import Path
-from math import floor
+# from pathlib import Path
+# from math import floor
 
-from archive.models import Image
-from archive.models import Group, Tag, Attachment, Person
+# from archive.models import Image
+# from archive.models import Group, Tag, Attachment, Person
 
 
-''' View Shared Functions '''
-''' Get_fields
-    Returns the basic fieldset for editing or creating an Image
-'''
-def get_fields():
-  return ['source', 'title', 'description',
-          'document_source', 'day', 'month', 'year',
-          'people', 
-          'show_in_index', 'is_deleted',]
+# ''' View Shared Functions '''
+# ''' Get_fields
+#     Returns the basic fieldset for editing or creating an Image
+# '''
+# def get_fields():
+#   return ['source', 'title', 'description',
+#           'document_source', 'day', 'month', 'year',
+#           'people', 
+#           'show_in_index', 'is_deleted',]
           
-''' Get_additional_fields
-    Used by add/create view
-    When building a form, it makes no sense to allow to select certain fields if there are
-    no selectable options, for example show an empty tag list.
-    So, loop through the Objects themselves, and add the field to the form if the Object
-    has items.
-'''
-def get_additional_fields():
-  ''' Allow to skip checking each object by using the setting OBJECT_FORM_FIELDS '''
-  if hasattr(settings, 'OBJECT_FORM_FIELDS') and len(settings.OBJECT_FORM_FIELDS) > 0:
-    return settings.OBJECT_FORM_FIELDS
-  else:
-    ''' If no fields have been configured, check each related field and count the
-        number of objects. If there are objects in a related field, add the related
-        field to the fields list.
-    '''
-    fields = []
-    if Tag.objects.all().count() > 0:
-      fields.append('tag')
-    if Group.objects.all().count() > 0:
-      fields.append('in_group')
-    if Attachment.objects.all().count() > 0:
-      fields.append('attachments')
-    if Person.objects.all().count() > 0:
-      fields.append('is_portrait_of')
-    return fields
+# ''' Get_additional_fields
+#     Used by add/create view
+#     When building a form, it makes no sense to allow to select certain fields if there are
+#     no selectable options, for example show an empty tag list.
+#     So, loop through the Objects themselves, and add the field to the form if the Object
+#     has items.
+# '''
+# def get_additional_fields():
+#   ''' Allow to skip checking each object by using the setting OBJECT_FORM_FIELDS '''
+#   if hasattr(settings, 'OBJECT_FORM_FIELDS') and len(settings.OBJECT_FORM_FIELDS) > 0:
+#     return settings.OBJECT_FORM_FIELDS
+#   else:
+#     ''' If no fields have been configured, check each related field and count the
+#         number of objects. If there are objects in a related field, add the related
+#         field to the fields list.
+#     '''
+#     fields = []
+#     if Tag.objects.all().count() > 0:
+#       fields.append('tag')
+#     if Group.objects.all().count() > 0:
+#       fields.append('in_group')
+#     if Attachment.objects.all().count() > 0:
+#       fields.append('attachments')
+#     if Person.objects.all().count() > 0:
+#       fields.append('is_portrait_of')
+#     return fields
 
 # ''' List Views
 #     Default home view:
