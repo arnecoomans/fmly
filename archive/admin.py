@@ -120,12 +120,13 @@ class PersonAdmin(admin.ModelAdmin):
       item.save()
       messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully marked items as') } { _(item.get_gender_display()) }: { item.full_name() }")
       
-  list_display = ['first_name', 'given_names', 'last_name', 'nickname', 'slug']
-  prepopulated_fields = {'slug': ('given_names', 'last_name',), 
-                         'given_names': ('first_name',),}
+  list_display = ['first_names', 'given_name', 'last_name', 'nickname', 'slug']
+  prepopulated_fields = {'slug': ('first_names', 'last_name',), 
+                         }
   list_filter = ['last_name', 'images']
   inlines = [FamilyRelationsInline,]
   actions=[toggleGender]
+
   def get_changeform_initial_data(self, request):
     get_data = super(PersonAdmin, self).get_changeform_initial_data(request)
     get_data['user'] = request.user.pk

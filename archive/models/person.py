@@ -5,6 +5,8 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse_lazy, reverse
 from math import floor
+from django.utils.translation import gettext_lazy as _
+
 
 class Person(models.Model):
   ''' Model: Person
@@ -12,8 +14,8 @@ class Person(models.Model):
       - tagged on an image
       - related to another person
   '''
-  first_name          = models.CharField(max_length=255, blank=True, verbose_name='Roepnaam')
-  given_names         = models.CharField(max_length=255, blank=True, verbose_name='Voornamen', help_text='Alle voornamen, inclusief roepnaam')
+  first_names         = models.CharField(max_length=255, blank=True, verbose_name='Voornamen', help_text='Alle voornamen, inclusief roepnaam')
+  given_name          = models.CharField(max_length=255, blank=True, verbose_name='Roepnaam', help_text='Indien afwijkend van eerste voornaam')
   last_name           = models.CharField(max_length=255, blank=True, verbose_name='Achternaam', help_text='Achternaam bij geboorte')
   married_name        = models.CharField(max_length=255, blank=True, verbose_name='Getrouwde Achternaam', help_text='Achternaam van echtgeno(o)t(e)')
 
@@ -22,8 +24,8 @@ class Person(models.Model):
   slug                = models.CharField(max_length=255, unique=True)
   
   # Gender (required for family tree)
-  GENDERS = [('m', 'male'), ('f', 'female')]
-  gender              = models.CharField(max_length=1, choices=GENDERS)
+  GENDERS = [('m', _('male')), ('f', _('female')), ('x', _('not stored'))]
+  gender              = models.CharField(max_length=1, choices=GENDERS, default='x')
   
   # Information
   place_of_birth      = models.CharField(max_length=255, blank=True)
@@ -51,7 +53,7 @@ class Person(models.Model):
   date_created        = models.DateTimeField(auto_now_add=True)
   
   class Meta:
-    ordering = ('first_name', 'last_name')
+    ordering = ('first_names', 'last_name')
     verbose_name = 'person'
     verbose_name_plural = 'people'
 
@@ -63,16 +65,20 @@ class Person(models.Model):
     return name
 
   def name(self):
-    return ' '.join([self.first_name, self.last_name])
+    return ' '.join([self.first_names, self.last_name])
 
   def full_name(self):
     if self.private:
-      return ' '.join([self.first_name, self.last_name]).strip()
+      return ' '.join([self.first_names, self.last_name]).strip()
     else:
-      call_sign = ''
-      if self.first_name and  self.first_name not in self.given_names.split(' '):
-        call_sign = '(' + self.first_name + ') '
-      return ' '.join([call_sign, self.given_names, self.last_name, self.married_name]).strip()
+      value = self.first_names
+      if self.given_name:
+        value += f" ({ self.given_name})"
+      if self.married_name:
+        value += f" { self.married_name } - { self.last_name }"
+      else:
+        value += f" { self.last_name }"
+      return value.strip()
     
 
   def century(self):
@@ -190,14 +196,8 @@ class Person(models.Model):
   ''' Processing at save
   '''
   def save(self, *args, **kwargs):
-    ''' First name:
-        If no first name is given, but given names are mentioned, assume first given name is first-name.
-    '''
-    if self.given_names and not self.first_name:
-      if ' ' in self.given_names:
-        self.first_name = self.given_names.split()[1]
-      else:
-        self.first_name = self.given_names
+    # ''' First name:
+    #     If no first name is given, but given names are mentioned, assume first given name is first-name.
     ''' Slug:
         Slug should always contain given names, last name and married name, but also 
         year of birth and -death.
@@ -208,8 +208,8 @@ class Person(models.Model):
         If a related user is set, copy user information to the related user
         and back
     '''
-    if self.related_user and self.first_name:
-      self.related_user.first_name = self.first_name
+    if self.related_user and self.first_names:
+      self.related_user.first_names = self.first_names
     if self.related_user and self.last_name:
       self.related_user.last_name = self.last_name
     if self.related_user and self.email:
