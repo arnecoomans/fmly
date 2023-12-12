@@ -6,7 +6,7 @@
     {% include  'archive/snippets/error_no_access.html' with object_type='people' %}
   {% else %}
     <header>
-      <h2>{% if person %}{{ person.first_name }} {{ person.last_name }}{% else %}{% translate 'new'|capfirst %} {% translate 'person' %}:{% endif %}</h2>
+      <h2>{% if person %}{{ person.first_names }} {{ person.last_name }}{% else %}{% translate 'new'|capfirst %} {% translate 'person' %}:{% endif %}</h2>
       {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
     </header>
     <div class="edit note">
@@ -17,15 +17,15 @@
             <dt>Fout(en)</dt>
               <dd>{{ form.non_field_errors }}</dd>
           {% endif %}
-          <dt><label for="{{ form.first_name.id_for_label }}">{% translate 'name'|capfirst %}:</label></dt>
+          <dt><label for="{{ form.first_names.id_for_label }}">{% translate 'name'|capfirst %}:</label></dt>
             <dd>
-              {{ form.first_name }}
-              {% if form.first_name.errors %}<p>{{ form.first_name.errors }}</p>{% endif %}
+              {{ form.first_names }}
+              {% if form.first_name.errors %}<p>{{ form.first_names.errors }}</p>{% endif %}
             </dd>
-          <dt><label for="{{ form.given_names.id_for_label }}">{% translate 'given name(s)'|capfirst %}:</label></dt>
+          <dt><label for="{{ form.given_name.id_for_label }}">{% translate 'given name'|capfirst %}:</label></dt>
             <dd>
-              {{ form.given_names }}
-              {% if form.given_names.errors %}<p>{{ form.given_names.errors }}</p>{% endif %}
+              {{ form.given_name }}
+              {% if form.given_name.errors %}<p>{{ form.given_name.errors }}</p>{% endif %}
             </dd>
           <dt><label for="{{ form.last_name.id_for_label }}">{% translate 'last name'|capfirst %}:</label></dt>
             <dd>

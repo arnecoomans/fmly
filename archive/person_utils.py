@@ -89,7 +89,7 @@ def get_person_queryset(filters):
       Searches Person Name, Bio
   '''
   if filters['search']:
-    queryset = queryset.filter(first_name__icontains=filters['search']) | \
+    queryset = queryset.filter(first_names__icontains=filters['search']) | \
                 queryset.filter(given_names__icontains=filters['search']) | \
                 queryset.filter(last_name__icontains=filters['search']) | \
                 queryset.filter(married_name__icontains=filters['search']) | \
@@ -98,13 +98,13 @@ def get_person_queryset(filters):
   ''' Overall ordering 
       Ordering is available in last-name, first-name and year of birth
   '''
-  if filters['order_by'] == 'first_name':
-    queryset = queryset.order_by('first_name', 'last_name', 'year_of_birth')
+  if filters['order_by'] == 'first_names':
+    queryset = queryset.order_by('first_names', 'last_name', 'year_of_birth')
   elif filters['order_by'] == 'year_of_birth':
     queryset = queryset.order_by('year_of_birth', 'month_of_birth', 'day_of_birth', 'last_name')
   else:
     ''' Default to last_name ordering, allows override in settings by use of correct field_name '''
-    queryset = queryset.order_by('last_name', 'first_name', 'year_of_birth')
+    queryset = queryset.order_by('last_name', 'first_names', 'year_of_birth')
   return queryset
 
 
