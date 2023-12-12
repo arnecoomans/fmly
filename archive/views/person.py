@@ -80,13 +80,13 @@ class PersonView(ListView):
     queryset = queryset.filter(is_deleted=False)
     ''' Show or hide hidden files '''
     if not self.show_hidden_files():
-      if queryset.filter(show_in_index=False).count() > 0:
-        self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count()
-        queryset = queryset.exclude(show_in_index=False)
+      if queryset.filter(visibility_frontpage=False).count() > 0:
+        self.added_context['images_hidden'] = queryset.filter(visibility_person_page=False).count()
+        queryset = queryset.exclude(visibility_person_page=False)
       else:
         self.added_context['images_hidden'] =  False
     else:
-      self.added_context['images_hidden'] = queryset.filter(show_in_index=False).count() * -1
+      self.added_context['images_hidden'] = queryset.filter(visibility_person_page=False).count() * -1
     self.added_context['count_images'] = queryset.count()
     ''' Order images '''
     queryset = queryset.order_by('uploaded_at')

@@ -60,7 +60,7 @@
             {% endfor %}
           {% endif %}
           <!-- Meta info -->
-          {% if not image.show_in_index %}<li class="bi bi-info-circle-fill"> Verborgen</li>{% endif %}
+          {% if not image.visibility_frontpage %}<li class="bi bi-info-circle-fill"> Verborgen</li>{% endif %}
           <li class="bi bi-info-circle-fill"> {{ image.extension }}, {{ image.getSize }}</li>
           <li class="bi bi-info-circle-fill"> {{ image.width }}x{{ image.height }} pixels, {{ image.get_orientation_display }}</li>
           <li class="bi bi-person-fill-check"> 

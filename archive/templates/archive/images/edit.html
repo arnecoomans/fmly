@@ -91,10 +91,10 @@
         <div class="row">
           <div class="col-3"></div>
           <div class="col-3">
-            <input type="submit" value="{% translate 'submit changes'|title %}" class="form-control">
+            <input type="submit" value="{% translate 'submit changes'|title %}" class="btn btn-success">
           </div>
           <div class="col-3">
-            {% if image %} <a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">{% translate 'cancel'|capfirst %} {% translate 'and return to image '%}</a>{% endif %}
+            {% if image %} <a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-outline-warning">{% translate 'cancel'|capfirst %} {% translate 'and return to image '%}</a>{% endif %}
           </div>
           <div class="col-3"></div>
         </div>
@@ -104,10 +104,14 @@
           <div class="col-3">{% translate 'options'|capfirst %}:</div>
           <div class="col-9">
             <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" name="{{ form.show_in_index.name }}" id="{{ form.show_in_index.id_for_label }}" {% if form.show_in_index.value %}checked{% endif %}>
-              <label class="form-check-label" for="{{ form.show_in_index.id_for_label }}">{% translate 'Show in index' %}</label>
-              <br>
-              </label>
+              <input class="form-check-input" type="checkbox" name="{{ form.visibility_frontpage.name }}" id="{{ form.visibility_frontpage.id_for_label }}" {% if form.visibility_frontpage.value %}checked{% endif %}>
+              <label class="form-check-label" for="{{ form.visibility_frontpage.id_for_label }}">{% translate 'Show on index page' %}</label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" name="{{ form.visibility_person_page.name }}" id="{{ form.visibility_person_page.id_for_label }}" {% if form.visibility_person_page.value %}checked{% endif %}>
+              <label class="form-check-label" for="{{ form.visibility_person_page.id_for_label }}">{% translate 'Show on person overview page' %}</label>
+            </div>
+            <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" name="{{ form.is_deleted.name }}" id="{{ form.is_deleted.id_for_label }}" {% if form.is_deleted.value %}checked{% endif %}>
               <label class="form-check-label" for="{{ form.is_deleted.id_for_label }}">{% translate 'Is deleted' %}</label>
               <br><br>
@@ -229,8 +233,8 @@
 <!-- Submit -->
         <div class="row">
           <div class="col-3"></div>
-          <div class="col-3"><input type="submit" value="{% translate 'submit changes'|title %}" class="form-control"></div>
-          <div class="col-3">{% if image %}<a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-warning">Annuleren en terug naar afbeelding</a>{% endif %}</div>
+          <div class="col-3"><input type="submit" value="{% translate 'submit changes'|title %}" class="btn btn-success"></div>
+          <div class="col-3">{% if image %}<a href="{% url 'archive:image' image.slug %}" type="button" class="btn btn-outline-warning">Annuleren en terug naar afbeelding</a>{% endif %}</div>
           <div class="col-3"></div>
           </div>
         </dl>

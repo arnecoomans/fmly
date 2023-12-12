@@ -65,9 +65,10 @@ class ImageAdmin(admin.ModelAdmin):
   @admin.action(description=_('Toggle show on index'))
   def toggle_show(modeladmin, request, queryset):
     for item in queryset:
-      item.show_in_index = False if item.show_in_index else True
+      item.visibility_frontpage = False if item.visibility_frontpage else True
       item.save()
-      messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully marked items as') } { _('visible') if item.show_in_index else _('invisible') }: { item.title }")
+      messages.add_message(request, messages.SUCCESS,
+                           f"{ _('Succesfully marked items as') } { _('visible') if item.visibility_frontpage else _('invisible') }: { item.title }")
 
   @admin.action(description='Set slug from title')
   def setSlugFromTitle(modeladmin, request, queryset):
@@ -89,13 +90,13 @@ class ImageAdmin(admin.ModelAdmin):
       object.storeSize()
 
 
-  list_display = ['id', 'slug', 'has_thumbnail', 'getSize', 'show_in_index', 'year']
+  list_display = ['id', 'slug', 'has_thumbnail', 'getSize', 'visibility_frontpage', 'year']
   list_display_links =['slug',]
   search_fields = ['title', 'description']
   exclude = []
   empty_value_display = '---'
   actions = [toggle_show, softdelete, softundelete, setSlugFromTitle, reset_thumbnail, resetSize,  ]
-  list_filter = ['tag', 'show_in_index', 'people']
+  list_filter = ['tag', 'visibility_frontpage', 'people']
   def get_changeform_initial_data(self, request):
     get_data = super(ImageAdmin, self).get_changeform_initial_data(request)
     get_data['user'] = request.user.pk
@@ -123,7 +124,6 @@ class PersonAdmin(admin.ModelAdmin):
   def purge_given_name(modeladmin, request, queryset):
     queryset.update(given_name='')
     messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully marked items as') } { _('not deleted') }.")
-
 
   list_display = ['first_names', 'given_name', 'last_name', 'nickname', 'slug']
   prepopulated_fields = {'slug': ('first_names', 'last_name',), 
