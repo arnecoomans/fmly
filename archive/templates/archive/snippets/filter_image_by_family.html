@@ -1,0 +1,11 @@
+{% if families|length > 0 %}
+  Filter by: 
+  {% for family in families %}
+    {% if family == current_family %}
+      {{ family|title }}
+    {% else %}
+      <a href="{% url 'archive:images' %}?family={{ family }}"{% if family == current_family %} disabled{% endif %}>{{ family|title }}</a>
+    {% endif %}
+    {% if not forloop.last %} | {% endif %}
+  {% endfor %}
+{% endif %}
