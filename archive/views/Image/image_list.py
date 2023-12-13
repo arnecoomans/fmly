@@ -39,8 +39,11 @@ class ImageListView(ListView):
       context['page_description'] += f" {_('in the period') } { str(decade) } - { str(decade + 9) }, { _('sorted on date, newest first') }. <br />"  + \
                                     f"{ _('You can also check out')} <a href=\"{reverse_lazy('archive:images-by-decade', args=[decade-10])}\">{ str(decade-10) } - { str(decade-1) }</a> { _('or') } <a href=\"{reverse_lazy('archive:images-by-decade', args=[decade+10])}\">{ str(decade+10) } - { str(decade+20) }</a>"
     ''' If search string is passed '''
-    if self.request.GET.get('search'):
+    if self.request.GET.get('search', False):
       context['page_description'] += f" { _('searching for') } \"{ self.request.GET.get('search') }\""
+    if self.request.GET.get('family', False):
+      context['page_description'] += f" { _('with tagged family members of') } \"{ self.request.GET.get('family')[:1].upper() }{ self.request.GET.get('family')[1:].lower() }\""
+      context['current_family'] = self.request.GET.get('family', '')
     ''' Added context, can be placed by get_queryset() '''
     if len(self.added_context) > 0:
       for key in self.added_context:
@@ -105,6 +108,9 @@ class ImageListView(ListView):
           queryset.filter(tag__title__icontains=search_text) | \
           queryset.filter(attachments__file__icontains=search_text) | \
           queryset.filter(attachments__description__icontains=search_text)
+    ''' If family search '''
+    if self.request.GET.get('family', False):
+      queryset = queryset.filter(people__last_name__icontains=self.request.GET.get('family',''))
     ''' Show or hide hidden images '''
     if self.show_hidden_files():
       ''' Show how many images can be hidden'''

@@ -5,13 +5,14 @@
   {% if not perms.archive.view_image %}
     {% include  'archive/snippets/error_no_access.html' with object_type='images' %}
   {% elif not images %}
-    {% include  'archive/snippets/error_no_objects.html' with object_type='images' %}<br>
+    {% include 'archive/snippets/error_no_objects.html' with object_type='images' %}<br>
     {% include 'archive/snippets/toggle_hidden_images.html' %}
   {% else %}
     <header>
       <h2>{{ total_images }} {% blocktranslate count counter=total_images %}Image or document{% plural %}Images and documents{% endblocktranslate %}:</h2>
       {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
       {% include 'archive/snippets/toggle_hidden_images.html' %}
+      {% include 'archive/snippets/filter_image_by_family.html' %}
     </header>
     <!-- Pagination -->
     {% include 'archive/snippets/pagination.html' %}
