@@ -1,5 +1,5 @@
-{% if families|length > 0 %}
-  Filter by: 
+{% load i18n %}{% if families|length > 1 %}
+  {% translate 'filter by'|capfirst %}: 
   {% for family in families %}
     {% if family == current_family %}
       {{ family|title }}
