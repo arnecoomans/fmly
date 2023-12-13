@@ -90,7 +90,7 @@ def get_person_queryset(filters):
   '''
   if filters['search']:
     queryset = queryset.filter(first_names__icontains=filters['search']) | \
-                queryset.filter(given_names__icontains=filters['search']) | \
+                queryset.filter(given_name__icontains=filters['search']) | \
                 queryset.filter(last_name__icontains=filters['search']) | \
                 queryset.filter(married_name__icontains=filters['search']) | \
                 queryset.filter(nickname__icontains=filters['search']) | \
