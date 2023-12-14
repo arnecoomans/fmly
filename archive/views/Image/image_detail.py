@@ -39,7 +39,9 @@ class ImageView(DetailView):
     result = []
     for person in self.object.people.all():
       if person.last_name in settings.FAMILIES or person.married_name in settings.FAMILIES:
-        result.append(person.last_name if person.last_name in settings.FAMILIES else person.married_name)
+        family = person.last_name if person.last_name in settings.FAMILIES else person.married_name
+        if family not in result:
+          result.append(family)
     if self.object.family in settings.FAMILIES:
       result.append(self.object.family)
     return result
