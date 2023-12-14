@@ -8,6 +8,7 @@ from PIL import Image as PIL
 from pathlib import Path
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.template.defaultfilters import slugify
+from django.utils.translation import gettext_lazy as _
 
 # Create Thumbnail function
 def get_thumbnail(image):
@@ -129,6 +130,7 @@ class Image(models.Model):
   attachments         = models.ManyToManyField(Attachment, blank=True, related_name='images')
   is_portrait_of      = models.OneToOneField(Person, on_delete=models.CASCADE, related_name='portrait', blank=True, null=True)
   in_group            = models.ManyToManyField(Group, blank=True, related_name='images', help_text='Group images')
+  family              = models.CharField(max_length=64, null=True, blank=True, help_text=_('Add image to family collection if no family member can be tagged'))
   # Dating
   MONTHS = [(1, 'januari'), (2, 'februari'), (3, 'maart'), (4, 'april'), (5, 'mei'), (6, 'juni'), (7, 'juli'), (8, 'augustus'), (9, 'september'), (10, 'oktober'), (11, 'november'), (12, 'december')]
   year                = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')

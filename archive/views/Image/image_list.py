@@ -101,8 +101,8 @@ class ImageListView(ListView):
       queryset = queryset.filter(title__icontains=search_text) | \
           queryset.filter(description__icontains=search_text) | \
           queryset.filter(source__icontains=search_text) | \
-          queryset.filter(people__first_name__icontains=search_text) | \
-          queryset.filter(people__given_names__icontains=search_text) | \
+          queryset.filter(people__first_names__icontains=search_text) | \
+          queryset.filter(people__given_name__icontains=search_text) | \
           queryset.filter(people__last_name__icontains=search_text) | \
           queryset.filter(people__married_name__icontains=search_text) | \
           queryset.filter(tag__title__icontains=search_text) | \
@@ -110,7 +110,9 @@ class ImageListView(ListView):
           queryset.filter(attachments__description__icontains=search_text)
     ''' If family search '''
     if self.request.GET.get('family', False):
-      queryset = queryset.filter(people__last_name__icontains=self.request.GET.get('family',''))
+      queryset = queryset.filter(people__last_name__icontains=self.request.GET.get('family','')) |\
+                 queryset.filter(people__married_name__icontains=self.request.GET.get('family', '')) |\
+                 queryset.filter(family__icontains=self.request.GET.get('family', ''))
     ''' Show or hide hidden images '''
     if self.show_hidden_files():
       ''' Show how many images can be hidden'''
