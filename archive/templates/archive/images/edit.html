@@ -225,7 +225,7 @@
                 <input type="hidden" name="is_portrait_of" value="{{ portrait.id }}">
                 {% include 'archive/snippets/person_link.html' with person=portrait %} <a href="{% url 'archive:remove-portrait' portrait.id image.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'delete'|capfirst %} {% translate 'image' %} {% translate 'as portrait of' %} {{ portrait }}">[X]</a>
               {% elif available_portraits.all.count > 0 %}
-                <select name="is_portrait_of" id="is_portrait_of">
+                <select name="is_portrait_of" id="is_portrait_of" class="form-control">
                   <option value selected>---------</option>
                   {% for person in available_portraits %}
                     <option value="{{ person.id }}">{{ person }}</option>
