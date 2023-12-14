@@ -185,6 +185,32 @@
             </div>
           </div>
         {% endif %}
+<!-- Image in Family Collection -->
+        {% if image and families|length > 0 %}
+          <div class="row">
+            <div class="col-3"><label for="family-id">{% translate 'family collection'|capfirst %}:</label></div>
+            <div class="col-9">
+                <!-- If image is in family via tagged people -->
+              {% if active_family_collections_tag|length > 0 %}
+                {% translate 'in family collection of'|capfirst %}:
+                {% for family in active_family_collections_tag %}
+                  <a href="{% url 'archive:images' %}?family={{ family }}">{{ family }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                {% translate 'via tagged people' %}.
+              {% endif %}
+                <!-- Manage Manual Family Connections -->
+                {% if available_family_collections|length > 0 %}
+                <select name="family" id="family_id" class="form-control">
+                  <option value="">--- {% if image.family %}{% translate 'remove from family collection'|capfirst %}{% else %}{% translate 'add to family collection'|capfirst %}{% endif %} ---</option>
+                  {% for family in available_family_collections %}
+                    <option value="{{ family }}" {% if image.family == family %}selected{% endif %}>{{ family|title }}</option>
+                  {% endfor %}
+                </select>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        {% endif %}
 <!-- Image is portrait of -->
         {% if image and form.is_portrait_of %}
           <div class="row">

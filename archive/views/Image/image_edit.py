@@ -36,8 +36,23 @@ class EditImageMaster:
     if self.object:
       context['portrait'] = self.object.is_portrait_of
       context['available_portraits'] = self.object.people.all().filter(portrait=None, private=False)
+      context['active_family_collections_tag'] = self.get_active_family_collections_tag()
+      context['available_family_collections'] = self.get_available_family_collections()
     return context
   
+  def get_active_family_collections_tag(self):
+    result = []
+    for person in self.object.people.all():
+      if person.last_name in settings.FAMILIES or person.married_name in settings.FAMILIES:
+        result.append(person.last_name if person.last_name in settings.FAMILIES else person.married_name)
+    return result
+  def get_available_family_collections(self):
+    result = []
+    for family in settings.FAMILIES:
+      if family not in self.get_active_family_collections_tag():
+        result.append(family)
+    return result
+
   ''' Catch form validation errors '''
   def form_invalid(self, form):
     messages.add_message(self.request, messages.WARNING,
@@ -132,7 +147,7 @@ class EditImageMaster:
 class EditImageView(EditImageMaster, UpdateView):
   fields = ['source', 'title', 'description',
             'document_source', 'day', 'month', 'year',
-            'people',
+            'people', 'family',
             'visibility_frontpage', 'visibility_person_page', 'is_deleted',
             'tag', 'in_group', 'attachments', 'is_portrait_of',]
 
@@ -144,9 +159,9 @@ class EditImageView(EditImageMaster, UpdateView):
 class AddImageView(EditImageMaster, CreateView):
   fields = ['source', 'title', 'description',
             'document_source', 'day', 'month', 'year',
-            'people',
-            'visibility_frontpage', 'visibility_person_page', 'is_deleted',
-            'tag', 'in_group', 'attachments', 'is_portrait_of',]
+            'people', 'family',
+            'visibility_frontpage', 'visibility_person_page', 'is_deleted']
+            # 'tag', 'in_group', 'attachments', 'is_portrait_of',] # Removed relation holding fields from view
 
   def form_valid(self, form):
     ''' Store Image '''
