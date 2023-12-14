@@ -111,7 +111,8 @@ class ImageListView(ListView):
     ''' If family search '''
     if self.request.GET.get('family', False):
       queryset = queryset.filter(people__last_name__icontains=self.request.GET.get('family','')) |\
-                 queryset.filter(people__married_name__icontains=self.request.GET.get('family', ''))
+                 queryset.filter(people__married_name__icontains=self.request.GET.get('family', '')) |\
+                 queryset.filter(family__icontains=self.request.GET.get('family', ''))
     ''' Show or hide hidden images '''
     if self.show_hidden_files():
       ''' Show how many images can be hidden'''
