@@ -28,9 +28,9 @@
         {% if image.description %}<p class="description">{{ image.description|markdown|safe }}</p>{% endif %}
         <ul class="metadata no-bullets">
           <!-- Source -->
-          {% if image.document_source %}<li class="bi bi-geo-fill"> {% if image.document_source|truncatechars:5 == "http…" %}<a href="{{ image.document_source }}" target="_blank" title="{{ image.document_source }}">{{ image.document_source|truncatechars:38 }}</a>{% else %}{{ image.document_source }}{% endif %}{% endif %}
+          {% if image.document_source %}<li class="bi bi-geo-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'source of this object'|capfirst %}"> {% if image.document_source|truncatechars:5 == "http…" %}<a href="{{ image.document_source }}" target="_blank" title="{{ image.document_source }}">{{ image.document_source|truncatechars:38 }}</a>{% else %}{{ image.document_source }}{% endif %}{% endif %}
           <!-- Date -->
-          {% if image.year or image.month or image.day %}<li class="bi bi-calendar-event-fill"> {% if image.month or image.day %}{{ image.day|default:'?' }}-{{ image.month|default:'?' }}-{% endif %}<a href="{% url 'archive:images-by-decade' image.year %}" title="Bekijk alles uit {{ image.year }}">{{ image.year|default:'?' }}</a></li>{% endif %}
+          {% if image.year or image.month or image.day %}<li class="bi bi-calendar-event-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'date of this object'|capfirst %}"> {% if image.month or image.day %}{{ image.day|default:'?' }}-{{ image.month|default:'?' }}-{% endif %}<a href="{% url 'archive:images-by-decade' image.year %}" title="Bekijk alles uit {{ image.year }}">{{ image.year|default:'?' }}</a></li>{% endif %}
           <!-- People -->
           {% if perms.archive.view_person and image.people.all.count > 0 %}
             {% for person in object.people.all %}
@@ -38,8 +38,8 @@
             {% endfor %}
           {% endif %}
           <!-- Family Collection -->
-          {% if family_collection|length > 0 %}
-            <li class=" bi bi-collection"> {% for family in family_collection %}<a href="{% url 'archive:images' %}?family={{ family }}" title="{% translate 'Open family collection of' %} {{ family }}">{{ family }}</a>{% if not forloop.last %}, {% endif %}{% endfor %} </li>
+          {% if image.family_collection|length > 0 %}
+            <li class=" bi bi-collection" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'this object is part of a family collection'|capfirst %}"> {% for family in image.family_collection %}<a href="{% url 'archive:images' %}?family={{ family }}" title="{% translate 'Open family collection of' %} {{ family }}">{{ family }}</a>{% if not forloop.last %}, {% endif %}{% endfor %} </li>
           {% endif %}
           <!-- Tags -->
           {% if perms.archive.view_tag and image.tag.all.count > 0 %}
@@ -60,13 +60,13 @@
           <!-- Attachments -->
           {% if perms.archive.view_attachment and image.attachments.all.count > 0 %}
             {% for attachment in image.get_attachments reversed %}
-              <li class="bi-paperclip"> <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment" target="_blank" rel="noopener noreferrer" title="{{ attachment.description }}">{{ attachment.description|truncatechars:52 }}</a> {{ attachment.extension }}, {{ attachment.getSize }}</li>
+              <li class="bi-paperclip" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'there is an attachment for this object'|capfirst %}"> <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment" target="_blank" rel="noopener noreferrer" title="{{ attachment.description }}">{{ attachment.description|truncatechars:52 }}</a> {{ attachment.extension }}, {{ attachment.getSize }}</li>
             {% endfor %}
           {% endif %}
           <!-- Meta info -->
           {% if not image.visibility_frontpage %}<li class="bi bi-info-circle-fill"> Verborgen</li>{% endif %}
-          <li class="bi bi-info-circle-fill"> {{ image.extension }}, {{ image.getSize }}</li>
-          <li class="bi bi-info-circle-fill"> {{ image.width }}x{{ image.height }} pixels, {{ image.get_orientation_display }}</li>
+          <li class="bi bi-info-circle-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'more information about this object'|capfirst %}"> {{ image.extension }}, {{ image.getSize }}</li>
+          <li class="bi bi-info-circle-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'more information about this object'|capfirst %}"> {{ image.width }}x{{ image.height }} pixels, {{ image.get_orientation_display }}</li>
           <li class="bi bi-person-fill-check"> 
             {% translate 'created by'|capfirst %}: <a href="{% url 'archive:image-by-uploader' image.user.username %}">{% if image.user.first_name %}{{ image.user.first_name }} {{ image.user.last_name }}{% else %} {{ image.user }}{% endif %}</a> 
             {% translate 'at' %} {{ image.uploaded_at|date:'d/m/y' }}<br>
@@ -74,10 +74,10 @@
           <!-- Comments -->
           {% if perms.archive.view_comment and image.count_comments > 0 %}
             <a name="comments"></a>
-            <li class="bi bi-chat-right-text-fill" > {{ image.count_comments }} {% blocktranslate count counter=object.count_comments context "plural" %}comment{% plural %}comments{% endblocktranslate %}</li>
+            <li class="bi bi-chat-right-text-fill"> {{ image.count_comments }} {% blocktranslate count counter=object.count_comments context "plural" %}comment{% plural %}comments{% endblocktranslate %}</li>
           {% endif %}
           {% if perms.archive.add_comment %}
-            <li class="bi bi-cursor-text">
+            <li class="bi bi-cursor-text" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'add your comment to this object'|capfirst %}">
               <div class="comment">
                 <form method="post" action="{% url 'archive:comment' image.id %}">
                   {% csrf_token %}

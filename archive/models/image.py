@@ -207,6 +207,17 @@ class Image(models.Model):
   def extension(self):
     return Path(str(self.source)).suffix[1:].lower()
   
+  ''' Familt Collection '''
+  def family_collection(self):
+    result = []
+    for person in self.people.all():
+      if person.last_name in settings.FAMILIES or person.married_name in settings.FAMILIES:
+        family = person.last_name if person.last_name in settings.FAMILIES else person.married_name
+        if family not in result:
+          result.append(family)
+    if self.family in settings.FAMILIES:
+      result.append(self.object.family)
+    return result
   
   def get_absolute_url(self):
     return reverse('archive:image', kwargs={'slug': self.title })  

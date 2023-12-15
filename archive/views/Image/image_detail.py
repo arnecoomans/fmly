@@ -23,8 +23,6 @@ class ImageRedirectView(DetailView):
 
 
 ''' ImageView'''
-
-
 class ImageView(DetailView):
   model = Image
   template_name = 'archive/images/detail.html'
@@ -32,16 +30,4 @@ class ImageView(DetailView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'images'
-    context['family_collection'] = self.get_family_collection()
     return context
-  
-  def get_family_collection(self):
-    result = []
-    for person in self.object.people.all():
-      if person.last_name in settings.FAMILIES or person.married_name in settings.FAMILIES:
-        family = person.last_name if person.last_name in settings.FAMILIES else person.married_name
-        if family not in result:
-          result.append(family)
-    if self.object.family in settings.FAMILIES:
-      result.append(self.object.family)
-    return result
