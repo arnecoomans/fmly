@@ -119,7 +119,7 @@
           </div>
         </div>
 <!-- Tagged People -->
-        {% if image and perms.archive.view_person %}
+        {% if perms.archive.view_person %}
           <div class="row">
             <div class="col-3"><label for="{{ form.people.id_for_label }}">{% translate 'people'|capfirst %}:</label></div>
             <div class="col-9">
@@ -139,7 +139,7 @@
           </div>
         {% endif %}
 <!-- Tagged Tags -->
-        {% if image and perms.archive.view_tag and form.tag %}
+        {% if perms.archive.view_tag and form.tag %}
           <div class="row">
             <div class="col-3"><label for="{{ form.tag.id_for_label }}">{% translate 'tags'|capfirst %}:</label></div>
             <div class="col-9">
@@ -157,7 +157,7 @@
           </div>
         {% endif %}
 <!-- Image Grouping -->
-        {% if image and form.in_group %}
+        {% if form.in_group %}
           <div class="row">
             <div class="col-3"><label for="{{ form.in_group.id_for_label }}">{% translate 'group'|capfirst %}:</label></div>
             <div class="col-9">
@@ -186,7 +186,7 @@
           </div>
         {% endif %}
 <!-- Image in Family Collection -->
-        {% if image and families|length > 0 %}
+        {% if families|length > 0 %}
           <div class="row">
             <div class="col-3"><label for="family-id">{% translate 'family collection'|capfirst %}:</label></div>
             <div class="col-9">
@@ -200,12 +200,12 @@
               {% endif %}
                 <!-- Manage Manual Family Connections -->
                 {% if available_family_collections|length > 0 %}
-                <select name="family" id="family_id" class="form-control">
-                  <option value="">--- {% if image.family %}{% translate 'remove from family collection'|capfirst %}{% else %}{% translate 'add to family collection'|capfirst %}{% endif %} ---</option>
-                  {% for family in available_family_collections %}
-                    <option value="{{ family }}" {% if image.family == family %}selected{% endif %}>{{ family|title }}</option>
-                  {% endfor %}
-                </select>
+                  <select name="family" id="family_id" class="form-control">
+                    <option value="">--- {% if image.family %}{% translate 'remove from family collection'|capfirst %}{% else %}{% translate 'add to family collection'|capfirst %}{% endif %} ---</option>
+                    {% for family in available_family_collections %}
+                      <option value="{{ family }}" {% if image.family == family %}selected{% endif %}>{{ family|title }}</option>
+                    {% endfor %}
+                  </select>
                 {% endif %}
               </ul>
             </div>

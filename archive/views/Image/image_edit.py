@@ -37,16 +37,17 @@ class EditImageMaster:
       context['portrait'] = self.object.is_portrait_of
       context['available_portraits'] = self.object.people.all().filter(portrait=None, private=False)
       context['active_family_collections_tag'] = self.get_active_family_collections_tag()
-      context['available_family_collections'] = self.get_available_family_collections()
+    context['available_family_collections'] = self.get_available_family_collections()
     return context
   
   def get_active_family_collections_tag(self):
     result = []
-    for person in self.object.people.all():
-      if person.last_name in settings.FAMILIES or person.married_name in settings.FAMILIES:
-        family = person.last_name if person.last_name in settings.FAMILIES else person.married_name
-        if family not in result:
-          result.append(family)
+    if self.object:
+      for person in self.object.people.all():
+        if person.last_name in settings.FAMILIES or person.married_name in settings.FAMILIES:
+          family = person.last_name if person.last_name in settings.FAMILIES else person.married_name
+          if family not in result:
+            result.append(family)
     return result
   def get_available_family_collections(self):
     result = []
@@ -79,13 +80,57 @@ class EditImageMaster:
       form.instance.slug = slugify(form.cleaned_data['title'])
     ''' Check if an upload should be processed '''
     if 'source' in form.changed_data:
+      ''' Set source and thumbnail to string version of itself '''
       form.instance.source = str(form.instance.source)
       form.instance.thumbnail = str(form.instance.thumbnail)
+      safe_fields = ['source', 'title', 'description',
+                     'document_source', 'day', 'month', 'year',
+                     'family', 'is_portrait_of',
+                     'visibility_frontpage', 'visibility_person_page', 'is_deleted',
+                     'user']
       form_data = {}
+      ''' Build dict of form data that can be stored '''
       for field in form.changed_data:
-        form_data[field] = getattr(form.instance, field)
+        if field in safe_fields:
+          form_data[field] = form.cleaned_data[field]
+      print(form_data)
       image = Image.objects.update_or_create(slug=form.instance.slug,
                                              defaults=form_data)
+      image = image[0]
+      ''' Process additional fields that require an object to be saved first '''
+      # additional_fields = ['people', 'tag', 'in_group', 'attachments', '',]
+      if 'people' in form.changed_data:
+        image.people.set(form.cleaned_data['people'])
+      if 'tag' in form.changed_data:
+        image.tag.set(form.cleaned_data['tag'])
+      if 'in_group' in form.changed_data:
+        image.in_group.set(form.cleaned_data['in_group'])
+      if 'attachments' in form.changed_data:
+        image.attachments.set(form.cleaned_data['attachments'])
+      if 'is_portrait_of' in form.changed_data:
+        image.is_portrait_of.set(form.cleaned_data['is_portrait_of'])
+      image.save()
+                    #  
+      
+      # form_data = {
+      #   'no_relations': {},
+      #   'relations': {},
+      # }
+      # no_relation_fields = ['source', 'title', 'description',
+      #                       'document_source', 'day', 'month', 'year',
+      #                       'people', 'family',
+      #                       'visibility_frontpage', 'visibility_person_page', 'is_deleted']
+      # for field in form.changed_data:
+      #   if field in no_relation_fields:
+      #     form_data['no_relations'][field] = getattr(form.instance, field)
+      #   else:
+      #     form_data['relations'][field] = form.cleaned_data[field]
+      # image = Image.objects.update_or_create(slug=form.instance.slug,
+      #                                        defaults=form_data['no_relations'])
+      # if len(form_data['relations']) > 0:
+      #   for field, value in form_data['relations'].items():
+      #     setattr(image, field, value)
+      #   image.save()
       messages.add_message(self.request, messages.SUCCESS,
                             f"{ _('successfully uploaded image ') } { form.instance.source }.")
       return redirect('archive:image', form.instance.slug)
@@ -162,8 +207,8 @@ class AddImageView(EditImageMaster, CreateView):
   fields = ['source', 'title', 'description',
             'document_source', 'day', 'month', 'year',
             'people', 'family',
-            'visibility_frontpage', 'visibility_person_page', 'is_deleted']
-            # 'tag', 'in_group', 'attachments', 'is_portrait_of',] # Removed relation holding fields from view
+            'visibility_frontpage', 'visibility_person_page', 'is_deleted',
+            'tag', 'in_group', 'attachments', 'is_portrait_of',]
 
   def form_valid(self, form):
     ''' Store Image '''
@@ -174,8 +219,6 @@ class AddImageView(EditImageMaster, CreateView):
       return redirect('archive:add-image')
     ''' Store Source and fetch new source filename '''
     form.instance.source = self.store_source(source=self.request.FILES['source'])
-    # ''' Store Thumbnail '''
-    # form.instance.thumbnail = self.store_thumbnail(form.instance.source)
     ''' Proceed with Operation '''
     return super().form_valid(form)
   
