@@ -38,8 +38,8 @@
             {% endfor %}
           {% endif %}
           <!-- Family Collection -->
-          {% if family_collection|length > 0 %}
-            <li class=" bi bi-collection"> {% for family in family_collection %}<a href="{% url 'archive:images' %}?family={{ family }}" title="{% translate 'Open family collection of' %} {{ family }}">{{ family }}</a>{% if not forloop.last %}, {% endif %}{% endfor %} </li>
+          {% if image.family_collection|length > 0 %}
+            <li class=" bi bi-collection"> {% for family in image.family_collection %}<a href="{% url 'archive:images' %}?family={{ family }}" title="{% translate 'Open family collection of' %} {{ family }}">{{ family }}</a>{% if not forloop.last %}, {% endif %}{% endfor %} </li>
           {% endif %}
           <!-- Tags -->
           {% if perms.archive.view_tag and image.tag.all.count > 0 %}
