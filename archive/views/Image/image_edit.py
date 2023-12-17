@@ -110,27 +110,6 @@ class EditImageMaster:
       if 'is_portrait_of' in form.changed_data:
         image.is_portrait_of.set(form.cleaned_data['is_portrait_of'])
       image.save()
-                    #  
-      
-      # form_data = {
-      #   'no_relations': {},
-      #   'relations': {},
-      # }
-      # no_relation_fields = ['source', 'title', 'description',
-      #                       'document_source', 'day', 'month', 'year',
-      #                       'people', 'family',
-      #                       'visibility_frontpage', 'visibility_person_page', 'is_deleted']
-      # for field in form.changed_data:
-      #   if field in no_relation_fields:
-      #     form_data['no_relations'][field] = getattr(form.instance, field)
-      #   else:
-      #     form_data['relations'][field] = form.cleaned_data[field]
-      # image = Image.objects.update_or_create(slug=form.instance.slug,
-      #                                        defaults=form_data['no_relations'])
-      # if len(form_data['relations']) > 0:
-      #   for field, value in form_data['relations'].items():
-      #     setattr(image, field, value)
-      #   image.save()
       messages.add_message(self.request, messages.SUCCESS,
                             f"{ _('successfully uploaded image ') } { form.instance.source }.")
       return redirect('archive:image', form.instance.slug)
