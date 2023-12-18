@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-05 16:18+0100\n"
-"PO-Revision-Date: 2023-02-05 16:20+0100\n"
+"PO-Revision-Date: 2023-12-18 10:18+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.4.1\n"
 
 #: archive/admin.py:8
 msgid "Softdelete"
@@ -553,7 +553,7 @@ msgstr "te verbergen"
 msgid ""
 "Succesfully registered your account. Please log in with your e-mail address "
 "and chosen password. "
-msgstr "Account aangemaakt. Log in met je e-mailadres en wachtwoord."
+msgstr "Account aangemaakt. Log in met je e-mailadres en wachtwoord. "
 
 #: datepicker/templates/datepicker/event_detail.html:10
 #: datepicker/templates/datepicker/event_form.html:8
@@ -713,7 +713,7 @@ msgstr ""
 
 #: templates/registration/inline_login.html:5
 msgid "If you do not have an account, you can"
-msgstr "als je nog geen account heb, kan je"
+msgstr "Als je nog geen account heb, kan je"
 
 #: templates/registration/inline_login.html:5
 msgid "register here"
@@ -762,7 +762,7 @@ msgstr "mag niet bestaan uit alleen maar nummers"
 
 #: templates/registration/user_register_form.html:47
 msgid "If you already have an account"
-msgstr "als je al een account hebt"
+msgstr "Als je al een account hebt"
 
 #: templates/registration/user_register_form.html:47
 msgid "login here"
