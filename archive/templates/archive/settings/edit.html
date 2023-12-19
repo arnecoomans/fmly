@@ -1,16 +1,65 @@
-{% extends 'index.html' %}
-{% load i18n %}
-
+{% extends 'index.html' %}{% load i18n %}{% load static %}
 {% block content %}
-  {% if not perms.archive.change_preference %}
-    {% include  'archive/snippets/error_no_access.html' with object_type='notes' %}
-  {% else %}
-    <header>
-      <h2>{% translate 'Edit Preferences' %} {% translate 'for' %} "{{ request.user }}":</h2>
-    </header>
-    <div class="edit note">
-      <form method="post" class="note">
-        {% include 'archive/snippets/form_basic.html'%}
+  <div class="list detail card">
+    {% if not perms.archive.change_preference %}
+      {% include  'archive/snippets/error_no_access.html' with object_type='notes' %}
+    {% else %}
+      <h1>{% translate 'profile of'|capfirst %} {{ profile.user.get_full_name }}:</h1>
+      <hr>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="user" value="{{ user.id }}">
+        <h3>{% translate 'your information'|capfirst %}</h3>
+        <div class="row">
+          <div class="col-3 title-col"><label for="first_name">{% translate 'first name'|capfirst %}</label>:</div>
+            <div class="col-9"><input class="form-control form-control-lg" name="first_name" id="first_name" value="{{ profile.user.first_name }}" disabled></div>
+        </div>
+        <div class="row">
+          <div class="col-3 title-col"><label for="last_name">{% translate 'last name'|capfirst %}</label>:</div>
+            <div class="col-9"><input class="form-control form-control-lg" name="last_name" id="last_name" value="{{ profile.user.last_name }}" disabled></div>
+        </div>
+        <div class="row">
+          <div class="col-3 title-col"><label for="username">{% translate 'username'|capfirst %}</label>:</div>
+            <div class="col-9"><input class="form-control form-control-lg" name="username" id="username" value="{{ profile.user.username }}" disabled></div>
+        </div>
+        <div class="row">
+          <div class="col-3 title-col"><label for="email">{% translate 'email'|capfirst %}</label>:</div>
+            <div class="col-9"><input class="form-control form-control-lg" type="email" name="email" id="email" value="{{ profile.user.email }}" disabled></div>
+        </div>
+      </form>
+      <form>
+        <div class="spacer"><hr></div>
+        <!-- Content Links -->
+        <div class="row">
+          <div class="col-3"><strong>{% translate 'your content'|capfirst %}</strong>:</div>
+          <div class="col-9">
+            <ul class="no-bullets">
+              <li><a href="{% url 'archive:image-by-uploader' profile.user.username %}">{% translate 'all your uploads'|capfirst %}</a></li>
+              <li><a href="{% url 'archive:people' %}?user={{ profile.user.username }}">{% translate 'all people you manage'|capfirst %}</a></li>
+              <li><a href="{% url 'archive:tags' %}?user={{ profile.user.username }}">{% translate 'all your tags'|capfirst %}</a></li>
+              <li><a href="{% url 'archive:notes' %}?user={{ profile.user.username }}">{% translate 'all your notes'|capfirst %}</a></li>
+              <li><a href="{% url 'archive:comments' %}?user={{ profile.user.username }}">{% translate 'all your comments'|capfirst %}</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="spacer"><hr></div>
+      </form>
+      <form method="post">
+        {% csrf_token %}
+        <!-- Toggleable options -->
+        <div class="row">
+          <div class="col-3"><strong>{% translate 'settings'|capfirst %}</strong>:</div>
+          <div class="col-9">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" name="show_hidden_files" id="show_hidden_files" {% if profile.show_hidden_files %}checked{% endif %} onchange="this.form.submit();" >
+              <label class="form-check-label" for="show_hidden_files">{% translate 'show hidden files in image listings'|capfirst %} </label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" name="show_new_uploads" id="show_new_uploads" {% if profile.show_new_uploads %}checked{% endif %} onchange="this.form.submit();" >
+              <label class="form-check-label" for="show_new_uploads">{% translate 'new uploads are set to visible by default'|capfirst %} </label>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   {% endif %}

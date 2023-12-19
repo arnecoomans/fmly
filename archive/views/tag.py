@@ -23,8 +23,11 @@ class TagListView(ListView):
 
   def get_queryset(self):
     queryset = Tag.objects.all()
+    ''' User filter '''
+    if self.request.GET.get('user', False):
+      queryset = queryset.filter(user__username__iexact=self.request.GET.get('user', ''))
     ''' Tag search '''
-    if self.request.GET.get('search'):
+    if self.request.GET.get('search', False):
       search_text = self.request.GET.get('search').lower()
       queryset = queryset.filter(title__icontains=search_text) | \
                  queryset.filter(description__icontains=search_text)

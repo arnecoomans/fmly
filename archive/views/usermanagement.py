@@ -17,8 +17,11 @@ class PreferencesView(UpdateView):
   model = Preference
   template_name = 'archive/settings/edit.html'
   fields = ['show_hidden_files', 'show_new_uploads']
+  context_object_name = 'profile'
 
   def get_object(self):
+    object = Preference.objects.get_or_create(user=self.request.user)
+    return object[0]
     if Preference.objects.filter(user=self.request.user.id).count() > 0:
       object = Preference.objects.get(user=self.request.user.id)
     else:
