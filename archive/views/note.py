@@ -17,6 +17,9 @@ class NotesListView(ListView):
 
   def get_queryset(self):
     queryset = Note.objects.all()
+    ''' User filter '''
+    if self.request.GET.get('user', False):
+      queryset = queryset.filter(user__username__iexact=self.request.GET.get('user', ''))
     ''' Note search '''
     if self.request.GET.get('search'):
       search_text = self.request.GET.get('search').lower()

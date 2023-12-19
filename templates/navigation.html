@@ -39,7 +39,7 @@
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <!-- Personal Profile-->
-              <li><a class="dropdown-item bi bi-person"> {{ user.first_name }} {{ user.last_name }} ({{ user }})</a></li>
+              <li><a class="dropdown-item bi bi-person" href="{% url 'archive:settings' %}"> {{ user.first_name }} {{ user.last_name }} ({{ user }})</a></li>
               <li><a class="dropdown-item bi bi-images" href="{% url 'archive:image-by-uploader' user %}"> {% translate 'my uploads'|title %}</a></li>
               <li><div class="dropdown-divider"></div></li>
               <!-- Notes -->

@@ -14,6 +14,7 @@ def get_person_filters(request):
     'decade': None,
     'century': None,
     'family': None,
+    'user': None, 
     'search': None,
     'order_by': settings.PEOPLE_ORDERBY_DEFAULT,
   }
@@ -85,6 +86,9 @@ def get_person_queryset(filters):
     queryset = queryset.exclude(year_of_birth__gt=filters['century']+99).\
                         exclude(year_of_death__lte=filters['century']).\
                         filter(year_of_birth__gte=filters['century']-90)
+  ''' User filter '''
+  if filters['user']:
+    queryset = queryset.filter(user__username__iexact=filters['user'])
   ''' Free text search
       Searches Person Name, Bio
   '''
