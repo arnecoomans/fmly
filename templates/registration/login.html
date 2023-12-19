@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+{% extends "index.html" %}{% load i18n %}
 
 {% block pagetitle %}Aanmelden{% endblock %}
 
@@ -14,4 +14,12 @@
     </form>
     <p class="text-center">Heb je nog geen account, <a href="{% url 'archive:signup' %}">registreer</a> je hier.</p>
   </div>
+{% endblock %}
+
+{% block content %}
+  {% if user.is_authenticated %}
+    <div class="message">
+        {% translate "you have succesfully logged in"|capfirst %}. <a href="/">{% translate 'click here'|capfirst %}</a> {% translate 'to go to the homepage' %}.
+    </div>
+  {% endif %}
 {% endblock %}
