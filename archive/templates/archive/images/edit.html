@@ -23,10 +23,12 @@
           <div class="col-3"><label for="{{ form.source.id_for_label }}">{% translate 'sourcefile'|title %}:</label></div>
           <div class="col-9">
             {% if image.source %}
-              <div class="input-group mb-3">
+              <div class="input-group mb-3 parentDiv">
                 <span class="input-group-text" id="basic-addon1">{% translate 'selected file'|capfirst %}</span>
-                <input type="text" class="form-control" aria-describedby="basic-addon1" name="source" id="id_source" value="{{ image.source }}" disabled>
+                <input type="text" class="form-control" aria-describedby="basic-addon1" name="stored_source" id="id_stored_source" value="{{ image.source }}" disabled>
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="showInputAndHideParent()">{% translate 'replace'|capfirst %}</button>
               </div>
+              <input class="form-control" style="display: none;" type="file" id="id_source" name="source" accept="image/png, image/gif, image/jpeg, image/heic" {% if 'source' in form %}required value="{{ form.source.value }}{% endif %}">
             {% else %}
               <input class="form-control" type="file" id="id_source" name="source" accept="image/png, image/gif, image/jpeg, image/heic" {% if 'source' in form %}required value="{{ form.source.value }}{% endif %}">
             {% endif %}
@@ -270,4 +272,17 @@
     <hr>
     {% include 'archive/snippets/object_metadata.html' with object=image %}
   {% endif %}
+
+  <script>
+    function showInputAndHideParent() {
+      var parentDiv = document.querySelector('.parentDiv');
+      var inputElement = document.getElementById('id_source');
+
+      // Show the input
+      inputElement.style.display = 'block';
+
+      // Hide the parent div
+      parentDiv.style.display = 'none';
+    }
+    </script>
 {% endblock %}
