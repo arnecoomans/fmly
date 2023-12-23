@@ -174,6 +174,8 @@ class EditImageMaster:
     image.in_group.set(form['in_group'])
     image.attachments.set(form['attachments'])
     image.is_portrait_of__id = form['is_portrait_of']
+    image.height, image.width = image.get_image_dimensions()
+    image.storeSize()
     image.save()
     self.image = image
     messages.add_message(self.request, messages.SUCCESS, f"{ _('sucessfully ' + action + ' information of') } { form['title'] }.")
