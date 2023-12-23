@@ -220,7 +220,7 @@ class Image(models.Model):
     return result
   
   def get_absolute_url(self):
-    return reverse('archive:image', kwargs={'slug': self.slug })  
+    return reverse('archive:image', kwargs={'slug': self.slug }) 
 
   ''' Cache Metadata 
       Image Metadata is sometimes displayed as nice-to-have. To minimize file system calls, this information is cached in the database.
