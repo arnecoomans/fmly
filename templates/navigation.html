@@ -89,8 +89,8 @@
                 <li><div class="dropdown-divider"></div></li>
                 <li><a class="dropdown-item bi bi-wrench-adjustable-circle-fill" href="/admin"> {% translate 'admin'|title %}</a></li>
                 {% if image %}
-                  <li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/image/{{ image.id }}/change/"> {% translate 'edit this'|capfirst %} {% translate 'image'|title %} {% translate 'in admin' %}" %}</a></li>
-                  {% if image.comments.all.count > 0 %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/comment/?image__id__exact={{ image.id }}"> {% translate 'edit this'|capfirst %} {% translate 'image'|capfirst %} {% translate 'comments'|capfirst %} {% translate 'in admin' %}</a></li>{% endif%}
+                  <li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/image/{{ image.id }}/change/"> {% translate 'edit this'|capfirst %} {% translate 'image'|title %} {% translate 'in admin' %}</a></li>
+                  {% if image.comments.all.count > 0 %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/comment/?image__id__exact={{ image.id }}"> {% translate 'edit this'|capfirst %} {% translate 'image'|capfirst %} {% translate 'comments'|capfirst %} {% translate 'in admin' %}</a></li>{% endif %}
                 {% endif %}
                 {% if person %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/person/{{ person.id }}/change/"> {% translate 'edit this'|capfirst %} {% translate 'person'|title %} {% translate 'in admin' %}</a></li>{% endif %}
                 {% if note %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/note/{{ note.id }}/change/"> {% translate 'Edit note in admin'|title %}</a></li>{% endif %}

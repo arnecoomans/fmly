@@ -2,7 +2,7 @@
 {% if messages %}
   {% for message in messages %}
     <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'primary' }}{% endif %} alert-dismissible fade show" role="alert">
-      {{ message|safe }}
+      {{ message|capfirst|safe }}
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
   {% endfor %}

@@ -80,8 +80,8 @@ class Attachment(models.Model):
     description = str(self.description)
     if len(description) < 1:
       description = self.slug
-    if self.is_deleted:
-      description = f"[Deleted] { description }"
+    # if self.is_deleted:
+    #   description = f"[Deleted] { description }"
     return str(description)
     
   def get_absolute_url(self):
@@ -207,7 +207,7 @@ class Image(models.Model):
   def extension(self):
     return Path(str(self.source)).suffix[1:].lower()
   
-  ''' Familt Collection '''
+  ''' Family Collection '''
   def family_collection(self):
     result = []
     for person in self.people.all():
@@ -216,7 +216,7 @@ class Image(models.Model):
         if family not in result:
           result.append(family)
     if self.family in settings.FAMILIES:
-      result.append(self.object.family)
+      result.append(self.family)
     return result
   
   def get_absolute_url(self):
@@ -261,9 +261,9 @@ class Image(models.Model):
     if not self.title:
       self.title = str(self.source.name.replace('_', ' '))
     ''' Store Image Dimensions '''
-    self.height, self.width = self.get_image_dimensions()
-    ''' Generate thumbnail '''
-    if self.source and not self.thumbnail:
-      self.thumbnail = get_thumbnail(self.source)
+    # self.height, self.width = self.get_image_dimensions()
+    # ''' Generate thumbnail '''
+    # if self.source and not self.thumbnail:
+    #   self.thumbnail = get_thumbnail(self.source)
     ''' Save '''
     return super(Image, self).save(*args, **kwargs)
