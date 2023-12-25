@@ -20,6 +20,13 @@
       <div class="column right">
         <!-- Action List-->
         <ul class="action list no-bullets text-end">
+          {% if user.is_authenticated %}
+            <li>
+              <a href="{% url 'archive:love-image' image.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if image in user.preference.favorites.all %}{% translate 'stop loving'|capfirst %}{% else %}{% translate 'love'|capfirst %}{% endif %}">
+                <svg class="bi" width="24" height="24" fill="red"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#heart{% if image in user.preference.favorites.all %}-fill{% endif %}"/></svg>  
+              </a>
+            </li>
+          {% endif %}
           {% if perms.archive.change_document or perms.archive.change_image %}
             <li><a href="{% url 'archive:image-edit' image.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil"/></svg></a></li>
             {% if user.is_staff %}<li><a href="/admin/archive/image/{{ image.id }}/change/" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %} {% translate 'in admin' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil-square"/></svg></a></li>{% endif %}
