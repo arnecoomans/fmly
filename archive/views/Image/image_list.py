@@ -125,5 +125,10 @@ class ImageListView(ListView):
       else:
         ''' No images available to hide '''
         self.added_context['images_hidden'] =  False
+    ''' Loved images '''
+    if self.request.user.is_authenticated and hasattr(self.request.user, 'preference'):
+      if self.request.GET.get('loved', 'false') != 'false':
+        queryset = queryset.filter(slug__in=self.request.user.preference.favorites.values_list('slug', flat=True))
+
     ''' Return filtered queryset '''
     return queryset

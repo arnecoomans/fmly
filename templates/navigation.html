@@ -41,6 +41,7 @@
             <!-- Personal Profile-->
               <li><a class="dropdown-item bi bi-person" href="{% url 'archive:settings' %}"> {{ user.first_name }} {{ user.last_name }} ({{ user }})</a></li>
               <li><a class="dropdown-item bi bi-images" href="{% url 'archive:image-by-uploader' user %}"> {% translate 'my uploads'|title %}</a></li>
+              {% if user.preference.favorites.all.count > 0 %}<li><a class="dropdown-item bi bi-heart-fill" href="{% url 'archive:images' %}?loved"> {% translate 'images i love'|capfirst %}</a>{% endif %}
               <li><div class="dropdown-divider"></div></li>
               <!-- Notes -->
               {% if perms.archive.view_note %}
