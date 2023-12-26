@@ -132,10 +132,12 @@ class EditImageMaster:
       messages.add_message(self.request, messages.ERROR, f"{ _('no uploaded file detected, please select a file to upload') }. { escape(str(object)) }")
       return redirect(self.get_failure_url())
     ''' Form Field Validation: Required fields: Title
-        If no title is supplied, take the filename and remove the suffix 
+        If no title is supplied, take the original filename and remove the suffix 
+        Uses self.request.FILES to get the original filename
+        Replaces _ by space and removes everything after the last dot (assumed suffix)
     '''
     if not form['title'] or len(form['title']) == 0:
-        source = form['source'] if 'source' in form else object.source
+        source = str(self.request.FILES['source']) if 'source' in form else object.source
         form['title'] = str(source).replace('_', ' ')[:str(source).rfind('.')]
     ''' Enforce Slug '''
     if not 'slug' in form or not form['slug'] or len(form['slug']) == 0:
