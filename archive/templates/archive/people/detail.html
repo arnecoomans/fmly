@@ -34,13 +34,13 @@
         {% if person.nickname %}
           <dt>{% translate 'nickname'|capfirst %}:</dt><dd>{{ person.nickname }}</dd>
         {% endif %}
-        <dt>{% translate 'first names'|capfirst %}</dt><dd>{{ person.first_names }}{% if person.given_name %} ({{ person.given_name }}){% endif %}</dd>
-        <dt>{% translate 'last name'|capfirst %}</dt><dd>{% if person.married_name %}<a href="{% url 'archive:people' %}?family={{ person.married_name }}">{{ person.married_name }}</a> ({% translate 'born' %}: <a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>){% else %}<a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>{% endif %}</dd>
+        <dt>{% translate 'first names'|capfirst %}:</dt><dd>{{ person.first_names }}{% if person.given_name %} ({{ person.given_name }}){% endif %}</dd>
+        <dt>{% translate 'last name'|capfirst %}:</dt><dd>{% if person.married_name %}<a href="{% url 'archive:people' %}?family={{ person.married_name }}">{{ person.married_name }}</a> ({% translate 'born' %}: <a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>){% else %}<a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>{% endif %}</dd>
         {% if person.year_of_birth or person.month_of_birth or person_day_of_birth or person.place_of_birth %}
-          <dt>{% translate 'born'|capfirst %}</dt><dd>{{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}</dd>
+          <dt>{% translate 'born'|capfirst %}:</dt><dd>{{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}</dd>
         {% endif %}
         {% if person.year_of_death or person.month_of_death or person_day_of_death or moment_of_death_unconfirmed or person.place_of_death %}
-          <dt>{% translate 'died'|capfirst %}</dt><dd>{{ person.day_of_death|default:'?' }}-{{ person.month_of_death|default:'?' }}-{{ person.year_of_death|default:'?' }} {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}{% if person.ageatdeath %} ({{ person.ageatdeath }}){% endif %}</dd>
+          <dt>{% translate 'died'|capfirst %}:</dt><dd>{{ person.day_of_death|default:'?' }}-{{ person.month_of_death|default:'?' }}-{{ person.year_of_death|default:'?' }} {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}{% if person.ageatdeath %} ({{ person.ageatdeath }}){% endif %}</dd>
         {% endif %}
         {% if person.get_parents %}
           <dt>{% translate 'parent'|capfirst %}:</dt>
@@ -50,20 +50,20 @@
             {% endfor %}
             </dd>
         {% endif %}
-        <!-- Partners -->
-        {% if person.get_partners %}
-          <dt>{% translate 'partner'|capfirst %}{% if person.get_partners|length > 1 %}s{% endif %}:</dt>
-          <dd>
-            {% for person in person.get_partners %}
-            {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
-            {% endfor %}
-          </dd>
-        {% endif %}
         <!-- Broer(s) en Zus(sen) -->
         {% if person.get_siblings %}
           <dt>{% blocktranslate count counter=person.get_siblings|length  %}Brother/Sister{% plural %}Brothers/Sisters{% endblocktranslate %}:</dt>
           <dd>
             {% for person in person.get_siblings %}
+            {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+          </dd>
+        {% endif %}
+        <!-- Partners -->
+        {% if person.get_partners %}
+          <dt>{% translate 'partner'|capfirst %}{% if person.get_partners|length > 1 %}s{% endif %}:</dt>
+          <dd>
+            {% for person in person.get_partners %}
             {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
             {% endfor %}
           </dd>
