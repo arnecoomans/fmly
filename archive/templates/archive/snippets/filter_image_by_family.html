@@ -4,7 +4,7 @@
     {% if family == current_family %}
       {{ family|title }}
     {% else %}
-      <a href="{% url 'archive:images' %}?family={{ family }}"{% if family == current_family %} disabled{% endif %}>{{ family|title }}</a>
+      <a href="{% url 'archive:images' %}?{% include '../snippets/fixparams.html' with ignore='family' %}family={{ family }}"{% if family == current_family %} disabled{% endif %}>{{ family|title }}</a>
     {% endif %}
     {% if not forloop.last %} | {% endif %}
   {% endfor %}
