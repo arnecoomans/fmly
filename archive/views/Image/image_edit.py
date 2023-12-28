@@ -226,7 +226,7 @@ class EditImageMaster:
     target_filename = target['filename']
     heic = target['heic']
     ''' Store Image to Filesystem '''
-    PIL.MAX_IMAGE_PIXELS = 500000000
+    PIL.MAX_IMAGE_PIXELS = 933120000
     with PIL.open(uploaded_file) as image:
       if heic:
         image = image.save(settings.MEDIA_ROOT / target_filename,
@@ -238,7 +238,7 @@ class EditImageMaster:
     return target_filename
   
   def store_thumbnail(self, stored_file):
-    PIL.MAX_IMAGE_PIXELS = 500000000
+    PIL.MAX_IMAGE_PIXELS = 933120000
     ''' Store Source Information '''
     src_file = settings.MEDIA_ROOT.joinpath(stored_file)
     ''' Store Target Information '''
@@ -254,7 +254,8 @@ class EditImageMaster:
         width, height = img.size
         ratio = width / height
         tgt_height = int(tgt_width / ratio)
-        img = img.resize((tgt_width, tgt_height), PIL.Resampling.LANCZOS)
+        #img = img.resize((tgt_width, tgt_height), PIL.Resampling.LANCZOS)
+        img.thumbnail((tgt_width, tgt_height), PIL.Resampling.LANCZOS)
         img.save(settings.MEDIA_ROOT.joinpath(tgt_path).joinpath(tgt_file))
         messages.add_message(self.request, messages.SUCCESS,
                              f"{ _('stored thumbnail of image to') }: { str(Path('thumbnails').joinpath(tgt_file)) }")
