@@ -254,7 +254,8 @@ class EditImageMaster:
         width, height = img.size
         ratio = width / height
         tgt_height = int(tgt_width / ratio)
-        img = img.resize((tgt_width, tgt_height), PIL.Resampling.LANCZOS)
+        #img = img.resize((tgt_width, tgt_height), PIL.Resampling.LANCZOS)
+        img.thumbnail((tgt_width, tgt_height), PIL.Resampling.LANCZOS)
         img.save(settings.MEDIA_ROOT.joinpath(tgt_path).joinpath(tgt_file))
         messages.add_message(self.request, messages.SUCCESS,
                              f"{ _('stored thumbnail of image to') }: { str(Path('thumbnails').joinpath(tgt_file)) }")
