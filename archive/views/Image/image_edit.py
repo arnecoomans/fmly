@@ -226,7 +226,7 @@ class EditImageMaster:
     target_filename = target['filename']
     heic = target['heic']
     ''' Store Image to Filesystem '''
-    PIL.MAX_IMAGE_PIXELS = 500000000
+    PIL.MAX_IMAGE_PIXELS = 933120000
     with PIL.open(uploaded_file) as image:
       if heic:
         image = image.save(settings.MEDIA_ROOT / target_filename,
@@ -238,7 +238,7 @@ class EditImageMaster:
     return target_filename
   
   def store_thumbnail(self, stored_file):
-    PIL.MAX_IMAGE_PIXELS = 500000000
+    PIL.MAX_IMAGE_PIXELS = 933120000
     ''' Store Source Information '''
     src_file = settings.MEDIA_ROOT.joinpath(stored_file)
     ''' Store Target Information '''
