@@ -10,7 +10,7 @@ class Preference(models.Model):
   show_new_uploads    = models.BooleanField(default=True)
 
   ''' Favorites '''
-  favorites           = models.ManyToManyField(Image, null=True, related_name="favorites")
+  favorites           = models.ManyToManyField(Image, blank=True, related_name="loved_by")
 
   def __str__(self):
     return f"Voorkeuren van { self.user }"
