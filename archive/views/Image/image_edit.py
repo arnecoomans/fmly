@@ -242,7 +242,9 @@ class EditImageMaster:
     ''' Store Source Information '''
     src_file = settings.MEDIA_ROOT.joinpath(stored_file)
     ''' Store Target Information '''
-    tgt_width = 300
+    # tgt_width = 300
+    max_width = 300
+    max_height = 500
     tgt_path = settings.MEDIA_ROOT.joinpath('thumbnails/')
     tgt_file = str(stored_file.name)
     ''' Check if thumbnails_dir exists '''
@@ -251,11 +253,11 @@ class EditImageMaster:
     ''' Set destination '''
     try:
       with PIL.open(src_file) as img:
-        width, height = img.size
-        ratio = width / height
-        tgt_height = int(tgt_width / ratio)
+        # width, height = img.size
+        # ratio = width / height
+        # tgt_height = int(tgt_width / ratio)
         #img = img.resize((tgt_width, tgt_height), PIL.Resampling.LANCZOS)
-        img.thumbnail((tgt_width, tgt_height), PIL.Resampling.LANCZOS)
+        img.thumbnail((max_width, max_height), PIL.Resampling.LANCZOS)
         img.save(settings.MEDIA_ROOT.joinpath(tgt_path).joinpath(tgt_file))
         messages.add_message(self.request, messages.SUCCESS,
                              f"{ _('stored thumbnail of image to') }: { str(Path('thumbnails').joinpath(tgt_file)) }")

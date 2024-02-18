@@ -10,10 +10,14 @@ from django.contrib.auth.password_validation import validate_password
 from archive.models.preference import Preference
 from django.contrib.auth.models import Group
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 
 ''' Preferences '''
-class PreferencesView(UpdateView):
+class PreferencesView(LoginRequiredMixin, UpdateView):
+  login_url = "/login/"
+  redirect_field_name = "next"
   model = Preference
   template_name = 'archive/settings/edit.html'
   fields = ['show_hidden_files', 'show_new_uploads']
