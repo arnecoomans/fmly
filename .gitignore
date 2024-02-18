@@ -4,6 +4,9 @@
 *.bak
 __pycache__
 
+# Ignore virtualenv
+.venv
+
 # Keep database outside repo
 *.sqlite3
 # Keep settings file outside repo
