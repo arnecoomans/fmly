@@ -49,6 +49,17 @@
           {% if image.family_collection|length > 0 %}
             <li class=" bi bi-collection" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'this object is part of a family collection'|capfirst %}"> {% for family in image.family_collection %}<a href="{% url 'archive:images' %}?family={{ family }}" title="{% translate 'Open family collection of' %} {{ family }}">{{ family }}</a>{% if not forloop.last %}, {% endif %}{% endfor %} </li>
           {% endif %}
+          <!-- Love -->
+          {% if image in user.preference.favorites.all and image.loved_by.all.count > 1 or image.loved_by.all.count > 0 %}
+            <li class="bi bi-heart{% if image in user.preference.favorites.all %}-fill{% endif %}">
+              {% translate 'loved by'|capfirst %}: 
+              {% if image in user.preference.favorites.all %}
+                {% translate 'you'|capfirst %}{% if image.loved_by.all.count > 1 %} {% translate 'and' %} {{ image.loved_by.all.count|add:-1 }} {% translate 'other' %} {% if image.loved_by.all.count|add:-1 == 1 %}{% translate 'person' %}{% else %}{% translate 'people' %}{% endif %}{% endif %}
+              {% else %}
+              {{ image.loved_by.all.count }} {% translate 'other' %} {% if image.loved_by.all.count == 1 %}{% translate 'person' %}{% else %}{% translate 'people' %}{% endif %}
+              {% endif %}
+            </li> 
+          {% endif %}
           <!-- Tags -->
           {% if perms.archive.view_tag and image.tag.all.count > 0 %}
             {% for tag in image.tag.all %}
