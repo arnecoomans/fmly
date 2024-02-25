@@ -1,5 +1,4 @@
 from .comment import *
-from .image import *
 from .Image.image_list import *
 from .Image.image_detail import *
 from .Image.image_edit import *
