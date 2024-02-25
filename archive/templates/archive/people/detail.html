@@ -22,8 +22,11 @@
         <ul class="action list no-bullets text-end">
           {% if perms.archive.change_person %}
             <li><a href="{% url 'archive:person-edit' person.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'person details' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil"/></svg></a></li>
-            {% if user.is_staff %}<li><a href="/admin/archive/person/{{ person.id }}/change/" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %} {% translate 'in admin' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil-square"/></svg></a></li>{% endif %}
           {% endif %}
+          {% if perms.archive.add_document or perms.archive.add_image %}
+            <li><A href="{% url 'archive:add-person-image' person.id person.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'add image for'|capfirst %} {{ person.full_name }}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#file-earmark-plus"/></svg></a></li>
+          {% endif %}
+          {% if user.is_staff %}<li><a href="/admin/archive/person/{{ person.id }}/change/" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %} {% translate 'in admin' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil-square"/></svg></a></li>{% endif %}
         </ul>
         {% if person.related_user %}
           <dt>&nbsp;</dt><dd>{% translate 'is'|capfirst %} {% if person.related_user.is_superuser %}{% translate 'manager' %}{% else %}{% translate 'user' %}{% endif %} {% translate 'of this website' %}</dd>

@@ -56,6 +56,8 @@ class EditImageMaster:
       ''' Family Collections '''
       context['active_family_collections_tag'] = self.get_active_family_collections_tag()
     context['available_family_collections'] = self.get_available_family_collections()
+    if self.kwargs.get('subject_id', None):
+      context['subject_id'] = self.kwargs.get('subject_id', None)
     return context
   
   ''' Family Collections '''
@@ -182,7 +184,6 @@ class EditImageMaster:
     self.image = image
     messages.add_message(self.request, messages.SUCCESS, f"{ _('sucessfully ' + action + ' information of') } { form['title'] }.")
     ''' Processing succesful; Redirect to success page '''
-    # messages.add_message(self.request, messages.INFO, escape(str(form)))
     return redirect(self.get_success_url())
 
 
@@ -253,10 +254,6 @@ class EditImageMaster:
     ''' Set destination '''
     try:
       with PIL.open(src_file) as img:
-        # width, height = img.size
-        # ratio = width / height
-        # tgt_height = int(tgt_width / ratio)
-        #img = img.resize((tgt_width, tgt_height), PIL.Resampling.LANCZOS)
         img.thumbnail((max_width, max_height), PIL.Resampling.LANCZOS)
         img.save(settings.MEDIA_ROOT.joinpath(tgt_path).joinpath(tgt_file))
         messages.add_message(self.request, messages.SUCCESS,

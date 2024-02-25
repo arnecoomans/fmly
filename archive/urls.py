@@ -34,7 +34,9 @@ urlpatterns = [
   path('person/add-relation/', views.PersonAddRelationView.as_view(), name='add-relationship'),
   # Tree
   path('tree/<int:pk>/', views.TreeView.as_view(), name="tree"),
-
+  # Add Image
+  path('person/<int:subject_id>:<str:subject_slug>/add-image/', views.AddImageView.as_view(), name='add-person-image'),
+  
   # Tags 
   path('tags/', views.TagListView.as_view(), name='tags'),
   path('tag/new/', views.AddTagView.as_view(), name='add-tag'),
