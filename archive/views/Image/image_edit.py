@@ -58,6 +58,8 @@ class EditImageMaster:
     context['available_family_collections'] = self.get_available_family_collections()
     if self.kwargs.get('subject_id', None):
       context['subject_id'] = self.kwargs.get('subject_id', None)
+    if hasattr(self, 'action'):
+      context['action'] = self.action
     return context
   
   ''' Family Collections '''
@@ -144,8 +146,17 @@ class EditImageMaster:
     ''' Enforce Slug '''
     if not 'slug' in form or not form['slug'] or len(form['slug']) == 0:
       form['slug'] = slugify(str(form['title']))
+    if self.action == 'add':
+      i = 0
+      original_slug = form['slug']
+      while Image.objects.filter(slug=form['slug']).exists():
+        i += 1
+        form['slug'] = f"{ original_slug }-{ str(i) }"
+      if i > 0:
+        messages.add_message(self.request, messages.INFO, f"{ _('slug already exists, selecting a different slug') }.")
+
     ''' Enforce Thumbnail '''
-    if 'thumbnail' not in form or not form['thumbnail'] or len(form['thumbnail']) == 0:
+    if 'thumbnail' not in form or not form['thumbnail'] or len(form['thumbnail']) == 0 or 'source'in self.request.FILES: 
       form['thumbnail'] = self.store_thumbnail(Path(str(form['source'])))
     ''' Enforce User '''
     if 'user' not in form or not form['user'] or len(form['user']) == 0:
@@ -264,12 +275,14 @@ class EditImageMaster:
       return None
 
 class EditImageView(EditImageMaster, UpdateView):
+  action = 'edit'
   def get_failure_url(self):
     return reverse_lazy('archive:image-edit', kwargs={'pk': self.get_object().id})
   def get_success_url(self):
     return reverse_lazy('archive:image', kwargs={'slug': self.get_object().slug})
 
 class AddImageView(EditImageMaster, CreateView):
+  action = 'add'
   def get_failure_url(self):
     return reverse_lazy('archive:add-image')
   def get_success_url(self):
