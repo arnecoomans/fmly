@@ -148,9 +148,10 @@ class EditImageMaster:
       form['slug'] = slugify(str(form['title']))
     if self.action == 'add':
       i = 0
+      original_slug = form['slug']
       while Image.objects.filter(slug=form['slug']).exists():
         i += 1
-        form['slug'] = f"{ form['slug'] }-{ str(i) }"
+        form['slug'] = f"{ original_slug }-{ str(i) }"
       if i > 0:
         messages.add_message(self.request, messages.INFO, f"{ _('slug already exists, selecting a different slug') }.")
 
