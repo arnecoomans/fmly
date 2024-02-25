@@ -277,3 +277,13 @@ class AddImageView(EditImageMaster, CreateView):
     return reverse_lazy('archive:add-image')
   def get_success_url(self):
     return reverse_lazy('archive:image', kwargs={'slug': self.image.slug})
+
+class RegenerateThumbnailView(EditImageMaster, UpdateView):
+  def get(self, *args, **kwargs):
+    ''' Set Object'''
+    self.object = self.get_object()
+    ''' Store Thumbnail '''
+    self.object.thumbnail = self.store_thumbnail(Path(str(self.object.source)))
+    self.object.save()
+    messages.add_message(self.request, messages.SUCCESS, f"{ _('sucessfully regenerated thumbnail of') } { self.object.title }.")
+    return redirect(self.get_success_url())
