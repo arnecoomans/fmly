@@ -28,6 +28,7 @@
             </li>
           {% endif %}
           {% if perms.archive.change_document or perms.archive.change_image %}
+            <li><a href="{% url 'archive:regenerate-thumbnail' image.id image.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'regenerate thumbnail'|capfirst %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#arrow-clockwise"/></svg></a></li>
             <li><a href="{% url 'archive:image-edit' image.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil"/></svg></a></li>
             {% if user.is_staff %}<li><a href="/admin/archive/image/{{ image.id }}/change/" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %} {% translate 'in admin' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil-square"/></svg></a></li>{% endif %}
           {% endif %}

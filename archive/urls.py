@@ -13,6 +13,7 @@ urlpatterns = [
   path('object/new/', views.AddImageView.as_view(), name='add-image'),
   path('object/<str:slug>/', views.ImageView.as_view(), name='image'),
   path('object/<str:slug>/love/', views.ToggleFavoriteImage.as_view(), name='love-image'),
+  path('object/<int:pk>:<str:slug>/regeneratethumbnail/', views.RegenerateThumbnailView.as_view(), name='regenerate-thumbnail'),
 
   # Special Image views
   path('objects/<int:decade>/', views.ImageListView.as_view(), {'columns': ('decade')}, name='images-by-decade'),
