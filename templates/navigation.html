@@ -97,7 +97,7 @@
                 {% if note %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/note/{{ note.id }}/change/"> {% translate 'Edit note in admin'|title %}</a></li>{% endif %}
               {% endif %}
               <li><div class="dropdown-divider"></div></li>
-              <li><a class="dropdown-item bi bi-box-arrow-left" href="{% url 'logout' %}" title="Je bent ingelogd als {{ user.first_name }} {{ user.last_name }} ({{ user }})"> {% translate 'Log out'|title %}</a></li>
+              <li><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="dropdown-item" title="{% translate 'you are logged in as'|capfirst %} {{ user.first_name }} {{ user.last_name }} ({{ user }})"><i class="bi bi-box-arrow-left"></i> {% translate 'log out'|title %}</button></form></li>
             </ul>
           </li>
         {% endif %}
