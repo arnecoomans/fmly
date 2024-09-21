@@ -1,9 +1,13 @@
-{% load i18n %}{% if not object.is_deleted %}
+{% load i18n %}{% load static %}{% if not object.is_deleted %}
   <div class="object{% if not object.visibility_frontpage or not object.visibility_person_page %} hidden{% endif %}" id="{{ object.title|slugify }}">
     <h2><span class="object-id">#{{ object.id }}</span><a href="{% url 'archive:image' object.slug %}" title="{{ object.title }}" tabindex="{{ forloop.counter }}">{{ object.title|truncatewords_html:3 }}</a></h2>
     <div class="column left">
       <a href="{% url 'archive:image' object.slug %}" title="{{ object.title }}">
-        <img src="/documents/{{ object.thumbnail }}" alt="{{ object.title }}" title="{{ object.title }} - {{ object.description }}">
+        {% if object.thumbnail %}
+          <img src="/documents/{{ object.thumbnail }}" alt="{{ object.title }}" title="{{ object.title }} - {{ object.description }}">
+        {% else %}
+          <svg class="bi" width="150" height="100" fill="#333"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#image-fill"></svg>
+        {% endif %}
       </a>
     </div>
     <div class="column right">
