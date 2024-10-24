@@ -108,7 +108,11 @@
             </li>
             {% endif %}
           {% if perms.archive.view_comment and image.count_comments > 0 %}
-            {% for comment in image.get_comments reversed %}
+          <div class="autoload comments">
+            <div class="comment-messages"></div>
+            <span class="comments statusmessage">loading comments...</span>
+          </div>
+            {% comment %} {% for comment in image.get_comments reversed %}
               <li class="bi bi-chat-right-text">
                 <div class="comment">
                   <h4>{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} schreef op {{ comment.date_created|date:'d/m/Y' }}:</h4>
@@ -122,7 +126,7 @@
                   {% endif %}
                 </div>
               </li>
-            {% endfor %}
+            {% endfor %} {% endcomment %}
           {% endif %}
         </ul>
       </div>
@@ -140,4 +144,20 @@
       {% endfor %}
     </section>
   {% endif %}
+{% endblock %}
+
+{% block footer %}
+<script src="{% static 'js/jquery.min.js' %}"></script>
+
+<script src="{% static 'js/autoload_comments.js' %}"></script>
+
+<script>
+  const csrfToken = '{{ csrf_token }}';
+  const url = '{% url 'archive:acommentsforimage' image.id image.slug %}'
+  $(document).ready(function() {
+    $('.comments.statusmessage').remove()
+    fetchAllComments(url, csrfToken);
+  });
+</script>
+
 {% endblock %}

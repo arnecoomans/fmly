@@ -1,14 +1,10 @@
 
 from django.views.generic.list import ListView
-from django.views.generic.edit import CreateView, UpdateView
-from django.shortcuts import redirect, reverse
-from django.contrib import messages
+from django.template.loader import render_to_string
+
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
-from django.conf import settings
 from django.http import JsonResponse
-from django.utils.html import strip_tags
-import markdown
 
 # from .snippets.a_helper import aHelper
 # from .snippets.filter_class import FilterClass
@@ -16,31 +12,27 @@ import markdown
 from archive.models import Image
 from archive.models.comment import Comment
 
-md = markdown.Markdown(extensions=["fenced_code"])
-
-
 class aListComments(ListView):
   model = Comment
 
   def get(self, request, *args, **kwargs):
     response = {
       'error': False,
+      'message': '',
       'object': {},
-      'data': {
-        'comments': []
-      }
+      'payload': [],
     }
     ''' Validate that user is logged in '''
     if not self.request.user.is_authenticated:
       response['error'] = True
-      response['message'] = _('You need to be logged in to view comments')
+      response['message'] = _('you need to be logged in to view comments').capitalize()
       return JsonResponse(response)
     ''' Validate object '''
     object = self.getObject()
     if object == False:
       return JsonResponse({
         'error': True,
-        'message': _('Object not found')
+        'message': _('object not found').capitalize(),
       })
     elif object:
       response['object'] = {
@@ -50,21 +42,7 @@ class aListComments(ListView):
         'url': object.get_absolute_url(),
       }
     for comment in self.getComments(object):
-      rendered_content = "<li class=\"bi bi-chat-right-text\"><div class=\"comment\">" + \
-                            f"<h4>{ comment.user.get_full_name() if comment.user.get_full_name() else comment.user }</h4>" + \
-                            md.convert(strip_tags(comment.content))
-      rendered_content += "</div></li>"
-      response['data']['comments'].append({
-        'id': comment.id, 
-        'content': md.convert(strip_tags(comment.content)),
-        'actions': {},
-        'user': {
-          'id': comment.user.id,
-          'username': comment.user.username,
-          'displayname': comment.user.get_full_name() if comment.user.get_full_name() else comment.user.username,
-        },
-        'date_created': comment.date_created,
-      })
+      response['payload'].append(render_to_string('archive/partial/comment.html', {'comment': comment}))
     return JsonResponse(response)
   
   def getObject(self):
