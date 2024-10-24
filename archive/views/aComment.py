@@ -41,8 +41,10 @@ class aListComments(ListView):
         'slug': object.slug,
         'url': object.get_absolute_url(),
       }
+    show_thumbnail = False if 'pk' in self.kwargs and 'slug' in self.kwargs else True
+    ''' Render comments '''
     for comment in self.getComments(object):
-      response['payload'].append(render_to_string('archive/partial/comment.html', {'comment': comment}))
+      response['payload'].append(render_to_string('archive/partial/comment.html', {'comment': comment, 'show_thumbnail': show_thumbnail}))
     return JsonResponse(response)
   
   def getObject(self):
@@ -57,7 +59,9 @@ class aListComments(ListView):
   def getComments(self, object):
     ''' Fetch all not deleted comments '''
     comments = Comment.objects.all().exclude(is_deleted=True)
-    ''' Process filters: ger comments for object '''
+    ''' Process filters: get comments for object 
+        If no PK or SLUG in url kwargs, return all comments
+    '''
     if 'pk' in self.kwargs and 'slug' in self.kwargs:
       comments = comments.filter(image=self.getObject())
     ''' Process filters: get comments for user '''

@@ -187,12 +187,32 @@ h6:hover:has(a), h6:hover a, h6 a:hover {
     color: var(--colour-dark, navy) !important;    
   }
   
+  li:has(.comment) {
+    list-style-type: none;
+  }
   .comment {
     display: inline-block; 
     width: 90%; 
     vertical-align: top;
     border: var(--object-border);
     margin-bottom: 15px;
+  }
+  .comment > .thumbnail {
+    display: inline-block;
+    width: 10%;
+    vertical-align: top;
+  }
+  .comment > .thumbnail > img,
+  .comment > .thumbnail > a > img {
+    max-width: 100%;
+  }
+  .comment > .content {
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+  }
+  .comment:has(.thumbnail) > .content {
+    width: 89%;
   }
   .comment h4 {
     background-color: var(--colour-dark);

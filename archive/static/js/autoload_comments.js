@@ -16,6 +16,7 @@ function fetchAllComments(url, csrf_token) {
         return false;
       } else {
         $('.comments .comment').remove();
+        console.log(data);
         $.each(data['payload'], function(index, comment){
           $('.autoload.comments').append(comment);
         });
