@@ -14,11 +14,13 @@ urlpatterns = [
   path('object/<str:slug>/', views.ImageView.as_view(), name='image'),
   path('object/<str:slug>/love/', views.ToggleFavoriteImage.as_view(), name='love-image'),
   path('object/<int:pk>:<str:slug>/regeneratethumbnail/', views.RegenerateThumbnailView.as_view(), name='regenerate-thumbnail'),
+  path('object/<int:pk>:<str:slug>/a/comments/', views.aListComments.as_view(), name='acommentsforimage'),
 
   # Special Image views
   path('objects/<int:decade>/', views.ImageListView.as_view(), {'columns': ('decade')}, name='images-by-decade'),
   path('objects/by:<str:user>/', views.ImageListView.as_view(), {'columns': ('user')}, name='image-by-uploader'),
   path('objects/<str:tag>/', views.ImageListView.as_view(), {'columns': ('tag')}, name='image-with-tag'),
+  path('objects/a/comments/', views.aListComments.as_view(), name='acomments'),
   path('objects/', views.ImageListView.as_view(), name='images'),
 
   # People
@@ -27,6 +29,7 @@ urlpatterns = [
   path('person/<int:pk>/edit/', views.EditPersonView.as_view(), name='person-edit'),
   path('person/<int:pk>/<name>/', views.PersonView.as_view(), name='person'),
   path('person/new/', views.AddPersonView.as_view(), name='add-person'),
+  path('person/add/', views.AddPerson.as_view(), name='new-add-person'),
   # Portrait
   path('person/<int:subject>/portrait:<int:removed_image>/delete/', views.RemovePortraitView.as_view(), name='remove-portrait'),
   # Relationships
