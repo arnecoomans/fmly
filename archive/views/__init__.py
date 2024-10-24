@@ -9,3 +9,5 @@ from .person import *
 from .tag import *
 from .usermanagement import *
 from .tree import *
+from .aComment import *
+from .People import *

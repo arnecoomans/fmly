@@ -1,0 +1,103 @@
+{% extends 'index.html' %}
+{% load i18n %}
+
+{% block content %}
+  {% if not perms.archive.change_person %}
+    {% include  'archive/snippets/error_no_access.html' with object_type='people' %}
+  {% else %}
+    <header>
+      <h2>{% translate 'add person'|capfirst %}</h2>
+      {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+    </header>
+    <div class="edit note">
+      <div class="step step-one">
+        <form method="POST" action="#">
+          {% csrf_token %}
+          
+          <!-- Personal Information -->
+          <h3>Personal Information</h3>
+          
+          <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" required>
+          </div>
+        
+          <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="married_name">Married Name (if applicable)</label>
+            <input type="text" class="form-control" id="married_name" name="married_name">
+          </div>
+        
+          <!-- Date and Place of Birth -->
+          <h3>Birth Information</h3>
+          
+          <div class="form-group">
+            <label for="dob">Date of Birth</label>
+            <input type="date" class="form-control" id="dob" name="dob" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="birth_place">Place of Birth</label>
+            <input type="text" class="form-control" id="birth_place" name="birth_place" required>
+          </div>
+        
+          <!-- Date and Place of Death (if applicable) -->
+          <h3>Death Information (if applicable)</h3>
+        
+          <div class="form-group">
+            <label for="dod">Date of Death</label>
+            <input type="date" class="form-control" id="dod" name="dod">
+          </div>
+          
+          <div class="form-group">
+            <label for="death_place">Place of Death</label>
+            <input type="text" class="form-control" id="death_place" name="death_place">
+          </div>
+        
+          <!-- Family Information -->
+          <h3>Family Information</h3>
+        
+          <div class="form-group">
+            <label for="father">Father</label>
+            <select class="form-control" id="father" name="father">
+              <option value="">-- Select Father --</option>
+              <!-- Dynamically load family members here -->
+            </select>
+          </div>
+        
+          <div class="form-group">
+            <label for="mother">Mother</label>
+            <select class="form-control" id="mother" name="mother">
+              <option value="">-- Select Mother --</option>
+              <!-- Dynamically load family members here -->
+            </select>
+          </div>
+        
+          <div class="form-group">
+            <label for="siblings">Siblings</label>
+            <select class="form-control" id="siblings" name="siblings" multiple>
+              <!-- Dynamically load family members here -->
+            </select>
+          </div>
+        
+          <div class="form-group">
+            <label for="children">Children</label>
+            <select class="form-control" id="children" name="children" multiple>
+              <!-- Dynamically load family members here -->
+            </select>
+          </div>
+        
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn-primary">Add Person</button>
+        </form>
+      </div>        
+    </div>
+    <!-- Meta information -->
+    <hr>
+    {% include 'archive/snippets/object_metadata.html' with object=person %}
+  {% endif %}
+{% endblock %}
