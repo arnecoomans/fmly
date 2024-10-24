@@ -1,19 +1,22 @@
 {% extends 'index.html' %}
-{% load i18n %}
+{% load i18n %}{% load static %}
 
 {% block content %}
   {% if not perms.archive.view_comment %}
-    {% include  'archive/snippets/error_no_access.html' with object_type='comments' %}
-  {% elif not comment_list %}
     {% include  'archive/snippets/error_no_access.html' with object_type='comments' %}
   {% else %}
     <header>
       <h2>{% translate 'comments' %}:</h2>
       {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
     </header>
+    <div class="autoload comments">
+      <div class="comment-messages"></div>
+      <span class="comments statusmessage">loading comments...</span>
+    </div>
+    
     <!-- Pagination -->
     {% include 'archive/snippets/pagination.html' %}
-    <section class="objects">
+    {% comment %} <section class="objects">
       {% for comment in comment_list %}
         <div class="object">
           <h5><a href="{% url 'archive:image' comment.image.slug %}#comments">{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} over {{ comment.image.title }}</a></h5>
@@ -28,8 +31,24 @@
           </div>
         </div>
       {% endfor %}
-    </section>
+    </section> {% endcomment %}
     <!-- Pagination -->
     {% include 'archive/snippets/pagination.html' %}
   {% endif %}
+{% endblock %}
+
+{% block footer %}
+<script src="{% static 'js/jquery.min.js' %}"></script>
+
+<script src="{% static 'js/autoload_comments.js' %}"></script>
+
+<script>
+  const csrfToken = '{{ csrf_token }}';
+  const url = '{% url 'archive:acomments' %}'
+  $(document).ready(function() {
+    $('.comments.statusmessage').remove()
+    fetchAllComments(url, csrfToken);
+  });
+</script>
+
 {% endblock %}

@@ -1,4 +1,4 @@
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from django.shortcuts import redirect
 from django.conf import settings
@@ -32,10 +32,10 @@ def get_comment_preview(comment):
   return ' '.join(comment)
 
 ''' List comments by date added newest first '''
-class CommentListView(ListView):
+class CommentListView(TemplateView):
   model = Comment
   template_name = 'archive/comments/list.html'
-  paginate_by = settings.PAGINATE
+  # paginate_by = settings.PAGINATE
 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
@@ -44,26 +44,26 @@ class CommentListView(ListView):
     context['page_description'] = f"{ _('To add a comment, first open the photo') }."
     return context
   
-  def get_queryset(self):
-    queryset = Comment.objects.all()
-    ''' Remove deleted_comments '''
-    queryset = queryset.filter(is_deleted=False)
-    ''' Filter comments by user '''
-    if self.request.GET.get('user'):
-      queryset = queryset.filter(user__username=self.request.GET.get('user'))
-    ''' Free text search 
-        Search Comment text, image title or user
-    '''
-    if self.request.GET.get('search'):
-      search_text = self.request.GET.get('search').lower()
-      queryset = queryset.filter(content__icontains=search_text) | \
-                 queryset.filter(image__title__icontains=search_text) | \
-                 queryset.filter(user__username__icontains=search_text) | \
-                 queryset.filter(user__first_name__icontains=search_text) | \
-                 queryset.filter(user__last_name__icontains=search_text)
-    '''  and add ordering'''
-    queryset = queryset.order_by('-date_modified')
-    return queryset
+  # def get_queryset(self):
+  #   queryset = Comment.objects.all()
+  #   ''' Remove deleted_comments '''
+  #   queryset = queryset.filter(is_deleted=False)
+  #   ''' Filter comments by user '''
+  #   if self.request.GET.get('user'):
+  #     queryset = queryset.filter(user__username=self.request.GET.get('user'))
+  #   ''' Free text search 
+  #       Search Comment text, image title or user
+  #   '''
+  #   if self.request.GET.get('search'):
+  #     search_text = self.request.GET.get('search').lower()
+  #     queryset = queryset.filter(content__icontains=search_text) | \
+  #                queryset.filter(image__title__icontains=search_text) | \
+  #                queryset.filter(user__username__icontains=search_text) | \
+  #                queryset.filter(user__first_name__icontains=search_text) | \
+  #                queryset.filter(user__last_name__icontains=search_text)
+  #   '''  and add ordering'''
+  #   queryset = queryset.order_by('-date_modified')
+  #   return queryset
 
 ''' Add Comment '''
 class AddCommentView(PermissionRequiredMixin, CreateView):
