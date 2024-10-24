@@ -155,7 +155,7 @@
   const csrfToken = '{{ csrf_token }}';
   const url = '{% url 'archive:acommentsforimage' image.id image.slug %}'
   $(document).ready(function() {
-    $('.comments.statusmessage').hide()
+    $('.comments.statusmessage').remove()
     fetchAllComments(url, csrfToken);
   });
 </script>

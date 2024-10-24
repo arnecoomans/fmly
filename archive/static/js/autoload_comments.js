@@ -15,6 +15,7 @@ function fetchAllComments(url, csrf_token) {
         $('#comment-messages').append('<div class="alert alert-danger" role="alert">' + data.status.name + ' when loading comments: ' + data.status.message + '</div>');
         return false;
       } else {
+        $('.comments .comment').remove();
         $.each(data['payload'], function(index, comment){
           $('.autoload.comments').append(comment);
         });
