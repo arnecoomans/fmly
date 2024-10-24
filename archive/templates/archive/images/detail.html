@@ -36,8 +36,6 @@
         <!-- Description -->
         {% if image.description %}<p class="description">{{ image.description|markdown|safe }}</p>{% endif %}
         <ul class="metadata no-bullets">
-          <!-- Warnings -->
-           {% if not image.thumbnail %}<li class="bi bi-exclamation-triangle-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'no thumbnail available'|capfirst %}"> {% translate 'no thumbnail'|capfirst %}. <a href="{% url 'archive:regenerate-thumbnail' image.id image.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'regenerate thumbnail'|capfirst %}">{% translate 'please re-generate thumbnail'|capfirst %}</a></li>{% endif %}
           <!-- Source -->
           {% if image.document_source %}<li class="bi bi-geo-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'source of this object'|capfirst %}"> {% if image.document_source|truncatechars:5 == "http…" %}<a href="{{ image.document_source }}" target="_blank" title="{{ image.document_source }}">{{ image.document_source|truncatechars:38 }}</a>{% else %}{{ image.document_source }}{% endif %}{% endif %}
           <!-- Date -->
