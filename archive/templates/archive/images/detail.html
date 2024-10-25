@@ -98,16 +98,16 @@
           {% endif %}
           {% if perms.archive.add_comment %}
             <li class="bi bi-cursor-text" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'add your comment to this object'|capfirst %}">
-              <div class="comment">
-                <form method="post" action="{% url 'archive:comment' image.id %}">
+              <div class="comment-form"><span id="csrf_token" data-csrf="{{ csrf_token }}"></span><div id="comment-messages"></div>
+                {% comment %} <form method="post" action="{% url 'archive:comment' image.id %}">
                   {% csrf_token %}
                   <textarea name="content" id="id_content" required=required style="height: 2em;" onfocus="this.style.height='8em'"></textarea>
                   <input type="submit" value="Reageer">
-                </form>
+                </form> {% endcomment %}
               </div>
             </li>
             {% endif %}
-          {% if perms.archive.view_comment and image.count_comments > 0 %}
+          {% if perms.archive.view_comment %}
           <div class="autoload comments">
             <div class="comment-messages"></div>
             <span class="comments statusmessage">loading comments...</span>
@@ -153,10 +153,10 @@
 
 <script>
   const csrfToken = '{{ csrf_token }}';
-  const url = '{% url 'archive:acommentsforimage' image.id image.slug %}'
   $(document).ready(function() {
     $('.comments.statusmessage').remove()
-    fetchAllComments(url, csrfToken);
+    {% if perms.archive.add_comment %}fetchCommentForm('{% url 'archive:fetchcommentform' image.id image.slug %}', csrfToken);{% endif %}
+    {% if perms.archive.view_comment %}fetchAllComments('{% url 'archive:acommentsforimage' image.id image.slug %}', csrfToken);{% endif %}
   });
 </script>
 
