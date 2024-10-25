@@ -8,7 +8,7 @@ urlpatterns = [
   # Images
   path('', views.ImageListView.as_view(), name='home'),
   path('object/<int:pk>/', views.ImageRedirectView.as_view(), name='image-redirect'),
-  path('object/<int:pk>/comment/', views.AddCommentView.as_view(), name='comment'),
+  # path('object/<int:pk>/comment/', views.AddCommentView.as_view(), name='comment'),
   path('object/<int:pk>/edit/', views.EditImageView.as_view(), name='image-edit'),
   path('object/new/', views.AddImageView.as_view(), name='add-image'),
   path('object/<str:slug>/', views.ImageView.as_view(), name='image'),

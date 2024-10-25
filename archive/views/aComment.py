@@ -46,7 +46,7 @@ class aListComments(ListView):
     show_thumbnail = False if 'pk' in self.kwargs and 'slug' in self.kwargs else True
     ''' Render comments '''
     for comment in self.getComments(object):
-      response['payload'].append(render_to_string('archive/partial/comment.html', {'comment': comment, 'show_thumbnail': show_thumbnail}))
+      response['payload'].append(render_to_string('archive/partial/comment.html', {'comment': comment, 'show_thumbnail': show_thumbnail, 'user':self.request.user }))
     return JsonResponse(response)
   
   def getObject(self):

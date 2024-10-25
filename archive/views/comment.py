@@ -66,18 +66,18 @@ class CommentListView(TemplateView):
   #   return queryset
 
 ''' Add Comment '''
-class AddCommentView(PermissionRequiredMixin, CreateView):
-  permission_required = 'archive.add_comment'
-  model = Comment
-  fields = ['content']
+# class AddCommentView(PermissionRequiredMixin, CreateView):
+#   permission_required = 'archive.add_comment'
+#   model = Comment
+#   fields = ['content']
 
-  def form_valid(self, form):
-    ''' Force comment user to be logged in user '''
-    form.instance.user = self.request.user
-    ''' Link Image Instance to comment '''
-    form.instance.image = Image.objects.get(pk=self.kwargs['pk'])
-    messages.add_message(self.request, messages.SUCCESS, f"{ _('Comment added to') } \"{form.instance.image.title}\"")
-    return super().form_valid(form)
+#   def form_valid(self, form):
+#     ''' Force comment user to be logged in user '''
+#     form.instance.user = self.request.user
+#     ''' Link Image Instance to comment '''
+#     form.instance.image = Image.objects.get(pk=self.kwargs['pk'])
+#     messages.add_message(self.request, messages.SUCCESS, f"{ _('Comment added to') } \"{form.instance.image.title}\"")
+#     return super().form_valid(form)
 
 ''' Edit Comment '''
 class CommentEditView(PermissionRequiredMixin, UpdateView):
