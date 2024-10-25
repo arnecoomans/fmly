@@ -15,7 +15,8 @@ urlpatterns = [
   path('object/<str:slug>/love/', views.ToggleFavoriteImage.as_view(), name='love-image'),
   path('object/<int:pk>:<str:slug>/regeneratethumbnail/', views.RegenerateThumbnailView.as_view(), name='regenerate-thumbnail'),
   path('object/<int:pk>:<str:slug>/a/comments/', views.aListComments.as_view(), name='acommentsforimage'),
-
+  path('object/<int:pk>:<str:slug>/a/commentform/', views.aFetchCommentForm.as_view(), name='fetchcommentform'),
+  path('object/<int:pk>:<str:slug>/a/postcomment/', views.aPostComment.as_view(), name='postcomment'),
   # Special Image views
   path('objects/<int:decade>/', views.ImageListView.as_view(), {'columns': ('decade')}, name='images-by-decade'),
   path('objects/by:<str:user>/', views.ImageListView.as_view(), {'columns': ('user')}, name='image-by-uploader'),

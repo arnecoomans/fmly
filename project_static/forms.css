@@ -64,14 +64,14 @@ form > dl > dd > select {
 }
 
 /** Comment inline form */
-.comment > form > textarea {
+.comment >  textarea {
   width: 100%;
 }
-.comment > form > input {
+.comment >  input {
   width: 100%;
   border: var(--object-border);
 }
-.comment > form > input:hover {
+.comment >  input:hover {
   background-color: var(--colour-highlight)
 }
 

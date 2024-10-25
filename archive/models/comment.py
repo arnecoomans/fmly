@@ -14,6 +14,9 @@ class Comment(models.Model):
   content             = models.TextField(help_text='Markdown supported')
   image               = models.ForeignKey(Image, related_name='comments', on_delete=models.CASCADE)
   
+  class Meta:
+    unique_together = ('image', 'content')
+    
   def __str__(self):
     deleted = ' (deleted)' if self.is_deleted else ''
     return self.user.username + ' on ' + self.image.title + deleted
