@@ -9,5 +9,7 @@ def setting_data(request):
     'families': getattr(settings, 'FAMILIES', []),
     'unauthenticated_welcome': getattr(settings, 'UNAUTHENTICATED_WELCOME', f'Welcome to { getattr(settings, 'WEBSITE_TITLE', 'Family Reseach') }'),
     'matomo_id': getattr(settings, 'MATOMO_TRACKING_ID', None),
+
+    'ajax_load_comments': getattr(settings, 'AJAX_LOAD_COMMENTS', False),
   }
   return result

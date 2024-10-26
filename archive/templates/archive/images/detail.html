@@ -93,21 +93,38 @@
           </li>
           <!-- Comments -->
           {% if perms.archive.view_comment and image.count_comments > 0 %}
-            <a name="comments"></a>
-            <li class="bi bi-chat-right-text-fill"> {{ image.count_comments }} {% blocktranslate count counter=object.count_comments context "plural" %}comment{% plural %}comments{% endblocktranslate %}</li>
+            <div class="autoload comments">
+              <div class="comment-messages"></div>
+              <a name="comments"></a>
+              <span id="csrf_token" data-csrf="{{ csrf_token }}"></span>
+              <li class="bi bi-chat-right-text-fill"> {{ image.count_comments }} {% blocktranslate count counter=object.count_comments context "plural" %}comment{% plural %}comments{% endblocktranslate %}</li>
+              {% if not ajax_load_comments %}
+                {% for comment in image.comments.all %}{% if not comment.is_deleted %}
+                  {% include 'archive/partial/comment.html' %}
+                {% endif %}{% endfor %}
+              {% endif %}
+            </div>
+            {% if perms.archive.add_comment %}
+              {% include 'archive/partial/commentform.html' %}
+            {% endif %}  
+          {% else %}
+            <div class="autoload comments">
+              <div class="comment-messages"></div>
+              <span class="comments statusmessage">loading comments...</span>
+            </div>
           {% endif %}
-          {% if perms.archive.add_comment %}
+          {% comment %} {% if perms.archive.add_comment %}
             <li class="bi bi-cursor-text" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'add your comment to this object'|capfirst %}">
-              <div class="comment-form"><span id="csrf_token" data-csrf="{{ csrf_token }}"></span><div id="comment-messages"></div>
+              <div class="comment-form"><div id="comment-messages"></div>
               </div>
             </li>
-            {% endif %}
-          {% if perms.archive.view_comment %}
+            {% endif %} {% endcomment %}
+          {% comment %} {% if perms.archive.view_comment %}
           <div class="autoload comments">
             <div class="comment-messages"></div>
             <span class="comments statusmessage">loading comments...</span>
           </div>
-          {% endif %}
+          {% endif %} {% endcomment %}
         </ul>
       </div>
       
@@ -135,8 +152,10 @@
   const csrfToken = '{{ csrf_token }}';
   $(document).ready(function() {
     $('.comments.statusmessage').remove()
-    {% if perms.archive.add_comment %}fetchCommentForm('{% url 'archive:fetchcommentform' image.id image.slug %}', csrfToken);{% endif %}
-    {% if perms.archive.view_comment %}fetchAllComments('{% url 'archive:acommentsforimage' image.id image.slug %}{% if request.GET.user %}?user={{ request.GET.user }}{% endif %}', csrfToken);{% endif %}
+    {% if ajax_load_comments %}
+      {% if perms.archive.view_comment %}fetchAllComments('{% url 'archive:acommentsforimage' image.id image.slug %}{% if request.GET.user %}?user={{ request.GET.user }}{% endif %}', csrfToken);{% endif %}
+      {% if perms.archive.add_comment %}fetchCommentForm('{% url 'archive:fetchcommentform' image.id image.slug %}', csrfToken);{% endif %}
+    {% endif %}
   });
 </script>
 

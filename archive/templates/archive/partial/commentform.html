@@ -1,1 +1,3 @@
-<div class="comment"><textarea name="content" id="commentcontent" required=required style="height: 2em;" onfocus="this.style.height='8em'"></textarea><input type="submit" value="Reageer" id="commentsubmit" data-url="{% url 'archive:postcomment' image.id image.slug %}" data-all-comments-url="{% url 'archive:acommentsforimage' image.id image.slug %}"></div>
+{% load i18n %}<li class="bi bi-cursor-text" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'add your comment to this object'|capfirst %}">
+  <div class="comment"><textarea name="content" id="commentcontent" required=required style="height: 2em;" onfocus="this.style.height='8em'"></textarea><input type="submit" value="Reageer" id="commentsubmit" data-url="{% url 'archive:postcomment' image.id image.slug %}" data-all-comments-url="{% url 'archive:acommentsforimage' image.id image.slug %}"></div>
+</li>

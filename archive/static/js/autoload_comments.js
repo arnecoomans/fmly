@@ -42,7 +42,7 @@ $(document).on('click', '#commentsubmit', function() {
   const comment = $('#commentcontent').val();  // Get the value of the comment field
   const allcommentsurl = $(this).data('all-comments-url');
 
-  console.log('Submitting ' + comment + ' to ' + url);
+  console.log('Submitting ' + comment + ' to ' + url + ' with csrf token ' + csrf_token);
   $.ajax({
     url: url,
     type: 'POST',
