@@ -136,7 +136,7 @@
   $(document).ready(function() {
     $('.comments.statusmessage').remove()
     {% if perms.archive.add_comment %}fetchCommentForm('{% url 'archive:fetchcommentform' image.id image.slug %}', csrfToken);{% endif %}
-    {% if perms.archive.view_comment %}fetchAllComments('{% url 'archive:acommentsforimage' image.id image.slug %}', csrfToken);{% endif %}
+    {% if perms.archive.view_comment %}fetchAllComments('{% url 'archive:acommentsforimage' image.id image.slug %}{% if request.GET.user %}?user={{ request.GET.user }}{% endif %}', csrfToken);{% endif %}
   });
 </script>
 
