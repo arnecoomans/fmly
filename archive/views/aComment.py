@@ -8,12 +8,16 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.db.utils import IntegrityError
 
-# from .snippets.a_helper import aHelper
-# from .snippets.filter_class import FilterClass
-
 from archive.models import Image
 from archive.models.comment import Comment
 
+''' List comments by date added newest first 
+    This view returns a list of comments sorted by date added.
+    When a specific image is mentioned in the URL, only comments for that image are returned.
+    When a specific user is mentioned in the URL, only comments by that user are returned.
+    When no filters are mentioned, all comments are returned.
+    @Todo: Add pagination
+'''
 class aListComments(ListView):
   model = Comment
 
@@ -75,8 +79,11 @@ class aListComments(ListView):
     comments = comments.order_by(order).distinct()
     return comments
   
+''' Fetch comment form 
+    This view returns a rendered comment form for the image to inject
+    into the image detail page via ajax request
+'''
 class aFetchCommentForm(TemplateView):
-  # template_name = 'archive/partial/comment_form.html'
   
   def get(self, *args, **kwargs):
     response = {
@@ -87,6 +94,10 @@ class aFetchCommentForm(TemplateView):
     ''' Validate that user is logged in '''
     return JsonResponse(response)
 
+
+''' Post comment
+    This view allows users to post comments to images via ajax request.
+'''
 class aPostComment(TemplateView):
   template_name = 'archive/partial/comment.html'
 
