@@ -119,6 +119,10 @@ class aPostComment(TemplateView):
       response['error'] = True
       response['message'] = _('you need to be logged in to comment').capitalize()
       return JsonResponse(response)
+    if not self.request.user.has_perm('archive.add_comment'):
+      response['error'] = True
+      response['message'] = _('you are not allowed to comment').capitalize()
+      return JsonResponse
     ''' Validate object '''
     try:
       object = Image.objects.get(pk=self.kwargs['pk'], slug=self.kwargs['slug'])
@@ -126,14 +130,15 @@ class aPostComment(TemplateView):
       response['error'] = True
       response['message'] = _('object not found').capitalize()
       return JsonResponse(response)
-    ''' Validate comment '''
+    ''' Validate comment - cannot be empty '''
     comment = self.request.POST.get('comment', False)
     if not comment:
       response['error'] = True
       response['message'] = _('comment cannot be empty').capitalize()
       return JsonResponse(response)
     comment = comment.strip()
-    if len(comment) <= getattr(settings, 'MIN_COMMENT_LENGTH', 5):
+    ''' Comments should have a minimum length in characters, so exclude space from check '''
+    if len(comment.replace(' ', '')) < getattr(settings, 'MIN_COMMENT_LENGTH', 5):
       response['error'] = True
       response['message'] = _('comment is too short').capitalize()
       return JsonResponse(response)
