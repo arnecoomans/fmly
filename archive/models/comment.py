@@ -25,10 +25,5 @@ class Comment(models.Model):
     deleted = ' (deleted)' if self.is_deleted else ''
     return self.user.username + ' on ' + self.image.title + deleted
   
-  def save(self, *args, **kwargs):
-    # if not self.user:
-    #   self.user = request.user
-    return super(Comment, self).save(*args, **kwargs)
-
   def get_absolute_url(self):
     return reverse('archive:image', kwargs={'slug': self.image.slug})
