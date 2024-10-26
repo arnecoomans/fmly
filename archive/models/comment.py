@@ -15,8 +15,12 @@ class Comment(models.Model):
   image               = models.ForeignKey(Image, related_name='comments', on_delete=models.CASCADE)
   
   class Meta:
-    unique_together = ('image', 'content')
-    
+    ''' Unique together
+        Any comment to an image should be unique for that image and user,
+        disallowing double comments.
+    '''
+    unique_together = ('user', 'image', 'content')
+
   def __str__(self):
     deleted = ' (deleted)' if self.is_deleted else ''
     return self.user.username + ' on ' + self.image.title + deleted
