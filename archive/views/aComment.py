@@ -7,6 +7,7 @@ from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.db.utils import IntegrityError
+from django.conf import settings
 
 from archive.models import Image
 from archive.models.comment import Comment
@@ -126,9 +127,15 @@ class aPostComment(TemplateView):
       response['message'] = _('object not found').capitalize()
       return JsonResponse(response)
     ''' Validate comment '''
-    if not self.request.POST.get('comment', False):
+    comment = self.request.POST.get('comment', False)
+    if not comment:
       response['error'] = True
       response['message'] = _('comment cannot be empty').capitalize()
+      return JsonResponse(response)
+    comment = comment.strip()
+    if len(comment) <= getattr(settings, 'MIN_COMMENT_LENGTH', 5):
+      response['error'] = True
+      response['message'] = _('comment is too short').capitalize()
       return JsonResponse(response)
     ''' Create comment '''
     try:
