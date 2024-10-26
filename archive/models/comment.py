@@ -20,6 +20,7 @@ class Comment(models.Model):
         disallowing double comments.
     '''
     unique_together = ('user', 'image', 'content')
+    ordering = ['-date_created']
 
   def __str__(self):
     deleted = ' (deleted)' if self.is_deleted else ''
