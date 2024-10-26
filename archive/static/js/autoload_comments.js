@@ -8,7 +8,7 @@ function fetchAllComments(url, csrf_token) {
       console.log(data);
       // Based on the status of the response, take the correct action
       if (data.error == true) {
-        $('#comment-messages').append('<div class="alert alert-danger" role="alert">' + data.status.name + ' when loading comments: ' + data.status.message + '</div>');
+        $('#comment-messages').append('<div class="alert alert-danger" role="alert">' + data.message + '.</div>');
         return false;
       } else {
         $('.comments li').remove();

@@ -29,31 +29,52 @@ class aListComments(ListView):
       'object': {},
       'payload': [],
     }
+    ''' Show thumbnail in comments should be se to
+        False when comments are rendered for a specific object
+        else True
+    '''
+    show_thumbnail = True
     ''' Validate that user is logged in '''
     if not self.request.user.is_authenticated:
       response['error'] = True
       response['message'] = _('you need to be logged in to view comments').capitalize()
       return JsonResponse(response)
-    ''' Validate object '''
+    ''' Validate object if object is mentioned in URL '''
     object = self.getObject()
     if object == False:
+      ''' Object is mentioned in URL but not found '''
       return JsonResponse({
         'error': True,
         'message': _('object not found').capitalize(),
       })
     elif object:
+      ''' Add object details to response '''
       response['object'] = {
         'id': object.id,
         'title': object.title,
         'slug': object.slug,
         'url': object.get_absolute_url(),
       }
-    show_thumbnail = False if 'pk' in self.kwargs and 'slug' in self.kwargs else True
-    ''' Render comments '''
-    for comment in self.getComments(object):
+      show_thumbnail = False
+    ''' Render comments 
+        Add all rendered comments to payload
+    '''
+    comments = self.getComments(object)
+    if comments == False:
+      return JsonResponse({
+        'error': True,
+        'message': _('comments cannot be loaded').capitalize(),
+      })
+    for comment in comments:
       response['payload'].append(render_to_string('archive/partial/comment.html', {'comment': comment, 'show_thumbnail': show_thumbnail, 'user':self.request.user }))
+    ''' Return response '''
     return JsonResponse(response)
   
+  ''' Fetch object information
+      Returns the object if id and slug are mentioned in URL
+      Returns False if object is mentioned in URL but not found
+      Returns None if object is not mentioned in URL
+  '''
   def getObject(self):
     try:
       object = Image.objects.get(pk=self.kwargs['pk'], slug=self.kwargs['slug'])
@@ -63,6 +84,11 @@ class aListComments(ListView):
       object = False
     return object
   
+  ''' Fetch comments
+      Returns all not-deleted comments
+      Filters comments by object if object is mentioned in URL
+      Filters comments by user if user is mentioned in URL query parameter
+  '''
   def getComments(self, object):
     ''' Fetch all not deleted comments '''
     comments = Comment.objects.all().exclude(is_deleted=True)
@@ -73,7 +99,11 @@ class aListComments(ListView):
       comments = comments.filter(image=self.getObject())
     ''' Process filters: get comments for user '''
     if self.request.GET.get('user', False):
-      comments = comments.filter(user=User.objects.get(username=self.request.GET.get('user')))
+      try:
+        user = User.objects.get(username__iexact=self.request.GET.get('user'))
+        comments = comments.filter(user=user)
+      except User.DoesNotExist:
+        return False
     ''' Order comments by date_modified '''
     order = 'date_modified' if self.request.GET.get('o', False) == '-' else '-date_modified'
     ''' Return comments '''

@@ -10,7 +10,7 @@
       {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
     </header>
     <div class="autoload comments">
-      <div class="comment-messages"></div>
+      <div id="comment-messages"></div>
       <span class="comments statusmessage">loading comments...</span>
     </div>
     
@@ -44,7 +44,7 @@
 
 <script>
   const csrfToken = '{{ csrf_token }}';
-  const url = '{% url 'archive:acomments' %}'
+  const url = '{% url 'archive:acomments' %}{% if request.GET.user %}?user={{ request.GET.user }}{% endif %}'
   $(document).ready(function() {
     $('.comments.statusmessage').remove()
     fetchAllComments(url, csrfToken);
