@@ -98,7 +98,8 @@
               <span id="csrf_token" data-csrf="{{ csrf_token }}"></span>
               <div id="comment-messages"></div>
               {% if image.count_comments > 0 %}
-                <li class="bi bi-chat-right-text-fill"> {{ image.count_comments }} {% blocktranslate count counter=object.count_comments context "plural" %}comment{% plural %}comments{% endblocktranslate %}</li>
+                {% include 'archive/partial/commentcounter.html' %}
+                {% comment %} <li class="bi bi-chat-right-text-fill"> {{ image.count_comments }} {% blocktranslate count counter=object.count_comments context "plural" %}comment{% plural %}comments{% endblocktranslate %}</li> {% endcomment %}
                 {% if not ajax_load_comments %}
                   {% for comment in image.comments.all %}{% if not comment.is_deleted %}
                     {% include 'archive/partial/comment.html' %}

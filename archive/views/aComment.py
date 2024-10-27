@@ -54,6 +54,7 @@ class aListComments(ListView):
         'title': object.title,
         'slug': object.slug,
         'url': object.get_absolute_url(),
+        'comment_count': object.count_comments(),
       }
       show_thumbnail = False
     ''' Render comments 
@@ -65,6 +66,8 @@ class aListComments(ListView):
         'error': True,
         'message': _('comments cannot be loaded').capitalize(),
       })
+    if object.count_comments() > 0:
+      response['payload'].append(render_to_string('archive/partial/commentcounter.html', {'image': object, }))
     for comment in comments:
       response['payload'].append(render_to_string('archive/partial/comment.html', {'comment': comment, 'show_thumbnail': show_thumbnail, 'user':self.request.user }))
     ''' Return response '''
