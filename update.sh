@@ -47,7 +47,10 @@ else
     echo "No changes in migrations or static files detected. Skipping migration and collectstatic."
 fi
 
-# Restart the application with supervisor
-echo "Restarting application with supervisor..."
-sudo supervisorctl restart fmly
-echo "Application restart complete."
+# Extract the first word from the current directory name, split by '.'
+pool_name=$(basename "$PWD" | cut -d. -f1)
+
+# Restart the application with supervisor using the extracted pool name
+echo "Restarting application with supervisor for pool '$pool_name'..."
+sudo supervisorctl restart "$pool_name"
+echo "Application restart for pool '$pool_name' complete."
