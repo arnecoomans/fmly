@@ -5,7 +5,15 @@ cd "$(dirname "$0")"
 
 # Pull latest changes from Git
 echo "Pulling latest changes from Git..."
-git_output=$(git pull)
+git_output=$(git pull 2>&1)
+
+# Check if git pull was successful
+if [ $? -ne 0 ]; then
+    echo "Error during git pull:"
+    echo "$git_output"
+    exit 1
+fi
+
 echo "Git pull complete."
 
 # Check if there were any updates
