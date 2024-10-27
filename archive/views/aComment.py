@@ -66,7 +66,7 @@ class aListComments(ListView):
         'error': True,
         'message': _('comments cannot be loaded').capitalize(),
       })
-    if object.count_comments() > 0:
+    if object and object.count_comments() > 0:
       response['payload'].append(render_to_string('archive/partial/commentcounter.html', {'image': object, }))
     for comment in comments:
       response['payload'].append(render_to_string('archive/partial/comment.html', {'comment': comment, 'show_thumbnail': show_thumbnail, 'user':self.request.user }))
