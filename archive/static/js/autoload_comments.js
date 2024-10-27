@@ -50,12 +50,12 @@ $(document).on('click', '#commentsubmit', function() {
     headers: {'X-CSRFToken': csrf_token},
     dataType: 'json',
     success: function(data){
+      console.log(data);
       // Based on the status of the response, take the correct action
       if (data.error == true) {
-        $('#comment-messages').append('<div class="alert alert-danger" role="alert">' + data.message + '.</div>');
+        $('#comment-messages').empty().append('<div class="alert alert-danger" role="alert">' + data.message + '.</div>');
         return false;
       } else {
-        console.log(data);
         $('#comment-messages').append('<div class="alert alert-success" role="alert">Comment submitted successfully</div>');
         fetchAllComments(allcommentsurl, csrf_token);
         $('#commentcontent').val('');
