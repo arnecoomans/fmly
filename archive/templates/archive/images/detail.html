@@ -92,27 +92,26 @@
             {% translate 'at' %} {{ image.uploaded_at|date:'d/m/y' }}<br>
           </li>
           <!-- Comments -->
-          {% if perms.archive.view_comment and image.count_comments > 0 %}
+          <a name="comments"></a>
+          {% if perms.archive.view_comment %}
             <div class="autoload comments">
-              <div class="comment-messages"></div>
-              <a name="comments"></a>
               <span id="csrf_token" data-csrf="{{ csrf_token }}"></span>
-              <li class="bi bi-chat-right-text-fill"> {{ image.count_comments }} {% blocktranslate count counter=object.count_comments context "plural" %}comment{% plural %}comments{% endblocktranslate %}</li>
-              {% if not ajax_load_comments %}
-                {% for comment in image.comments.all %}{% if not comment.is_deleted %}
-                  {% include 'archive/partial/comment.html' %}
-                {% endif %}{% endfor %}
+              <div id="comment-messages"></div>
+              {% if image.count_comments > 0 %}
+                <li class="bi bi-chat-right-text-fill"> {{ image.count_comments }} {% blocktranslate count counter=object.count_comments context "plural" %}comment{% plural %}comments{% endblocktranslate %}</li>
+                {% if not ajax_load_comments %}
+                  {% for comment in image.comments.all %}{% if not comment.is_deleted %}
+                    {% include 'archive/partial/comment.html' %}
+                  {% endif %}{% endfor %}
+                {% else %}
+                  <span class="comments statusmessage">loading comments...</span>
+                {% endif %}
               {% endif %}
             </div>
-            {% if perms.archive.add_comment %}
+          {% endif %}
+          {% if perms.archive.add_comment %}
               {% include 'archive/partial/commentform.html' %}
             {% endif %}  
-          {% else %}
-            <div class="autoload comments">
-              <div class="comment-messages"></div>
-              <span class="comments statusmessage">loading comments...</span>
-            </div>
-          {% endif %}
           {% comment %} {% if perms.archive.add_comment %}
             <li class="bi bi-cursor-text" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'add your comment to this object'|capfirst %}">
               <div class="comment-form"><div id="comment-messages"></div>
