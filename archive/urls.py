@@ -72,4 +72,7 @@ urlpatterns = [
   # Accounts
   path('settings/', views.PreferencesView.as_view(), name='settings'),
   path("sign-up/", views.SignUpView.as_view(), name='signup'),
+
+  # JSON
+  path('json/image:<int:pk>/attribute/<str:attribute>/', views.JsonGetAttributeOfImage.as_view(), name='json-get-attribute-of-image'),
 ]
