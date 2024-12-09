@@ -75,4 +75,5 @@ urlpatterns = [
 
   # JSON
   path('json/image:<int:pk>/attribute/<str:attribute>/', views.JsonGetAttributeOfImage.as_view(), name='json-get-attribute-of-image'),
+  path('json/person:<int:pk>/attribute/<str:attribute>/', views.JsonGetAttributeOfPerson.as_view(), name='json-get-attribute-of-person'),
 ]

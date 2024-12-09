@@ -14,6 +14,25 @@ class JsonHelper(View):
     self.object = None
     self.status = 200
   
+  def get(self, request, *args, **kwargs):
+    ''' Set Scope '''
+    self.scope = self.request.resolver_match.url_name.replace('json-get-attribute-of-', '')
+    ''' Fetch Object '''
+    self.object = self.get_object()
+    ''' Fetch the Attribute Name
+        The attribute name is the key to the value we want to retrieve
+    '''
+    self.attribute = self.get_attribute()
+    if not self.attribute:
+      return self.return_response()
+    ''' Get the Value of the Attribute '''
+    value = getattr(self.object, self.attribute)
+    value = value.all() if hasattr(value, 'all') else value
+    ''' Add the Value to the Response '''
+    self.add_payload(value)
+    return self.return_response()
+  
+
   def get_query_element(self, key):
     if key in self.kwargs:
       return self.kwargs[key]
@@ -67,11 +86,11 @@ class JsonHelper(View):
 
   def get_rendered_payload(self, value):
     try:
-      return render_to_string('partial/' + self.attribute + '.html', { self.attribute: value })
+      return render_to_string('partial/' + self.scope + '/' + self.attribute + '.html', { self.attribute: value })
     except Exception as e:
       ''' Exception Handling'''
       if self.attribute == 'people':
-        return render_to_string('partial/person.html', { 'person': value })
+        return render_to_string('partial/' + self.scope + '/person.html', { 'person': value })
       ''' Logging'''
       if self.request.user.is_staff:
         self.add_message('warning', 'Could not render ' + self.attribute + ' for ' + str(value) + ': ' + str(e))
@@ -83,6 +102,7 @@ class JsonHelper(View):
       'url': self.request.path,
       'resolver': self.request.resolver_match.url_name,
       'user': self.request.user.username if self.request.user.is_authenticated else False,
+      'scope': self.scope
     }
     self.response['status'] = self.status
     self.response['messages'] = self.messages
