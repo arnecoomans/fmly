@@ -163,7 +163,7 @@
       {% if perms.archive.add_comment %}fetchCommentForm('{% url 'archive:fetchcommentform' image.id image.slug %}', csrfToken);{% endif %}
     {% endif %}
     {% if ajax_image_load_people %}
-      getImageAttributes(object='{{ image.id }}:{{ image.slug }}', attribute='people', before='<li class="bi bi-person-fill">', after='</li>');
+      getImageAttributes(url='{% url 'archive:json-get-attribute-of-image' image.id image.slug 'people' %}', attribute='people', before='<li class="bi bi-person-fill">', after='</li>');
     {% endif %}
   });
 </script>

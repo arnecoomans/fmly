@@ -81,7 +81,6 @@ class JsonHelper(View):
       payload.append(self.get_rendered_payload(value))
     if self.request.user.is_staff:
       self.response['value'] = str(value)
-      self.response['type'] = str(type(value))
     self.payload = payload
 
   def get_rendered_payload(self, value):

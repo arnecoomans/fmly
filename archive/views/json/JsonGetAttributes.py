@@ -16,8 +16,11 @@ class JsonGetAttributeOfImage(JsonHelper):
         Try to get the object by pk, if not found try to get by slug
         If the object is not found, return an error message
     '''
+    if 'pk' not in self.kwargs or 'slug' not in self.kwargs:
+      self.add_message('error', 'Invalid request')
+      return False
     try:
-      object = Image.objects.get(pk=self.kwargs['pk']) if 'pk' in self.kwargs else Image.objects.get(slug=self.kwargs['slug'])
+      object = Image.objects.get(pk=self.kwargs['pk'], slug=self.kwargs['slug'])
     except Image.DoesNotExist:
       self.add_message('error', 'Image not found')
       return False

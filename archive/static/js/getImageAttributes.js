@@ -7,9 +7,8 @@
  * @returns {void}
  */
 
-function getImageAttributes(object, attribute, before='', after='') {
+function getImageAttributes(url, attribute, before='', after='') {
   target = 'target-' + attribute;
-  url = '/json/image:' + object + '/attribute/' + attribute + '/'
   console.log('fetching data from ' + url + ' for ' + target);
   
   $.ajax({
