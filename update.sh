@@ -1,4 +1,12 @@
 #!/bin/bash
+# Update script for Django applications
+# Runs a git pull
+# Based on the outcome it will activate the virtual environment, 
+#  install new requirements, run migrations and collect static files
+# Restarts the application with supervisorctl
+#  based on the directory name (first part before the first dot)
+# Author: Arne Coomans
+# Version: 1.0.2
 
 # Change to the script's directory
 cd "$(dirname "$0")"
@@ -22,29 +30,59 @@ if echo "$git_output" | grep -q 'Already up to date'; then
     exit 0
 fi
 
-# Check if output contains 'migration' or 'project_static'
-if echo "$git_output" | grep -q -e 'migration' -e 'project_static'; then
-    echo "Changes detected in migrations or static files. Activating virtual environment..."
+# Check if output contains 'migration' or 'project_static' or 'requirements.txt'
+if echo "$git_output" | grep -q -e 'migration' -e 'static' -e 'requirements.txt'; then
+    echo "Changes detected in requirements, migrations or static files. Activating virtual environment..."
     
     # Activate virtual environment in .venv directory in the current directory
     source .venv/bin/activate
     echo "Virtual environment activated."
+
+    # Install any new requirements
+    if echo "$git_output" | grep -q 'requirements.txt'; then
+        echo "Installing new requirements..."
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+        echo "Requirements installed."
+    else
+        echo "No changes in requirements detected. Skipping requirement installation."
+    fi
 
     # Check for 'migration' keyword in git output
     if echo "$git_output" | grep -q 'migration'; then
         echo "Running migrations..."
         python manage.py migrate
         echo "Migrations complete."
+    else
+        echo "No changes in migrations detected. Skipping migration."
     fi
     
     # Check for 'project_static' keyword in git output
-    if echo "$git_output" | grep -q 'project_static'; then
+    if echo "$git_output" | grep -q 'static'; then
         echo "Collecting static files..."
         python manage.py collectstatic --noinput
         echo "Static files collected."
+    else
+        echo "No changes in static files detected. Skipping collectstatic."
     fi
 else
     echo "No changes in migrations or static files detected. Skipping migration and collectstatic."
+fi
+
+# Check if there are any outdated packages
+outdated=$(python -m pip list --outdated --format=freeze)
+
+if [ -n "$outdated" ]; then
+    echo "Outdated packages detected:"
+    echo "$outdated"
+    echo "Updating all packages from requirements.txt..."
+    
+    # Update all packages listed in requirements.txt
+    python -m pip install --upgrade -r requirements.txt
+
+    echo "All packages have been updated."
+else
+    echo "No outdated packages found."
 fi
 
 # Extract the first word from the current directory name, split by '.'
