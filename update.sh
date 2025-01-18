@@ -69,6 +69,22 @@ else
     echo "No changes in migrations or static files detected. Skipping migration and collectstatic."
 fi
 
+# Check if there are any outdated packages
+outdated=$(python -m pip list --outdated --format=freeze)
+
+if [ -n "$outdated" ]; then
+    echo "Outdated packages detected:"
+    echo "$outdated"
+    echo "Updating all packages from requirements.txt..."
+    
+    # Update all packages listed in requirements.txt
+    python -m pip install --upgrade -r requirements.txt
+
+    echo "All packages have been updated."
+else
+    echo "No outdated packages found."
+fi
+
 # Extract the first word from the current directory name, split by '.'
 pool_name=$(basename "$PWD" | cut -d. -f1)
 
