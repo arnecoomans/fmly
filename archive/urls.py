@@ -14,9 +14,6 @@ urlpatterns = [
   path('object/<str:slug>/', views.ImageView.as_view(), name='image'),
   path('object/<str:slug>/love/', views.ToggleFavoriteImage.as_view(), name='love-image'),
   path('object/<int:pk>:<str:slug>/regeneratethumbnail/', views.RegenerateThumbnailView.as_view(), name='regenerate-thumbnail'),
-  path('object/<int:pk>:<str:slug>/a/comments/', views.aListComments.as_view(), name='acommentsforimage'),
-  path('object/<int:pk>:<str:slug>/a/commentform/', views.aFetchCommentForm.as_view(), name='fetchcommentform'),
-  path('object/<int:pk>:<str:slug>/a/postcomment/', views.aPostComment.as_view(), name='postcomment'),
   # Special Image views
   path('objects/<int:decade>/', views.ImageListView.as_view(), {'columns': ('decade')}, name='images-by-decade'),
   path('objects/by:<str:user>/', views.ImageListView.as_view(), {'columns': ('user')}, name='image-by-uploader'),
@@ -74,6 +71,10 @@ urlpatterns = [
   path("sign-up/", views.SignUpView.as_view(), name='signup'),
 
   # JSON
-  path('json/image:<int:pk>/attribute/<str:attribute>/', views.JsonGetAttributeOfImage.as_view(), name='json-get-attribute-of-image'),
-  path('json/person:<int:pk>/attribute/<str:attribute>/', views.JsonGetAttributeOfPerson.as_view(), name='json-get-attribute-of-person'),
+  path('json/image:<int:pk>:<str:slug>/attribute/<str:attribute>/', views.JsonGetAttributeOfImage.as_view(), name='json-get-attribute-of-image'),
+  path('json/person:<int:pk>:<str:slug>/attribute/<str:attribute>/', views.JsonGetAttributeOfPerson.as_view(), name='json-get-attribute-of-person'),
+  path('json/object:<int:pk>:<str:slug>/comments/', views.aListComments.as_view(), name='acommentsforimage'),
+  path('json/object:<int:pk>:<str:slug>/commentform/', views.aFetchCommentForm.as_view(), name='fetchcommentform'),
+  path('json/object:<int:pk>:<str:slug>/postcomment/', views.aPostComment.as_view(), name='postcomment'),
+  
 ]

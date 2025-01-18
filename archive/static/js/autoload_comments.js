@@ -5,13 +5,14 @@ function fetchAllComments(url, csrf_token) {
     headers: {'X-CSRFToken': csrf_token},
     dataType: 'json',
     success: function(data){
-      console.log(data);
+      // console.log(data);
       // Based on the status of the response, take the correct action
       if (data.error == true) {
         $('#comment-messages').append('<div class="alert alert-danger" role="alert">' + data.message + '.</div>');
         return false;
       } else {
         $('.comments li').remove();
+        console.log('Data fetched successfully and writing to comments');
         $.each(data['payload'], function(index, comment){
           $('.autoload.comments').append(comment);
         });
