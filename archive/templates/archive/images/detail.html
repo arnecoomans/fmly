@@ -40,12 +40,18 @@
           {% if image.document_source %}<li class="bi bi-geo-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'source of this object'|capfirst %}"> {% if image.document_source|truncatechars:5 == "http…" %}<a href="{{ image.document_source }}" target="_blank" title="{{ image.document_source }}">{{ image.document_source|truncatechars:38 }}</a>{% else %}{{ image.document_source }}{% endif %}{% endif %}
           <!-- Date -->
           {% if image.year or image.month or image.day %}<li class="bi bi-calendar-event-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'date of this object'|capfirst %}"> {% if image.month or image.day %}{{ image.day|default:'?' }}-{{ image.month|default:'?' }}-{% endif %}<a href="{% url 'archive:images-by-decade' image.year %}" title="Bekijk alles uit {{ image.year }}">{{ image.year|default:'?' }}</a></li>{% endif %}
+        </ul>
+        <ul class="metadata no-bullets" id="target-people">
           <!-- People -->
           {% if perms.archive.view_person and image.people.all.count > 0 %}
-            {% for person in object.people.all %}
-              <li class=" bi bi-person-fill"> <a href="{% url 'archive:person' person.id person.name %}" title="{% translate 'Open profile of' %} {{ person.full_name }}">{{ person }}</a> {% if person == image.is_portrait_of %}<i class="bi bi-image-fill" title="{% translate 'This image is a portrait of' %} {{ person.first_name}} {{ person.last_name }}"></i>{% endif %}</li>
-            {% endfor %}
+            {% if not ajax_image_load_people %}
+              {% for person in object.people.all %}
+                <li class=" bi bi-person-fill" data-ajax="false">{% include 'partial/image/person.html' %}</li>
+              {% endfor %}
+            {% endif %}
           {% endif %}
+        </ul>
+        <ul class="metadata no-bullets">
           <!-- Family Collection -->
           {% if image.family_collection|length > 0 %}
             <li class=" bi bi-collection" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'this object is part of a family collection'|capfirst %}"> {% for family in image.family_collection %}<a href="{% url 'archive:images' %}?family={{ family }}" title="{% translate 'Open family collection of' %} {{ family }}">{{ family }}</a>{% if not forloop.last %}, {% endif %}{% endfor %} </li>
@@ -147,7 +153,7 @@
 <script src="{% static 'js/jquery.min.js' %}"></script>
 
 <script src="{% static 'js/autoload_comments.js' %}"></script>
-
+<script src="{% static 'js/getImageAttributes.js' %}"></script>
 <script>
   const csrfToken = '{{ csrf_token }}';
   $(document).ready(function() {
@@ -155,6 +161,9 @@
     {% if ajax_load_comments %}
       {% if perms.archive.view_comment %}fetchAllComments('{% url 'archive:acommentsforimage' image.id image.slug %}{% if request.GET.user %}?user={{ request.GET.user }}{% endif %}', csrfToken);{% endif %}
       {% if perms.archive.add_comment %}fetchCommentForm('{% url 'archive:fetchcommentform' image.id image.slug %}', csrfToken);{% endif %}
+    {% endif %}
+    {% if ajax_image_load_people %}
+      getImageAttributes(url='{% url 'archive:json-get-attribute-of-image' image.id image.slug 'people' %}', attribute='people', before='<li class="bi bi-person-fill">', after='</li>');
     {% endif %}
   });
 </script>
