@@ -170,23 +170,23 @@
 <script src="{% static 'js/jquery.min.js' %}"></script>
 
 <script src="{% static 'js/autoload_comments.js' %}"></script>
-<script src="{% static 'js/getImageAttributes.js' %}"></script>
+<script src="{% static 'js/getAttributes.js' %}"></script>
 <script>
   const csrfToken = '{{ csrf_token }}';
   $(document).ready(function() {
     $('.comments.statusmessage').remove()
     {% if ajax_load_comments %}
-      {% if perms.archive.view_comment %}getImageAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'comments' %}', attribute='comments');{% endif %}
+      {% if perms.archive.view_comment %}getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'comments' %}', attribute='comments');{% endif %}
       {% if perms.archive.add_comment %}fetchCommentForm('{% url 'archive:fetchcommentform' image.id image.slug %}', csrfToken);{% endif %}
     {% endif %}
-    {% if ajax_image_load_description %}
-      getImageAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'description' %}', attribute='description');
+    {% if ajax_image_load_description and image.description %}
+      getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'description' %}', attribute='description');
     {% endif %}
-    {% if ajax_image_load_people %} 
-      getImageAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'people' %}', attribute='people', before='<li class="bi bi-person-fill">', after='</li>');
+    {% if ajax_image_load_people and image.people.all.count > 0 %} 
+      getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'people' %}', attribute='people', before='<li class="bi bi-person-fill">', after='</li>');
     {% endif %}
     {% comment %} {% if ajax_image_load_tags %}
-      getImageAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'tag' %}', attribute='tag');
+      getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'tag' %}', attribute='tag');
     {% endif %} {% endcomment %}
   });
 </script>
