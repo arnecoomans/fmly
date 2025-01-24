@@ -1,3 +1,4 @@
 [submodule "cmnsdjango"]
 	path = cmnsdjango
 	url = https://github.com/arnecoomans/cmnsdjango
+	branch = main
