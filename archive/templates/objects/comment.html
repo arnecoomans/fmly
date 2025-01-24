@@ -1,0 +1,20 @@
+{% load i18n %}{% load static %}<li class="bi bi-chat-right-text">
+  <div class="comment">
+    {% if show_thumbnail %}
+      <div class="thumbnail">
+        <a href="{% url 'archive:image' comment.image.slug %}"><img src="/documents/{{ comment.image.thumbnail }}" alt="{{ comment.image.title }}" title="{{ comment.image.title }} - {{ comment.image.description }}"></a>
+      </div>
+    {% endif %}
+    <div class="content">
+      <h4>{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} {% translate 'wrote on' %} {{ comment.date_created|date:'d/m/Y' }}{% if show_thumbnail %} {% translate 'on'%} <a href="{% url 'archive:image' comment.image.slug %}">{{ comment.image.title|title }}{% endif %}</a>:</h4>
+      {{ comment.content|markdown|safe }}
+      {% if comment.user == user or user.is_staff %}
+        <span class="actions">
+          {% if comment.user == user %}<a href="{% url 'archive:edit-comment' comment.id %}">{% translate 'edit'|capfirst %} {% translate 'comment' %}</a>{% endif %}
+          {% if user.is_staff %}<a href="/admin/archive/comment/{{ comment.id }}/change/">{% translate 'edit'|capfirst %} {% translate 'in admin' %}</a>{% endif %}
+          {% if comment.user == user or user.is_staff %}<a href="{% url 'archive:delete-comment' comment.id %}">{% translate 'delete'|capfirst %} {% translate 'comment' %}</a>{% endif %}
+        </span>
+      {% endif %}
+    </div>
+  </div>
+</li>

@@ -12,6 +12,10 @@ class Tag(models.Model):
   date_modified       = models.DateTimeField(auto_now=True)
   date_created        = models.DateTimeField(auto_now_add=True)
   
+  allow_read_attributes = 'Authenticated'  # Allow authenticated users to read attributes via JSON requests
+  allow_suggest_attributes = "Authenticated"  # Allow authenticated users to suggest attributes via JSON requests
+  
+  searchable_fields = ['slug']
   def __str__(self):
     return self.title
   

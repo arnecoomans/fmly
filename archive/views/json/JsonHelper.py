@@ -83,13 +83,13 @@ class JsonHelper(View):
       self.response['value'] = str(value)
     self.payload = payload
 
-  def get_rendered_payload(self, value):
+  def get_rendered_payload(self, value, format='html'):
     try:
       return render_to_string('partial/' + self.scope + '/' + self.attribute + '.html', { self.attribute: value })
     except Exception as e:
       ''' Exception Handling'''
       if self.attribute == 'people':
-        return render_to_string('partial/' + self.scope + '/person.html', { 'person': value })
+        return render_to_string('partial/' + self.scope + '/person.' + format, { 'person': value })
       ''' Logging'''
       if self.request.user.is_staff:
         self.add_message('warning', 'Could not render ' + self.attribute + ' for ' + str(value) + ': ' + str(e))

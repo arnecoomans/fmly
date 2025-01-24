@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from cmnsdjango import views as cmnsviews
 #from core.views import SignUpView
 
 app_name = 'archive'
@@ -71,8 +72,13 @@ urlpatterns = [
   path("sign-up/", views.SignUpView.as_view(), name='signup'),
 
   # JSON
-  path('json/image:<int:pk>:<str:slug>/attribute/<str:attribute>/', views.JsonGetAttributeOfImage.as_view(), name='json-get-attribute-of-image'),
-  path('json/person:<int:pk>:<str:slug>/attribute/<str:attribute>/', views.JsonGetAttributeOfPerson.as_view(), name='json-get-attribute-of-person'),
+  # JSON GET Attributes
+  path('json/<str:model>/<int:pk>:<str:slug>/attribute/<str:attribute>/', cmnsviews.JsonGetAttributes.as_view(), name='json-get-attributes-by-pk-slug'),
+  path('json/<str:model>/<str:slug>/attribute/<str:attribute>/', cmnsviews.JsonGetAttributes.as_view(), name='json-get-attributes'),
+  # JSON GET Suggestions
+  path('json/<str:model>/<int:pk>:<str:slug>/suggest/<str:attribute>/', cmnsviews.JsonGetSuggestions.as_view(), name='json-get-suggestions-by-pk-slug'),
+  path('json/<str:model>/<str:slug>/suggest/<str:attribute>/', cmnsviews.JsonGetSuggestions.as_view(), name='json-get-suggestions'),
+  # path('json/person:<int:pk>:<str:slug>/attribute/<str:attribute>/', views.JsonGetAttributeOfPerson.as_view(), name='json-get-attribute-of-person'),
   path('json/object:<int:pk>:<str:slug>/comments/', views.aListComments.as_view(), name='acommentsforimage'),
   path('json/object:<int:pk>:<str:slug>/commentform/', views.aFetchCommentForm.as_view(), name='fetchcommentform'),
   path('json/object:<int:pk>:<str:slug>/postcomment/', views.aPostComment.as_view(), name='postcomment'),

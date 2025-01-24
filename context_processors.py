@@ -12,6 +12,8 @@ def setting_data(request):
     'matomo_id': getattr(settings, 'MATOMO_TRACKING_ID', None),
 
     'ajax_load_comments': getattr(settings, 'AJAX_LOAD_COMMENTS', default_ajax_load),
-    'ajax_image_load_people': getattr(settings, 'AJAX_IMAGE_LOAD_PEOPLE', default_ajax_load)
+    'ajax_image_load_people': getattr(settings, 'AJAX_IMAGE_LOAD_PEOPLE', default_ajax_load),
+    'ajax_image_load_tags': getattr(settings, 'AJAX_IMAGE_LOAD_TAGS', default_ajax_load),
+    'ajax_image_load_description': getattr(settings, 'AJAX_IMAGE_LOAD_DESCRIPTION', default_ajax_load),
   }
   return result

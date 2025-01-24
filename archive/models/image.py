@@ -149,10 +149,15 @@ class Image(models.Model):
   visibility_frontpage     = models.BooleanField(default=True)
   visibility_person_page   = models.BooleanField(default=True)
   
-
+  allow_read_attributes = 'Authenticated'  # Allow authenticated users to read attributes via JSON requests
+  
+  def date(self):
+    """ Returns the date of the image by combining the year, month and day fields """
+    return f"{self.day} {self.MONTHS[self.month-1][1]} {self.year}"
+  
   def __str__(self):
     return self.get_indexed_name()
-  
+
   ''' Get Save Slug
       Loop through existing slugs and append slug with counter if Unique contraint would fail
   '''

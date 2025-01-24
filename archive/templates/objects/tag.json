@@ -1,0 +1,5 @@
+{ 
+  "slug": "{{ tag.slug }}", 
+  "title": "{{ tag.title }}", 
+  "url": "{{ tag.get_absolute_url }}"
+}
