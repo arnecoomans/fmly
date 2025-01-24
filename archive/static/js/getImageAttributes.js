@@ -8,9 +8,7 @@
  */
 
 function getImageAttributes(url, attribute, before='', after='') {
-  target = 'target-' + attribute;
-  console.log('fetching data from ' + url + ' for ' + target);
-  
+  console.log('fetching data from ' + url + ' for ' + attribute);
   $.ajax({
     url: url,
     dataType: 'json',
@@ -21,7 +19,8 @@ function getImageAttributes(url, attribute, before='', after='') {
         $('#messages-placeholder').append('<div class="alert alert-danger alert-dismissible fade show" role="alert">' + data.message + '  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
         return false;
       } else {
-        console.log('Data fetched successfully and writing to ' + target);
+        target = 'target-' + attribute;
+        console.log(attribute + '-data ' + data['payload'].length + ' item fetched successfully and writing to ' + target);
         $('#' + target).empty();
         $.each(data['payload'], function(index, payload){
           $('#' + target).append(before + payload + after);
