@@ -185,9 +185,9 @@
     {% if ajax_image_load_people and image.people.all.count > 0 %} 
       getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'people' %}', attribute='people', before='<li class="bi bi-person-fill">', after='</li>');
     {% endif %}
-    {% comment %} {% if ajax_image_load_tags %}
+    {% if ajax_image_load_tags %}
       getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'tag' %}', attribute='tag');
-    {% endif %} {% endcomment %}
+    {% endif %}
   });
 </script>
 
