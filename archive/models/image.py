@@ -149,7 +149,9 @@ class Image(models.Model):
   visibility_frontpage     = models.BooleanField(default=True)
   visibility_person_page   = models.BooleanField(default=True)
   
-  allow_read_attributes = 'Authenticated'  # Allow authenticated users to read attributes via JSON requests
+  allow_read_attribute = 'Authenticated'  # Allow authenticated users to read attributes via JSON requests
+  allow_suggest_attribute = 'Authenticated'  # Allow authenticated users to suggest attributes via JSON requests
+  allow_set_attribute = 'Staff'  # Allow staff users to set attributes via JSON requests
   
   def date(self):
     """ Returns the date of the image by combining the year, month and day fields """
