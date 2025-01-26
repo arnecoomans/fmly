@@ -2,7 +2,7 @@ from django.conf import settings
 
 # Define content that will be available in templates
 def setting_data(request):
-  default_ajax_load = True
+  default_ajax_load = getattr(settings, 'AJAX_LOAD_DEFAULT', False)
   result = {
     'website_title': getattr(settings, 'WEBSITE_TITLE', 'Family Reseach'),
     'LANGUAGE_CODE': getattr(settings, 'LANGUAGE_CODE', 'en-us'),
