@@ -172,7 +172,7 @@
 <script src="{% static 'js/autoload_comments.js' %}"></script>
 <script src="{% static 'js/getAttributes.js' %}"></script>
 <script>
-  const csrf_token = '{{ csrf_token }}';
+  {% comment %} const csrf_token = '{{ csrf_token }}'; {% endcomment %}
   $(document).ready(function() {
     $('.comments.statusmessage').remove()
     {% if ajax_load_comments %}
