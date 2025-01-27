@@ -172,12 +172,12 @@
 <script src="{% static 'js/autoload_comments.js' %}"></script>
 <script src="{% static 'js/getAttributes.js' %}"></script>
 <script>
-  const csrfToken = '{{ csrf_token }}';
+  const csrf_token = '{{ csrf_token }}';
   $(document).ready(function() {
     $('.comments.statusmessage').remove()
     {% if ajax_load_comments %}
       {% if perms.archive.view_comment %}getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'comments' %}', attribute='comments');{% endif %}
-      {% if perms.archive.add_comment %}fetchCommentForm('{% url 'archive:fetchcommentform' image.id image.slug %}', csrfToken);{% endif %}
+      {% if perms.archive.add_comment %}fetchCommentForm('{% url 'archive:fetchcommentform' image.id image.slug %}', csrf_token);{% endif %}
     {% endif %}
     {% if ajax_image_load_description and image.description %}
       getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'description' %}', attribute='description');
