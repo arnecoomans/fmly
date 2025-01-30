@@ -1,0 +1,14 @@
+{% load i18n %}<div id="overlayContent">
+  <button id="closeOverlay">{% translate 'close'|capfirst %}</button>
+  <h4>{{ title }}</h5>
+  <p>{{ object.title|default:object }}</p>
+  <input
+    type="text"
+    id="attributeInput"
+    placeholder="Type to search..."
+    autocomplete="off"
+    data-suggestion-url="{% url 'archive:json-get-suggestions-by-pk-slug' model object.id object.slug related_field %}"
+    data-submit-url="{% url 'archive:json-set-attribute-by-pk-slug' model object.id object.slug related_field %}"
+  />
+  <ul id="suggestions"></ul>
+</div>

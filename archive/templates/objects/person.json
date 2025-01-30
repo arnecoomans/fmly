@@ -1,0 +1,5 @@
+{
+  "slug": "{{ person.slug }}",
+  "display_text": "{{ person.name|highlight:query|safe }} {% if person.year_of_birth or person.year_of_death %}({{ person.year_of_birth|default:"" }}{% if person.year_of_death %}- {{ person.year_of_death }}{% endif %}){% endif %}"
+  
+}
