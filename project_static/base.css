@@ -192,6 +192,9 @@ h6:hover:has(a), h6:hover a, h6 a:hover {
   li:has(.comment) {
     list-style-type: none;
   }
+  .comment.placeholder {
+    border: none;
+  }
   .comment {
     display: inline-block; 
     width: 90%; 
