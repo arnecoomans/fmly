@@ -5,10 +5,12 @@
   <input
     type="text"
     id="attributeInput"
-    placeholder="Type to search..."
+    placeholder="{% translate 'type to search'|capfirst %}..."
     autocomplete="off"
     data-suggestion-url="{% url 'archive:json-get-suggestions-by-pk-slug' model object.id object.slug related_field %}"
     data-submit-url="{% url 'archive:json-set-attribute-by-pk-slug' model object.id object.slug related_field %}"
+    data-success-url="{% url 'archive:json-get-attributes-by-pk-slug' model object.id object.slug related_field %}"
+    data-attribute="{{ attribute }}"
   />
   <ul id="suggestions"></ul>
 </div>
