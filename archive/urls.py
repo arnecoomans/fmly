@@ -81,8 +81,8 @@ urlpatterns = [
   # JSON SET Attributes
   path('json/<str:model>/<int:pk>:<str:slug>/set/<str:field>/', cmnsviews.JsonSetAttribute.as_view(), name='json-set-attribute-by-pk-slug'),
   path('json/<str:model>/<str:slug>/set/<str:field>/', cmnsviews.JsonSetAttribute.as_view(), name='json-set-attribute'),
-  # JSON DEBUG
-  path('json/<str:model>/<str:slug>/suggestionform/<str:field>/', cmnsviews.JsonGetSuggestionForm.as_view(), name='json-suggestion-form'),
+  # JSON getAttribute Form
+  path('json/<str:model>/<str:slug>/add/<str:field>/', cmnsviews.GetJsonAddObjectForm.as_view(), name='json-suggestion-form'),
   # path('json/person:<int:pk>:<str:slug>/attribute/<str:attribute>/', views.JsonGetAttributeOfPerson.as_view(), name='json-get-attribute-of-person'),
   path('json/object:<int:pk>:<str:slug>/comments/', views.aListComments.as_view(), name='acommentsforimage'),
   path('json/object:<int:pk>:<str:slug>/commentform/', views.aFetchCommentForm.as_view(), name='fetchcommentform'),

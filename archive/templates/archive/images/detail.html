@@ -12,6 +12,7 @@
         <h2><span class="object-id">#{{ object.id }}</span>{{ image.title }}:</h2>
       </header>
 
+      <div id="attributeOverlay" style="display: none;"></div>
       <div class="column left">
         <a href="/documents/{{ image.source }}" title="{{ image.title }}" target="_blank">
           <img src="/documents/{{ image.source }}" title="{{ image.title }}" alt="{{ image.description }}" />
@@ -28,7 +29,8 @@
             </li>
           {% endif %}
           {% if perms.archive.change_document or perms.archive.change_image %}
-            <li><a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'add person to'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#person-plus"/></svg></a></li>
+            <li><a href="#" class="addOverlayButton" data-url="{% url 'archive:json-suggestion-form' 'image' image.slug 'people' %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'add person to'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#person-plus"/></svg></a></li>
+            <li><a href="#" class="addOverlayButton" data-url="{% url 'archive:json-suggestion-form' 'image' image.slug 'tag' %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'add tag to'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#tag"/></svg></a></li>
             <li><a href="{% url 'archive:regenerate-thumbnail' image.id image.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'regenerate thumbnail'|capfirst %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#arrow-clockwise"/></svg></a></li>
             <li><a href="{% url 'archive:image-edit' image.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil"/></svg></a></li>
             {% if user.is_staff %}<li><a href="/admin/archive/image/{{ image.id }}/change/" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %} {% translate 'in admin' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil-square"/></svg></a></li>{% endif %}
@@ -167,10 +169,10 @@
 {% endblock %}
 
 {% block footer %}
-<script src="{% static 'js/jquery.min.js' %}"></script>
-
 <script src="{% static 'js/autoload_comments.js' %}"></script>
 <script src="{% static 'js/getAttributes.js' %}"></script>
+<script src="{% static 'js/addObjectOverlay.js' %}"></script>
+
 <script>
   {% comment %} const csrf_token = '{{ csrf_token }}'; {% endcomment %}
   $(document).ready(function() {
