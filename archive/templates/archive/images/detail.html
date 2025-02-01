@@ -80,15 +80,16 @@
         <ul class="metadata no-bullets">
         {% endif %}
         <!-- Tags -->
-        {% if perms.archive.view_tag and image.tag.all.count > 0 %}
-          <ul class="metadata no-bullets" id="target-tag">
+        <ul class="metadata no-bullets" id="target-tag">
+          {% if perms.archive.view_tag and image.tag.all.count > 0 %}
             {% if not ajax_image_load_tags %}
               {% for tag in image.tag.all %}
                 {% include 'objects/tag.html' %}
               {% endfor %}
             {% endif %}
-          </ul>
-        {% endif %}
+          {% endif %}
+        </ul>
+
         <!-- Grouping -->
         <ul class="metadata no-bullets">
           {% for name, objects in image.get_grouped_images.items %}
