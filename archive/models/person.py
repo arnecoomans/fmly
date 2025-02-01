@@ -24,7 +24,7 @@ class Person(models.Model):
   slug                = models.CharField(max_length=255, unique=True)
   
   # Gender (required for family tree)
-  GENDERS = [('m', _('male')), ('f', _('female')), ('x', _('not stored'))]
+  GENDERS             = [('m', _('male')), ('f', _('female')), ('x', _('not stored'))]
   gender              = models.CharField(max_length=1, choices=GENDERS, default='x')
   
   # Information
@@ -52,11 +52,14 @@ class Person(models.Model):
   date_modified       = models.DateTimeField(auto_now=True)
   date_created        = models.DateTimeField(auto_now_add=True)
   
+
+  # Model configuration for JSON API
   allow_read_attribute = 'Authenticated'  # Allow authenticated users to read attributes via JSON requests
   allow_suggest_attribute = 'Authenticated'  # Allow authenticated users to suggest attributes via JSON requests
   allow_set_attribute = 'Staff'  # Allow staff users to set attributes via JSON requests
-  
+  allow_create_attribute = False # Disallow creating new objects via JSON requests by setting to False
   searchable_fields = ['first_names', 'given_name', 'last_name', 'married_name', 'nickname', 'place_of_birth', 'place_of_death', 'bio']
+
   class Meta:
     ordering = ('first_names', 'last_name')
     verbose_name = 'person'

@@ -11,15 +11,6 @@
       <header>
         <h2><span class="object-id">#{{ object.id }}</span>{{ image.title }}:</h2>
       </header>
-      <div>
-        {% if perms.archive.change_image and not disallow_delete_attribute %}FOO{% endif%}
-
-      </div>
-{% comment %} <li>{{ perms.image }}
-<li>@@{{ perms.archive.change_image }}@@
-<li>--{{ disallow_delete_attribute|default:False }}--
-<li>{{ image.is_deleted }} {% endcomment %}
-
       <div id="attributeOverlay" style="display: none;"></div>
       <div class="column left">
         <a href="/documents/{{ image.source }}" title="{{ image.title }}" target="_blank">

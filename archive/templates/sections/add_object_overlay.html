@@ -12,5 +12,8 @@
     data-success-url="{% url 'archive:json-get-attributes-by-pk-slug' model object.id object.slug related_field %}"
     data-attribute="{{ attribute }}"
   />
+  {% if allow_create_attribute %}
+    <button id="createAttribute" data-url="{% url 'archive:json-set-attribute-by-pk-slug' model object.id object.slug related_field %}" >{% translate 'create'|capfirst %}</button>
+  {% endif %}
   <ul id="suggestions"></ul>
 </div>
