@@ -54,7 +54,7 @@
           {% if perms.archive.view_person and image.people.all.count > 0 %}
             {% if not ajax_image_load_people %}
               {% for person in object.people.all %}
-                <li class=" bi bi-person-fill" data-ajax="false">{% include 'objects/person.html' %}</li>
+                {% include 'objects/person.html' %}
               {% endfor %}
             {% endif %}
           {% endif %}
