@@ -12,6 +12,11 @@ class Preference(models.Model):
   ''' Favorites '''
   favorites           = models.ManyToManyField(Image, blank=True, related_name="loved_by")
 
+  allow_read_attribute = 'Self'  # Allow authenticated users to read attributes via JSON requests
+  allow_suggest_attribute = 'Self'  # Allow authenticated users to suggest attributes via JSON requests
+  allow_set_attribute = 'Self'  # Allow staff users to set attributes via JSON requests
+  allow_create_attribute = False # Disallow creating new objects via JSON requests by setting to False
+  
   def __str__(self):
     return f"Voorkeuren van { self.user }"
   
