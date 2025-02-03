@@ -4,7 +4,7 @@
         data-url="{% url 'archive:json-set-attribute-by-pk-slug' 'image' image.id image.slug 'tag' %}?obj_id={{ tag.id }}" 
         data-success-url="{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'tag' %}"
         data-attribute="tag"
-        title="{% translate 'remove'|capfirst %} '{{ tag.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">
+        title="{% translate 'remove tag'|capfirst %} {{ field_name }} '{{ tag.title|title }}' from &quot;{{ image.title }}&quot;" data-bs-toggle="tooltip" data-bs-placement="top">
       <i class="bi bi-x"></i>
   </span>{% endif %}
 </li>
