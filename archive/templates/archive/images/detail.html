@@ -182,13 +182,13 @@
       {% if perms.archive.view_comment %}getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'comments' %}', attribute='comments');{% endif %}
       {% if perms.archive.add_comment %}fetchCommentForm('{% url 'archive:fetchcommentform' image.id image.slug %}', csrf_token);{% endif %}
     {% endif %}
-    {% if ajax_image_load_description and image.description %}
+    {% if ajax_load_attributes and image.description %}
       getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'description' %}', attribute='description');
     {% endif %}
-    {% if ajax_image_load_people and image.people.all.count > 0 %} 
+    {% if ajax_load_attributes and image.people.all.count > 0 %} 
       getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'people' %}', attribute='people', before='', after='');
     {% endif %}
-    {% if ajax_image_load_tags %}
+    {% if ajax_load_attributes and image.tag.all.count > 0 %}
       getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'tag' %}', attribute='tag');
     {% endif %}
   });
