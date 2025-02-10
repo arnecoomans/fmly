@@ -60,10 +60,6 @@ class Person(models.Model):
   allow_create_attribute = False # Disallow creating new objects via JSON requests by setting to False
   searchable_fields = ['first_names', 'given_name', 'last_name', 'married_name', 'nickname', 'place_of_birth', 'place_of_death', 'bio']
 
-  allow_read_attribute = 'Authenticated'  # Allow authenticated users to read attributes via JSON requests
-  allow_suggest_attribute = 'Authenticated'  # Allow authenticated users to suggest attributes via JSON requests
-  allow_set_attribute = 'Staff'  # Allow staff users to set attributes via JSON requests
-  allow_create_attribute = True # Disallow creating new objects via JSON requests by setting to False
   
   class Meta:
     ordering = ('first_names', 'last_name')

@@ -28,8 +28,8 @@
             </li>
           {% endif %}
           {% if perms.archive.change_document or perms.archive.change_image %}
-            <li><a href="#" class="addOverlayButton" data-url="{% url 'archive:json-suggestion-form' 'image' image.slug 'people' %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'add person to'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#person-plus"/></svg></a></li>
-            <li><a href="#" class="addOverlayButton" data-url="{% url 'archive:json-suggestion-form' 'image' image.slug 'tag' %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'add tag to'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#tag"/></svg></a></li>
+            <li><a href="#" class="clickable" data-url="{% url 'archive:json-suggestion-form' 'image' image.slug 'people' %}" data-action="getOverlay" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'add person to'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#person-plus"/></svg></a></li>
+            <li><a href="#" class="clickable" data-url="{% url 'archive:json-suggestion-form' 'image' image.slug 'tag' %}" data-action="getOverlay" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'add tag to'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#tag"/></svg></a></li>
             <li><a href="{% url 'archive:regenerate-thumbnail' image.id image.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'regenerate thumbnail'|capfirst %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#arrow-clockwise"/></svg></a></li>
             <li><a href="{% url 'archive:image-edit' image.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil"/></svg></a></li>
             {% if user.is_staff %}<li><a href="/admin/archive/image/{{ image.id }}/change/" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %} {% translate 'in admin' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil-square"/></svg></a></li>{% endif %}
@@ -170,10 +170,8 @@
 
 {% block footer %}
 <script src="{% static 'js/autoload_comments.js' %}"></script>
-<script src="{% static 'js/getCookieValue.js' %}"></script>
-<script src="{% static 'js/getAttributes.js' %}"></script>
-<script src="{% static 'js/manageAttributes.js' %}"></script>
-<script src="{% static 'js/addObjectOverlay.js' %}"></script>
+{% comment %} <script src="{% static 'js/manageAttributes.js' %}"></script>
+<script src="{% static 'js/addObjectOverlay.js' %}"></script> {% endcomment %}
 
 <script>
   $(document).ready(function() {
@@ -182,13 +180,13 @@
       {% if perms.archive.view_comment %}getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'comments' %}', attribute='comments');{% endif %}
       {% if perms.archive.add_comment %}fetchCommentForm('{% url 'archive:fetchcommentform' image.id image.slug %}', csrf_token);{% endif %}
     {% endif %}
-    {% if ajax_image_load_description and image.description %}
+    {% if ajax_load_attributes and image.description %}
       getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'description' %}', attribute='description');
     {% endif %}
-    {% if ajax_image_load_people and image.people.all.count > 0 %} 
+    {% if ajax_load_attributes and image.people.all.count > 0 %} 
       getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'people' %}', attribute='people', before='', after='');
     {% endif %}
-    {% if ajax_image_load_tags %}
+    {% if ajax_load_attributes and image.tag.all.count > 0 %}
       getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'tag' %}', attribute='tag');
     {% endif %}
   });

@@ -1,0 +1,9 @@
+{% load i18n %}{% load static %}<div class="description attribute">{{ description|markdown|safe }}
+{% if perms.archive.change_image and not disallow_delete_attribute %}<span class="clickable " 
+        data-url="{% url 'archive:json-suggestion-form' 'image' image.slug 'description' %}" 
+        data-action="getOverlay"
+        title="{% translate 'edit description'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="top">
+        <svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil"/></svg>
+  </span>{% endif %}
+</li>
+</div>

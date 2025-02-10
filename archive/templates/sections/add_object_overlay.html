@@ -8,12 +8,18 @@
     placeholder="{% translate 'type to search'|capfirst %}..."
     autocomplete="off"
     data-suggestion-url="{% url 'archive:json-get-suggestions-by-pk-slug' model object.id object.slug related_field %}"
-    data-submit-url="{% url 'archive:json-set-attribute-by-pk-slug' model object.id object.slug related_field %}"
-    data-success-url="{% url 'archive:json-get-attributes-by-pk-slug' model object.id object.slug related_field %}"
     data-attribute="{{ attribute }}"
+    data-success-url="{% url 'archive:json-get-attributes-by-pk-slug' model object.id object.slug related_field %}"
+            data-url="{% url 'archive:json-set-attribute-by-pk-slug' model object.id object.slug related_field %}"
   />
   {% if allow_create_attribute %}
-    <button id="createAttribute" data-url="{% url 'archive:json-set-attribute-by-pk-slug' model object.id object.slug related_field %}" >{% translate 'create'|capfirst %}</button>
+    <button id="createAttribute" class="clickable" data-action="setAttribute" 
+    data-input-selector="#attributeInput"
+    data-attribute="{{ attribute }}"
+    data-success-url="{% url 'archive:json-get-attributes-by-pk-slug' model object.id object.slug related_field %}"
+    data-url="{% url 'archive:json-set-attribute-by-pk-slug' model object.id object.slug related_field %}"
+    >{% translate 'create'|capfirst %}</button>
+    
   {% endif %}
   <ul id="suggestions"></ul>
 </div>
