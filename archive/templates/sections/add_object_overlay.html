@@ -10,7 +10,8 @@
     data-suggestion-url="{% url 'archive:json-get-suggestions-by-pk-slug' model object.id object.slug related_field %}"
     data-attribute="{{ attribute }}"
     data-success-url="{% url 'archive:json-get-attributes-by-pk-slug' model object.id object.slug related_field %}"
-            data-url="{% url 'archive:json-set-attribute-by-pk-slug' model object.id object.slug related_field %}"
+    data-url="{% url 'archive:json-set-attribute-by-pk-slug' model object.id object.slug related_field %}"
+    data-field="{{ field }}"
   />
   {% if allow_create_attribute %}
     <button id="createAttribute" class="clickable" data-action="setAttribute" 
