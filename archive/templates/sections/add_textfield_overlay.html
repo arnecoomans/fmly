@@ -1,0 +1,15 @@
+{% load i18n %}<div id="overlayContent">
+  <button id="closeOverlay">{% translate 'close'|capfirst %}</button>
+  <h4>{{ title }}</h5>
+  <p>{{ object.title|default:object }}</p>
+  <textarea id="attributeInput" class="form-control">{{ object.description }}</textarea>
+  {% if allow_create_attribute %}
+    <button id="createAttribute" class="clickable" data-action="setAttribute" 
+    data-input-selector="#attributeInput"
+    data-attribute="{{ attribute }}"
+    data-success-url="{% url 'archive:json-get-attributes-by-pk-slug' model object.id object.slug related_field %}"
+    data-url="{% url 'archive:json-set-attribute-by-pk-slug' model object.id object.slug related_field %}"
+    >{% translate 'update'|capfirst %}</button>
+    
+  {% endif %}
+</div>
