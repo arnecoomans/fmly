@@ -1,19 +1,19 @@
 # Python
-pip >= 24.3.1
-
+pip >= 25.3
+ 
 # Django
-Django >= 5.1.4
-Pillow >= 10.0.0
-gunicorn >= 21.2.0
+Django >= 5.2.7
+Pillow >= 11.3.0
+gunicorn >= 23.0.0
 
 # Markdown
-Markdown >= 3.4.4
+Markdown >= 3.9
 
 # Heic to JPG
-pillow-heif >= 0.13.1
+pillow-heif >= 1.1.0
 
 # Sendfile for Attachments
-django-sendfile2 >= 0.7.0
+django-sendfile2 >= 0.7.2
 
 # Graphviz for Family Tree
 graphviz >= 0.20.1
