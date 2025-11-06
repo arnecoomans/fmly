@@ -2,3 +2,6 @@
 	path = cmnsdjango
 	url = https://github.com/arnecoomans/cmnsdjango
 	branch = main
+[submodule "cmnsd"]
+	path = cmnsd
+	url = https://github.com/arnecoomans/cmnsd/

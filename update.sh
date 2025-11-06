@@ -1,1 +1,0 @@
-cmnsdjango/helpers/update.sh
