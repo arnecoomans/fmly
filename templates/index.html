@@ -12,6 +12,13 @@
     <link rel="stylesheet" href="{% static 'bootstrap-icons/font/bootstrap-icons.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/dynamicOverlay.css' %}">
     <link rel="stylesheet" href="{% static 'css/manageAttributes.css' %}">
+    <!-- cmnsd -->
+    <link rel="stylesheet" href="{% static 'css/cmnsd/messages.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cmnsd/cmnsd.branding.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cmnsd/cmsd.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cmnsd/autosuggest.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cmnsd/actions.css' %}">
+
     {% for file in load_script %}
       <script src="/static/{{ file }}"></script>
     {% endfor %}
@@ -52,5 +59,27 @@
     {% include 'footer.html' %}
     {% block footer %}
     {% endblock %}
+
+    <!-- Javascripts -->
+<script src="{% static '/js/jquery/jquery.min.js' %}"></script>
+<script src="{% static '/js/jquery-ui/jquery-ui.js' %}"></script> 
+<script type="module">
+  import cmnsd from "{% static 'js/cmnsd/index.js' %}";
+  import { initAutosuggest } from "{% static 'js/cmnsd/autosuggest.js' %}";
+
+  cmnsd.init({
+    baseURL: '',
+    debug: {{ debug|lower|default:'false' }}, // enable console.debug tracing when django DEBUG=True
+    messages: { container: '#messages', dismissible: true, clearBefore: false, max: 5 }, // message container, see messages.html
+    actions: { autoBind: true } // bind delegated [data-action] on document
+
+    {% block cmnsdInit %}{% endblock %}
+  });
+  {% block cmnsdPostInit %}{% endblock %}
+  document.addEventListener('submit', e => console.debug('[test] submit event', e.target));
+  initAutosuggest();
+</script>
+{% block scriptfooter %}{% endblock %}
+
   </body>
 </html>

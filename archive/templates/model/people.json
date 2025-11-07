@@ -1,0 +1,5 @@
+{
+  {% for person in people %}
+  {% include 'model/person.json' with person=person %}{% if not forloop.last %},{% endif %}
+  {% endfor %}
+}

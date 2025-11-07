@@ -1,0 +1,126 @@
+{% if ajax.editable and perms.archive.change_person %}{% load static %}
+  <form
+    id="person-names-form"
+    data-action
+    data-autosuggest-allow-empty="1"
+    data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'names' %}"
+    data-method="post"
+    data-body="form"
+    data-map='{"names":"#names"}'
+    >
+{% endif %}
+  <div class="d-flex">
+    <!-- LEFT SECTION (labels + values stacked) -->
+    <div class="flex-grow-1">    
+      <!-- Nickname -->
+      {% if person.nickname or ajax.editable and perms.archive.change_person %}
+        <div class="d-flex py-1">
+          <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'nickname'|capfirst %}:</div>
+          <div class="col">
+            {% if ajax.editable and perms.archive.change_person %}
+              <input type="text" class="form-control" name="nickname" value="{{ person.nickname }}">
+            {% else %}
+              {{ person.nickname }}
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+      <!-- First name -->
+      <div class="d-flex py-1">
+        <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'first name'|capfirst %}:</div>
+        <div class="col">
+          {% if ajax.editable and perms.archive.change_person %}
+            <input type="text" class="form-control" name="first_names" value="{{ person.first_names }}">
+          {% else %}
+            {{ person.first_names }}
+            {% if person.given_name %}({{ person.given_name }}){% endif %}
+          {% endif %}
+        </div>
+      </div>
+      <!-- Given name -->
+      {% if person.given_name and ajax.editable %}
+        <div class="d-flex py-1">
+          <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'given name'|capfirst %}:</div>
+          <div class="col">
+            {% if ajax.editable and perms.archive.change_person %}
+              <input type="text" class="form-control" name="given_name" value="{{ person.given_name }}">
+            {% else %}
+              {{ person.given_name }}
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+      <!-- Last name -->
+      <div class="d-flex {% if not ajax.editable %}border-bottom {% endif %}py-1">
+        <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'last name'|capfirst %}:</div>
+        <div class="col">
+          {% if ajax.editable and perms.archive.change_person %}
+            <input  type="text" 
+                    class="form-control" 
+                    name="last_name" 
+                    value="{{ person.last_name }}"
+                    data-autosuggest
+                    data-local-source = '[{% for name in person.all_last_names %}{"last_name":"{{ name }}"}{% if not forloop.last %}, {% endif %}{% endfor %}]'
+                    data-field-input="last_name"
+                  >
+          {% else %}
+            {% if person.married_name %} 
+              <a href="{% url 'archive:people' %}?family={{ person.married_name }}">{{ person.married_name }}</a> <span class="text-muted">({% translate 'born' %}: <a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>)</span>
+            {% else %}
+              <a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+      <!-- Married name -->
+      {% if ajax.editable and perms.archive.change_person %}
+        <div class="d-flex py-1">
+          <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'married name'|capfirst %}:</div>
+          <div class="col">
+            {% if ajax.editable and perms.archive.change_person %}
+              <input
+                type="text"
+                name="married_name"
+                class="form-control"
+                value="{{ person.married_name }}"
+                data-autosuggest
+                data-local-source = '[{% for name in person.all_last_names %}{"married_name":"{{ name }}"}{% if not forloop.last %}, {% endif %}{% endfor %}]'
+                data-field-input="married_name"
+              />
+            {% else %}
+              {% if person.married_name %} 
+                <a href="{% url 'archive:people' %}?family={{ person.married_name }}">{{ person.married_name }}</a> <span class="text-muted">({% translate 'born'|capfirst %}: <a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>)</span>
+              {% else %}
+                <a href="{% url 'archive:people' %}?family={{ person.married_name }}">{{ person.married_name }}</a>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+        <div class="d-flex border-bottom py-1">
+          <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'gender'|capfirst %}:</div>
+          <div class="col">
+            {% if ajax.editable and perms.archive.change_person %}
+              <select name="gender" class="form-control">
+                {% for gender in person.genders %}
+                  <option value="{{ gender.0 }}" {% if person.gender == gender.0 %}selected{% endif %}>{{ gender.1 }}</option>
+                {% endfor %}
+              </select>
+            {% else %}
+              {% if person.gender.0 in 'M,F' %}<img src="{% static 'img/bootstrap-icons/gender-{{ person.gender.0 }}.svg' %}" alt="{{ person.get_gender_display }}" class="icon">{% endif %}
+              {{ person.get_gender_display }}
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+      
+    </div>
+    <!-- RIGHT SECTION (icons spanning vertically) -->
+    <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+      {% include 'element/reusable_edit_column.html' with object_name='person' object=person field='names' %}
+    </div>
+  </div>
+{% if ajax.editable and perms.archive.change_person%}
+  </form>
+{% endif %}
+
+<div class="spacer my-3"></div>

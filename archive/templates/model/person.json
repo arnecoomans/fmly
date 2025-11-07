@@ -1,0 +1,12 @@
+"{{ person.id }}": {
+  "id": {{ person.id }},
+  "nickname": "{{ person.nickname }}",
+  "first_names": "{{ person.first_names }}",
+  "given_name": "{{ person.given_name }}",
+  "last_name": "{{ person.last_name }}",
+  "married_name": "{{ person.married_name }}",
+  "full_name": "{{ person.full_name }}",
+  "place_of_birth": "{{ person.place_of_birth }}",
+  "place_of_death": "{{ person.place_of_death }}",
+  "lifespan": "{{ person.get_lifespan_display }}"
+}

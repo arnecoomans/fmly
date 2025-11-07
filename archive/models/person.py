@@ -6,7 +6,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse_lazy, reverse
 from math import floor
 from django.utils.translation import gettext_lazy as _
-
+from cmnsd.models.cmnsd_basemodel import BaseModel, VisibilityModel
+from cmnsd.models.cmnsd_basemethod import ajax_function, searchable_function
 
 class Person(models.Model):
   ''' Model: Person
@@ -73,6 +74,37 @@ class Person(models.Model):
       name += f" ({ self.get_lifespan() })"
     return name
 
+  @property
+  def months(self):
+    return self.MONTHS
+  @property
+  def genders(self):
+    return self.GENDERS
+  
+  @ajax_function
+  def names(self):
+    return {
+      'first_names': self.first_names,
+      'given_name': self.given_name,
+      'last_name': self.last_name,
+      'married_name': self.married_name,
+      'nickname': self.nickname,
+    }
+  
+  @ajax_function
+  def dates(self):
+    return {
+      'date_of_birth': self.date_of_birth,
+      'date_of_death': self.date_of_death,
+      'year_of_birth': self.year_of_birth,
+      'year_of_death': self.year_of_death,
+      'month_of_birth': self.month_of_birth,
+      'month_of_death': self.month_of_death,
+      'day_of_birth': self.day_of_birth,
+      'day_of_death': self.day_of_death,
+      'moment_of_death_unconfirmed': self.moment_of_death_unconfirmed,
+    }
+  
   def name(self):
     return ' '.join([self.first_names, self.last_name])
 
@@ -107,6 +139,31 @@ class Person(models.Model):
       lifespan += str(self.year_of_death)
     return lifespan
 
+  def get_lifespan_display(self):
+    lifespan = ''
+    if self.date_of_birth:
+      lifespan += self.date_of_birth.strftime('%d-%m-%Y')
+    elif self.year_of_birth:
+      lifespan += str(self.year_of_birth)
+    if self.place_of_birth:
+      lifespan += f" ({ self.place_of_birth })"
+    if self.date_of_death or self.moment_of_death_unconfirmed:
+      lifespan += ' - '
+    if self.date_of_death:
+      lifespan += self.date_of_death.strftime('%d-%m-%Y')
+    elif self.year_of_death:
+      lifespan += str(self.year_of_death)
+    if self.place_of_death:
+      lifespan += f" ({ self.place_of_death })"
+    return lifespan
+  
+  def has_dates(self):
+    if self.date_of_birth or self.month_of_birth or self.year_of_birth or self.place_of_birth or \
+       self.date_of_death or self.month_of_death or self.year_of_death or self.place_of_death:
+      return True
+    return False
+  
+
   def ageatdeath(self):
     if self.date_of_birth and self.date_of_death:
       age = self.date_of_death.year - self.date_of_birth.year
@@ -127,12 +184,66 @@ class Person(models.Model):
       Parents have a simple relation
       up is parent of down.
   '''
+
+  @ajax_function
+  def parents(self):
+    return self.get_parents()
+  def siblings(self):
+    return self.get_siblings()
+  def partners(self):
+    return self.get_partners()
+  def children(self):
+    return self.get_children()
+  
+  @ajax_function
+  def family(self):
+    return {
+      'parents': [parent.id for parent in self.get_parents()] if self.get_parents() else [],
+      'children': [child.id for child in self.get_children()] if self.get_children() else [],
+      'partners': [partner.id for partner in self.get_partners()] if self.get_partners() else [],
+      'siblings': [sibling.id for sibling in self.get_siblings()] if self.get_siblings() else [],
+    }
+  
+  @ajax_function
+  @searchable_function
+  def all_family(self):
+    family = []
+    for parent in self.get_parents() or []:
+      family.append(parent)
+    for child in self.get_children() or []:
+      family.append(child)
+    for partner in self.get_partners() or []:
+      family.append(partner)
+    for sibling in self.get_siblings() or []:
+      family.append(sibling)
+    return family
+  
+  @ajax_function
+  def all_last_names(self):
+    last_names = []
+    for person in Person.objects.all():
+      if person.last_name not in last_names:
+        last_names.append(person.last_name)
+      if person.married_name and person.married_name not in last_names:
+        last_names.append(person.married_name)
+    return last_names
+  
+  def all_places(self):
+    places = []
+    for person in Person.objects.all():
+      if person.place_of_birth and person.place_of_birth.lower() not in [p.lower() for p in places]:
+        places.append(person.place_of_birth)
+      if person.place_of_death and person.place_of_death.lower() not in [p.lower() for p in places]:
+        places.append(person.place_of_death)
+    return places
+
   def get_parents(self, person=None):
     if not person:
       person = self
     if person.relation_up:
       parents = []
       for parent in person.relation_up.filter(type='parent').order_by('up__year_of_birth'):
+        parent.up.relation_id = parent.id
         parents.append(parent.up)
       return parents
   def get_father(self):
@@ -154,7 +265,9 @@ class Person(models.Model):
     if person.relation_down:
       children = []
       for child in person.relation_down.filter(type='parent').order_by('down__year_of_birth'):
-        children.append(child.down)
+        child_obj = child.down
+        child_obj.relation_id = child.id
+        children.append(child_obj)
       return children
   
   ''' get_partners()
@@ -170,14 +283,22 @@ class Person(models.Model):
       for child in self.get_children():
         for parent in self.get_parents(child):
           if parent not in partners and parent != person:
+            # A relation is assumed because of shared parentage,
+            # but relation_id is assigned in get_parents(). 
+            # Force to None here.
+            parent.relation_id = None
             partners.append(parent)
       ''' Partner is also found by relation type=partner '''
       for partner in person.relation_up.filter(type='partner'):
         if partner.up not in partners:
-          partners.append(partner.up)
+          partner_obj = partner.up
+          partner_obj.relation_id = partner.id
+          partners.append(partner_obj)
       for partner in person.relation_down.filter(type='partner'):
         if partner.down not in partners:
-          partners.append(partner.down)
+          partner_obj = partner.down
+          partner_obj.relation_id = partner.id
+          partners.append(partner_obj)
       return partners
 
   ''' get_siblings
@@ -192,10 +313,16 @@ class Person(models.Model):
       for parent in self.get_parents():
         for child in self.get_children(parent):
           if child not in siblings and child != person:
+            child.relation_id = child.id
             siblings.append(child)
       return siblings
-
-  ''' Absulute URL
+  
+  @property
+  def get_family_relations(self):
+    return ['parent', 'child', 'partner', 'sibling']
+  
+  
+  ''' Absolute URL
       should return URL with both name and slug
   '''
   def get_absolute_url(self):
@@ -246,5 +373,13 @@ class FamilyRelations(models.Model):
     unique_together = ('up', 'down', 'type', )
 
   def __str__(self):
-    return str(self.up) + ' is ' + self.type + ' of ' + str(self.down)
+    try:
+      return str(self.up) + ' is ' + self.type + ' of ' + str(self.down)
+    except Exception as e:
+      print(str(e))
+      return 'FamilyRelation object ' + str(self.id)
+
+  @property
+  def types(self):
+    return dict(self.RELATION_CHOICES)
 

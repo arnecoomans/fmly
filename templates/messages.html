@@ -1,5 +1,5 @@
 <!-- Messages -->
-<div id="messages-placeholder" class="alert-container"></div>
+<div id="messages" class="cmnsd-messages"></div>
 {% if messages %}
   {% for message in messages %}
     <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'primary' }}{% endif %} alert-dismissible fade show" role="alert">

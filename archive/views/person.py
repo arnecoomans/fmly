@@ -50,6 +50,9 @@ class PersonView(ListView):
     if len(self.added_context) > 0:
       for key in self.added_context:
         context[key] = self.added_context[key]
+    context['ajax'] = {
+      'editable': True if 'editable' in self.request.GET else False,
+    }
     return context
   
   ''' show_hidden_files()

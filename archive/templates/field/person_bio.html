@@ -1,0 +1,43 @@
+{% load static %}
+{% if person.related_user %}
+  <div class="d-flex">
+    <div class="flex-grow-1">
+      <div class="d-flex border-bottom py-1">
+        <div class="col">
+          <p class="text-muted">{% translate 'is'|capfirst %} {% if person.related_user.is_superuser %}{% translate 'manager' %}{% else %}{% translate 'user' %}{% endif %} {% translate 'of this website' %}.</p>
+        </div>
+      </div>    
+    </div>
+  </div>
+{% endif %}
+{% if ajax.editable and perms.archive.change_person %}
+  <form
+    id="person-bio-form"
+    data-action
+    data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'bio' %}"
+    data-method="post"
+    data-body="form"
+    data-map='{"bio":"#bio"}'
+    >
+{% endif %}
+<div class="d-flex">
+  <div class="flex-grow-1">
+    <div class="d-flex border-bottom py-1">
+      <div class="col">
+        <h6 class="fw-semibold">{% translate 'about'|capfirst %} {{ person.full_name }}:</h6>
+        {% if ajax.editable and perms.archive.change_person %}
+          <textarea class="form-control" name="bio" rows="6" data-autoresize>{{ person.bio }}</textarea>
+        {% else %}
+          {{ person.bio|markdown|safe }}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+    {% include 'element/reusable_edit_column.html' with object_name='person' object=person field='bio' %}
+  </div>
+</div>
+{% if ajax.editable and perms.archive.change_person %}
+  </form>
+{% endif %}
+<div class="spacer my-3"></div>

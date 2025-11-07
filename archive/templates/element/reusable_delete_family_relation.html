@@ -1,0 +1,18 @@
+{% load static %}
+{% if ajax.editable and perms.archive.change_person %}
+  {% if relation.relation_id %}
+  <!-- Only show delete icon if a deletable relation exists, leaving implied relations at the source -->
+    <img  src="{% static 'img/bootstrap-icons/trash.svg' %}" 
+          alt="{% translate 'remove' %}" 
+          title="{% translate 'remove family relation' %}" 
+          class="ms-2 icon-sm link-danger"
+          data-action
+          data-method="DELETE"
+          data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'FamilyRelations' relation.relation_id person.slug 'type' %}"
+          data-confirm="{% translate 'Are you sure you want to remove the family relation with' %} {{ relation.full_name }}?"
+          data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'Person' person.id person.slug 'family' %}"
+          data-refresh-params="editable"
+          data-refresh-map='{"family":"#family"}'
+          >
+  {% endif %}
+{% endif %}

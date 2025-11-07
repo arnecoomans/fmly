@@ -1,0 +1,140 @@
+{% load static %}
+<div class="d-flex">
+  <!-- LEFT SECTION (labels + values stacked) -->
+  <div class="flex-grow-1">
+    <!-- Family -->
+    {% if not person.parents and not person.siblings and not person.children and not person.partners and not ajax.editable %}
+      <div class="d-flex py-1">
+        <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'family'|capfirst %}:</div>
+        <div class="col">
+          {% if not person.has_family and not ajax.editable %}
+            <div class="text-muted">{% translate 'no family relations recorded'|capfirst %}</div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+    <!-- Parents -->
+    {% if person.parents or ajax.editable and perms.archive.change_person %}
+      <div class="d-flex py-1">
+        <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'parents'|capfirst %}:</div>
+        <div class="col">
+          {% for parent in person.parents %}
+            <a href="{% url 'archive:person' parent.id parent.slug %}">{{ parent.full_name }}</a>
+            {% include 'element/reusable_delete_family_relation.html' with relation=parent person=person %}
+            {% if not forloop.last %}<br> {% endif %}
+          {% empty %}
+            <span class="text-muted">None recorded</span>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    <!-- Siblings -->
+    {% if person.siblings or ajax.editable and perms.archive.change_person %}
+      <div class="d-flex py-1">
+        <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% blocktranslate count counter=person.get_siblings|length  %}Brother/Sister{% plural %}Brothers/Sisters{% endblocktranslate %}:</div>
+        <div class="col">
+          {% for sibling in person.siblings %}
+            <a href="{% url 'archive:person' sibling.id sibling.slug %}">{{ sibling.full_name }}</a>
+            {% comment %} Siblings cannot be removed since they are auto-computed by parent overlap {% include 'element/reusable_delete_family_relation.html' with relation=sibling person=person %} {% endcomment %}
+            {% if not forloop.last %}<br> {% endif %}
+          {% empty %}
+            <span class="text-muted">None recorded</span>
+          {% endfor %}
+
+        </div>
+      </div>
+    {% endif %}
+    <!-- Partners -->
+    {% if person.partners or ajax.editable and perms.archive.change_person %}
+      <div class="d-flex py-1">
+        <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'partners'|capfirst %}:</div>
+        <div class="col">
+          {% for partner in person.partners %}
+            <a href="{% url 'archive:person' partner.id partner.slug %}">{{ partner.full_name }}</a>
+            {% include 'element/reusable_delete_family_relation.html' with relation=partner person=person %}
+            {% if not forloop.last %}<br> {% endif %}
+          {% empty %}
+            <span class="text-muted">None recorded</span>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    <!-- Children -->
+    {% if person.children or ajax.editable and perms.archive.change_person %}
+      <div class="d-flex {% if not ajax.editable %}border-bottom {% endif %} py-1">
+        <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'children'|capfirst %}:</div>
+        <div class="col">
+          {% for child in person.children %}
+            {% with partner=child.parents|remove:person %}
+              {% ifchanged partner %}
+                <span class="text-muted">{% translate 'with' %}
+                  {% for p in partner %}
+                    {{ p.full_name }}:
+                  {% endfor %}
+                  {% if not partner %}
+                    {% translate 'unregistered partner' %}:
+                  {% endif %}
+                </span><br>
+              {% endifchanged %}
+            {% endwith %}
+            <a href="{% url 'archive:person' child.id child.slug %}">{{ child.full_name }}</a>
+            {% include 'element/reusable_delete_family_relation.html' with relation=child person=person %}
+            {% if not forloop.last %}<br> {% endif %}
+          {% empty %}
+            <span class="text-muted">None recorded</span>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    {% if ajax.editable and perms.archive.change_person %}
+      <div class="d-flex border-bottom py-1">
+        <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'add relation'|capfirst %}:</div>
+        <div class="col">
+          <form data-relation-form
+                data-action
+                id="family-relation-form"
+                data-method="POST"
+                data-url="{% url 'cmnsd:dispatch' 'FamilyRelations' %}"
+                data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'family' %}"
+                data-refresh-map='{"family":"#family"}'>
+            <div class="input-group">
+              <select class="form-control input-group-addon" name="relation_type" id="relation_type" style="max-width: 6em;">
+                {% for relation in person.get_family_relations %}
+                  {% if relation != 'sibling' %}
+                    <option value="{{ relation }}">{% translate relation|capfirst %}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+              <input type="hidden" name="person_id" value="{{ person.id }}">
+              <input type="hidden" name="id">
+              <input  type="text" 
+                      class="form-control" 
+                      id="related_person"
+                      name="related_person" 
+                      placeholder="{% translate 'search person by name' %}"
+                      data-autosuggest
+                      data-url="{% url 'cmnsd:dispatch' 'person'%}"
+                      data-param="{{ search_query_character }}"
+                      data-extra-params='{"format":"json", "exclude": "id:{{ person.id }},{% for person in person.all_family %}id:{{ person.id }}{% if not forloop.last %},{% endif %}{% endfor %}"}'
+                      data-container="person"
+                      data-field-hidden="id"
+                      data-display-fields	="full_name,lifespan"
+                      data-allow-create="0"
+                      >
+              <button type="submit" 
+                      class="btn btn-outline-success"
+                      disabled
+                      ><img src="{% static 'img/bootstrap-icons/person-plus.svg' %}" alt="{% translate 'add family member' %}" title="{% translate 'add family member' %}" class="icon-sm"></button>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- RIGHT SECTION (icons spanning vertically) -->
+  <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+    {% include 'element/reusable_edit_column.html' with object_name='person' object=person field='family' no_save=True infotitle="Why can't i delete all relations?" info="Some relations are implied.<br> <ul><li>If you share a child with a person, a relation is implied.</li><li>If you share a parent with a person, a sibling-relation is implied.</li></ul>Implied relations are not stored in the database and cannot be removed." %}
+  </div>
+</div>
+<div class="spacer my-3"></div>

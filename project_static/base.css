@@ -176,6 +176,7 @@ h6:hover:has(a), h6:hover a, h6 a:hover {
         background-color: transparent;
         color: var(--colour-dark)
       }
+
 /* pagination */
   nav.pagination * a {
     color: var(--colour-dark);
@@ -274,4 +275,15 @@ ul.action.list>li>a {}
 ul.action.list>li>a:hover {
   background-color: transparent;
   text-decoration: underline;
+}
+
+/** Person Header **/
+section.person > header > h1 {
+  margin: 0;
+  padding: 0.2em 1em;
+}
+section.person > header > h6 {
+  margin: 0;
+  padding: 0 1em 1em 1em;
+  font-weight: normal;
 }

@@ -1,6 +1,6 @@
 {% load i18n %}<li class="tag bi bi-tag-fill attribute">
   <a href="{% url 'archive:image-with-tag' tag.slug %}" class="tag" title="{{ tag.images.all.count }} afbeeldingen met tag '{{ tag.title|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{% if compact %}{{ tag.title|title|truncatechars:12 }}{% else %}{{ tag.title|title }}{% endif %}</a> {% if tag.images.all.count > 0 %}({{ tag.images.all.count }}){% endif %}
-  {% if perms.archive.change_image and not disallow_delete_attribute %}<span class="clickable"
+  {% comment %} {% if perms.archive.change_image and not disallow_delete_attribute %}<span class="clickable"
         data-slug="{{ tag.slug }}"
         data-url="{% url 'archive:json-set-attribute-by-pk-slug' 'image' image.id image.slug 'tag' %}?obj_id={{ tag.id }}" 
         data-success-url="{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'tag' %}"
@@ -8,5 +8,5 @@
         data-attribute="tag"
         title="{% translate 'remove tag'|capfirst %} {{ field_name }} '{{ tag.title|title }}' from &quot;{{ image.title }}&quot;" data-bs-toggle="tooltip" data-bs-placement="top">
       <i class="bi bi-x"></i>
-  </span>{% endif %}
+  </span>{% endif %} {% endcomment %}
 </li>

@@ -9,7 +9,7 @@
     <!-- comments -->{% if person.related_user.comments.all.count > 0 %} <a href="{% url 'archive:comments' %}?user={{ person.related_user.username }}" class="bi bi-chat" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.related_user.comments.all.count }} reacties door {{ person.name }}">{{ person.related_user.comments.all.count }}</a>{% endif %}
   </span>
 {% endif %}
-{% if perms.archive.change_image and not disallow_delete_attribute %}<span class="clickable"
+{% comment %} {% if perms.archive.change_image and not disallow_delete_attribute %}<span class="clickable"
         data-slug="{{ person.slug }}"
         data-url="{% url 'archive:json-set-attribute-by-pk-slug' 'image' image.id image.slug 'people' %}?obj_id={{ person.id }}" 
         data-success-url="{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'people' %}"
@@ -17,5 +17,5 @@
         data-action="setAttribute"
         title="{% translate 'remove'|capfirst %} '{{ person.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">
       <i class="bi bi-x"></i>
-  </span>{% endif %}
+  </span>{% endif %} {% endcomment %}
 </li>

@@ -1,4 +1,7 @@
 {% load static %}
+<footer>
+  &copy; {% now 'Y' %} | By Arne Coomans | <a href="https://github.com/arnecoomans/camping.cmns.nl/" target="_blank" title="{% translate 'camping.cmns.nl on GitHub'|capfirst %}"><img src="{% static 'img/bootstrap-icons/github.svg' %}" alt="GitHub"></a> | Powered by <span class="cmnsd"><span class="cmnsd-square"></span> <a href="https://github.com/arnecoomans/cmnsd/" target="_blank">cmnsd</a></span> and <span class="cmnsd js"><span class="cmnsd-square"></span> <a href="https://github.com/arnecoomans/cmnsd/tree/main/static/js/cmnsd" target="_blank">cmnsd.js</a></span>
+</footer>
 
 <!-- Bootstrap Javascript -->
 <script src="{% static 'js/bootstrap/bootstrap.bundle.min.js' %}"></script>
@@ -13,9 +16,9 @@
 </script>
 
 <!-- CMNSDJANGO -->
-<script src="{% static 'js/getCookieValue.js' %}"></script>
+{% comment %} <script src="{% static 'js/getCookieValue.js' %}"></script> {% endcomment %}
 {% comment %} <script src="{% static 'js/getAttributes.js' %}"></script> {% endcomment %}
 {% comment %} <script src="{% static 'js/cmnsdjango.js' %}"></script> {% endcomment %}
-<script src="{% static 'js/cmnsdjango-ajax-utils.js' %}"></script>
-<script src="{% static 'js/cmnsdjango-ajax-actions.js' %}"></script>
+{% comment %} <script src="{% static 'js/cmnsdjango-ajax-utils.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'js/cmnsdjango-ajax-actions.js' %}"></script> {% endcomment %}
  

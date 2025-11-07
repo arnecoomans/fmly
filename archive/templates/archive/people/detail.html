@@ -1,90 +1,75 @@
 {% extends 'index.html' %}
-{% load i18n %}{% load static %}
+{% load static %}
 {% block content %}
   {% if not perms.archive.view_person %}
     {% include  'archive/snippets/error_no_access.html' with object_type='people' %}
   {% elif person.is_deleted %}
     {% include  'archive/snippets/error_object_deleted.html' with object_type='person' %}
   {% else %}
-    <section class="object person">
+    <section class="person" id="person-{{ person.slug }}">
       <header>
-        <h2>{{ person.full_name }}</h2>
-      </header>
-      <!-- Portrait -->
-      <div class="column left">
-        {% if person.portrait %}
-          <a href="{% url 'archive:image-redirect' person.portrait.id %}"><img src="/documents/{{ person.portrait.source }}"></a>
-        {% endif %}
-      </div>
-      <!-- Collected data -->
-      <dl class="data column right">
-        <!-- Action List-->
-        <ul class="action list no-bullets text-end">
-          {% if perms.archive.change_person %}
+        <h1>{{ person.full_name }}:</h1>
+        <h6>{{ person.get_lifespan_display }}</h6>
+        <!-- Legacy Action List-->
+        {% if perms.archive.change_person %}
+          <ul class="action list no-bullets text-end">
             <li><a href="{% url 'archive:person-edit' person.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'person details' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil"/></svg></a></li>
-          {% endif %}
           {% if perms.archive.add_document or perms.archive.add_image %}
-            <li><A href="{% url 'archive:add-person-image' person.id person.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'add image for'|capfirst %} {{ person.full_name }}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#file-earmark-plus"/></svg></a></li>
+              <li><A href="{% url 'archive:add-person-image' person.id person.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'add image for'|capfirst %} {{ person.full_name }}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#file-earmark-plus"/></svg></a></li>
+            {% endif %}
+            {% if user.is_staff %}<li><a href="/admin/archive/person/{{ person.id }}/change/" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %} {% translate 'in admin' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil-square"/></svg></a></li>{% endif %}
+          </ul>
+        {% endif %}
+      </header>
+      <div class="container person-profile py-3">
+        <div class="row align-items-start">
+          <!-- IMAGE COLUMN -->
+          <div class="col-md-4 text-center mb-3 mb-md-0">
+            {% if person.portrait %}
+              <a href="{% url 'archive:image-redirect' person.portrait.id %}">
+                <img src="/documents/{{ person.portrait.source }}"
+                      alt="{% translate 'portrait of'|capfirst %} {{ person.full_name }}"
+                      class="img-fluid rounded shadow-sm profile-photo">
+              </a>
+            {% else %}
+              <div class="bg-light border text-muted rounded p-5">No photo</div>
+            {% endif %}
+          </div>
+
+          <!-- CONTENT COLUMN -->
+          <div class="col-md-8">
+            <div id="bio">
+              {% include 'field/person_bio.html' with person=person %}
+            </div>
+            <div id="names">
+              {% include 'function/person_names.html' with person=person %}
+            </div>
+            <div id="dates">
+              {% include 'function/person_dates.html' with person=person %}
+            </div>
+            <div id="family">
+              {% include 'function/person_family.html' with person=person %}
+            </div>
+            {% if not person.private %}
+            <div id="family-tree">
+              <div class="d-flex">
+                <div class="flex-grow-1">
+                  <div class="d-flex py-1">
+                    <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'family tree'|capfirst %}:</div>
+                    <div class="col">
+                      <a href="{% url 'archive:tree' person.id %}">{% translate 'See family tree of'%} {{ person.full_name }}</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           {% endif %}
-          {% if user.is_staff %}<li><a href="/admin/archive/person/{{ person.id }}/change/" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %} {% translate 'in admin' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil-square"/></svg></a></li>{% endif %}
-        </ul>
-        {% if person.related_user %}
-          <dt>&nbsp;</dt><dd>{% translate 'is'|capfirst %} {% if person.related_user.is_superuser %}{% translate 'manager' %}{% else %}{% translate 'user' %}{% endif %} {% translate 'of this website' %}</dd>
-        {% endif %}
-        {% if person.bio %}
-          <dt>{% translate 'biography'|capfirst %}:</dt><dd>{{ person.bio|markdown|safe }}</dd>
-        {% endif %}
-        {% if person.nickname %}
-          <dt>{% translate 'nickname'|capfirst %}:</dt><dd>{{ person.nickname }}</dd>
-        {% endif %}
-        <dt>{% translate 'first names'|capfirst %}:</dt><dd>{{ person.first_names }}{% if person.given_name %} ({{ person.given_name }}){% endif %}</dd>
-        <dt>{% translate 'last name'|capfirst %}:</dt><dd>{% if person.married_name %}<a href="{% url 'archive:people' %}?family={{ person.married_name }}">{{ person.married_name }}</a> ({% translate 'born' %}: <a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>){% else %}<a href="{% url 'archive:people' %}?family={{ person.last_name }}">{{ person.last_name }}</a>{% endif %}</dd>
-        {% if person.year_of_birth or person.month_of_birth or person_day_of_birth or person.place_of_birth %}
-          <dt>{% translate 'born'|capfirst %}:</dt><dd>{{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}</dd>
-        {% endif %}
-        {% if person.year_of_death or person.month_of_death or person_day_of_death or moment_of_death_unconfirmed or person.place_of_death %}
-          <dt>{% translate 'died'|capfirst %}:</dt><dd>{{ person.day_of_death|default:'?' }}-{{ person.month_of_death|default:'?' }}-{{ person.year_of_death|default:'?' }} {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}{% if person.ageatdeath %} ({{ person.ageatdeath }}){% endif %}</dd>
-        {% endif %}
-        {% if person.get_parents %}
-          <dt>{% translate 'parent'|capfirst %}:</dt>
-          <dd>
-            {% for person in person.get_parents %}
-              {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
-            {% endfor %}
-            </dd>
-        {% endif %}
-        <!-- Broer(s) en Zus(sen) -->
-        {% if person.get_siblings %}
-          <dt>{% blocktranslate count counter=person.get_siblings|length  %}Brother/Sister{% plural %}Brothers/Sisters{% endblocktranslate %}:</dt>
-          <dd>
-            {% for person in person.get_siblings %}
-            {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
-            {% endfor %}
-          </dd>
-        {% endif %}
-        <!-- Partners -->
-        {% if person.get_partners %}
-          <dt>{% translate 'partner'|capfirst %}{% if person.get_partners|length > 1 %}s{% endif %}:</dt>
-          <dd>
-            {% for person in person.get_partners %}
-            {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
-            {% endfor %}
-          </dd>
-        {% endif %}
-        <!-- Kinderen -->
-        {% if person.get_children %}
-          <dt>{% blocktranslate count counter=person.get_children|length %}Child{% plural %}Children{% endblocktranslate %}:</dt>
-          <dd>
-            {% for person in person.get_children %}
-            {% include 'archive/snippets/person_link.html' %}{% if not forloop.last %}<br>{% endif %}
-            {% endfor %}
-          </dd>
-        {% endif %}
-        {% if not person.private %}
-          <dt>&nbsp;</dt>
-            <dd><a href="{% url 'archive:tree' person.id %}">{% translate 'See family tree of'%} {{ person.full_name }}</a></dd>
-        {% endif %}
-      </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="related-data" class="mt-4">
       <!-- Related data -->
       {% if not person.private and person.images.all.count > 0 %}
         <a name="images"></a>
@@ -103,4 +88,91 @@
       <div class="clearfix"></div>
     </section>
   {% endif %}
+{% endblock %}
+
+
+
+
+{% block scriptfooter %}
+<script type="module">
+document.addEventListener('DOMContentLoaded', () => {
+  console.debug('[relation-helper] ready (robust binding)');
+
+  function bindRelationForms(root = document) {
+    root.querySelectorAll('form[data-relation-form]').forEach(form => {
+      if (form.dataset.relationBound === '1') return;
+      form.dataset.relationBound = '1';
+
+      const select = form.querySelector('select[name=relation_type]');
+      const hiddenPerson = form.querySelector('input[name=person_id]');
+      const submitBtn = form.querySelector('[type=submit]');
+
+      // defer the binding until id field exists
+      function waitForTargetInput() {
+        const hiddenTarget = form.querySelector('input[type=hidden][name=id]');
+        if (!hiddenTarget) {
+          console.debug('[relation-helper] waiting for autosuggest hidden id...');
+          setTimeout(waitForTargetInput, 100);
+          return;
+        }
+        console.debug('[relation-helper] found hidden target', hiddenTarget);
+        setup(form, select, hiddenPerson, hiddenTarget, submitBtn);
+      }
+      waitForTargetInput();
+    });
+  }
+
+  function setup(form, select, hiddenPerson, hiddenTarget, submitBtn) {
+    function buildPayload() {
+      const relationType = select.value;
+      const personId = hiddenPerson?.value?.trim() || null;
+      const targetId = hiddenTarget?.value?.trim() || null;
+      if (!relationType || !targetId) return null;
+
+      const payload = { relation: null, up__id: null, down__id: null };
+
+      if (relationType === 'parent') {
+        payload.type = 'parent';
+        payload.up__id = targetId;
+        payload.down__id = personId;
+      } else if (relationType === 'child') {
+        payload.type = 'parent';
+        payload.up__id = personId;
+        payload.down__id = targetId;
+      } else if (relationType === 'partner') {
+        payload.type = 'partner';
+        payload.up__id = personId;
+        payload.down__id = targetId;
+      }
+
+      form.dataset.body = JSON.stringify(payload);
+      console.debug('[relation-helper] attached payload', payload);
+
+      submitBtn.disabled = !(targetId && relationType);
+      return payload;
+    }
+
+    form.addEventListener('cmnsd:autosuggest:selected', () => setTimeout(buildPayload, 50));
+    select.addEventListener('change', buildPayload);
+    form.addEventListener('submit', e => {
+      const payload = buildPayload();
+      if (!payload) {
+        e.preventDefault();
+        console.warn('[relation-helper] blocked submit — no valid payload');
+        return false;
+      }
+      console.debug('[relation-helper] final JSON payload', payload);
+    });
+
+    buildPayload();
+    console.debug('[relation-helper] bound successfully', form);
+  }
+
+  bindRelationForms();
+
+  document.addEventListener('cmnsd:content:applied', e => {
+    bindRelationForms(e.detail?.container || document);
+  });
+});
+</script>
 {% endblock %}
