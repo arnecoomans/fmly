@@ -38,7 +38,7 @@
         </div>
       </div>
       <!-- Given name -->
-      {% if person.given_name and ajax.editable %}
+      {% if person.given_name or ajax.editable %}
         <div class="d-flex py-1">
           <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'given name'|capfirst %}:</div>
           <div class="col">
