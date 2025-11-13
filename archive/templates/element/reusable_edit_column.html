@@ -1,6 +1,6 @@
 {% load static %}
 {% if user.is_authenticated %}
-  {% if ajax.editable and perms.location.change_person %}
+  {% if ajax.editable and perms.archive.change_person %}
     {% if not no_save %}
       <!-- Save -->
       <button type="submit" 
