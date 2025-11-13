@@ -1,0 +1,81 @@
+
+{% load static %}
+<div class="d-flex">
+  <div class="flex-grow-1">
+    <!-- Portrait -->
+     <div class="d-flex py-1">
+      <div class="col">
+        {% if image.is_portrait_of %}
+          <img src="{% static 'img/bootstrap-icons/person-badge-fill.svg' %}" alt="{% translate 'portrait' %}" title="{% translate 'this image is a portrait of'|capfirst %} {{ image.is_portrait_of.full_name }}" data-bs-toggle="tooltip" data-bs-placement="left"> {% include 'element/person_full_name.html' with person=image.is_portrait_of %}
+          {% if ajax.editable and perms.archive.change_image %}
+            <img src="{% static 'img/bootstrap-icons/robot.svg' %}" alt="{% translate 'automated action' %}" title="{% translate 'this image is portrait of'|capfirst %} {{ image.is_portrait_of.full_name}}. {% translate 'remove portrait setting before removing person from this photo'|capfirst %}." data-bs-toggle="tooltip" data-bs-placement="right">
+          {% endif %}
+        {% endif %}
+        
+      </div>
+    </div>
+    <!-- People-->
+    <div class="d-flex py-1">
+      <div class="col">
+        {% for person in image.people.all %}
+          {% if person != image.is_portrait_of %}
+            <img src="{% static 'img/bootstrap-icons/person-fill.svg' %}" alt="{% translate 'person' %}" title="{% translate 'person on this photo' %}" data-bs-toggle="tooltip" data-bs-placement="left"> {% include 'element/person_full_name.html' with person=person %}
+            {% if ajax.editable and perms.archive.change_image %}
+              {% include 'element/reusable_delete_button.html' with field='people' map_value=person.slug confirm=True %}
+            {% endif %}
+            {% if not forloop.last %}<br>{% endif %}
+          {% endif %}
+        {% empty %}
+          <p class="text-muted">
+            <img src="{% static 'img/bootstrap-icons/person-exclamation.svg' %}" alt="{% translate 'person' %}" title="{% translate 'no people are registered to this photo' %}">
+            {% translate "no people are registered to this photo"|capfirst %}
+          </p>
+        {% endfor %}
+      </div>
+    </div>
+    {% if ajax.editable  and perms.archive.change_image %}
+      <div class="d-flex py-1">
+        <div class="col">
+          <form
+            data-action
+            data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'people' %}"
+            data-method="post"
+            data-body="form"
+            data-map='{"people":"#people"}'
+            >
+            <div class="input-group">
+              <img src="{% static 'img/bootstrap-icons/person-plus-fill.svg' %}" alt="{% translate 'info' %}" title="{% translate 'info' %}">
+              <input type="hidden" name="editable" value="true">
+              <input  type="text" 
+                      class="form-control" 
+                      name="full_name" 
+                      id="full_name" 
+                      placeholder="{% translate 'type to search for people to add to this image'|capfirst %}"
+                      data-autosuggest
+                      data-url="{% url 'cmnsd:dispatch' 'people'%}"
+                      data-param="{{ search_query_character}}"
+                      data-extra-params='{"format":"json", "exclude": "{% for person in image.people.all %}id:{{ person.id }}{% if not forloop.last %},{% endif %}{% endfor %}"}'
+                      data-container="person"
+                      data-display-fields="full_name, lifespan"
+                      data-field-input="full_name"
+                      data-field-hidden="id"
+                      data-allow-create="0" 
+                      data-field-prefix="people__"
+                      >
+              <button type="submit" class="btn btn-outline-success"><img src="{% static 'img/bootstrap-icons/plus.svg' %}" alt="{% translate 'add person' %}" title="{% translate 'add person' %}"></button>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+    <div class="spacer border-bottom my-2"></div>
+  </div>
+  <div class="d-flex border-bottom py-1"></div>
+  <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+    {% include 'element/reusable_edit_column.html' with object_name='image' object=image field='people' no_save=True %}
+  </div>
+</div>
+{% if ajax.editable and perms.archive.change_image %}
+  </form>
+{% endif %}
+<div class="spacer my-3"></div>

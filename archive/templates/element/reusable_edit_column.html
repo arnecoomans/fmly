@@ -6,7 +6,7 @@
       <button type="submit" 
               class="btn btn-outline-success show-autocomplete"
               title="{% translate 'save'|capfirst %} {% translate field|capfirst %}"
-              ><img src="{% static 'bootstrap-icons/floppy.svg' %}"></button>
+              ><img src="{% static 'img/bootstrap-icons/floppy.svg' %}"></button>
     {% endif %}
     <!-- Cancel Edit -->
     <button type="button" 
@@ -16,7 +16,7 @@
             data-method="GET"
             data-url	="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' object_name object.id object.slug field %}"
             data-map	= '{"{{ field }}":"#{{ field }}"}'
-            ><img src="{% static 'bootstrap-icons/x.svg' %}"></button>
+            ><img src="{% static 'img/bootstrap-icons/x.svg' %}"></button>
     {% if info %}
       <!-- Info -->
       <button type="button" 
@@ -26,7 +26,7 @@
               data-title="{{ infotitle }}"
               data-info="{{ info }}"
               data-placement="left"
-              ><img src="{% static 'bootstrap-icons/info-circle.svg' %}"></button>
+              ><img src="{% static 'img/bootstrap-icons/info-circle.svg' %}"></button>
     {% endif %}
   {% else %}
     <!-- Edit -->
@@ -39,6 +39,6 @@
             data-params	= "editable"
             data-map	= '{"{{ field }}":"#{{ field }}"}'
             data-focus="#related_person"
-            ><img src="{% static 'bootstrap-icons/pencil.svg' %}"></button>
+            ><img src="{% static 'img/bootstrap-icons/pencil.svg' %}"></button>
   {% endif %}
 {% endif %}

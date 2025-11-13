@@ -1,0 +1,77 @@
+
+{% load static %}
+{% if ajax.editable and perms.archive.change_image %}
+  <form
+    id="object-bio-form"
+    data-action
+    data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'origin' %}"
+    data-method="post"
+    data-body="form"
+    data-map='{"origin":"#origin"}'
+    >
+{% endif %}
+<div class="d-flex">
+  <div class="flex-grow-1">
+    <div id="description">
+      {% include 'field/image_description.html' %}
+    </div>
+    {% if origin.document_source or ajax.editable %}
+      <!-- Document Source -->
+      <div class="d-flex py-1">
+        <div class="col"> 
+          {% if ajax.editable and perms.archive.change_image %}
+          <div class="input-group">
+            <span class="input-group-text">
+              <img src="{% static 'img/bootstrap-icons/archive.svg' %}" alt="{% translate 'source of this image' %}" title="{% translate 'source of this image'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left">
+            </span>
+            <input type="text" class="form-control" name="document_source" value="{{ origin.document_source|default:'' }}" placeholder="{% translate 'Enter document source URL or description' %}">
+          </div>
+          {% else %}
+            <img src="{% static 'img/bootstrap-icons/archive.svg' %}" alt="{% translate 'source of this image' %}" title="{% translate 'source of this image'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left"> {% if image.document_source|truncatechars:5 == "http…" %}<a href="{{ image.document_source }}" target="_blank" title="{{ image.document_source }}">{{ image.document_source|truncatechars:38 }}</a>{% else %}{{ image.document_source }}{% endif %}
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+    {% if origin.day or origin.month or origin.year or ajax.editable%}
+      <!-- Date -->
+      <div class="d-flex py-1">
+        <div class="col">
+          {% if ajax.editable and perms.archive.change_image %}
+            <div class="input-group">
+              <span class="input-group-text">
+                <img src="{% static 'img/bootstrap-icons/calendar.svg' %}" alt="{% translate 'date of this image'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left">
+              </span>
+              <input type="number" class="form-control" name="day" value="{{ origin.day|default:'' }}" placeholder="{% translate 'day'|capfirst %}" min="1" max="31">
+              <select class="form-select" name="month">
+                <option value="">{% translate 'month'|capfirst %}</option>
+                {% for month_number, month_name in origin.months %}
+                  <option value="{{ month_number }}" {% if origin.month == month_number %}selected{% endif %}>{% translate month_name|capfirst   %}</option>
+                {% endfor %}
+              <input type="number" class="form-control" name="year" value="{{ origin.year|default:'' }}" placeholder="{% translate 'year'|capfirst %}" min="0" max="9999">
+            </div>
+          {% else %}
+            <img src="{% static 'img/bootstrap-icons/calendar.svg' %}" alt="{% translate 'date of this image'|capfirst %}" title="{% translate 'date of this image'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left">
+            {% if origin.day %}{{ origin.day }} - {% endif %}
+            {% if origin.month %}{{ origin.month }} - {% endif %}
+            {% if origin.year %}<a href="{% url 'archive:images-by-decade' image.year %}" title="{% translate 'view all from'|capfirst%} {{ image.year }}">{{ image.year|default:'?' }}</a>{% endif %}
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+    {% if not origin.document_source and not origin.day and not origin.month and not origin.year and not ajax.editable%}
+      <div class="d-flex border-bottom py-1">
+        <div class="col">
+          <p class="text-muted">{% translate "no origin information available"|capfirst %}</p>
+        </div>
+      </div>
+    {% endif %}
+    <div class="spacer border-bottom my-2"></div>
+  </div>
+  <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+    {% if user.is_staff %}{% include 'element/reusable_edit_column.html' with object_name='image' object=image field='origin' %}{% endif %}
+  </div>
+</div>
+{% if ajax.editable and perms.archive.change_image %}
+  </form>
+{% endif %}
+<div class="spacer my-3"></div>

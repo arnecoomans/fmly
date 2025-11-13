@@ -1,0 +1,106 @@
+
+{% load static %}
+{% if ajax.editable and perms.archive.change_image %}
+
+{% endif %}
+<div class="d-flex">
+  <div class="flex-grow-1">
+    <!-- Love -->
+    <div id="love">
+      {% include 'field/image_love.html' with image=image metadata=metadata ajax=ajax %}
+    </div>
+    <!-- Hidden -->
+    {% if not image.visibility_frontpage or ajax.editable%}
+      <div class="d-flex py-1">
+        <div class="col">
+          {% if ajax.editable %}
+            <form 
+              id="toggle-visibility-frontpage-form"
+              data-action 
+              data-method="POST"
+              data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'metadata,visibility_frontpage' %}"
+              data-body="form"
+              data-params='{"editable":true}'
+              data-map='{"metadata":"#metadata"}'
+              >
+              <div class="input-group">
+                <span class="input-group-text">
+                  <img src="{% if image.visibility_frontpage %}{% static 'img/bootstrap-icons/eye.svg' %}{% else %}{% static 'img/bootstrap-icons/eye-slash.svg' %}{% endif %}" alt="{% translate 'information' %}" title="{% if image.visibility_frontpage %}{% translate 'this image is visible on the main image list'|capfirst %}{% else %}{% translate 'this image is hidden from the main image list'|capfirst %}{% endif %}" data-bs-toggle="tooltip" data-bs-placement="left">
+                </span>
+                <select name="visibility_frontpage" class="form-select">
+                  <option value="True" {% if image.visibility_frontpage %}selected{% endif %}>{% translate 'visible on main image list'|capfirst %}</option>
+                  <option value="False" {% if not image.visibility_frontpage %}selected{% endif %}>{% translate 'hide on main image list'|capfirst %}</option>
+                </select>
+                <button type="submit" class="btn btn-outline-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'save visibility setting'|capfirst %}"><img src="{% static 'img/bootstrap-icons/save.svg' %}" alt="{% translate 'save' %}" title="{% translate 'save visibility setting'|capfirst %}"></button>
+              </div>
+            </form>
+          {% else %}
+            <img src="{% static 'img/bootstrap-icons/eye-slash.svg' %}" alt="{% translate 'information' %}" title="{% translate 'this image can be hidden from the image list'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left"> {% translate 'hidden on the main image list'|capfirst %}
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+    {% if not image.visibility_person_page or ajax.editable%}
+      <div class="d-flex py-1">
+        <div class="col">
+          {% if ajax.editable %}
+            <form 
+              id="toggle-visibility-person-page-form"
+              data-action 
+              data-method="POST"
+              data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'metadata,visibility_person_page' %}"
+              data-body="form"
+              data-params='{"editable":true}'
+              data-map='{"metadata":"#metadata"}'
+              >
+              <div class="input-group">
+                <span class="input-group-text">
+                  <img src="{% if image.visibility_person_page %}{% static 'img/bootstrap-icons/eye.svg' %}{% else %}{% static 'img/bootstrap-icons/eye-slash.svg' %}{% endif %}" alt="{% translate 'information' %}" title="{% if image.visibility_person_page %}{% translate 'this image is visible on the person page'|capfirst %}{% else %}{% translate 'this image is hidden from the person page'|capfirst %}{% endif %}" data-bs-toggle="tooltip" data-bs-placement="left">
+                </span>
+                <select name="visibility_person_page" class="form-select">
+                  <option value="True" {% if image.visibility_person_page %}selected{% endif %}>{% translate 'visible on person page'|capfirst %}</option>
+                  <option value="False" {% if not image.visibility_person_page %}selected{% endif %}>{% translate 'hide on person page'|capfirst %}</option>
+                </select>
+                <button type="submit" class="btn btn-outline-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'save visibility setting'|capfirst %}"><img src="{% static 'img/bootstrap-icons/save.svg' %}" alt="{% translate 'save' %}" title="{% translate 'save visibility setting'|capfirst %}"></button>
+              </div>
+            </form>
+          {% else %}
+            <img src="{% static 'img/bootstrap-icons/eye-slash.svg' %}" alt="{% translate 'information' %}" title="{% translate 'this image can be hidden from the image list'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left"> {% translate 'hidden on the person page'|capfirst %}
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+    <!-- Attachments -->
+     <div id="attachments">
+      {% include 'field/image_attachments.html' with image=image metadata=metadata ajax=ajax %}
+    </div>
+    <!-- Stored Original Image Size-->
+    {% if metadata.extention or metadata.size or ajax.editable %}
+      <div class="d-flex py-1">
+        <div class="col">
+          <img src="{% static 'img/bootstrap-icons/info-circle.svg' %}" alt="{% translate 'information' %}" title="{% translate 'original image size'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left"> {{ metadata.extension|default:"unknown extension" }}, {{ metadata.size|default:"unknown size" }}
+        </div>
+      </div>
+    {% endif %}
+    <!-- Stored Image Dimensions-->
+    {% if metadata.dimensions.width or metadata.dimensions.height or ajax.editable %}
+      <div class="d-flex py-1">
+        <div class="col">
+          <img src="{% static 'img/bootstrap-icons/info-circle.svg' %}" alt="{% translate 'information' %}" title="{% translate 'image dimensions'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left">
+          {{ metadata.dimensions.width|default:"unknown width" }}x{{ metadata.dimensions.height|default:"unknown height" }} pixels
+        </div>
+      </div>
+    {% endif %}
+    <!-- Uploaded By User -->
+    <div id="user">
+      {% include 'field/image_user.html' with image=image metadata=metadata ajax=ajax %}
+    </div>
+  </div>
+  <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+    {% include 'element/reusable_edit_column.html' with object_name='image' object=image field='metadata' no_save=True %}
+  </div>
+</div>
+{% if ajax.editable and perms.archive.change_image %}
+  </form>
+{% endif %}
+<div class="spacer my-3"></div>

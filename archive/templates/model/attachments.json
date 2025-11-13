@@ -1,0 +1,5 @@
+{
+  {% for attachment in attachments %}
+  {% include 'model/attachment.json' with attachment=attachment %}{% if not forloop.last %},{% endif %}
+  {% endfor %}
+}

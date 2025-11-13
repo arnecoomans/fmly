@@ -1,0 +1,29 @@
+{% load static %}
+{% if ajax.editable and perms.archive.change_image %}
+  <form
+    id="object-bio-form"
+    data-action
+    data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'description' %}"
+    data-method="post"
+    data-body="form"
+    data-map='{"description":"#description"}'
+    >
+{% endif %}
+<div class="d-flex">
+  <div class="flex-grow-1">
+    <div class="d-flex py-1">
+      <div class="col">
+        <h6 class="fw-semibold">{% translate 'about'|capfirst %} {{ image.title }}:</h6>
+        {% if ajax.editable and perms.archive.change_person %}
+          <textarea class="form-control" name="description" rows="6" data-autoresize>{{ image.description }}</textarea>
+        {% else %}
+          {{ image.description|markdown|safe }}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% if ajax.editable and perms.archive.change_image %}
+  </form>
+{% endif %}
+<div class="spacer my-3"></div>

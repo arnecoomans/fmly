@@ -1,0 +1,5 @@
+{
+  {% for group in groups %}
+  {% include 'model/group.json' with group=group %}{% if not forloop.last %},{% endif %}
+  {% endfor %}
+}

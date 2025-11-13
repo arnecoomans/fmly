@@ -1,0 +1,7 @@
+"{{ attachment.id }}": {
+  "id": {{ attachment.id }},
+  "filename": "{{ attachment.filename|escapejs }}",
+  "description": "{{ attachment.description|escapejs }}",
+  "extension": "{{ attachment.extension }}",
+  "size": {{ attachment.size }}
+}

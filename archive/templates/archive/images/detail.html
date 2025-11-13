@@ -1,5 +1,5 @@
 {% extends 'index.html' %}
-{% load i18n %}{% load static %}
+{% load static %}
 
 {% block content %}
   {% if not perms.archive.view_image %}
@@ -7,192 +7,53 @@
   {% elif image.is_deleted %}
       {% include 'archive/snippets/error_object_deleted.html' with object_type='image' %}
   {% else %}
-    <section class="object">
+    <section class="cmnsd-supported object">
       <header>
-        <h2><span class="object-id">#{{ object.id }}</span>{{ image.title }}:</h2>
-      </header>
-      <div id="attributeOverlay" style="display: none;"></div>
-      <div class="column left">
-        <a href="/documents/{{ image.source }}" title="{{ image.title }}" target="_blank">
-          <img src="/documents/{{ image.source }}" title="{{ image.title }}" alt="{{ image.description }}" />
-        </a>
-      </div>
-      <div class="column right">
-        <!-- Action List-->
-        <ul class="action list no-bullets text-end">
-          {% if user.is_authenticated %}
-            <li>
-              <a href="{% url 'archive:love-image' image.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% if image in user.preference.favorites.all %}{% translate 'stop loving'|capfirst %}{% else %}{% translate 'love'|capfirst %}{% endif %}">
-                <svg class="bi" width="24" height="24" fill="red"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#heart{% if image in user.preference.favorites.all %}-fill{% endif %}"/></svg>  
-              </a>
-            </li>
-          {% endif %}
-          {% if perms.archive.change_document or perms.archive.change_image %}
-            {% comment %} 
-              DISABLED BECAUSE OF PHASE OUT OF CMNSDJANGO
-              <li><a href="#" class="clickable" data-url="{% url 'archive:json-suggestion-form' 'image' image.slug 'people' %}" data-action="getOverlay" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'add person to'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#person-plus"/></svg></a></li>
-            <li><a href="#" class="clickable" data-url="{% url 'archive:json-suggestion-form' 'image' image.slug 'tag' %}" data-action="getOverlay" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'add tag to'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#tag"/></svg></a></li> 
-            {% endcomment %}
-            <li><a href="{% url 'archive:regenerate-thumbnail' image.id image.slug %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'regenerate thumbnail'|capfirst %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#arrow-clockwise"/></svg></a></li>
-            <li><a href="{% url 'archive:image-edit' image.id %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil"/></svg></a></li>
-            {% if user.is_staff %}<li><a href="/admin/archive/image/{{ image.id }}/change/" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %} {% translate 'in admin' %}"><svg class="bi" width="16" height="16" fill="currentColor"><use xlink:href="{% static 'bootstrap-icons/bootstrap-icons.svg' %}#pencil-square"/></svg></a></li>{% endif %}
-          {% endif %}
-        </ul>
-        <!-- Description -->
-        {% if image.description %}
-          <p class="description" id="target-description">
-            {% if not ajax_image_load_description %}
-              {{ image.description|markdown|safe }}
-            {% endif %}
-            </p>
-          {% endif %}
-        <ul class="metadata no-bullets">
-          <!-- Source -->
-          {% if image.document_source %}<li class="bi bi-geo-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'source of this object'|capfirst %}"> {% if image.document_source|truncatechars:5 == "http…" %}<a href="{{ image.document_source }}" target="_blank" title="{{ image.document_source }}">{{ image.document_source|truncatechars:38 }}</a>{% else %}{{ image.document_source }}{% endif %}{% endif %}
-          <!-- Date -->
-          {% if image.year or image.month or image.day %}<li class="bi bi-calendar-event-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'date of this object'|capfirst %}"> {% if image.month or image.day %}{{ image.day|default:'?' }}-{{ image.month|default:'?' }}-{% endif %}<a href="{% url 'archive:images-by-decade' image.year %}" title="Bekijk alles uit {{ image.year }}">{{ image.year|default:'?' }}</a></li>{% endif %}
-        </ul>
-        <ul class="metadata no-bullets" id="target-people">
-          <!-- People -->
-          {% if perms.archive.view_person and image.people.all.count > 0 %}
-            {% if not ajax_image_load_people %}
-              {% for person in object.people.all %}
-                {% include 'objects/person.html' %}
-              {% endfor %}
-            {% endif %}
-          {% endif %}
-        </ul>
-        
-        <!-- Family Collection -->
-        {% if image.family_collection|length > 0 %}
-        <ul class="metadata no-bullets" id="target-family_collection">
-          <li class=" bi bi-collection" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'this object is part of a family collection'|capfirst %}"> {% for family in image.family_collection %}<a href="{% url 'archive:images' %}?family={{ family }}" title="{% translate 'Open family collection of' %} {{ family }}">{{ family }}</a>{% if not forloop.last %}, {% endif %}{% endfor %} </li>
-        </ul>
-        {% endif %}
-        <!-- Love -->
-        {% if image in user.preference.favorites.all and image.loved_by.all.count > 1 or image.loved_by.all.count > 0 %}
-        <ul class="metadata no-bullets">
-          <li class="bi bi-heart{% if image in user.preference.favorites.all %}-fill{% endif %}">
-            {% translate 'loved by'|capfirst %}: 
-            {% if image in user.preference.favorites.all %}
-              {% translate 'you'|capfirst %}{% if image.loved_by.all.count > 1 %} {% translate 'and' %} {{ image.loved_by.all.count|add:-1 }} {% translate 'other' %} {% if image.loved_by.all.count|add:-1 == 1 %}{% translate 'person' %}{% else %}{% translate 'people' %}{% endif %}{% endif %}
-            {% else %}
-            {{ image.loved_by.all.count }} {% translate 'other' %} {% if image.loved_by.all.count == 1 %}{% translate 'person' %}{% else %}{% translate 'people' %}{% endif %}
-            {% endif %}
-          </li> 
-        <ul class="metadata no-bullets">
-        {% endif %}
-        <!-- Tags -->
-        <ul class="metadata no-bullets" id="target-tag">
-          {% if perms.archive.view_tag and image.tag.all.count > 0 %}
-            {% if not ajax_image_load_tags %}
-              {% for tag in image.tag.all %}
-                {% include 'objects/tag.html' %}
-              {% endfor %}
-            {% endif %}
-          {% endif %}
-        </ul>
-
-        <!-- Grouping -->
-        <ul class="metadata no-bullets">
-          {% for name, objects in image.get_grouped_images.items %}
-            <li class="bi bi-collection-fill"> {{ name }} ({{ objects.all.count|add:'1'}})
-              <ul>
-                {% for object in objects.all %}
-                  <li class=" bi bi-image"> <a href="{% url 'archive:image' object.slug %}">{{ object.title }}</a></li>
-                {% endfor %}
-              </ul>
-            </li>
-          {% endfor %}
-          <!-- Attachments -->
-          {% if perms.archive.view_attachment and image.attachments.all.count > 0 %}
-            {% for attachment in image.get_attachments reversed %}
-              <li class="bi-paperclip" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'there is an attachment for this object'|capfirst %}"> <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment" target="_blank" rel="noopener noreferrer" title="{{ attachment.description }}">{{ attachment.description|truncatechars:52 }}</a> {{ attachment.extension }}, {{ attachment.getSize }}</li>
-            {% endfor %}
-          {% endif %}
-          <!-- Meta info -->
-          {% if not image.visibility_frontpage %}<li class="bi bi-info-circle-fill"> Verborgen</li>{% endif %}
-          <li class="bi bi-info-circle-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'more information about this object'|capfirst %}"> {{ image.extension }}, {{ image.getSize }}</li>
-          <li class="bi bi-info-circle-fill" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'more information about this object'|capfirst %}"> {{ image.width }}x{{ image.height }} pixels, {{ image.get_orientation_display }}</li>
-          <li class="bi bi-person-fill-check"> 
-            {% translate 'created by'|capfirst %}: <a href="{% url 'archive:image-by-uploader' image.user.username %}">{% if image.user.first_name %}{{ image.user.first_name }} {{ image.user.last_name }}{% else %} {{ image.user }}{% endif %}</a> 
-            {% translate 'at' %} {{ image.uploaded_at|date:'d/m/y' }}<br>
-          </li>
-        </ul>
-        <!-- Comments -->
-        <a name="comments"></a>
-        {% if perms.archive.view_comment %}
-          <div class="autoload comments">
-            <div class="comment placeholder" id="target-comments"></div>
-            <span id="csrf_token" data-csrf="{{ csrf_token }}"></span>
-            <div id="comment-messages"></div>
-            {% if image.count_comments > 0 %}
-              {% include 'archive/partial/commentcounter.html' %}
-              {% comment %} <li class="bi bi-chat-right-text-fill"> {{ image.count_comments }} {% blocktranslate count counter=object.count_comments context "plural" %}comment{% plural %}comments{% endblocktranslate %}</li> {% endcomment %}
-              {% if not ajax_load_comments %}
-                {% for comment in image.comments.all %}{% if not comment.is_deleted %}
-                  {% include 'archive/partial/comment.html' %}
-                {% endif %}{% endfor %}
-              {% else %}
-                <span class="comments statusmessage">loading comments...</span>
-              {% endif %}
-            {% endif %}
-          </div>
-        {% endif %}
-        {% if perms.archive.add_comment %}
-            {% include 'archive/partial/commentform.html' %}
-          {% endif %}  
-        {% comment %} {% if perms.archive.add_comment %}
-          <li class="bi bi-cursor-text" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'add your comment to this object'|capfirst %}">
-            <div class="comment-form"><div id="comment-messages"></div>
-            </div>
-          </li>
-          {% endif %} {% endcomment %}
-        {% comment %} {% if perms.archive.view_comment %}
-        <div class="autoload comments">
-          <div class="comment-messages"></div>
-          <span class="comments statusmessage">loading comments...</span>
+        <h2 id="title">{% include 'field/image_title.html' %}</h2>
+        <!-- ACTION LIST -->
+        <div id="actionlist">
+          {% include 'field/image_actionlist.html' %}
         </div>
-        {% endif %} {% endcomment %}
-      </div>
-      
-      <!-- Grouped Images -->
-      {% for name, objects in image.get_grouped_images.items %}
-        {% if objects.all.count > 0 %}
-          <div class="objects">
-            <h2>{% translate 'group'|capfirst %}: {{ name }} ({{ objects.all.count|add:'1' }})</h2>
-            {% for object in objects.all %}
-              {% include 'archive/snippets/image.html' %}
-            {% endfor %}
+      </header>
+
+      <div class="container person-profile py-3">
+        <div class="row align-items-start">
+          <!-- IMAGE COLUMN -->
+          <div class="col-md-5 text-center mb-3 mb-md-0">
+            <a href="/documents/{{ image.source }}" title="{{ image.title }}" target="_blank">
+              <img  src="/documents/{{ image.source }}" 
+                    title="{{ image.title }}" 
+                    alt="{{ image.description }}" 
+                    class="img-fluid rounded shadow-sm profile-photo"
+                    >
+            </a>
           </div>
-        {% endif %}
-      {% endfor %}
+
+          <!-- CONTENT COLUMN -->
+          <div class="col-md-7">
+            <!-- ORIGIN -->
+            <div id="origin">
+              {% include 'function/image_origin.html' with origin=image.origin %}
+            </div>
+            <!-- CLASSIFICATION -->
+            <div id="classification">
+              {% include 'function/image_classification.html' with classification=image.classification %}
+            </div>
+            <!-- PEOPLE -->
+            <div id="people">
+              {% include 'field/image_people.html' with people=image.people %}
+            </div>
+            <!-- COMMENTS -->
+            <div id="comments">
+              {% include 'field/image_comments.html' with comments=image.comments %}
+            </div>
+
+            <!-- METADATA -->
+            <div id="metadata">
+              {% include 'function/image_metadata.html' with metadata=image.metadata %}
+          </div>
+        </div>
+      </div>
     </section>
   {% endif %}
-{% endblock %}
-
-{% block footer %}
-<script src="{% static 'js/autoload_comments.js' %}"></script>
-{% comment %} <script src="{% static 'js/manageAttributes.js' %}"></script>
-<script src="{% static 'js/addObjectOverlay.js' %}"></script> {% endcomment %}
-
-<script>
-  $(document).ready(function() {
-    $('.comments.statusmessage').remove()
-    {% if ajax_load_comments %}
-      {% if perms.archive.view_comment %}getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'comments' %}', attribute='comments');{% endif %}
-      {% if perms.archive.add_comment %}fetchCommentForm('{% url 'archive:fetchcommentform' image.id image.slug %}', csrf_token);{% endif %}
-    {% endif %}
-    {% if ajax_load_attributes and image.description %}
-      getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'description' %}', attribute='description');
-    {% endif %}
-    {% if ajax_load_attributes and image.people.all.count > 0 %} 
-      getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'people' %}', attribute='people', before='', after='');
-    {% endif %}
-    {% if ajax_load_attributes and image.tag.all.count > 0 %}
-      getAttributes(url='{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'tag' %}', attribute='tag');
-    {% endif %}
-  });
-</script>
-
 {% endblock %}

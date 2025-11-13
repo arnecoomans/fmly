@@ -1,0 +1,5 @@
+"{{ group.id }}": {
+  "id": {{ group.id }},
+  "title": "{{ group.title|highlight:query|escapejs }}",
+  "description": "{% if group.description %}{{ group.description|highlight:query|escapejs }}{% endif %}"
+}

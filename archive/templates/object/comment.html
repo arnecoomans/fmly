@@ -1,0 +1,85 @@
+{% load static %}
+{% if ajax.editable and perms.archive.change_comment %}
+<form>
+{% csrf_token %}
+{% endif %}
+<div class="d-flex">
+  <div class="flex-grow-1">
+    <div class="d-flex py-1">
+      <div class="col">
+        {% if ajax.editable and perms.archive.change_comment %}
+          {% if comment.user == user or user.is_staff %}
+            <textarea class="form-control" name="content" data-autoresize>{{ comment.content }}</textarea>
+          {% else %}
+            <span class="text-muted">{% translate "you are not allowed to edit this comment"|capfirst %}</span><br>
+          {% endif %}
+        {% else %}
+          <div class="comment">
+            {% if show_thumbnail %}
+              <div class="thumbnail">
+                <a href="{% url 'archive:image' comment.image.slug %}"><img src="/documents/{{ comment.image.thumbnail }}" alt="{{ comment.image.title }}" title="{{ comment.image.title }} - {{ comment.image.description }}"></a>
+              </div>
+            {% endif %}
+            <div class="content">
+              <h4>{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} {% translate 'wrote on' %} {{ comment.date_created|date:'d/m/Y' }}{% if show_thumbnail %} {% translate 'on'%} <a href="{% url 'archive:image' comment.image.slug %}">{{ comment.image.title|title }}{% endif %}</a>:</h4>
+              {{ comment.content|markdown|safe }}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+    {% if user == comment.user or user.is_staff %}
+      {% if ajax.editable %}
+        <button 
+          type="submit" 
+          class="btn btn-outline-success"
+          data-action
+          data-method="post"
+          data-url = "{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id image.slug|default:comment.user.username %}"
+          data-body="form"
+          data-refresh-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id image.slug|default:comment.user.username %}"
+          data-refresh-map='{"comment":"#comment-{{ comment.id }}"}'
+          >
+          <img src="{% static 'img/bootstrap-icons/floppy.svg' %}" alt="{% translate 'save comment' %}" title="{% translate 'save comment' %}" data-bs-toggle="tooltip" data-bs-placement="right" >
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-outline-danger"
+          data-action
+          data-method="delete"
+          data-url = "{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id image.slug|default:comment.user.username %}"
+          data-body='{"delete":"true"}'
+          data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' comment.image.id comment.image.slug 'comments' %}"
+          data-refresh-map='{"comments":"#comments"}'
+          data-confirm="{% translate 'Are you sure you want to delete this comment?' %}"
+          >
+          <img src="{% static 'img/bootstrap-icons/trash.svg' %}" alt="{% translate 'delete comment' %}" title="{% translate 'delete comment' %}" data-bs-toggle="tooltip" data-bs-placement="right" >
+        <button 
+          type="button" 
+          class="btn btn-outline-secondary"
+          data-action
+          data-url = "{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id image.slug|default:comment.user.username %}"
+          data-map='{"comment":"#comment-{{ comment.id }}"}'
+          >
+          <img src="{% static 'img/bootstrap-icons/x.svg' %}" alt="{% translate 'cancel edit comment' %}" title="{% translate 'cancel edit comment' %}" data-bs-toggle="tooltip" data-bs-placement="right" >
+        </button>
+      {% else %}
+        <button 
+          type="button" 
+          class="btn btn-outline-secondary"
+          data-action
+          data-url = "{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id image.slug|default:comment.user.username %}"
+          data-body = '{"editable":"true"}'
+          data-map='{"comment":"#comment-{{ comment.id }}"}'
+          >
+          <img src="{% static 'img/bootstrap-icons/pencil.svg' %}" alt="{% translate 'edit comment' %}" title="{% translate 'edit comment' %}" data-bs-toggle="tooltip" data-bs-placement="right" >
+        </button>
+      </div>
+    {% endif %}
+  {% endif %}
+</div>
+{% if ajax.editable and perms.archive.change_comment %}
+</form>
+{% endif %}

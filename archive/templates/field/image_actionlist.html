@@ -1,0 +1,60 @@
+{% load static %}
+<div class="action list">
+  {% if user.is_authenticated%}
+    <!-- Love -->
+     {% if user.preference %}
+      <button 
+        class="btn btn-outline-secondary btn-sm me-2"
+        data-action 
+        data-method="PATCH"
+        data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'metadata,actionlist' %}"
+        data-body='{"loved_by__id":"{{ user.preference.id }}"}'
+        data-map='{"metadata":"#metadata","love":"#love","actionlist":"#actionlist"}'
+        >
+        <img src="{% if image in user.preference.favorites.all %}{% static 'img/bootstrap-icons/heart-fill.svg' %}{% else %}{% static 'img/bootstrap-icons/heart.svg' %}{% endif %}" alt="{% translate 'love/unlove image' %}" title="{% if image in user.preference.favorites.all %}{% translate 'unlove image' %}{% else %}{% translate 'love image' %}{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top">
+      </button>
+    {% endif %}
+    <!-- Activate Edit Mode on Page -->
+    {% if ajax.editable %}
+      <a class="btn btn-outline-secondary btn-sm me-2"
+          data-action 
+          data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'title,actionlist,origin,classification,people,metadata' %}"
+          data-method="GET"
+          data-map='{
+            "title":"#title",
+            "actionlist":"#actionlist",
+            "origin":"#origin",
+            "classification":"#classification",
+            "people":"#people",
+            "metadata":"#metadata"
+          }'
+      >
+        <img src="{% static 'img/bootstrap-icons/x.svg' %}" alt="{% translate 'stop editing' %}" title="{% translate 'stop editing' %} {{ image.title }}" data-bs-toggle="tooltip" data-bs-placement="top">
+      </a>
+    {% else %}
+      <a class="btn btn-outline-secondary btn-sm me-2"
+          data-action 
+          data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'title,actionlist,origin,classification,people,metadata' %}"
+          data-params	= "editable"
+          data-method="GET"
+          data-map='{
+            "title":"#title",
+            "actionlist":"#actionlist",
+            "origin":"#origin",
+            "classification":"#classification",
+            "people":"#people",
+            "metadata":"#metadata"
+          }'
+      >
+        <img src="{% static 'img/bootstrap-icons/pencil.svg' %}" alt="{% translate 'edit title' %}" title="{% translate 'open this page in edit mode' %}" data-bs-toggle="tooltip" data-bs-placement="top">
+    </a>
+    {% endif %}
+    <!-- Regenerate thumbnail-->
+    <a href="{% url 'archive:regenerate-thumbnail' image.id image.slug %}" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'regenerate thumbnail'|capfirst %}"><img src="{% static 'img/bootstrap-icons/arrow-clockwise.svg' %}" alt="{% translate 'regenerate thumbnail' %}" title="{% translate 'regenerate thumbnail' %}"></a>
+    <!-- Edit Image -->
+    {% if perms.archive.change_image %}
+      <a href="{% url 'archive:image-edit' image.id %}" data-bs-toggle="tooltip" class="btn btn-outline-secondary btn-sm me-2" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %}"><img src="{% static 'img/bootstrap-icons/pencil.svg' %}" alt="{% translate 'edit' %}" title="{% translate 'edit' %}"></a>
+    {% endif %}
+    {% if user.is_staff %}<a href="/admin/archive/image/{{ image.id }}/change/" target="_blank" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'edit'|capfirst %} {% translate 'image' %} {% translate 'in admin' %}"><img src="{% static 'img/bootstrap-icons/pencil-square.svg' %}" alt="{% translate 'edit in admin' %}" title="{% translate 'edit in admin' %}"></a>{% endif %}
+  {% endif %}
+</div>

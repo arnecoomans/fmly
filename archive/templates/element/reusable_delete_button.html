@@ -1,0 +1,15 @@
+{% load static %}
+{% if ajax.editable and user.is_authenticated %}
+  <button 
+    type="button" 
+    class="btn btn-outline-danger btn-sm ms-2"
+    data-action
+    data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug field %}"
+        data-method="PATCH"
+        data-body='{"{{ field }}__{{ map_id|default:"slug" }}": "{{ map_value }}", "editable": true}'
+        data-map='{"{{ field }}":"#{{ field }}"}'
+        {% if confirm %}data-confirm="{% translate 'are you sure you want to remove this '|capfirst %} {{ field }}?"{% endif %}
+    >
+    <img src="{% static 'img/bootstrap-icons/trash.svg' %}" alt="{% translate 'remove' %} {% translate field %}" title="{% translate 'remove '|capfirst %} {{ field }} {% translate 'from this image' %}" data-bs-toggle="tooltip" data-bs-placement="right" >
+  </button>
+{% endif %}
