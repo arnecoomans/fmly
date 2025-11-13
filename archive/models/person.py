@@ -147,7 +147,7 @@ class Person(models.Model):
       lifespan += str(self.year_of_birth)
     if self.place_of_birth:
       lifespan += f" ({ self.place_of_birth })"
-    if self.date_of_death or self.moment_of_death_unconfirmed:
+    if self.date_of_death or self.year_of_death or self.moment_of_death_unconfirmed:
       lifespan += ' - '
     if self.date_of_death:
       lifespan += self.date_of_death.strftime('%d-%m-%Y')

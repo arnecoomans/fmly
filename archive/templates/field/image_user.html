@@ -1,0 +1,36 @@
+{% load static %}
+{% if metadata.user or ajax.editable %}
+  <div class="d-flex border-bottom py-1">
+    <div class="col">
+      {% if ajax.editable and user.is_staff %}
+      <form
+        id="object-metadata-user-form"
+        data-action
+        data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'user' %}"
+        data-method="post"
+        data-body="form"
+        data-map='{"user":"#user"}'
+        >
+        <div class="input-group">
+          <span class="input-group-text">
+            <img src="{% static 'img/bootstrap-icons/person.svg' %}" alt="{% translate 'information' %}" title="{% translate 'image is shared by user' %}">
+          </span>
+          <input type="hidden" name="editable" value="true">
+          <select class="form-select" 
+                  name="user__id" 
+                  id="user" 
+                  >
+            <option value="">{% translate 'select user who uploaded/shared this image'|capfirst %}</option>
+            {% for user in image.get_available_users %}
+              <option value="{{ user.id }}" {% if image.user and user.id == image.user.id %}selected{% endif %}>{{ user.get_full_name|default:user.username|default:"unknown user" }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn btn-outline-success"><img src="{% static 'img/bootstrap-icons/save.svg' %}" alt="{% translate 'save changes' %}" title="{% translate 'save changes' %}"></button>
+        </div>
+      {% else %}
+        <img src="{% static 'img/bootstrap-icons/person.svg' %}" alt="{% translate 'information' %}" title="{% translate 'image is shared by user' %}">
+        {% translate 'shared by'|capfirst %} {{ image.user.get_full_name|default:image.user.username|default:"unknown user" }} {% translate 'on' %} {{ image.uploaded_at|date:"m F Y" }}
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

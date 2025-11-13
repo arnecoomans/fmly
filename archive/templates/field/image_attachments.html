@@ -1,0 +1,53 @@
+{% load static %}
+{% if image.get_attachments.all.count > 0 or ajax.editable %}
+  <div class="d-flex py-1">
+    <div class="col">
+      {% for attachment in image.get_attachments %}
+        <img src="{% static 'img/bootstrap-icons/paperclip.svg' %}" alt="{% translate 'attachment' %}" title="{% translate 'this image has an attachment'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left" >
+        <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment" target="_blank" rel="noopener noreferrer" title="{{ attachment.description }}">{{ attachment.description|truncatechars:52 }}</a> {{ attachment.extension }}, {{ attachment.getSize }}
+        {% if ajax.editable %}
+          {% include 'element/reusable_delete_button.html' with field='attachments' map_id="id" map_value=attachment.id confirm=True %}
+        {% endif %}
+        {% if not forloop.last %}<br>{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% if ajax.editable and perms.archive.change_image and perms.archive.view_attachment %}
+    <div class="d-flex py-1">
+      <div class="col">
+        <form
+          id="object-attachment-form"
+          data-action
+          data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'attachments' %}"
+          data-method="post"
+          data-body="form"
+          data-map='{"attachments":"#attachments"}'
+          >
+          <div class="input-group">
+            <span class="input-group-text">
+              <img src="{% static 'img/bootstrap-icons/paperclip.svg' %}" alt="{% translate 'information' %}" title="{% translate 'add an attachment to this image' %}" data-bs-toggle="tooltip" data-bs-placement="left" >
+            </span>
+            <input type="hidden" name="editable" value="{{ ajax.editable }}">
+            <input type="text" 
+                  class="form-control" 
+                  name="attachments" 
+                  id="attachments" 
+                  placeholder="{% translate 'start typing to search for uploaded attachments'|capfirst %}"
+                  data-autosuggest
+                  data-url="{% url 'cmnsd:dispatch' 'attachments' %}"
+                  data-param="{{ search_query_character}}"
+                  data-extra-params='{"format":"json", "exclude": "{% for attachment in image.attachments.all %}id:{{ attachment.id }}{% if not forloop.last %},{% endif %}{% endfor %}"}'
+                  data-container="attachment"
+                  data-display-fields="description, filename"
+                  data-allow-create="0"
+                  data-field-input="description"
+                  data-field-hidden="id"
+                  data-field-prefix="attachments__"
+                  >
+                  <button type="submit" class="btn btn-outline-success"><img src="{% static 'img/bootstrap-icons/plus.svg' %}" alt="{% translate 'add family collection' %}" title="{% translate 'add family collection' %}"></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+{% endif %}

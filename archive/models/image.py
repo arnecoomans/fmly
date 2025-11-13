@@ -10,6 +10,9 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
 
+from cmnsd.models.cmnsd_basemodel import BaseModel, VisibilityModel
+from cmnsd.models.cmnsd_basemethod import ajax_function, searchable_function
+
 # Create Thumbnail function
 def get_thumbnail(image):
   # Check if suffix is supported.
@@ -87,6 +90,8 @@ class Attachment(models.Model):
   def get_absolute_url(self):
       return reverse("archive:attachment", kwargs={"slug": self.slug})
   
+  def filename(self):
+    return Path(str(self.file)).name
   
   def extension(self):
     return Path(str(self.file)).suffix[1:].lower()
@@ -149,10 +154,6 @@ class Image(models.Model):
   visibility_frontpage     = models.BooleanField(default=True)
   visibility_person_page   = models.BooleanField(default=True)
   
-  allow_read_attribute = 'Authenticated'  # Allow authenticated users to read attributes via JSON requests
-  allow_suggest_attribute = 'Authenticated'  # Allow authenticated users to suggest attributes via JSON requests
-  allow_set_attribute = 'Staff'  # Allow staff users to set attributes via JSON requests
-  
   def date(self):
     """ Returns the date of the image by combining the year, month and day fields """
     return f"{self.day} {self.MONTHS[self.month-1][1]} {self.year}"
@@ -160,6 +161,45 @@ class Image(models.Model):
   def __str__(self):
     return self.get_indexed_name()
 
+  @ajax_function
+  def origin(self):
+    return {
+      'document_source': str(self.document_source),
+      'date': f"{ self.day if self.day else '*'}-{self.month if self.month else '*'}-{self.year if self.year else '*'}",
+      'day': self.day,
+      'month': self.month,
+      'year': self.year,
+      'months': self.MONTHS,
+    }
+  @ajax_function
+  def metadata(self):
+    return {
+      'attachments': self.get_attachments(),
+      'size': self.getSize(),
+      'dimensions': {
+        'width': self.width,
+        'height': self.height,
+      },
+      'extension': self.extension(),
+      'user': self.user,
+      'users': User.objects.all(),
+      'date_shared': self.uploaded_at,
+    }
+  @ajax_function
+  def classification(self):
+    return {
+      'tag': self.tag.all(),
+      'groups': self.in_group.all(),
+      'grouped_items': self.grouped_items(),
+      'family': self.family,
+      'family_collection': self.family_collection(),
+      'automated_family': self.automated_family(),
+      'available_families': self.families(),
+    }
+  @ajax_function
+  def actionlist(self):
+    return True
+  
   ''' Get Save Slug
       Loop through existing slugs and append slug with counter if Unique contraint would fail
   '''
@@ -202,8 +242,13 @@ class Image(models.Model):
   def get_grouped_images(self):
     groups = {}
     for group in self.in_group.all():
-      groups[group.title] = group.images.exclude(is_deleted=True).exclude(id=self.id)
+      groups[group.title] = {'id': group.id, 'images': group.images.exclude(is_deleted=True).exclude(id=self.id)}
     return groups
+    
+  def grouped_items(self):
+    return self.in_group.all().exclude(images__is_deleted=True).exclude(id=self.id).distinct()
+  def get_available_users(self):
+    return User.objects.filter(is_active=True)
 
   def count_tags(self):
     return self.tag.count()
@@ -215,16 +260,36 @@ class Image(models.Model):
     return Path(str(self.source)).suffix[1:].lower()
   
   ''' Family Collection '''
+  @ajax_function
+  @searchable_function
+  def families(self):
+    families = []
+    for family in getattr(settings, 'FAMILIES', []):
+      if family not in self.family_collection():
+        families.append(family)
+    return families
+    
+  @ajax_function
   def family_collection(self):
     result = []
     for person in self.people.all():
-      if person.last_name in settings.FAMILIES or person.married_name in settings.FAMILIES:
-        family = person.last_name if person.last_name in settings.FAMILIES else person.married_name
+      if person.last_name in getattr(settings, 'FAMILIES', []) or person.married_name in getattr(settings, 'FAMILIES', []):
+        family = person.last_name if person.last_name in getattr(settings, 'FAMILIES', []) else person.married_name
         if family not in result:
           result.append(family)
-    if self.family in settings.FAMILIES:
+    if self.family in getattr(settings, 'FAMILIES', []) and self.family not in result:
       result.append(self.family)
     return result
+  
+  def automated_family(self):
+    families = []
+    for person in self.people.all():
+      if person.last_name in getattr(settings, 'FAMILIES', []) or person.married_name in getattr(settings, 'FAMILIES', []):
+        family = person.last_name if person.last_name in getattr(settings, 'FAMILIES', []) else person.married_name
+        if family not in families:
+          families.append(family)
+    return families
+    
   
   def get_absolute_url(self):
     return reverse('archive:image', kwargs={'slug': self.slug }) 

@@ -1,0 +1,29 @@
+
+{% load static %}
+{% if ajax.editable and perms.archive.change_image %}
+
+{% endif %}
+<div class="d-flex">
+  <div class="flex-grow-1">
+    <!-- Tags -->
+      <div id="tag">
+        {% include 'field/image_tag.html' with tag=classification.tag %}
+      </div>
+    <!-- Groups -->
+      <div id="in_group">
+        {% include 'field/image_in_group.html' with groups=classification.groups grouped_items=classification.grouped_items %}
+      </div>
+    <!-- Family Collection -->
+    <div id="family">
+      {% include 'field/image_family.html' with classification=classification %}
+    </div>
+    <div class="spacer border-bottom my-2"></div>
+  </div>
+  <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+    {% include 'element/reusable_edit_column.html' with object_name='image' object=image field='classification' no_save=True %}
+  </div>
+</div>
+{% if ajax.editable and perms.archive.change_image %}
+  </form>
+{% endif %}
+<div class="spacer my-3"></div>

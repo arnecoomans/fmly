@@ -19,7 +19,8 @@
         <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'parents'|capfirst %}:</div>
         <div class="col">
           {% for parent in person.parents %}
-            <a href="{% url 'archive:person' parent.id parent.slug %}">{{ parent.full_name }}</a>
+            {% include 'element/person_full_name.html' with person=parent %}
+            {% comment %} <a href="{% url 'archive:person' parent.id parent.slug %}">{{ parent.full_name }}</a> {% endcomment %}
             {% include 'element/reusable_delete_family_relation.html' with relation=parent person=person %}
             {% if not forloop.last %}<br> {% endif %}
           {% empty %}
@@ -34,7 +35,8 @@
         <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% blocktranslate count counter=person.get_siblings|length  %}Brother/Sister{% plural %}Brothers/Sisters{% endblocktranslate %}:</div>
         <div class="col">
           {% for sibling in person.siblings %}
-            <a href="{% url 'archive:person' sibling.id sibling.slug %}">{{ sibling.full_name }}</a>
+            {% include 'element/person_full_name.html' with person=sibling %}
+            {% comment %} <a href="{% url 'archive:person' sibling.id sibling.slug %}">{{ sibling.full_name }}</a> {% endcomment %}
             {% comment %} Siblings cannot be removed since they are auto-computed by parent overlap {% include 'element/reusable_delete_family_relation.html' with relation=sibling person=person %} {% endcomment %}
             {% if not forloop.last %}<br> {% endif %}
           {% empty %}
@@ -50,7 +52,8 @@
         <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'partners'|capfirst %}:</div>
         <div class="col">
           {% for partner in person.partners %}
-            <a href="{% url 'archive:person' partner.id partner.slug %}">{{ partner.full_name }}</a>
+            {% include 'element/person_full_name.html' with person=partner %}
+            {% comment %} <a href="{% url 'archive:person' partner.id partner.slug %}">{{ partner.full_name }}</a> {% endcomment %}
             {% include 'element/reusable_delete_family_relation.html' with relation=partner person=person %}
             {% if not forloop.last %}<br> {% endif %}
           {% empty %}
@@ -77,7 +80,8 @@
                 </span><br>
               {% endifchanged %}
             {% endwith %}
-            <a href="{% url 'archive:person' child.id child.slug %}">{{ child.full_name }}</a>
+            {% include 'element/person_full_name.html' with person=child %}
+            {% comment %} <a href="{% url 'archive:person' child.id child.slug %}">{{ child.full_name }}</a> {% endcomment %}
             {% include 'element/reusable_delete_family_relation.html' with relation=child person=person %}
             {% if not forloop.last %}<br> {% endif %}
           {% empty %}

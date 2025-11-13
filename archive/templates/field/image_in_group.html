@@ -1,0 +1,64 @@
+{% load static %}
+{% if groups or ajax.editable %}
+  <div class="d-flex py-1">
+    <div class="col">
+      {% for group in image.grouped_items.all %}
+        <img src="{% static 'img/bootstrap-icons/collection-fill.svg' %}" alt="{% translate 'group' %}" title="{% translate 'this image belongs to group'|capfirst %} {{ group.title }}" data-bs-toggle="tooltip" data-bs-placement="left">
+        {% if compact %}{{ group.title|title|truncatechars:12 }}{% else %}{{ group.title|title }}{% endif %} {% if group.images.count > 0 %}({{ group.images.count }}){% endif %}
+        {% if ajax.editable and perms.archive.change_image %}
+          {% include 'element/reusable_delete_button.html' with field='in_group' map_id="id" map_value=group.id confirm=True %}
+        {% endif %}
+        {% if not forloop.last %}<br>{% endif %}
+        {% if group.images.all.count > 0 %}
+          <ul style="list-style-type: none; margin-left: 10px;">
+            {% for object in group.images.all %}
+              <li>
+                <img src="{% static 'img/bootstrap-icons/image.svg' %}" alt="{% translate 'image' %}" title="{% translate 'image in this group'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left">
+                <a href="{% url 'archive:image' object.slug %}">{{ object.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% if ajax.editable  and perms.archive.change_image %}
+    <div class="d-flex border-bottom py-1">
+      <div class="col">
+        <form
+          data-action
+          data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'in_group' %}"
+          data-method="post"
+          data-body="form"
+          data-map='{"in_group":"#in_group"}'
+          >
+          <div class="input-group">
+            <span class="input-group-text">
+              <img src="{% static 'img/bootstrap-icons/collection.svg' %}" alt="{% translate 'groups' %}" title="{% translate 'groups' %}">
+            </span>
+            <input type="hidden" name="images__id" value="{{ image.id }}">
+            <input type="hidden" name="editable" value="true">
+            <input  type="text" 
+                    class="form-control" 
+                    name="full_name" 
+                    id="full_name" 
+                    placeholder="{% translate 'type to search for groups to add to this image'|capfirst %}"
+                    data-autosuggest
+                    data-url="{% url 'cmnsd:dispatch' 'groups'%}"
+                    data-param="{{ search_query_character}}"
+                    data-extra-params='{"format":"json", "exclude": "{% for group in image.in_group.all %}id:{{ group.id }}{% if not forloop.last %},{% endif %}{% endfor %}"}'
+                    data-container="group"
+                    data-display-fields="title, description"
+                    data-field-input="title"
+                    data-field-hidden="id"
+                    data-allow-create="0"
+                    data-field-prefix="in_group__"
+                    data-min="0"
+                    >
+            <button type="submit" class="btn btn-outline-success"><img src="{% static 'img/bootstrap-icons/plus.svg' %}" alt="{% translate 'add person' %}" title="{% translate 'add person' %}"></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+{% endif %}

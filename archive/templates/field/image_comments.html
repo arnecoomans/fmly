@@ -1,0 +1,54 @@
+
+{% load static %}
+{% for comment in image.comments.all %}
+  <div id="comment-{{ comment.id }}" style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 10px;">
+    {% include 'object/comment.html' %}
+  </div>
+{% empty %}
+  <div class="d-flex">
+    <div class="flex-grow-1">
+      <div class="d-flex py-1">
+        <div class="col">
+          <span class="text-muted">{% translate "no comments"|capfirst %}</span>
+        </div>
+      </div>
+    </div>
+    <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+    </div>
+  </div>
+{% endfor %}
+
+{% if perms.archive.add_comment %}
+  <form id="add-comment-form" 
+        data-action
+        data-method="post"
+        data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'comments'%}"
+        data-body="form"
+        data-map='{"comments":"#comments"}'
+
+        >
+    <div class="d-flex">
+      <div class="flex-grow-1">
+        <div class="d-flex py-1">
+          <div class="col">
+            {% csrf_token %}
+            <input type="hidden" name="comments__user__id" value="{{ user.id }}">
+            <input type="hidden" name="comments__image__id" value="{{ image.id }}">
+            <textarea class="form-control" name="comments__content" placeholder="{% translate 'Add a comment...' %}" data-autoresize minlength="5"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+          <button 
+            type="submit" 
+            class="btn btn-outline-primary"
+            >
+            <img src="{% static 'img/bootstrap-icons/send.svg' %}" alt="{% translate 'post comment' %}" title="{% translate 'post comment' %}" data-bs-toggle="tooltip" data-bs-placement="right" >
+          </button>
+            
+      </div>
+    </div>
+  </form>
+{% endif %}
+
+<div class="spacer my-3"></div>

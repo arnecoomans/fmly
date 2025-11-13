@@ -1,0 +1,69 @@
+{% load static %}
+{% if image.family_collection or ajax.editable %}
+  <div class="d-flex py-1">
+    <div class="col">
+      {% for family in image.automated_family %}
+        <img src="{% static 'img/bootstrap-icons/person-square.svg' %}" alt="{% translate 'family' %}" title="{% translate 'image is automatically part of family collection'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left" >
+        <a href="{% url 'archive:images' %}?family={{ family }}" title="{% translate 'Open family collection of' %} {{ family }}">{{ family }}</a>
+        {% if ajax.editable and perms.archive.change_image %}
+          <img src="{% static 'img/bootstrap-icons/robot.svg' %}" alt="{% translate 'automated action' %}" title="{% translate 'this image is part of family collection'|capfirst %} {{ family }} {% translate 'because a family member is tagged in this photo'|capfirst %}." data-bs-toggle="tooltip" data-bs-placement="right">
+        {% endif %}
+        {% if not forloop.last %}<br>{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  <div class="d-flex py-1">
+    <div class="col">
+      {% if image.family|length > 0 %}
+        <img src="{% static 'img/bootstrap-icons/person-square.svg' %}" alt="{% translate 'family' %}" title="{% translate 'image is part of family collection'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left" >
+        <a href="{% url 'archive:images' %}?family={{ image.family }}" title="{% translate 'Open family collection of' %} {{ image.family }}">{{ image.family }}</a>
+      {% endif %}
+    </div>
+  </div>
+  {% if ajax.editable and perms.archive.change_image %}
+    <div class="d-flex py-1">
+      <div class="col">
+        <form
+          id="object-bio-form"
+          data-action
+          data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'family' %}"
+          data-method="post"
+          data-body="form"
+          data-map='{"family":"#family"}'
+          >
+          <div class="input-group">
+            <span class="input-group-text">
+              <img src="{% static 'img/bootstrap-icons/person-square.svg' %}" alt="{% translate 'information' %}" title="{% translate 'image is part of family collection' %}" data-bs-toggle="tooltip" data-bs-placement="left" >
+            </span>
+            {% if not image.family and image.family_collection|length > 0 %}
+              <span class="input-group-text">{% for family in image.family_collection %}{{ family }}{% if not forloop.last %}, {% endif %}{% endfor %}{% if image.families|length > 0 %} {% translate 'and' %}{% endif %}</span>
+            {% endif %}
+            <input type="hidden" name="editable" value="{{ ajax.editable }}">
+            {% if image.families|length > 0 %}
+              <input type="text" 
+                    class="form-control" 
+                    name="family" 
+                    id="family" 
+                    value="{{ image.family }}"
+                    placeholder="{% translate 'select family collection'|capfirst %}"
+                    data-autosuggest
+                    data-url="{% url 'cmnsd:dispatch' 'image' %}"
+                    data-local-source='[{% for family in image.families %}{"display":"{{ family }}","family":"{{ family }}"}{% if not forloop.last %},{% endif %}{% endfor %}]'
+                    data-allow-create="0"
+                    data-min="0"
+                    data-field-input="display"
+                    data-field-hidden="family"
+                    data-allow-empty="1"
+                    >
+                    <button type="submit" class="btn btn-outline-success"><img src="{% static 'img/bootstrap-icons/plus.svg' %}" alt="{% translate 'add family collection' %}" title="{% translate 'add family collection' %}"></button>
+            {% else %}
+              <span class="input-group-text text-muted">{% translate "clear manual family collection"|capfirst %} {{ image.family }}</span>
+              <input type="hidden" name="family" value="">
+              <button type="submit" class="btn btn-outline-success"><img src="{% static 'img/bootstrap-icons/x.svg' %}" alt="{% translate 'clear family collection' %}" title="{% translate 'clear family collection' %}"></button>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+{% endif %}
