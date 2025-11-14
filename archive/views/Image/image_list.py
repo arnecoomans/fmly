@@ -44,6 +44,10 @@ class ImageListView(ListView):
     if self.request.GET.get('family', False):
       context['page_description'] += f" { _('with tagged family members of') } \"{ self.request.GET.get('family')[:1].upper() }{ self.request.GET.get('family')[1:].lower() }\""
       context['current_family'] = self.request.GET.get('family', '')
+    ''' Categories for filtering '''
+    context['categories'] = Image.objects.values_list('category__slug', flat=True).distinct()
+    if self.request.GET.get('category', False):
+      context['current_category'] = self.request.GET.get('category', '')
     ''' Added context, can be placed by get_queryset() '''
     if len(self.added_context) > 0:
       for key in self.added_context:

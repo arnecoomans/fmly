@@ -1,0 +1,13 @@
+{% if categories|length > 1 %}- 
+  {% translate 'filter by'|capfirst %} {% translate 'category' %}: 
+  {% for category in categories %}
+    {% if category %}
+      {% if category == current_category %}
+        {{ category|default:''|title }}
+      {% else %}
+        <a href="{% url 'archive:images' %}?{% include '../snippets/fixparams.html' with ignore='category' %}category={{ category }}"{% if category == current_category %} disabled{% endif %}>{{ category|title }}</a>
+      {% endif %}
+      {% if not forloop.last %} | {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
