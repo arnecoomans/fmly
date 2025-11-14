@@ -1,0 +1,50 @@
+{% load static %}
+{% if image.category or ajax.editable %}
+  <div class="d-flex py-1">
+    <div class="col">
+      {% if ajax.editable and perms.archive.change_image %}
+        <form>
+          <div class="input-group">
+            <span class="input-group-text">
+              <img src="{% static image.category.get_icon_file|default:'img/bootstrap-icons/list.svg' %}" alt="{% translate 'category' %}">
+            </span>
+            <input name="category__title" 
+                   type="text" 
+                   class="form-control" 
+                   id="category__title" 
+                   placeholder="{% translate 'type to search for categories to add to this image'|capfirst %}"
+                   data-autosuggest
+                   data-url="{% url 'cmnsd:dispatch' 'categories'%}"
+                   data-param="{{ search_query_character}}"
+                   data-extra-params='{"format":"json", "exclude": "{% if image.category %}id:{{ image.category.id }}{% endif %}"}'
+                   data-container="category"
+                   data-display-fields="name"
+                   data-field-input="name"
+                   data-field-hidden="slug"
+                   data-field-prefix="category__"
+                   data-min="0"
+                   data-allow-empty="1"
+                   {% if not user.is_staff %}data-allow-create="0"{% endif %}
+                   value="{{ image.category|default:'' }}"
+                   >
+                   <button type="submit" 
+                           class="btn btn-outline-success"
+                           data-action
+                           data-method="post"
+                           data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'category' %}"
+                           data-body="form"
+                           data-params='{"editable":true}'
+                           data-map='{"category":"#category"}'
+                           >
+                     <img src="{% static 'img/bootstrap-icons/save.svg' %}" alt="{% translate 'set category' %}" title="{% translate 'set category' %}">
+                    </button>
+          </div>
+        </form>
+      {% else %}
+        <img src="{% static image.category.get_icon_file %}" alt="{% translate 'category' %}" title="{% translate 'category of this photo'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left"> 
+        {% if image.category.parent %}<a href="{% url 'archive:images' %}?category={{ image.category.parent.slug }}" class="tag" title="{{ image.category.parent.images.all.count }} afbeeldingen met categorie '{{ image.category.parent.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{% translate image.category.parent.name %}</a>: {% endif %}
+        <a href="{% url 'archive:images' %}?category={{ image.category.slug }}" class="tag" title="{{ image.category.images.all.count }} afbeeldingen met categorie '{{ image.category.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{{ image.category.name }}</a> {% if image.category.images.all.count > 0 %}({{ image.category.images.all.count }}){% endif %}
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

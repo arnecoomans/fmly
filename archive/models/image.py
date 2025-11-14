@@ -2,13 +2,15 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
-from .tag import Tag
-from .person import Person
 from PIL import Image as PIL
 from pathlib import Path
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
+
+from .tag import Tag
+from .person import Person
+from .Category import Category
 
 from cmnsd.models.cmnsd_basemodel import BaseModel, VisibilityModel
 from cmnsd.models.cmnsd_basemethod import ajax_function, searchable_function
@@ -130,6 +132,7 @@ class Image(models.Model):
   description         = models.TextField(blank=True, help_text='Markdown supported')
   document_source     = models.CharField(max_length=255, blank=True, help_text='Link or textual description of source')
   # Relations
+  category            = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True, related_name='images')
   people              = models.ManyToManyField(Person, blank=True, related_name='images', help_text='Tag people that are on the photo')
   tag                 = models.ManyToManyField(Tag, blank=True, related_name='images')
   attachments         = models.ManyToManyField(Attachment, blank=True, related_name='images')

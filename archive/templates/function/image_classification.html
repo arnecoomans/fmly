@@ -5,6 +5,10 @@
 {% endif %}
 <div class="d-flex">
   <div class="flex-grow-1">
+    <!-- Category -->
+      <div id="category">
+        {% include 'field/image_category.html' %}
+      </div>
     <!-- Tags -->
       <div id="tag">
         {% include 'field/image_tag.html' with tag=classification.tag %}
