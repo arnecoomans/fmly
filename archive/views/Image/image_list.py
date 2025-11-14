@@ -108,6 +108,10 @@ class ImageListView(ListView):
           queryset.filter(tag__title__icontains=search_text) | \
           queryset.filter(attachments__file__icontains=search_text) | \
           queryset.filter(attachments__description__icontains=search_text)
+    ''' If category filter is active '''
+    if self.request.GET.get('category', False):
+      queryset =  queryset.filter(category__slug__iexact=self.request.GET.get('category')) |\
+                  queryset.filter(category__parent__slug__iexact=self.request.GET.get('category'))
     ''' If family search '''
     if self.request.GET.get('family', False):
       queryset = queryset.filter(people__last_name__icontains=self.request.GET.get('family','')) |\

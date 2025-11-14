@@ -142,6 +142,9 @@ class TagAdmin(admin.ModelAdmin):
   prepopulated_fields = {'slug': ('title',)}
   list_display = ['title', 'slug']
 
+class CategoryAdmin(admin.ModelAdmin):
+  prepopulated_fields = {'slug': ('name',)}
+  list_display = ['name', 'parent', 'slug']
 
 ''' Register Admin Models '''
 admin.site.register(Attachment, AttachmentAdmin)
@@ -153,3 +156,4 @@ admin.site.register(Note, NoteAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Preference)
 admin.site.register(Tag, TagAdmin)
+admin.site.register(Category, CategoryAdmin)
