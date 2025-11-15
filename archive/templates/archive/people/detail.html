@@ -24,16 +24,8 @@
       <div class="container person-profile py-3">
         <div class="row align-items-start">
           <!-- IMAGE COLUMN -->
-          <div class="col-md-4 text-center mb-3 mb-md-0">
-            {% if person.portrait %}
-              <a href="{% url 'archive:image-redirect' person.portrait.id %}">
-                <img src="/documents/{{ person.portrait.source }}"
-                      alt="{% translate 'portrait of'|capfirst %} {{ person.full_name }}"
-                      class="img-fluid rounded shadow-sm profile-photo">
-              </a>
-            {% else %}
-              <div class="bg-light border text-muted rounded p-5">No photo</div>
-            {% endif %}
+          <div class="col-md-4 text-center mb-3 mb-md-0" id="portrait">
+            {% include 'field/person_portrait.html' with person=person %}
           </div>
 
           <!-- CONTENT COLUMN -->
@@ -173,6 +165,198 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('cmnsd:content:applied', e => {
     bindRelationForms(e.detail?.container || document);
   });
+});
+</script>
+
+<script>
+function initCropper(root = document) {
+    const wrapper = root.querySelector("#crop-wrapper");
+    if (!wrapper) return;
+
+    console.debug("[crop] initialising cropper in", wrapper);
+
+    const img = wrapper.querySelector("#crop-image");
+    const rect = wrapper.querySelector("#crop-rect");
+    const shade = wrapper.querySelector("#crop-shade");
+    const saveBtn = root.querySelector("#crop-save-btn");
+
+    if (!img || !rect || !shade || !saveBtn) {
+        console.warn("[crop] missing elements — skipping init");
+        return;
+    }
+
+    let naturalW = 0, naturalH = 0;
+    let dragging = false;
+    let resizing = false;
+    let resizingHandle = null;
+    let startX = 0, startY = 0;
+
+    img.addEventListener("load", () => {
+        naturalW = img.naturalWidth;
+        naturalH = img.naturalHeight;
+        console.debug("[crop] natural size =", naturalW, naturalH);
+    });
+
+    function updateShade() {
+        const wRect = wrapper.getBoundingClientRect();
+        const rRect = rect.getBoundingClientRect();
+
+        const top    = rRect.top    - wRect.top;
+        const left   = rRect.left   - wRect.left;
+        const bottom = rRect.bottom - wRect.top;
+        const right  = rRect.right  - wRect.left;
+
+        shade.style.clipPath = `
+          polygon(
+            0% 0%, 100% 0%, 100% 100%, 0% 100%,
+            0% ${top}px,
+            ${left}px ${top}px,
+            ${left}px ${bottom}px,
+            ${right}px ${bottom}px,
+            ${right}px ${top}px,
+            0% ${top}px
+          )
+        `;
+    }
+
+    function finalizeCrop() {
+        const wRect = wrapper.getBoundingClientRect();
+        const rRect = rect.getBoundingClientRect();
+
+        if (rRect.width <= 0 || rRect.height <= 0) return;
+
+        if (!naturalW || !naturalH) {
+            naturalW = img.naturalWidth;
+            naturalH = img.naturalHeight;
+        }
+
+        const scaleX = naturalW / wRect.width;
+        const scaleY = naturalH / wRect.height;
+
+        const crop = {
+            portrait_x: Math.round((rRect.left - wRect.left) * scaleX),
+            portrait_y: Math.round((rRect.top  - wRect.top)  * scaleY),
+            portrait_w: Math.round(rRect.width  * scaleX),
+            portrait_h: Math.round(rRect.height * scaleY),
+        };
+
+        console.debug("[crop] final crop =", crop);
+
+        saveBtn.dataset.body = JSON.stringify(crop);
+        saveBtn.disabled = false;
+    }
+
+    wrapper.addEventListener("mousedown", (e) => {
+        if (e.target.classList.contains("crop-handle")) {
+            resizing = true;
+            resizingHandle = e.target;
+            e.preventDefault();
+            return;
+        }
+
+        const box = wrapper.getBoundingClientRect();
+        dragging = true;
+        resizing = false;
+        resizingHandle = null;
+
+        startX = e.clientX - box.left;
+        startY = e.clientY - box.top;
+
+        rect.style.left = `${startX}px`;
+        rect.style.top = `${startY}px`;
+        rect.style.width = "0px";
+        rect.style.height = "0px";
+        rect.style.display = "block";
+
+        updateShade();
+        saveBtn.disabled = true;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (!dragging && !resizing) return;
+
+        const box = wrapper.getBoundingClientRect();
+        const pointerX = e.clientX - box.left;
+        const pointerY = e.clientY - box.top;
+
+        if (dragging) {
+            const left = Math.min(startX, pointerX);
+            const top  = Math.min(startY, pointerY);
+            const w    = Math.abs(pointerX - startX);
+            const h    = Math.abs(pointerY - startY);
+
+            rect.style.left = `${left}px`;
+            rect.style.top = `${top}px`;
+            rect.style.width = `${w}px`;
+            rect.style.height = `${h}px`;
+        }
+
+        if (resizing && resizingHandle) {
+            const rRect = rect.getBoundingClientRect();
+            const wRect = wrapper.getBoundingClientRect();
+
+            let left = rRect.left - wRect.left;
+            let top  = rRect.top  - wRect.top;
+            let width  = rRect.width;
+            let height = rRect.height;
+
+            const cls = resizingHandle.classList;
+
+            if (cls.contains("nw")) {
+                width  += left - pointerX;
+                height += top  - pointerY;
+                left = pointerX;
+                top  = pointerY;
+            }
+            if (cls.contains("ne")) {
+                width  = pointerX - left;
+                height += top - pointerY;
+                top = pointerY;
+            }
+            if (cls.contains("sw")) {
+                width  += left - pointerX;
+                left = pointerX;
+                height = pointerY - top;
+            }
+            if (cls.contains("se")) {
+                width  = pointerX - left;
+                height = pointerY - top;
+            }
+
+            left   = Math.max(0, Math.min(left, wRect.width - width));
+            top    = Math.max(0, Math.min(top,  wRect.height - height));
+            width  = Math.max(1, Math.min(width,  wRect.width - left));
+            height = Math.max(1, Math.min(height, wRect.height - top));
+
+            rect.style.left   = `${left}px`;
+            rect.style.top    = `${top}px`;
+            rect.style.width  = `${width}px`;
+            rect.style.height = `${height}px`;
+        }
+
+        updateShade();
+    });
+
+    document.addEventListener("mouseup", () => {
+        if (!dragging && !resizing) return;
+        dragging = false;
+        resizing = false;
+        resizingHandle = null;
+
+        finalizeCrop();
+    });
+
+    console.debug("[crop] initialized");
+}
+
+/*** RUN ON PAGE LOAD ***/
+document.addEventListener("DOMContentLoaded", () => {
+    initCropper();
+});
+
+/*** RUN AFTER CMNSD AJAX LOAD ***/
+document.addEventListener("cmnsd:content:applied", (e) => {
+    initCropper(e.detail?.container || document);
 });
 </script>
 {% endblock %}

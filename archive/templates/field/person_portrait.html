@@ -1,0 +1,95 @@
+{% if person.portrait %}
+  {% if person.portrait_x or person.portrait_y or person.portrait_w or person.portrait_h %}
+    {% with ox=person.portrait.get_image_dimensions.0 oy=person.portrait.get_image_dimensions.1 %}
+      {% with cx=person.portrait_x cy=person.portrait_y cw=person.portrait_w ch=person.portrait_h %}
+        {% with box_ratio=ch|div:cw|mul:100 img_width=ox|div:cw|mul:100 offset_left=cx|div:cw|mul:100 offset_top=cy|div:cw|mul:100 %}
+          <div  class="portrait-wrapper"
+                style=" padding-top: {{ box_ratio|floatdot }}%;
+                  ">
+            <a href="{% url 'archive:image-redirect' person.portrait.id %}">
+              <img 
+                  src="/documents/{{ person.portrait.source }}" 
+                  class="portrait-image"
+                  title="{{ person.portrait.title }}" 
+                  alt="{{ person.portrait.description }}" 
+                  style="width: {{ img_width|floatdot }}%;
+                          left: -{{ offset_left|floatdot }}%;
+                          top: -{{ offset_top|floatdot }}%;
+                          "
+                >
+            </a>
+          </div>
+        {% endwith %}
+      {% endwith %}
+    {% endwith %}
+    <button class="btn btn-secondary mt-2"
+            data-action
+            data-method="post"
+            data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait,portrait_x,portrait_y,portrait_w,portrait_h' %}"
+            data-body='{"portrait_x": null, "portrait_y": null, "portrait_w": null, "portrait_h": null}'
+            data-map='{"portrait": "#portrait"}'
+            >
+        Reset Crop
+    </button>
+  {% elif ajax.editable %}
+    <!-- Cropper -->
+    <div id="crop-wrapper" style="position:relative; display:inline-block; width:100%;">
+      <img id="crop-image" src="/documents/{{ person.portrait.source }}" class="img-fluid">
+
+      <!-- REQUIRED FOR CROPPER -->
+      <div id="crop-shade"></div>
+
+      <!-- The crop rectangle -->
+      <div id="crop-rect">
+          <div class="crop-handle nw"></div>
+          <div class="crop-handle ne"></div>
+          <div class="crop-handle sw"></div>
+          <div class="crop-handle se"></div>
+      </div>
+    </div>
+
+<button id="crop-save-btn"
+        data-action
+        data-method="PATCH"
+        data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait,portrait_x,portrait_y,portrait_w,portrait_h' %}"
+        data-map='{"portrait": "#portrait"}'
+        disabled>
+    Save Crop
+</button>
+    {% comment %} <div id="crop-wrapper" style="position:relative; display:inline-block; width:100%;">
+      <img id="crop-image"
+          src="/documents/{{ person.portrait.source }}"
+          alt=""
+          class="img-fluid">
+      <div id="crop-rect"></div>
+    </div>
+
+    <button class="btn btn-primary mt-2"
+            data-action
+            data-method="PATCH"
+            data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait_x,portrait_y,portrait_w,portrait_h' %}"
+            id="crop-save-btn"
+            disabled>
+        Save Crop
+    </button> {% endcomment %}
+  {% else %}
+    <a href="{% url 'archive:image-redirect' person.portrait.id %}">
+      <img src="/documents/{{ person.portrait.source }}"
+            alt="{% translate 'portrait of'|capfirst %} {{ person.full_name }}"
+            class="img-fluid rounded shadow-sm profile-photo">
+    </a>
+    {% if perms.archive.change_person %}
+      <button class="btn btn-secondary mt-2"
+              data-action
+              data-method="post"
+              data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait' %}"
+              data-params='{"editable": true}'
+              data-map='{"portrait": "#portrait"}'
+              >
+          {% translate 'crop'|capfirst %}
+      </button>
+    {% endif %}
+  {% endif %}
+{% else %}
+  <div class="bg-light border text-muted rounded p-5">No photo</div>
+{% endif %}
