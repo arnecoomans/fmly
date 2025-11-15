@@ -17,6 +17,9 @@ settings.py
 /public/documents/*
 /public/documents/files/*
 
+# Keep scripts outside repo
+/*.sh
+
 # allow for custom css's
 custom_*.css
 
@@ -37,3 +40,5 @@ auth.md
 # Development
 old_*
 dev_*
+*.old
+*.dev
