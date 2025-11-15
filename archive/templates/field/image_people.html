@@ -3,16 +3,10 @@
 <div class="d-flex">
   <div class="flex-grow-1">
     <!-- Portrait -->
-     <div class="d-flex py-1">
-      <div class="col">
-        {% if image.is_portrait_of %}
-          <img src="{% static 'img/bootstrap-icons/person-badge-fill.svg' %}" alt="{% translate 'portrait' %}" title="{% translate 'this image is a portrait of'|capfirst %} {{ image.is_portrait_of.full_name }}" data-bs-toggle="tooltip" data-bs-placement="left"> {% include 'element/person_full_name.html' with person=image.is_portrait_of %}
-          {% if ajax.editable and perms.archive.change_image %}
-            <img src="{% static 'img/bootstrap-icons/robot.svg' %}" alt="{% translate 'automated action' %}" title="{% translate 'this image is portrait of'|capfirst %} {{ image.is_portrait_of.full_name}}. {% translate 'remove portrait setting before removing person from this photo'|capfirst %}." data-bs-toggle="tooltip" data-bs-placement="right">
-          {% endif %}
-        {% endif %}
-        
-      </div>
+     
+    <!-- Portrait settings -->
+    <div id="is_portrait_of">
+      {% include 'field/image_is_portrait_of.html' with image=image metadata=metadata ajax=ajax %}
     </div>
     <!-- People-->
     <div class="d-flex py-1">
@@ -21,6 +15,7 @@
           {% if person != image.is_portrait_of %}
             <img src="{% static 'img/bootstrap-icons/person-fill.svg' %}" alt="{% translate 'person' %}" title="{% translate 'person on this photo' %}" data-bs-toggle="tooltip" data-bs-placement="left"> {% include 'element/person_full_name.html' with person=person %}
             {% if ajax.editable and perms.archive.change_image %}
+              {% include 'element/person_set_portrait.html' with person=person image=image %}
               {% include 'element/reusable_delete_button.html' with field='people' map_value=person.slug confirm=True %}
             {% endif %}
             {% if not forloop.last %}<br>{% endif %}

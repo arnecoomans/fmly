@@ -1,0 +1,31 @@
+{% load static %}
+{% if not image.visibility_person_page or ajax.editable%}
+<div class="d-flex py-1">
+  <div class="col">
+    {% if ajax.editable %}
+      <form 
+        id="toggle-visibility-person-page-form"
+        data-action 
+        data-method="POST"
+        data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'metadata,visibility_person_page' %}"
+        data-body="form"
+        data-params='{"editable":true}'
+        data-map='{"metadata":"#metadata"}'
+        >
+        <div class="input-group">
+          <span class="input-group-text">
+            <img src="{% if image.visibility_person_page %}{% static 'img/bootstrap-icons/eye.svg' %}{% else %}{% static 'img/bootstrap-icons/eye-slash.svg' %}{% endif %}" alt="{% translate 'information' %}" title="{% if image.visibility_person_page %}{% translate 'this image is visible on the person page'|capfirst %}{% else %}{% translate 'this image is hidden from the person page'|capfirst %}{% endif %}" data-bs-toggle="tooltip" data-bs-placement="left">
+          </span>
+          <select name="visibility_person_page" class="form-select">
+            <option value="True" {% if image.visibility_person_page %}selected{% endif %}>{% translate 'visible on person page'|capfirst %}</option>
+            <option value="False" {% if not image.visibility_person_page %}selected{% endif %}>{% translate 'hide on person page'|capfirst %}</option>
+          </select>
+          <button type="submit" class="btn btn-outline-success" data-bs-toggle="tooltip" data-bs-placement="top" title="{% translate 'save visibility setting'|capfirst %}"><img src="{% static 'img/bootstrap-icons/save.svg' %}" alt="{% translate 'save' %}" title="{% translate 'save visibility setting'|capfirst %}"></button>
+        </div>
+      </form>
+    {% else %}
+      <img src="{% static 'img/bootstrap-icons/eye-slash.svg' %}" alt="{% translate 'information' %}" title="{% translate 'this image can be hidden from the image list'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left"> {% translate 'hidden on the person page'|capfirst %}
+    {% endif %}
+  </div>
+</div>
+{% endif %}
