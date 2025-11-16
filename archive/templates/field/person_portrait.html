@@ -33,44 +33,43 @@
     </button>
   {% elif ajax.editable %}
     <!-- Cropper -->
-    <div id="crop-wrapper" style="position:relative; display:inline-block; width:100%;">
-      <img id="crop-image" src="/documents/{{ person.portrait.source }}" class="img-fluid">
-
-      <!-- REQUIRED FOR CROPPER -->
-      <div id="crop-shade"></div>
-
-      <!-- The crop rectangle -->
-      <div id="crop-rect">
-          <div class="crop-handle nw"></div>
-          <div class="crop-handle ne"></div>
-          <div class="crop-handle sw"></div>
-          <div class="crop-handle se"></div>
-      </div>
+    <div  id="crop-wrapper"
+          data-cropper
+          data-cropper-target="#crop-image"
+          data-cropper-save="#crop-save-btn"
+          data-cropper-fields="x=portrait_x,y=portrait_y,w=portrait_w,h=portrait_h">
+      <img  id="crop-image"
+            src="/documents/{{ person.portrait.source }}"
+            alt=""
+            class="img-fluid">
+      <!-- Rect can exist or be created automatically -->
+      <div class="cmnsd-crop-rect"></div>
     </div>
-
-<button id="crop-save-btn"
-        data-action
-        data-method="PATCH"
-        data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait,portrait_x,portrait_y,portrait_w,portrait_h' %}"
-        data-map='{"portrait": "#portrait"}'
-        disabled>
-    Save Crop
-</button>
-    {% comment %} <div id="crop-wrapper" style="position:relative; display:inline-block; width:100%;">
-      <img id="crop-image"
-          src="/documents/{{ person.portrait.source }}"
-          alt=""
-          class="img-fluid">
-      <div id="crop-rect"></div>
-    </div>
-
-    <button class="btn btn-primary mt-2"
+    <button id="crop-save-btn"
+            class="btn btn-primary mt-2"
             data-action
             data-method="PATCH"
-            data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait_x,portrait_y,portrait_w,portrait_h' %}"
-            id="crop-save-btn"
+            data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait,portrait_x,portrait_y,portrait_w,portrait_h' %}"
+            data-map='{"portrait": "#portrait"}'
             disabled>
-        Save Crop
+      {% translate 'save crop'|title %}
+    </button>
+
+    {% comment %} <div data-cropper
+        data-cropper-target="#crop-image"
+        data-cropper-save="#crop-save-btn"
+        data-cropper-fields="x=portrait_x,y=portrait_y,w=portrait_w,h=portrait_h">
+      <img id="crop-image" src="" class="img-fluid">
+      <div class="crop-rect"></div>
+    </div>
+
+    <button id="crop-save-btn"
+            data-action
+            data-method="PATCH"
+            data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait,portrait_x,portrait_y,portrait_w,portrait_h' %}"
+            data-map='{"portrait": "#portrait"}'
+    >
+      
     </button> {% endcomment %}
   {% else %}
     <a href="{% url 'archive:image-redirect' person.portrait.id %}">
@@ -93,3 +92,4 @@
 {% else %}
   <div class="bg-light border text-muted rounded p-5">No photo</div>
 {% endif %}
+
