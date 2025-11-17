@@ -1,27 +1,8 @@
 {% if person.portrait %}
   {% if person.portrait_x or person.portrait_y or person.portrait_w or person.portrait_h %}
-    {% with ox=person.portrait.get_image_dimensions.0 oy=person.portrait.get_image_dimensions.1 %}
-      {% with cx=person.portrait_x cy=person.portrait_y cw=person.portrait_w ch=person.portrait_h %}
-        {% with box_ratio=ch|div:cw|mul:100 img_width=ox|div:cw|mul:100 offset_left=cx|div:cw|mul:100 offset_top=cy|div:cw|mul:100 %}
-          <div  class="portrait-wrapper"
-                style=" padding-top: {{ box_ratio|floatdot }}%;
-                  ">
-            <a href="{% url 'archive:image-redirect' person.portrait.id %}">
-              <img 
-                  src="/documents/{{ person.portrait.source }}" 
-                  class="portrait-image"
-                  title="{{ person.portrait.title }}" 
-                  alt="{{ person.portrait.description }}" 
-                  style="width: {{ img_width|floatdot }}%;
-                          left: -{{ offset_left|floatdot }}%;
-                          top: -{{ offset_top|floatdot }}%;
-                          "
-                >
-            </a>
-          </div>
-        {% endwith %}
-      {% endwith %}
-    {% endwith %}
+    <!-- Cropped Portrait -->
+    {% portrait_crop person.portrait src=person.portrait.source|prepend:"/documents/" crop_source=person%}
+
     <button class="btn btn-secondary mt-2"
             data-action
             data-method="post"
@@ -35,13 +16,19 @@
     <!-- Cropper -->
     <div  id="crop-wrapper"
           data-cropper
+          data-cropper-debug="1"
           data-cropper-target="#crop-image"
           data-cropper-save="#crop-save-btn"
           data-cropper-fields="x=portrait_x,y=portrait_y,w=portrait_w,h=portrait_h">
       <img  id="crop-image"
             src="/documents/{{ person.portrait.source }}"
-            alt=""
-            class="img-fluid">
+            draggable="false"
+            alt="{{ person.portrait.title}}"
+            style="
+                  object-position: -{{ person.portrait_x }}px -{{ person.portrait_y }}px;
+                  width: {{ person.portrait_w }}px;
+                  height: {{ person.portrait_h }}px;
+                ">
       <!-- Rect can exist or be created automatically -->
       <div class="cmnsd-crop-rect"></div>
     </div>
