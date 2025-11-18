@@ -3,13 +3,14 @@ from django.contrib.auth.models import User
 from .image import Image
 from django.urls import reverse
 
-
-class Comment(models.Model):
+from cmnsd.models.cmnsd_basemodel import BaseModel
+  
+class Comment(BaseModel):
   # Meta
-  date_modified       = models.DateTimeField(auto_now=True)
-  date_created        = models.DateTimeField(auto_now_add=True)
-  is_deleted          = models.BooleanField(default=False)
-  user                = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+  # date_modified       = models.DateTimeField(auto_now=True)
+  # date_created        = models.DateTimeField(auto_now_add=True)
+  # is_deleted          = models.BooleanField(default=False)
+  # user                = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
   # Content
   content             = models.TextField(help_text='Markdown supported')
   image               = models.ForeignKey(Image, related_name='comments', on_delete=models.CASCADE)

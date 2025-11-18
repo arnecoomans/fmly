@@ -3,6 +3,8 @@ from django.template.defaultfilters import slugify
 from django.contrib import messages
 from django.utils.translation import gettext as _
 
+from cmnsd.admin import ReadOnlyAdmin
+
 from .models import *
 ''' Admin Actions - Used by more than one Model '''
 @admin.action(description=_('Softdelete'))
@@ -34,10 +36,9 @@ class AttachmentAdmin(admin.ModelAdmin):
 
 
 ''' Comment Model Admin '''
-class CommentAdmin(admin.ModelAdmin):
-  list_display = ['user', 'image', 'is_deleted', 'content']
+class CommentAdmin(ReadOnlyAdmin):
+  list_display = ['user', 'image', 'status', 'content']
   list_filter = ['image']
-  actions = [softdelete, softundelete]
 
   def get_changeform_initial_data(self, request):
     get_data = super(CommentAdmin, self).get_changeform_initial_data(request)
