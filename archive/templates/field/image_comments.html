@@ -1,6 +1,6 @@
 
 {% load static %}
-{% for comment in image.comments.all %}
+{% for comment in image.comments.all|filter_by_status %}
   <div id="comment-{{ comment.id }}" style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 10px;">
     {% include 'object/comment.html' %}
   </div>

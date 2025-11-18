@@ -37,9 +37,9 @@
           class="btn btn-outline-success"
           data-action
           data-method="post"
-          data-url = "{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id image.slug|default:comment.user.username %}"
+          data-url = "{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id comment.token|default:comment.user.username %}"
           data-body="form"
-          data-refresh-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id image.slug|default:comment.user.username %}"
+          data-refresh-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id comment.token|default:comment.user.username %}"
           data-refresh-map='{"comment":"#comment-{{ comment.id }}"}'
           >
           <img src="{% static 'img/bootstrap-icons/floppy.svg' %}" alt="{% translate 'save comment' %}" title="{% translate 'save comment' %}" data-bs-toggle="tooltip" data-bs-placement="right" >
@@ -49,7 +49,7 @@
           class="btn btn-outline-danger"
           data-action
           data-method="delete"
-          data-url = "{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id image.slug|default:comment.user.username %}"
+          data-url = "{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id comment.token|default:comment.user.username %}"
           data-body='{"delete":"true"}'
           data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' comment.image.id comment.image.slug 'comments' %}"
           data-refresh-map='{"comments":"#comments"}'
@@ -60,7 +60,7 @@
           type="button" 
           class="btn btn-outline-secondary"
           data-action
-          data-url = "{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id image.slug|default:comment.user.username %}"
+          data-url = "{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id comment.token|default:comment.user.username %}"
           data-map='{"comment":"#comment-{{ comment.id }}"}'
           >
           <img src="{% static 'img/bootstrap-icons/x.svg' %}" alt="{% translate 'cancel edit comment' %}" title="{% translate 'cancel edit comment' %}" data-bs-toggle="tooltip" data-bs-placement="right" >
@@ -70,7 +70,7 @@
           type="button" 
           class="btn btn-outline-secondary"
           data-action
-          data-url = "{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id image.slug|default:comment.user.username %}"
+          data-url = "{% url 'cmnsd:dispatch_object_by_id_and_slug' 'comment' comment.id comment.token|default:comment.user.username %}"
           data-body = '{"editable":"true"}'
           data-map='{"comment":"#comment-{{ comment.id }}"}'
           >
