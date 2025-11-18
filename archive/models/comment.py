@@ -24,7 +24,7 @@ class Comment(BaseModel):
     ordering = ['-date_created']
 
   def __str__(self):
-    deleted = ' (deleted)' if self.is_deleted else ''
+    deleted = ' (deleted)' if self.status == 'x' else ''
     return self.user.username + ' on ' + self.image.title + deleted
   
   def get_absolute_url(self):
