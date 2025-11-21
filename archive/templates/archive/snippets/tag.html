@@ -1,3 +1,3 @@
 <li class="tag bi bi-tag-fill">
-  <a href="{% url 'archive:image-with-tag' tag.slug %}" class="tag" title="{{ tag.images.all.count }} afbeeldingen met tag '{{ tag.title|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{% if compact %}{{ tag.title|title|truncatechars:12 }}{% else %}{{ tag.title|title }}{% endif %}</a> {% if tag.images.all.count > 0 %}({{ tag.images.all.count }}){% endif %}
+  <a href="{% url 'archive:image-with-tag' tag.slug %}" class="tag" title="{{ tag.images.all.count }} afbeeldingen met tag '{{ tag.title|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{% if compact %}{{ tag.name|title|truncatechars:12 }}{% else %}{{ tag.name|title }}{% endif %}</a> {% if tag.images.all.count > 0 %}({{ tag.images.all.count }}){% endif %}
 </li>
