@@ -140,8 +140,8 @@ class PersonAdmin(admin.ModelAdmin):
 
 
 class TagAdmin(admin.ModelAdmin):
-  prepopulated_fields = {'slug': ('title',)}
-  list_display = ['title', 'slug']
+  prepopulated_fields = {'slug': ('name',)}
+  list_display = ['name', 'slug']
 
 class CategoryAdmin(admin.ModelAdmin):
   prepopulated_fields = {'slug': ('name',)}

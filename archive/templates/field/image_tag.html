@@ -3,7 +3,7 @@
   <div class="d-flex py-1">
     <div class="col">
       {% for tag in image.tag.all %}
-        <img src="{% static 'img/bootstrap-icons/tag.svg' %}" alt="{% translate 'tag' %}" title="{% translate 'tag on this photo'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left"> <a href="{% url 'archive:image-with-tag' tag.slug %}" class="tag" title="{{ tag.images.all.count }} afbeeldingen met tag '{{ tag.title|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{% if compact %}{{ tag.title|title|truncatechars:12 }}{% else %}{{ tag.title|title }}{% endif %}</a> {% if tag.images.all.count > 0 %}({{ tag.images.all.count }}){% endif %}
+        <img src="{% static 'img/bootstrap-icons/tag.svg' %}" alt="{% translate 'tag' %}" title="{% translate 'tag on this photo'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left"> <a href="{% url 'archive:image-with-tag' tag.slug %}" class="tag" title="{{ tag.images.all.count }} afbeeldingen met tag '{{ tag.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{% if compact %}{{ tag.name|title|truncatechars:12 }}{% else %}{{ tag.name|title }}{% endif %}</a> {% if tag.images.all.count > 0 %}({{ tag.images.all.count }}){% endif %}
         {% if ajax.editable and perms.archive.change_image %}
           {% include 'element/reusable_delete_button.html' with field='tag' map_value=tag.slug confirm=True %}
         {% endif %}
