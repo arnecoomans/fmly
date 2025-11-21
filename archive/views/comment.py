@@ -10,6 +10,8 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from archive.models import Comment, Image
 
+from cmnsd.views.cmnsd_filter import FilterMixin
+
 ''' Shared View Functions'''
 
 ''' Comment Change is Allowed:
@@ -32,9 +34,10 @@ def get_comment_preview(comment):
   return ' '.join(comment)
 
 ''' List comments by date added newest first '''
-class CommentListView(TemplateView):
+class CommentListView(FilterMixin, ListView):
   model = Comment
   template_name = 'archive/comments/list.html'
+
   # paginate_by = settings.PAGINATE
 
   def get_context_data(self, **kwargs):
@@ -44,26 +47,11 @@ class CommentListView(TemplateView):
     context['page_description'] = f"{ _('To add a comment, first open the photo') }."
     return context
   
-  # def get_queryset(self):
-  #   queryset = Comment.objects.all()
-  #   ''' Remove deleted_comments '''
-  #   queryset = queryset.filter(is_deleted=False)
-  #   ''' Filter comments by user '''
-  #   if self.request.GET.get('user'):
-  #     queryset = queryset.filter(user__username=self.request.GET.get('user'))
-  #   ''' Free text search 
-  #       Search Comment text, image title or user
-  #   '''
-  #   if self.request.GET.get('search'):
-  #     search_text = self.request.GET.get('search').lower()
-  #     queryset = queryset.filter(content__icontains=search_text) | \
-  #                queryset.filter(image__title__icontains=search_text) | \
-  #                queryset.filter(user__username__icontains=search_text) | \
-  #                queryset.filter(user__first_name__icontains=search_text) | \
-  #                queryset.filter(user__last_name__icontains=search_text)
-  #   '''  and add ordering'''
-  #   queryset = queryset.order_by('-date_modified')
-  #   return queryset
+  def get_queryset(self):
+    queryset = Comment.objects.all()
+    queryset = self.filter(queryset, self.request)
+    queryset = queryset.order_by('-date_modified').distinct()
+    return queryset
 
 ''' Add Comment '''
 # class AddCommentView(PermissionRequiredMixin, CreateView):
@@ -109,41 +97,41 @@ class CommentEditView(PermissionRequiredMixin, UpdateView):
       return redirect(reverse('archive:image', args=[form.instance.image.slug]))
 
 
-''' Delete Comment '''
-class CommentDeleteView(PermissionRequiredMixin, DetailView):
-  permission_required = 'archive.change_comment'
-  model = Comment
+# ''' Delete Comment '''
+# class CommentDeleteView(PermissionRequiredMixin, DetailView):
+#   permission_required = 'archive.change_comment'
+#   model = Comment
     
-  def get(self, request, *args, **kwargs):
-    comment = Comment.objects.get(pk=self.kwargs['pk'])
-    ''' Only allow action from Comment User or Staff'''
-    if change_is_allowed(self.request.user, comment):
-      ''' Mark comment as deleted '''
-      comment.is_deleted = True
-      messages.add_message(self.request, messages.SUCCESS, f"{ _('Comment') } \"{ get_comment_preview(comment) }\" { _('on') } \"{comment.image.title}\" { _('has been removed')}. <a href=\"{reverse('archive:undelete-comment', args=[comment.id])}\">{ _('Undo') }</a>.")
-    else:
-      ''' Share errormessage that the comment cannot be modified '''
-      messages.add_message(self.request, messages.ERROR, f"{ _('Comment') } \"{ get_comment_preview(comment) }\" { _('on') } \"{comment.image.title}\" { _('cannot be removed')}. { _('this is not your comment')}")
-    comment.save()
-    ''' Redirect to image, also listing comments '''
-    return redirect('archive:image', comment.image.slug)
+#   def get(self, request, *args, **kwargs):
+#     comment = Comment.objects.get(pk=self.kwargs['pk'])
+#     ''' Only allow action from Comment User or Staff'''
+#     if change_is_allowed(self.request.user, comment):
+#       ''' Mark comment as deleted '''
+#       comment.is_deleted = True
+#       messages.add_message(self.request, messages.SUCCESS, f"{ _('Comment') } \"{ get_comment_preview(comment) }\" { _('on') } \"{comment.image.title}\" { _('has been removed')}. <a href=\"{reverse('archive:undelete-comment', args=[comment.id])}\">{ _('Undo') }</a>.")
+#     else:
+#       ''' Share errormessage that the comment cannot be modified '''
+#       messages.add_message(self.request, messages.ERROR, f"{ _('Comment') } \"{ get_comment_preview(comment) }\" { _('on') } \"{comment.image.title}\" { _('cannot be removed')}. { _('this is not your comment')}")
+#     comment.save()
+#     ''' Redirect to image, also listing comments '''
+#     return redirect('archive:image', comment.image.slug)
 
-''' Comment Undelete
-    When deleting a comment, the undo-option is available. 
-'''
-class CommentUnDeleteView(PermissionRequiredMixin, DetailView):
-  permission_required = 'archive.change_comment'
-  model = Comment
+# ''' Comment Undelete
+#     When deleting a comment, the undo-option is available. 
+# '''
+# class CommentUnDeleteView(PermissionRequiredMixin, DetailView):
+#   permission_required = 'archive.change_comment'
+#   model = Comment
   
-  def get(self, request, *args, **kwargs):
-    comment = Comment.objects.get(pk=self.kwargs['pk'])
-    ''' Only allow action from Comment User or Staff'''
-    if change_is_allowed(self.request.user, comment):
-      ''' Mark comment as restored'''
-      comment.is_deleted = False
-      messages.add_message(self.request, messages.SUCCESS, f"{ _('Comment') } \"{ get_comment_preview(comment) }\" { _('on') } \"{comment.image.title}\" { _('restored') }.")
-    else:
-      ''' Share errormessage that the comment cannot be modified '''
-      messages.add_message(self.request, messages.ERROR, f"{ _('Comment') } \"{ get_comment_preview(comment) }\" { _('on') } \"{comment.image.title}\" { _('cannot be restored') }. { _('this is not your comment')}")
-    comment.save()
-    return redirect('archive:image', comment.image.slug)
+#   def get(self, request, *args, **kwargs):
+#     comment = Comment.objects.get(pk=self.kwargs['pk'])
+#     ''' Only allow action from Comment User or Staff'''
+#     if change_is_allowed(self.request.user, comment):
+#       ''' Mark comment as restored'''
+#       comment.is_deleted = False
+#       messages.add_message(self.request, messages.SUCCESS, f"{ _('Comment') } \"{ get_comment_preview(comment) }\" { _('on') } \"{comment.image.title}\" { _('restored') }.")
+#     else:
+#       ''' Share errormessage that the comment cannot be modified '''
+#       messages.add_message(self.request, messages.ERROR, f"{ _('Comment') } \"{ get_comment_preview(comment) }\" { _('on') } \"{comment.image.title}\" { _('cannot be restored') }. { _('this is not your comment')}")
+#     comment.save()
+#     return redirect('archive:image', comment.image.slug)

@@ -1,5 +1,5 @@
 {% extends 'index.html' %}
-{% load i18n %}{% load static %}
+{% load static %}
 
 {% block content %}
   {% if not perms.archive.view_comment %}
@@ -9,15 +9,11 @@
       <h2>{% translate 'comments' %}:</h2>
       {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
     </header>
-    <div class="autoload comments">
-      <div id="comment-messages"></div>
-      <span class="comments statusmessage">loading comments...</span>
-    </div>
     
     <!-- Pagination -->
     {% include 'archive/snippets/pagination.html' %}
-    {% comment %} <section class="objects">
-      {% for comment in comment_list %}
+    <section class="objects">
+      {% for comment in comment_list.all %}
         <div class="object">
           <h5><a href="{% url 'archive:image' comment.image.slug %}#comments">{% if comment.user.first_name %}{{ comment.user.first_name }} {{ comment.user.last_name }}{% else %}{{ comment.user }}{% endif %} over {{ comment.image.title }}</a></h5>
           <div class="column left">
@@ -31,24 +27,12 @@
           </div>
         </div>
       {% endfor %}
-    </section> {% endcomment %}
+    </section> 
     <!-- Pagination -->
     {% include 'archive/snippets/pagination.html' %}
   {% endif %}
 {% endblock %}
 
 {% block footer %}
-<script src="{% static 'js/jquery.min.js' %}"></script>
-
-<script src="{% static 'js/autoload_comments.js' %}"></script>
-
-<script>
-  const csrfToken = '{{ csrf_token }}';
-  const url = '{% url 'archive:acomments' %}{% if request.GET.user %}?user={{ request.GET.user }}{% endif %}'
-  $(document).ready(function() {
-    $('.comments.statusmessage').remove()
-    fetchAllComments(url, csrfToken);
-  });
-</script>
 
 {% endblock %}
