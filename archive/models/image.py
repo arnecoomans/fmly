@@ -45,7 +45,7 @@ def get_thumbnail(image):
   except Exception as e:
     return None
 
-class Group(models.Model):
+class Group(BaseModel):
   title               = models.CharField(max_length=255, blank=True)
   description         = models.CharField(max_length=512, blank=True, null=True)
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
