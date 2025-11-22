@@ -52,6 +52,17 @@
             <p>{% translate 'markdown allowed'|capfirst %}</p>
           </div>
         </div>
+<!-- Image category -->
+        <div class="row">
+          <div class="col-3"><label for="{{ form.category.id_for_label }}">{% translate 'image category'|title %}:</label></div>
+          <div class="col-9">
+            <select class="form-control" name="category" id="category">
+              {% for key, value in form.fields.category.choices %}
+                <option value="{{ key }}" {% if key == form.category.value %}selected{% endif %}>{{ value|capfirst }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
 <!-- Image Source: where does the image originate? -->
         <div class="row">
           <div class="col-3"><label for="{{ form.document_source.id_for_label }}">{% translate 'image source'|title %}:</label></div>

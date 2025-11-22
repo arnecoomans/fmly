@@ -14,7 +14,7 @@ from pillow_heif import register_heif_opener
 from html import escape
 
 from archive.models import Image
-from archive.models import Group, Tag, Attachment, Person
+from archive.models import Group, Tag, Attachment, Person, Category
 
 ''' EditImageMasterClass
     Holds functionality used both by add and edit image views:
@@ -26,6 +26,7 @@ class EditImageMaster:
   model = Image
   template_name = 'archive/images/edit.html'
   fields = ['source', 'title', 'description',
+            'category',
             'document_source', 'day', 'month', 'year',
             'people', 'family',
             'visibility_frontpage', 'visibility_person_page', 'is_deleted',
@@ -110,6 +111,7 @@ class EditImageMaster:
     form['title'] = self.request.POST.get('title', None)
     form['description'] = self.request.POST.get('description', '')
     form['document_source'] = self.request.POST.get('document_source', '')
+    form['category'] = self.request.POST.get('category', None)
     form['day'] = None if self.request.POST.get('day', None) == '' else self.request.POST.get('day', None)
     form['month'] = None if self.request.POST.get('month', None) == '' else self.request.POST.get('month', None)
     form['year'] = None if self.request.POST.get('year', None) == '' else self.request.POST.get('year', None)
@@ -184,6 +186,10 @@ class EditImageMaster:
     action = 'stored' if image[1] else 'updated'
     image = image[0]
     ''' Process additional fields that require an object to be saved first '''
+    print(form)
+    print("form['category']", form['category'])
+    print("Category.objects.get(id=form['category'])", Category.objects.get(id=form['category']) if form['category'] else None)
+    image.category = Category.objects.get(id=form['category']) if form['category'] else None
     image.people.set(form['people'])
     image.tag.set(form['tag'])
     image.in_group.set(form['in_group'])
