@@ -71,7 +71,7 @@ class Group(BaseModel):
   def count_images(self):
     return self.images.filter(is_deleted=False).count()
 
-class Attachment(models.Model):
+class Attachment(BaseModel):
   slug                = models.CharField(max_length=255, unique=True)
   file                = models.FileField(null=True, upload_to='files', help_text='Possible to attach file to an image. Use for pdf, doc, excel, etc.')
   description         = models.CharField(max_length=512, blank=True, null=True)
