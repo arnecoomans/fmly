@@ -45,7 +45,7 @@ def get_thumbnail(image):
   except Exception as e:
     return None
 
-class Group(models.Model):
+class Group(BaseModel):
   title               = models.CharField(max_length=255, blank=True)
   description         = models.CharField(max_length=512, blank=True, null=True)
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -71,14 +71,14 @@ class Group(models.Model):
   def count_images(self):
     return self.images.filter(is_deleted=False).count()
 
-class Attachment(models.Model):
+class Attachment(BaseModel):
   slug                = models.CharField(max_length=255, unique=True)
   file                = models.FileField(null=True, upload_to='files', help_text='Possible to attach file to an image. Use for pdf, doc, excel, etc.')
   description         = models.CharField(max_length=512, blank=True, null=True)
   # Meta
   size                = models.IntegerField(default=0)
-  uploaded_at         = models.DateTimeField(auto_now_add=True)
-  user                = models.ForeignKey(User, on_delete=models.CASCADE)
+  # date_created         = models.DateTimeField(auto_now_add=True)
+  # user                = models.ForeignKey(User, on_delete=models.CASCADE)
   is_deleted          = models.BooleanField(default=False)
 
   def __str__(self) -> str:
@@ -149,7 +149,7 @@ class Image(models.Model):
   width               = models.IntegerField(default=0)
   height              = models.IntegerField(default=0)
   
-  uploaded_at         = models.DateTimeField(auto_now_add=True)
+  date_created        = models.DateTimeField(auto_now_add=True)
   date_modified       = models.DateTimeField(auto_now=True)
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
   is_deleted          = models.BooleanField(default=False)
@@ -186,7 +186,7 @@ class Image(models.Model):
       'extension': self.extension(),
       'user': self.user,
       'users': User.objects.all(),
-      'date_shared': self.uploaded_at,
+      'date_shared': self.date_created,
     }
   @ajax_function
   def classification(self):

@@ -61,7 +61,7 @@ class ImageListView(ListView):
     queryset = queryset.exclude(is_deleted=True)
     ''' Process Search Query '''
     queryset = self.filter_objects(queryset)
-    queryset = queryset.distinct().order_by('-uploaded_at')
+    queryset = queryset.distinct().order_by('-date_created')
     self.added_context['total_images'] = queryset.count()
     return queryset
   
@@ -109,7 +109,7 @@ class ImageListView(ListView):
           queryset.filter(people__given_name__icontains=search_text) | \
           queryset.filter(people__last_name__icontains=search_text) | \
           queryset.filter(people__married_name__icontains=search_text) | \
-          queryset.filter(tag__title__icontains=search_text) | \
+          queryset.filter(tag__name__icontains=search_text) | \
           queryset.filter(attachments__file__icontains=search_text) | \
           queryset.filter(attachments__description__icontains=search_text)
     ''' If category filter is active '''
