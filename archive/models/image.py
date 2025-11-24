@@ -77,8 +77,8 @@ class Attachment(BaseModel):
   description         = models.CharField(max_length=512, blank=True, null=True)
   # Meta
   size                = models.IntegerField(default=0)
-  uploaded_at         = models.DateTimeField(auto_now_add=True)
-  user                = models.ForeignKey(User, on_delete=models.CASCADE)
+  # date_created         = models.DateTimeField(auto_now_add=True)
+  # user                = models.ForeignKey(User, on_delete=models.CASCADE)
   is_deleted          = models.BooleanField(default=False)
 
   def __str__(self) -> str:
@@ -149,7 +149,7 @@ class Image(models.Model):
   width               = models.IntegerField(default=0)
   height              = models.IntegerField(default=0)
   
-  uploaded_at         = models.DateTimeField(auto_now_add=True)
+  date_created        = models.DateTimeField(auto_now_add=True)
   date_modified       = models.DateTimeField(auto_now=True)
   user                = models.ForeignKey(User, on_delete=models.CASCADE)
   is_deleted          = models.BooleanField(default=False)
@@ -186,7 +186,7 @@ class Image(models.Model):
       'extension': self.extension(),
       'user': self.user,
       'users': User.objects.all(),
-      'date_shared': self.uploaded_at,
+      'date_shared': self.date_created,
     }
   @ajax_function
   def classification(self):
