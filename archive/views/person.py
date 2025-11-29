@@ -92,7 +92,7 @@ class PersonView(ListView):
       self.added_context['images_hidden'] = queryset.filter(visibility_person_page=False).count() * -1
     self.added_context['count_images'] = queryset.count()
     ''' Order images '''
-    queryset = queryset.order_by('uploaded_at')
+    queryset = queryset.order_by('date_created')
     ''' Return result '''
     return queryset
 
