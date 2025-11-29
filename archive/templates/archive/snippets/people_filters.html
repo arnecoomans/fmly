@@ -37,7 +37,7 @@
         {% endwith %}
         {% if available_families|length > 1 %}
           <label for="family">Familie: </label>
-          <select name="family" onchange="this.form.submit()">
+          <select name="familycollection" onchange="this.form.submit()">
             <option value="all">-----</option>
             {% if filters.family and filters.family  not in available_families|lower %}
               <option value="{{ family }}" selected>{{ filters.family|title }}</option>

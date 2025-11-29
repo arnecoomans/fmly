@@ -199,8 +199,7 @@ class Image(BaseModel):
     return True
   
   @searchable_function
-  def family(self):
-    print("Fetching family collection", self.family_collection())
+  def familycollection(self):
     return self.family_collection()
   
   @searchable_function

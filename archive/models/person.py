@@ -6,10 +6,12 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse_lazy, reverse
 from math import floor
 from django.utils.translation import gettext_lazy as _
+
 from cmnsd.models.cmnsd_basemodel import BaseModel, VisibilityModel
 from cmnsd.models.cmnsd_basemethod import ajax_function, searchable_function
 
-class Person(models.Model):
+
+class Person(BaseModel):
   ''' Model: Person
       People are:
       - tagged on an image
@@ -119,14 +121,34 @@ class Person(models.Model):
         value += f" { self.last_name }"
       return value.strip()
     
-
+  @searchable_function
   def century(self):
     if self.year_of_birth:
       return floor(self.year_of_birth/100)*100
+  @searchable_function
   def decade(self):
     if self.year_of_birth:
       return floor(self.year_of_birth/10)*10
   
+  @searchable_function
+  def last_names(self):
+    last_names = []
+    if self.last_name and self.last_name not in last_names:
+      last_names.append(self.last_name)
+    if self.married_name and self.married_name not in last_names:
+      last_names.append(self.married_name)
+    return last_names
+
+  @searchable_function
+  def familycollection(self):
+    families = []
+    for name in getattr(settings, 'FAMILIES', []):
+      if name.lower() in self.last_name.lower() \
+        or (self.married_name and name.lower() in self.married_name.lower()):
+        if name not in families:
+          families.append(name)
+    return families
+    
   def get_lifespan(self):
     lifespan = ''
     if self.year_of_birth:
