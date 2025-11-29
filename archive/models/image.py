@@ -8,6 +8,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
 
+from math import floor
+
 from .tag import Tag
 from .person import Person
 from .Category import Category
@@ -69,7 +71,7 @@ class Group(BaseModel):
     return title
 
   def count_images(self):
-    return self.images.filter(is_deleted=False).count()
+    return self.images.exclude(status='x').count()
 
 class Attachment(BaseModel):
   slug                = models.CharField(max_length=255, unique=True)
@@ -77,8 +79,6 @@ class Attachment(BaseModel):
   description         = models.CharField(max_length=512, blank=True, null=True)
   # Meta
   size                = models.IntegerField(default=0)
-  # date_created         = models.DateTimeField(auto_now_add=True)
-  # user                = models.ForeignKey(User, on_delete=models.CASCADE)
   is_deleted          = models.BooleanField(default=False)
 
   def __str__(self) -> str:
@@ -123,7 +123,7 @@ import random
 def random_string():
   return str(random.randint(10000, 99999))
 
-class Image(models.Model):
+class Image(BaseModel):
   # Document details
   slug                = models.CharField(max_length=255, unique=True, default=random_string)
   source              = models.FileField()
@@ -140,7 +140,7 @@ class Image(models.Model):
   in_group            = models.ManyToManyField(Group, blank=True, related_name='images', help_text='Group images')
   family              = models.CharField(max_length=64, null=True, blank=True, help_text=_('Add image to family collection if no family member can be tagged'))
   # Dating
-  MONTHS = [(1, 'januari'), (2, 'februari'), (3, 'maart'), (4, 'april'), (5, 'mei'), (6, 'juni'), (7, 'juli'), (8, 'augustus'), (9, 'september'), (10, 'oktober'), (11, 'november'), (12, 'december')]
+  MONTHS = [(1, _('january')), (2, _('february')), (3, _('march')), (4, _('april')), (5, _('may')), (6, _('june')), (7, _('july')), (8, _('august')), (9, _('september')), (10, _('october')), (11, _('november')), (12, _('december'))]
   year                = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
   month               = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', choices=MONTHS)
   day                 = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', validators=[MaxValueValidator(31), MinValueValidator(1)])
@@ -149,11 +149,6 @@ class Image(models.Model):
   width               = models.IntegerField(default=0)
   height              = models.IntegerField(default=0)
   
-  date_created        = models.DateTimeField(auto_now_add=True)
-  date_modified       = models.DateTimeField(auto_now=True)
-  user                = models.ForeignKey(User, on_delete=models.CASCADE)
-  is_deleted          = models.BooleanField(default=False)
-
   visibility_frontpage     = models.BooleanField(default=True)
   visibility_person_page   = models.BooleanField(default=True)
   
@@ -203,6 +198,17 @@ class Image(models.Model):
   def actionlist(self):
     return True
   
+  @searchable_function
+  def familycollection(self):
+    return self.family_collection()
+  
+  @searchable_function
+  def decade(self):
+    if self.year:
+      decade = floor(self.year / 10) * 10
+      return decade
+    return None
+  
   ''' Get Save Slug
       Loop through existing slugs and append slug with counter if Unique contraint would fail
   '''
@@ -223,33 +229,33 @@ class Image(models.Model):
     id = str(self.id)
     while len(id) < 4:
       id = '0' + id
-    if self.is_deleted:
+    if self.status == 'x':
       title += ' (deleted)'
     return id + ' ' + title
   
   ''' Related Object Methods'''
   def count_comments(self):
-    return self.comments.filter(is_deleted=False).count()
+    return self.comments.exclude(status='x').count()
   def get_comments(self):
-    return self.comments.filter(is_deleted=False)
+    return self.comments.exclude(status='x')
   def count_attachments(self):
-    return self.attachments.filter(is_deleted=False).count()
+    return self.attachments.exclude(status='x').count()
   def get_attachments(self):
-    return self.attachments.filter(is_deleted=False)
+    return self.attachments.exclude(status='x')
   def get_groups(self):
     groups = {}
     for group in self.in_group.all():
-      if group.images.exclude(is_deleted=True).count() > 1:
-        groups[group.title] = group.images.exclude(is_deleted=True).count()
+      if group.images.exclude(status='x').count() > 1:
+        groups[group.title] = group.images.exclude(status='x').count()
     return groups
   def get_grouped_images(self):
     groups = {}
     for group in self.in_group.all():
-      groups[group.title] = {'id': group.id, 'images': group.images.exclude(is_deleted=True).exclude(id=self.id)}
+      groups[group.title] = {'id': group.id, 'images': group.images.exclude(status='x').exclude(id=self.id)}
     return groups
     
   def grouped_items(self):
-    return self.in_group.all().exclude(images__is_deleted=True).exclude(id=self.id).distinct()
+    return self.in_group.all().exclude(images__status='x').exclude(id=self.id).distinct()
   def get_available_users(self):
     return User.objects.filter(is_active=True)
 

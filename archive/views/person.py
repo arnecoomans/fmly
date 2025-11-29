@@ -14,6 +14,9 @@ from ..person_utils import get_person_filters, get_person_queryset, get_centurie
 
 from archive.models import Person, FamilyRelations, Image
 
+from cmnsd.views.cmnsd_filter import FilterMixin
+from cmnsd.views.utils__request import RequestMixin
+
 ''' Class Functions '''
 ''' get_fields()
     Returns a list of fields to use in formsets
@@ -80,7 +83,7 @@ class PersonView(ListView):
     ''' Fetch images with Person in field people '''
     queryset = Image.objects.filter(people=Person.objects.get(pk=self.kwargs['pk']))
     ''' Always remove deleted images '''
-    queryset = queryset.filter(is_deleted=False)
+    queryset = queryset.filter(status='p')
     ''' Show or hide hidden files '''
     if not self.show_hidden_files():
       if queryset.filter(visibility_frontpage=False).count() > 0:
@@ -100,7 +103,7 @@ class PersonView(ListView):
     Display a list of people, grouped by family (Last_name or Married_name)
     Allows for additional filtering
 '''
-class PersonListView(ListView):
+class PersonListView(FilterMixin, RequestMixin, ListView):
   model = Person
   template_name = 'archive/people/list.html'
   context_object_name = 'people'
@@ -148,7 +151,15 @@ class PersonListView(ListView):
     return context
 
   def get_queryset(self):
-    return get_person_queryset(filters=get_person_filters(self.request))
+    # Return cached queryset if available
+    if hasattr(self, 'queryset') and self.queryset is not None:
+      return self.queryset
+    # Build initial queryset
+    self.queryset = Person.objects.all()
+    self.queryset = self.filter(self.queryset, mapping={})
+    self.queryset = self.queryset.distinct().order_by('last_name', 'first_names')
+    return self.queryset
+    
 
 
 ''' Edit Person '''

@@ -4,7 +4,7 @@
     <div class="col">
       {% for family in image.automated_family %}
         <img src="{% static 'img/bootstrap-icons/person-square.svg' %}" alt="{% translate 'family' %}" title="{% translate 'image is automatically part of family collection'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left" >
-        <a href="{% url 'archive:images' %}?family={{ family }}" title="{% translate 'Open family collection of' %} {{ family }}">{{ family }}</a>
+        <a href="{% url 'archive:images' %}?familycollection={{ family }}" title="{% translate 'Open family collection of' %} {{ family }}">{{ family }}</a>
         {% if ajax.editable and perms.archive.change_image %}
           <img src="{% static 'img/bootstrap-icons/robot.svg' %}" alt="{% translate 'automated action' %}" title="{% translate 'this image is part of family collection'|capfirst %} {{ family }} {% translate 'because a family member is tagged in this photo'|capfirst %}." data-bs-toggle="tooltip" data-bs-placement="right">
         {% endif %}
@@ -16,7 +16,7 @@
     <div class="col">
       {% if image.family|length > 0 %}
         <img src="{% static 'img/bootstrap-icons/person-square.svg' %}" alt="{% translate 'family' %}" title="{% translate 'image is part of family collection'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left" >
-        <a href="{% url 'archive:images' %}?family={{ image.family }}" title="{% translate 'Open family collection of' %} {{ image.family }}">{{ image.family }}</a>
+        <a href="{% url 'archive:images' %}?familycollection={{ image.family }}" title="{% translate 'Open family collection of' %} {{ image.family }}">{{ image.family }}</a>
       {% endif %}
     </div>
   </div>

@@ -13,11 +13,13 @@ from math import floor
 from archive.models import Image
 from archive.models import Group, Tag, Attachment, Person
 
+from cmnsd.views.cmnsd_filter import FilterMixin
+from cmnsd.views.utils__request import RequestMixin
 
 ''' Image List View 
     Show a list of images based on filters
 '''
-class ImageListView(ListView):
+class ImageListView(FilterMixin, RequestMixin, ListView):
   model = Image
   template_name = 'archive/images/list.html'
   context_object_name = 'images'
@@ -58,9 +60,17 @@ class ImageListView(ListView):
   def get_queryset(self):
     queryset = Image.objects.all()
     ''' Remove Deleted Images '''
-    queryset = queryset.exclude(is_deleted=True)
-    ''' Process Search Query '''
+    # queryset = queryset.filter(status='p')
+    ''' Use CMNSD Filter Mixin to filter '''
+    mapping = {
+      'tag': 'tag__slug',
+      'user': 'user__username',
+      'category': 'category__slug',
+    }
+    queryset = self.filter(queryset, mapping=mapping)
+    ''' Process Custom Query '''
     queryset = self.filter_objects(queryset)
+    
     queryset = queryset.distinct().order_by('-date_created')
     self.added_context['total_images'] = queryset.count()
     return queryset
@@ -84,43 +94,6 @@ class ImageListView(ListView):
   
   ''' Process Search and Visibility Filter to Queryset '''
   def filter_objects(self, queryset):
-    ''' Show images by a single user '''
-    if 'user' in self.kwargs:
-      queryset = queryset.filter(user_id__username=self.kwargs['user'])
-    ''' Show images with a tag '''
-    if 'tag' in self.kwargs:
-      queryset = queryset.filter(tag__slug=self.kwargs['tag'])
-    ''' Show images in a decade '''
-    if 'decade' in self.kwargs:
-      decade = floor(int(self.kwargs['decade']) / 10) * 10
-      queryset = queryset.filter(year__gte=decade).filter(year__lte=decade+9)
-    ''' Image search
-        Free text search in Image title, description, filename
-        Person names,
-        Tag title,
-        Attachment title
-    '''
-    if self.request.GET.get('search', False):
-      search_text = self.request.GET.get('search', '').lower()
-      queryset = queryset.filter(title__icontains=search_text) | \
-          queryset.filter(description__icontains=search_text) | \
-          queryset.filter(source__icontains=search_text) | \
-          queryset.filter(people__first_names__icontains=search_text) | \
-          queryset.filter(people__given_name__icontains=search_text) | \
-          queryset.filter(people__last_name__icontains=search_text) | \
-          queryset.filter(people__married_name__icontains=search_text) | \
-          queryset.filter(tag__name__icontains=search_text) | \
-          queryset.filter(attachments__file__icontains=search_text) | \
-          queryset.filter(attachments__description__icontains=search_text)
-    ''' If category filter is active '''
-    if self.request.GET.get('category', False):
-      queryset =  queryset.filter(category__slug__iexact=self.request.GET.get('category')) |\
-                  queryset.filter(category__parent__slug__iexact=self.request.GET.get('category'))
-    ''' If family search '''
-    if self.request.GET.get('family', False):
-      queryset = queryset.filter(people__last_name__icontains=self.request.GET.get('family','')) |\
-                 queryset.filter(people__married_name__icontains=self.request.GET.get('family', '')) |\
-                 queryset.filter(family__icontains=self.request.GET.get('family', ''))
     ''' Show or hide hidden images '''
     if self.show_hidden_files():
       ''' Show how many images can be hidden'''
