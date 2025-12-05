@@ -53,7 +53,6 @@
         <div class="col">
           {% for partner in person.partners %}
             {% include 'element/person_full_name.html' with person=partner %}
-            {% comment %} <a href="{% url 'archive:person' partner.id partner.slug %}">{{ partner.full_name }}</a> {% endcomment %}
             {% include 'element/reusable_delete_family_relation.html' with relation=partner person=person %}
             {% if not forloop.last %}<br> {% endif %}
           {% empty %}

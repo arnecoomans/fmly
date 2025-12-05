@@ -35,7 +35,7 @@
             title="{% translate 'edit'|capfirst %} {% translate field|capfirst %}"
             data-action
             data-method="GET"
-            data-url	="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' object_name object.id object.slug field %}"
+            data-url	="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' object_name object.id object.slug|default:object.token field %}"
             data-params	= "editable"
             data-map	= '{"{{ field }}":"#{{ field }}"}'
             data-focus="#related_person"

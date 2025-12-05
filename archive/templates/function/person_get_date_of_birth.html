@@ -1,0 +1,117 @@
+{% load static%}  
+<div class="flex-grow-1">    
+  <!-- Birth -->
+  {% if person.birth or ajax.editable %}
+    <div class="d-flex py-1">
+      <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'born'|capfirst %}:</div>
+      <div class="col">
+        {% if ajax.editable %}
+          <!-- Date --> 
+          <form id="date_of_birth_form">
+            <div class="input-group">
+              <span class="input-group-text">{% translate 'date'|capfirst %}:</span>
+              <input type="number" class="form-control" name="day" value="{{ person.birth.day }}" min="1" max="31">
+              <select class="form-select" name="month">
+                <option value="" {% if not person.birth.month %}selected{% endif %}>--</option>
+                {% for month in person.months %}
+                  <option value="{{ month.0 }}" {% if person.birth.month == month.0 %}selected{% endif %}>{{ month.1 }}</option>
+                {% endfor %}
+              </select>
+              <input type="number" class="form-control" name="year" value="{{ person.get_date_of_birth.year }}">
+            </div>
+          </form>
+          <!-- Location -->
+           <form
+            {% if person.birth.locations.all.count == 0 %}
+              data-action
+              data-method="POST"
+              data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.birth.id person.birth.token %}"
+              data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}"
+              data-refresh-params='{"editable":"{{ ajax.editable }}"}'
+              data-refresh-map='{"get_date_of_birth":"#date_of_birth"}'
+            {% endif%}
+           >
+            <div class="input-group">
+              <span class="input-group-text">{% translate 'place'|capfirst %}:</span>
+              {% if person.birth.locations.all.count > 0 %}
+                <span class="input-group-text">{{ person.birth.locations.first }}</span>
+                <button type="button" 
+                        class="btn btn-outline-danger remove-related-object"
+                        title="{% translate 'remove'|capfirst %} {% translate 'place'|capfirst %}"
+                        data-action
+                        data-method="POST"
+                        data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.birth.id person.birth.token %}"
+                        data-params='{"locations__id":"{{ person.birth.locations.first.id }}","locations__token":"{{ person.birth.locations.first.token }}"}'
+                        data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}"
+                        data-refresh-params='{"editable":"{{ ajax.editable }}"}'
+                        data-refresh-map='{"get_date_of_birth":"#date_of_birth"}'
+                        >
+                  <img src="{% static 'img/bootstrap-icons/x.svg' %}" alt="{% translate 'remove'|capfirst %}">
+                </button>
+              {% else %}
+                <input  type="text" 
+                        class="form-control" 
+                        placeholder="{% translate 'start typing to search for a place'|capfirst %}"
+                        data-autosuggest
+                        data-url="{% url 'cmnsd:dispatch' 'locations' %}?format=json"
+                        data-param="{{ search_query_character|default:'q' }}"
+                        data-field-input="name"
+                        data-field-hidden="slug"
+                        data-field-prefix="locations__"
+                        data-display-fields="name, description"
+                        data-container="location"
+                >
+                <button type="submit" 
+                        class="btn btn-outline-success add-related-object"
+                        title="{% translate 'add'|capfirst %} {% translate 'place'|capfirst %}"
+                        >
+                  <img src="{% static 'img/bootstrap-icons/plus.svg' %}" alt="{% translate 'add'|capfirst %}"> 
+                </button>
+              {% endif %}
+            </div>
+          </form>
+        {% else %}
+          {% if person.birth.weekday %}{% translate person.birth.weekday|default:""|capfirst %} {% endif %}
+          {{ person.birth.day|default:'' }} {% if person.birth.month %}{% translate person.birth.get_month_display|default:'' %} {% endif %}{{ person.birth.year|default:'?' }} 
+          {% if person.birth.locations.all.count > 0 %}{% translate 'in' %} {% for location in person.birth.locations.all %}{{ location.get_display_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
+        {% endif %}
+      </div>
+      <!-- RIGHT SECTION (icons spanning vertically) -->
+      <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+        {% if ajax.editable %}
+          <button class="btn btn-outline-success" 
+                          type="button" 
+                          title="{% translate 'save'|capfirst %} {% translate field|capfirst %}"
+                          data-action
+                          data-method="POST"
+                          data-body="#date_of_birth_form"
+                          data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.birth.id person.birth.token %}"
+                          data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}"
+                          data-refresh-map	= '{"get_date_of_birth":"#date_of_birth"}'
+                          >
+            <img src="{% static 'img/bootstrap-icons/floppy.svg' %}" alt="{% translate 'save'|capfirst %}">
+          </button>
+          <button type="button" 
+                  class="btn btn-outline-secondary show-autocomplete"
+                  title="{% translate 'stop editing'|capfirst %} {% translate field|capfirst %}"
+                  data-action
+                  data-method="GET"
+                  data-url	="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}"
+                  data-map	= '{"get_date_of_birth":"#date_of_birth"}'
+                  ><img src="{% static 'img/bootstrap-icons/x.svg' %}"></button>
+        {% elif not ajax.editable %}
+          <button type="button" 
+                class="btn btn-outline-secondary show-autocomplete"
+                title="{% translate 'edit'|capfirst %} {% translate field|capfirst %}"
+                data-action
+                data-method="GET"
+                data-url	="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}"
+                data-map	= '{"get_date_of_birth":"#date_of_birth"}'
+                data-params = '{"editable":"true"}'
+                data-focus="#related_person"
+                ><img src="{% static 'img/bootstrap-icons/pencil.svg' %}"></button>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>

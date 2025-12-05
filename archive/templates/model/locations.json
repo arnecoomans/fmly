@@ -1,0 +1,5 @@
+{
+  {% for location in locations %}
+  {% include 'model/location.json' with location=location %}{% if not forloop.last %},{% endif %}
+  {% endfor %}
+}

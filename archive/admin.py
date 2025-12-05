@@ -16,6 +16,55 @@ def softundelete(modeladmin, request, queryset):
   queryset.update(is_deleted=False)
   messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully marked items as') } { _('not deleted') }.")
 
+def get_location(name, request):
+  # Find location by full name
+  if Location.objects.filter(name__icontains=name).exists():
+    location = Location.objects.filter(name__icontains=name).first()
+    return location
+  else:
+    L = name.split(' ')[0].replace(',', '').strip()
+    # Try to find location by first word
+    try:
+      location = Location.objects.filter(name__icontains=L).first()
+      return location
+    except Location.DoesNotExist:
+      location = Location.objects.get_or_create(name=name, slug=slugify(name)[:64], user=request.user)[0]
+      return location
+@admin.action(description="migrate dates to events")
+def migrate_dates(modeladmin, request, queryset):
+  for person in queryset:
+    # Create a new event for date of birth
+    if person.year_of_birth:
+      event = Event.objects.get_or_create(
+        type = 'birth',
+        year = person.year_of_birth,
+        month = person.month_of_birth,
+        day = person.day_of_birth,
+        user = request.user,
+      )[0]
+      event.people.add(person)
+      if person.place_of_birth:
+        location = get_location(person.place_of_birth, request)
+        if location:
+          event.locations.add(location)
+      event.save()
+    # Create a new event for date of death
+    if person.year_of_death:
+      event = Event.objects.get_or_create(
+        type = 'death',
+        year = person.year_of_death,
+        month = person.month_of_death,
+        day = person.day_of_death,
+        user = request.user,
+      )[0]
+      event.people.add(person)
+      if person.place_of_death:
+        location = get_location(person.place_of_death, request)
+        if location:
+          event.locations.add(location)
+      event.save()
+  messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully migrated dates to events for selected people.') }")
+
 ''' Attachment Model Admin '''
 class AttachmentAdmin(admin.ModelAdmin):
   ''' Admin Tasks '''
@@ -131,7 +180,7 @@ class PersonAdmin(admin.ModelAdmin):
                          }
   list_filter = ['last_name', 'images']
   inlines = [FamilyRelationsInline,]
-  actions = [toggleGender, purge_given_name]
+  actions = [toggleGender, purge_given_name, migrate_dates]
 
   def get_changeform_initial_data(self, request):
     get_data = super(PersonAdmin, self).get_changeform_initial_data(request)
@@ -147,6 +196,19 @@ class CategoryAdmin(admin.ModelAdmin):
   prepopulated_fields = {'slug': ('name',)}
   list_display = ['name', 'parent', 'slug']
 
+class LocationAdmin(admin.ModelAdmin):
+  prepopulated_fields = {'slug': ('name',)}
+  list_display = ['name', 'parent', 'slug']
+
+class EventAdmin(admin.ModelAdmin):
+  list_display = ('display_str', 'type',)
+
+  def display_str(self, obj):
+    return str(obj)
+  
+  list_filter = ['type',]
+  search_fields = ['title', 'description']
+
 ''' Register Admin Models '''
 admin.site.register(Attachment, AttachmentAdmin)
 admin.site.register(Comment, CommentAdmin)
@@ -158,3 +220,5 @@ admin.site.register(Person, PersonAdmin)
 admin.site.register(Preference)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(Location, LocationAdmin)
+admin.site.register(Event, EventAdmin)

@@ -16,8 +16,6 @@ class ImageRedirectView(DetailView):
   def get(self, request, *args, **kwargs):
     ''' Fetch image to read title '''
     image = Image.objects.get(pk=self.kwargs['pk'])
-    ''' Get title or use default '''
-    title = 'needs a title' if image.title == '' else image.title
     ''' Redirect to proper view '''
     return redirect('archive:image', image.slug)
 

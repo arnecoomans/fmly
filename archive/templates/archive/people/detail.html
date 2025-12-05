@@ -21,6 +21,20 @@
           </ul>
         {% endif %}
       </header>
+      {% if user.is_staff %}
+        <div class="prev_next d-flex justify-content-between mb-3">
+          <div class="prev">
+            {% if person.previous_person %}
+              <a href="{% url 'archive:person' person.previous_person.id person.previous_person.slug %}">&laquo; {{ person.previous_person.full_name }}</a>
+            {% endif %}
+          </div>
+          <div class="next">
+            {% if person.next_person %}
+              <a href="{% url 'archive:person' person.next_person.id person.next_person.slug %}">{{ person.next_person.full_name }} &raquo;</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
       <div class="container person-profile py-3">
         <div class="row align-items-start">
           <!-- IMAGE COLUMN -->
@@ -42,6 +56,10 @@
             <div id="family">
               {% include 'function/person_family.html' with person=person %}
             </div>
+            {% comment %} <div class="events">
+              {% include 'field/person_events.html' with person=person %}
+            </div> {% endcomment %}
+            
             {% if not person.private %}
             <div id="family-tree">
               <div class="d-flex">

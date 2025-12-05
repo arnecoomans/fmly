@@ -1,0 +1,20 @@
+{% load static %}
+<!-- {{ event.year}} - {{ event.type }} -->
+  <div class="timeline-item {{ event.type }}">
+    <div class="timeline-marker"></div>
+    <div class="timeline-content">
+      <span class="timeline-date">
+        {% if event.weekday %}{% translate event.weekday|default:""|capfirst %} {% endif %}
+        {{ event.day|default:'' }} {% if event.month %}{% translate event.get_month_display|default:'' %} {% endif %}{{ event.year|default:'?' }} 
+        {% if event.get_date|calc_age:person.get_date_of_birth %}<span class="text-muted">({{ event.get_date|calc_age:person.get_date_of_birth }})</span>{% endif %}
+      </span>
+      <span class="timeline-location">{% if event.locations.all.count > 0 %}{% translate 'in' %} {% for location in event.locations.all %}{{ location.get_display_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}</span>
+      {% if event.type.slug != 'other' %}<div class="timeline-header">
+        {{ event.type|capfirst }}
+        {% if event.people.count == 1 %} {% translate 'of' %} <a href="{% url 'archive:person' event.people.first.id event.people.first.slug %}">{{ event.people.first.short_name }}</a>{% endif %}
+        {% if event.people.all.count > 1 %} {% translate 'with' %} {% for p in event.people.all|without:person %}<a href="{% url 'archive:person' p.id p.slug %}">{{ p.short_name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
+      </div>{% endif %}
+      <div class="timeline-title">{% if event.title %}{{ event.title }}</br>{% endif %}</div>
+      <div class="timeline-description">{{ event.description|linebreaks }}</div>
+    </div>
+  </div>
