@@ -1,0 +1,68 @@
+.timeline {
+  position: relative;
+  margin-left: 40px;
+  padding-left: 20px;
+}
+
+.timeline:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 6px;
+  width: 2px;
+  background: #ddd;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.timeline-marker {
+  width: 12px;
+  height: 12px;
+  background: #007bff;
+  border-radius: 50%;
+  position: absolute;
+  left: -1px;
+  top: 5px;
+}
+
+.global-marker {
+  background: #b30000;
+}
+
+.death-marker {
+  background: #333;
+}
+
+.timeline-content {
+  margin-left: 25px;
+}
+
+.timeline-date {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.timeline-location,
+.timeline-age,
+.timeline-person,
+.timeline-note {
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+
+.timeline-note {
+  font-style: italic;
+  color: #444;
+}
+
+.timeline-year-separator {
+  font-weight: bold;
+  margin: 20px 0 10px 0;
+  padding-left: 25px;
+  color: #444;
+  font-size: 1.1rem;
+}

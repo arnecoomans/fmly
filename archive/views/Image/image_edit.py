@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.template.defaultfilters import slugify
 from django.conf import settings
-from django.contrib.auth.mixins import PermissionRequiredMixin
+# from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
 from django.utils.translation import gettext as _
 
@@ -186,9 +186,6 @@ class EditImageMaster:
     action = 'stored' if image[1] else 'updated'
     image = image[0]
     ''' Process additional fields that require an object to be saved first '''
-    print(form)
-    print("form['category']", form['category'])
-    print("Category.objects.get(id=form['category'])", Category.objects.get(id=form['category']) if form['category'] else None)
     image.category = Category.objects.get(id=form['category']) if form['category'] else None
     image.people.set(form['people'])
     image.tag.set(form['tag'])

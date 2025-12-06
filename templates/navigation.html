@@ -114,7 +114,7 @@
         {% endwith %}
           <input class="form-control me-2" 
                  type="search" placeholder="{% translate 'Search' %}"
-                 aria-label="Search" name="search" 
+                 aria-label="Search" name="{{ search_query_character|default:'search'}}" 
                  {% if request.GET.search %}value="{{ request.GET.search }}"{% endif %}>
           <button class="btn btn-outline-success {% if not active_page %}disabled{% endif %}" type="submit" {% if not active_page %}disabled{% endif %}>{% translate 'Search' %}</button>
         </form>

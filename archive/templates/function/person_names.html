@@ -65,7 +65,7 @@
                   >
           {% else %}
             {% if person.married_name %} 
-              <a href="{% url 'archive:people' %}?{% if person.married_name in person.familycollection %}familycollection{% else %}last_names{% endif %}={{ person.married_name }}">{{ person.married_name }}</a> <span class="text-muted">({% translate 'born' %}: <a href="{% url 'archive:people' %}?{% if person.last_name in person.familycollection %}familycollection{% else %}last_names{% endif %}={{ person.last_name }}">{{ person.last_name }}</a>)</span>
+              <a href="{% url 'archive:people' %}?{% if person.married_name in person.familycollection %}familycollection{% else %}last_names{% endif %}={{ person.married_name }}">{{ person.married_name }}</a> <span class="text-muted">({% translate 'born' %}: {% if person.last_name %}<a href="{% url 'archive:people' %}?{% if person.last_name in person.familycollection %}familycollection{% else %}last_names{% endif %}={{ person.last_name }}">{% endif %}{{ person.last_name|default:"unknown" }}{% if person.last_name %}</a>{% endif %})</span>
             {% else %}
               <a href="{% url 'archive:people' %}?{% if person.last_name in person.familycollection %}familycollection{% else %}last_names{% endif %}={{ person.last_name }}">{{ person.last_name }}</a>
             {% endif %}

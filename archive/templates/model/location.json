@@ -1,0 +1,13 @@
+"{{ location.id }}": {
+  "slug": "{{ location.slug }}",
+  "name": "{% if location.name %}{{ location.get_display_name|highlight:query|escapejs }}{% endif %}",
+  "description": "{% if location.description %}{{ location.description|highlight:query|escapejs }}{% endif %}",
+  "parent": {% if location.parent %}"{{ location.parent.id }}"{% else %}null{% endif %},
+  "alternatives": {
+    {% for alternative in location.get_alternatives.all %}
+    "{{ alternative.id }}": "{{ alternative.name }}"{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  },
+  "coord_lat": {% if location.coord_lat %}{{ location.coord_lat }}{% else %}null{% endif %},
+  "coord_lon": {% if location.coord_lon %}{{ location.coord_lon }}{% else %}null{% endif %}
+}

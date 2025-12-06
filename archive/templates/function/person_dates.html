@@ -1,109 +1,65 @@
-{% if ajax.editable and perms.archive.change_person %}
-  <form
-    data-action
-    data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'dates' %}"
-    data-method="post"
-    data-body="form"
-    data-map='{"dates":"#dates"}'
-    >
-{% endif %}
+{% load static %}
 <div class="d-flex">
-  <!-- LEFT SECTION (labels + values stacked) -->
-  <div class="flex-grow-1">
-    <!-- Empty -->
-     {% if not person.has_dates and not ajax.editable %}
+  <div class="flex-grow-1"> 
+    <!-- No dates available -->
+     {% if not person.birth and not person.death and not ajax.editable %}
       <div class="d-flex py-1">
         <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'life'|capfirst %}:</div>
         <div class="col">
           <div class="text-muted">{% translate 'no birth or death information available'|capfirst %}</div>
         </div>
       </div>
-     {% endif %}
+    {% endif %}
     <!-- Birth -->
-    {% if person.year_of_birth or person.month_of_birth or person_day_of_birth or person.place_of_birth  or ajax.editable%}
-      <div class="d-flex py-1">
-        <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'born'|capfirst %}:</div>
-        <div class="col">
-          {% if ajax.editable and perms.archive.change_person %}
-          <div class="input-group">
-            <span class="input-group-text">{% translate 'day'|capfirst %}:</span>
-            <input type="number" class="form-control" name="day_of_birth" value="{{ person.day_of_birth }}" min="1" max="31">
-            <span class="input-group-text">{% translate 'month'|capfirst %}:</span>
-            <select class="form-select" name="month_of_birth">
-              <option value="" {% if not person.month_of_birth %}selected{% endif %}>--</option>
-              {% for month in person.months %}
-                <option value="{{ month.0 }}" {% if person.month_of_birth == month.0 %}selected{% endif %}>{{ month.1 }}</option>
-              {% endfor %}
-            </select>
-            <span class="input-group-text">{% translate 'year'|capfirst %}:</span>
-            <input type="number" class="form-control" name="year_of_birth" value="{{ person.year_of_birth }}">
-          </div>
-          <div class="input-group mt-2">
-            <span class="input-group-text">{% translate 'place'|capfirst %}:</span>
-            <input  type="text" 
-                    class="form-control" 
-                    name="place_of_birth" 
-                    value="{{ person.place_of_birth }}"
-                    data-autosuggest
-                    {% comment %} data-url="{% url 'cmnsd:dispatch' 'person'%}" {% endcomment %}
-                    data-local-source = '[{% for place in person.all_places %}{"place_of_birth":"{{ place }}"}{% if not forloop.last %}, {% endif %}{% endfor %}]'
-                    data-field-input="place_of_birth"
-                    {% comment %} data-extra-params='{"format":"json"}'
-                    data-container="person"
-                    data-field-input="place_of_birth"
-                    data-force-unique="place_of_birth"
-                    data-field-prefix="tags__">  {% endcomment %}
-            >
-          </div>
-          {% else %}
-            {{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}
-          {% endif %}
-        </div>
-      </div>
-    {% endif %}
+    <div id="date_of_birth">
+      {% include 'function/person_get_date_of_birth.html' %}
+    </div>
     <!-- Death -->
-    {% if person.year_of_death or person.month_of_death or person_day_of_death or moment_of_death_unconfirmed or person.place_of_death or ajax.editable %}
-      <div class="d-flex border-bottom py-1">
-        <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'died'|capfirst %}:</div>
-        <div class="col">
-          {% if ajax.editable and perms.archive.change_person %}
-          <div class="input-group">
-            <span class="input-group-text">{% translate 'day'|capfirst %}:</span>
-            <input type="number" class="form-control" name="day_of_death" value="{{ person.day_of_death }}" min="1" max="31">
-            <span class="input-group-text">{% translate 'month'|capfirst %}:</span>
-            <select class="form-select" name="month_of_death">
-              <option value="" {% if not person.month_of_death %}selected{% endif %}>--</option>
-              {% for month in person.months %}
-                <option value="{{ month.0 }}" {% if person.month_of_death == month.0 %}selected{% endif %}>{{ month.1 }}</option>
-              {% endfor %}
-            </select>
-            <span class="input-group-text">{% translate 'year'|capfirst %}:</span>
-            <input type="number" class="form-control" name="year_of_death" value="{{ person.year_of_death }}">
-          </div>
-          <div class="input-group mt-2">
-            <span class="input-group-text">{% translate 'place'|capfirst %}:</span>
-            <input  type="text" 
-                    class="form-control" 
-                    name="place_of_death" 
-                    value="{{ person.place_of_death }}"
-                    data-autosuggest
-                    data-local-source = '[{% for place in person.all_places %}{"place_of_death":"{{ place }}"}{% if not forloop.last %}, {% endif %}{% endfor %}]'
-                    data-field-input="place_of_death"
-            >
-          </div>
-          {% else %}
-            {{ person.day_of_death|default:'?' }}-{{ person.month_of_death|default:'?' }}-{{ person.year_of_death|default:'?' }} {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}{% if person.ageatdeath %} ({{ person.ageatdeath }}){% endif %}
-          {% endif %}
-        </div>
-      </div>
-    {% endif %}
+    <div id="date_of_death">
+      {% include 'function/person_get_date_of_death.html' %}
+    </div>
   </div>
-
-  <!-- RIGHT SECTION (icons spanning vertically) -->
   <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
-    {% include 'element/reusable_edit_column.html' with object_name='person' object=person field='dates' %}
-  </div>
+      {% include 'element/reusable_edit_column.html' with object_name='person' object=person field='dates' no_save='true'%}
+    </div>
 </div>
-{% if ajax.editable and perms.archive.change_person%}
-  </form>
+
+
+
+
+
+
+{% if user.is_staff %}
+  <div class="d-flex">
+    <!-- LEFT SECTION (labels + values stacked) -->
+    <div class="flex-grow-1">
+      <!-- Legacy Birth -->
+      {% if person.year_of_birth or person.month_of_birth or person_day_of_birth or person.place_of_birth  or ajax.editable%}
+        <div class="d-flex py-1">
+          <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'born'|capfirst %} (old):</div>
+          <div class="col">
+            
+              {{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}
+            
+          </div>
+        </div>
+      {% endif %}
+      <!-- Death -->
+      {% if person.year_of_death or person.month_of_death or person_day_of_death or moment_of_death_unconfirmed or person.place_of_death or ajax.editable %}
+        <div class="d-flex border-bottom py-1">
+          <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'died'|capfirst %} (old):</div>
+          <div class="col">
+            
+              {{ person.day_of_death|default:'?' }}-{{ person.month_of_death|default:'?' }}-{{ person.year_of_death|default:'?' }} {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}{% if person.ageatdeath %} ({{ person.ageatdeath }}){% endif %}
+            
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- RIGHT SECTION (icons spanning vertically) -->
+    <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+      
+    </div>
+  </div>
 {% endif %}

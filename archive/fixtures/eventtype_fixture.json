@@ -1,0 +1,257 @@
+[
+  {
+    "model": "archive.EventType",
+      "pk": 1,
+      "fields": {
+        "name": "birth",
+        "slug": "birth",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "importance": 2
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 2,
+      "fields": {
+        "name": "marriage",
+        "slug": "marriage",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "importance": 2
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 3,
+      "fields": {
+        "name": "death",
+        "slug": "death",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "importance": 2
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 4,
+      "fields": {
+        "name": "photo",
+        "slug": "photo",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "importance": 0
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 5,
+      "fields": {
+        "name": "document",
+        "slug": "document",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "importance": 0
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 6,
+      "fields": {
+        "name": "other",
+        "slug": "other",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "importance": 0
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 7,
+      "fields": {
+        "name": "migration",
+        "slug": "migration",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "importance": 1
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 8,
+      "fields": {
+        "name": "graduation",
+        "slug": "graduation",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "importance": 1
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 9,
+      "fields": {
+        "name": "employment",
+        "slug": "employment",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "importance": 1
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 10,
+      "fields": {
+        "name": "divorce",
+        "slug": "divorce",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "importance": 1
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 11,
+      "fields": {
+        "name": "engagement",
+        "slug": "engagement",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "importance": 1
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 12,
+      "fields": {
+        "name": "war",
+        "slug": "war",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "is_global": true,
+        "importance": 2
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 13,
+      "fields": {
+        "name": "political",
+        "slug": "political",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "is_global": true,
+        "importance": 1
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 14,
+      "fields": {
+        "name": "natural_disaster",
+        "slug": "natural-disaster",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "is_global": true,
+        "importance": 0
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 15,
+      "fields": {
+        "name": "colonial",
+        "slug": "colonial",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "is_global": true,
+        "importance": 0
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 16,
+      "fields": {
+        "name": "cultural",
+        "slug": "cultural",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "is_global": true,
+        "importance": 0
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 17,
+      "fields": {
+        "name": "technological",
+        "slug": "technological",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "is_global": true,
+        "importance": 1
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 18,
+      "fields": {
+        "name": "economic",
+        "slug": "economic",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "is_global": true,
+        "importance": 9
+      }
+  },
+  {
+    "model": "archive.EventType",
+      "pk": 19,
+      "fields": {
+        "name": "major political event",
+        "slug": "major-political-event",
+        "description": "",
+        "date_created": "2025-06-10T12:00:00Z",
+        "date_modified": "2025-06-10T12:00:00Z",
+        "user": 1,
+        "is_global": true,
+        "importance": 1
+      }
+  }
+] 

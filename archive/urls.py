@@ -13,7 +13,7 @@ urlpatterns = [
   path('object/<int:pk>/edit/', views.EditImageView.as_view(), name='image-edit'),
   path('object/new/', views.AddImageView.as_view(), name='add-image'),
   path('object/<str:slug>/', views.ImageView.as_view(), name='image'),
-  path('object/<str:slug>/love/', views.ToggleFavoriteImage.as_view(), name='love-image'),
+  # path('object/<str:slug>/love/', views.ToggleFavoriteImage.as_view(), name='love-image'),
   path('object/<int:pk>:<str:slug>/regeneratethumbnail/', views.RegenerateThumbnailView.as_view(), name='regenerate-thumbnail'),
   # Special Image views
   path('objects/<int:decade>/', views.ImageListView.as_view(), {'columns': ('decade')}, name='images-by-decade'),
@@ -30,7 +30,7 @@ urlpatterns = [
   path('person/new/', views.AddPersonView.as_view(), name='add-person'),
   path('person/add/', views.AddPerson.as_view(), name='new-add-person'),
   # Portrait
-  path('person/<int:subject>/portrait:<int:removed_image>/delete/', views.RemovePortraitView.as_view(), name='remove-portrait'),
+  # path('person/<int:subject>/portrait:<int:removed_image>/delete/', views.RemovePortraitView.as_view(), name='remove-portrait'),
   # Relationships
   path('person/<int:subject>/<str:type>:<int:removed_person>/delete/', views.PersonRemoveRelationView.as_view(), {'columns': ('up', 'relation', 'down')}, name='remove-relationship'),
   path('person/add-relation/', views.PersonAddRelationView.as_view(), name='add-relationship'),
@@ -62,6 +62,9 @@ urlpatterns = [
   path('attachment/<str:slug>/edit/', views.AttachmentEditView.as_view(), name='edit-attachment'),
   path('attachment/<str:slug>/create-image/', views.CreateImageFromAttachmentView.as_view(), name='create-image-from-attachment'),
   path('attachment/<str:slug>/', views.AttachmentStreamView.as_view(), name='attachment'),
+  
+  # Locations
+  path('locations/', views.LocationListView.as_view(), name='locations'),
   
   # Accounts
   path('settings/', views.PreferencesView.as_view(), name='settings'),

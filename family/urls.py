@@ -7,7 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-  path('pick/', include('datepicker.urls')),
+  # path('pick/', include('datepicker.urls')),
   path('', include('archive.urls')),
   path('ajax/', include('cmnsd.urls')),
   path('admin/', admin.site.urls),

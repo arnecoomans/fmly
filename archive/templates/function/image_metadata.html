@@ -7,7 +7,7 @@
   <div class="flex-grow-1">
     <!-- Love -->
     <div id="love">
-      {% include 'field/image_love.html' with image=image metadata=metadata ajax=ajax %}
+      {% include 'field/image/love.html' with image=image metadata=metadata ajax=ajax %}
     </div>
     <!-- Stored Image Dimensions-->
     {% if metadata.dimensions.width or metadata.dimensions.height or ajax.editable %}
@@ -28,19 +28,19 @@
     {% endif %}
     <!-- Visibility -->
     <div id="visibility_frontpage">
-      {% include 'field/image_visibility_frontpage.html' with image=image ajax=ajax %}
+      {% include 'field/image/visibility_frontpage.html' with image=image ajax=ajax %}
     </div>
     <div id="visibility_person_page">
-      {% include 'field/image_visibility_person_page.html' with image=image ajax=ajax %}
+      {% include 'field/image/visibility_person_page.html' with image=image ajax=ajax %}
     </div>
     <!-- Attachments -->
      <div id="attachments">
-      {% include 'field/image_attachments.html' with image=image metadata=metadata ajax=ajax %}
+      {% include 'field/image/attachments.html' with image=image metadata=metadata ajax=ajax %}
     </div>
     
     <!-- Uploaded By User -->
     <div id="user">
-      {% include 'field/image_user.html' with image=image metadata=metadata ajax=ajax %}
+      {% include 'field/image/user.html' with image=image metadata=metadata ajax=ajax %}
     </div>
   </div>
   <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">

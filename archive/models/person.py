@@ -1,4 +1,7 @@
+import datetime
 from django.db import models
+from django.db.models import F
+from django.db.models.functions import Coalesce
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.conf import settings
@@ -6,6 +9,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse_lazy, reverse
 from math import floor
 from django.utils.translation import gettext_lazy as _
+
+from .Event import Event
 
 from cmnsd.models.cmnsd_basemodel import BaseModel, VisibilityModel
 from cmnsd.models.cmnsd_basemethod import ajax_function, searchable_function
@@ -120,7 +125,12 @@ class Person(BaseModel):
       else:
         value += f" { self.last_name }"
       return value.strip()
-    
+  
+  def short_name(self):
+    if self.given_name:
+      return f"{ self.given_name } { self.last_name }"
+    return f"{ self.first_names.split(' ')[0] } { self.last_name }"
+  
   @searchable_function
   def century(self):
     if self.year_of_birth:
@@ -148,6 +158,61 @@ class Person(BaseModel):
         if name not in families:
           families.append(name)
     return families
+  
+  
+  ## Life Events
+  def get_major_events(self):
+    events = (
+      self.events
+      .annotate(
+        effective_importance_db=Coalesce('importance', F('type__importance'))
+      )
+      .filter(effective_importance_db__gte=1)
+    )
+    return events.order_by('year', 'month', 'day').distinct()
+  
+  def get_all_events(self):
+    events = self.events.all()
+    print("Starting events", events)
+    for parent in self.get_parents() or []:
+      events = events | parent.events.filter(type__slug='birth') | parent.events.filter(type__slug='death')
+      print(events)
+    for partner in self.get_partners() or []:
+      events = events | partner.events.filter(type__slug='death')
+    for child in self.get_children() or []:
+      events = events | child.events.filter(type__slug='birth') | child.events.filter(type__slug='death')
+    events = events |Event.objects.filter(type__is_global=True)
+    events = events.filter(year__gte=self.year_of_birth or 0, year__lte=self.year_of_death or datetime.datetime.now().year+1)
+    return events.order_by('year', 'month', 'day').distinct()
+  
+  @ajax_function
+  def get_date_of_birth(self):
+    if self.events.filter(type='birth').exists():
+      event = self.events.filter(type='birth').first()
+      if not event.year:
+        return None
+      return datetime.date(year=event.year, month=event.month or 1, day=event.day or 1)
+  
+  @ajax_function
+  def get_date_of_death(self):
+    if self.events.filter(type='death').exists():
+      event = self.events.filter(type='death').first()
+      if not event.year:
+        return None
+      return datetime.date(year=event.year, month=event.month or 1, day=event.day or 1)
+  
+  def birth(self):
+    return self.events.filter(type='birth').first()
+  def death(self):
+    return self.events.filter(type='death').first()
+  
+  @ajax_function
+  def event(self, event__id, event__token):
+    try:
+      event = self.events.filter(id=event__id, token=event__token).first()
+      return event
+    except:
+      return 'FOO'
     
   def get_lifespan(self):
     lifespan = ''
@@ -341,6 +406,17 @@ class Person(BaseModel):
   def get_family_relations(self):
     return ['parent', 'child', 'partner', 'sibling']
   
+  def previous_person(self):
+    try:
+      return Person.objects.filter(id__lt=self.id).order_by('-id').first()
+    except Person.DoesNotExist:
+      return None
+  def next_person(self):
+    try:
+      return Person.objects.filter(id__gt=self.id).order_by('id').first()
+    except Person.DoesNotExist:
+      return None
+    
   
   ''' Absolute URL
       should return URL with both name and slug

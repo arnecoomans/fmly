@@ -5,3 +5,5 @@ from .comment import *
 from .note import *
 from .preference import *
 from .Category import *
+from .Location import *
+from .Event import *

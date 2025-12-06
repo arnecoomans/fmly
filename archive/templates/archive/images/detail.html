@@ -9,10 +9,10 @@
   {% else %}
     <section class="cmnsd-supported object">
       <header>
-        <h2 id="title">{% include 'field/image_title.html' %}</h2>
+        <h2 id="title">{% include 'field/image/title.html' %}</h2>
         <!-- ACTION LIST -->
         <div id="actionlist">
-          {% include 'field/image_actionlist.html' %}
+          {% include 'field/image/actionlist.html' %}
         </div>
       </header>
 
@@ -41,11 +41,11 @@
             </div>
             <!-- PEOPLE -->
             <div id="people">
-              {% include 'field/image_people.html' with people=image.people %}
+              {% include 'field/image/people.html' with people=image.people %}
             </div>
             <!-- COMMENTS -->
             <div id="comments">
-              {% include 'field/image_comments.html' with comments=image.comments %}
+              {% include 'field/image/comments.html' with comments=image.comments %}
             </div>
 
             <!-- METADATA -->
