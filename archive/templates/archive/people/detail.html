@@ -39,13 +39,13 @@
         <div class="row align-items-start">
           <!-- IMAGE COLUMN -->
           <div class="col-md-4 text-center mb-3 mb-md-0" id="portrait">
-            {% include 'field/person_portrait.html' with person=person %}
+            {% include 'field/person/portrait.html' with person=person %}
           </div>
 
           <!-- CONTENT COLUMN -->
           <div class="col-md-8">
             <div id="bio">
-              {% include 'field/person_bio.html' with person=person %}
+              {% include 'field/person/bio.html' with person=person %}
             </div>
             <div id="names">
               {% include 'function/person_names.html' with person=person %}
@@ -57,7 +57,7 @@
               {% include 'function/person_family.html' with person=person %}
             </div>
             {% comment %} <div class="events">
-              {% include 'field/person_events.html' with person=person %}
+              {% include 'field/person/events.html' with person=person %}
             </div> {% endcomment %}
             
             {% if not person.private %}

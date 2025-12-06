@@ -189,12 +189,16 @@ class Person(BaseModel):
   def get_date_of_birth(self):
     if self.events.filter(type='birth').exists():
       event = self.events.filter(type='birth').first()
+      if not event.year:
+        return None
       return datetime.date(year=event.year, month=event.month or 1, day=event.day or 1)
   
   @ajax_function
   def get_date_of_death(self):
     if self.events.filter(type='death').exists():
       event = self.events.filter(type='death').first()
+      if not event.year:
+        return None
       return datetime.date(year=event.year, month=event.month or 1, day=event.day or 1)
   
   def birth(self):

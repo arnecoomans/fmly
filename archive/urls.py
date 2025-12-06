@@ -63,6 +63,9 @@ urlpatterns = [
   path('attachment/<str:slug>/create-image/', views.CreateImageFromAttachmentView.as_view(), name='create-image-from-attachment'),
   path('attachment/<str:slug>/', views.AttachmentStreamView.as_view(), name='attachment'),
   
+  # Locations
+  path('locations/', views.LocationListView.as_view(), name='locations'),
+  
   # Accounts
   path('settings/', views.PreferencesView.as_view(), name='settings'),
   path("sign-up/", views.SignUpView.as_view(), name='signup'),

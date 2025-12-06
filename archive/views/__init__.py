@@ -11,3 +11,4 @@ from .usermanagement import *
 from .tree import *
 from .aComment import *
 from .People import *
+from .Locations import *

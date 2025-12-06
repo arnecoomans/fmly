@@ -36,6 +36,8 @@ class Event(BaseModel):
 
   year = models.PositiveIntegerField(
     validators=[MinValueValidator(1), MaxValueValidator(9999)],
+    blank=True,
+    null=True,
     verbose_name=_('year'),
   )
   month = models.PositiveIntegerField(
@@ -59,7 +61,7 @@ class Event(BaseModel):
     ordering = ['-year', '-month', '-day', 'title', 'type']
   
   def __str__(self):
-    return self.get_title()
+    return f"{ self.type} - { self.title }"
   
   def get_title(self):
     title = []
@@ -82,7 +84,7 @@ class Event(BaseModel):
     if self.title:
       title.append(f": { self.title }")
     return " ".join(title)
-    
+  
   @property
   def months(self):
     return MONTHS
@@ -93,3 +95,6 @@ class Event(BaseModel):
       return None
     date = datetime.date(year=self.year, month=self.month, day=self.day)
     return date.strftime('%A')
+
+  def date(self):
+    return datetime.date(year=self.year, month=self.month or 1, day=self.day or 1)

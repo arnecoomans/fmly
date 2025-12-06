@@ -29,3 +29,10 @@ class Location(BaseModel, BaseIcon):
   def get_alternatives(self):
     alternatives = self.alternatives.all() | self.alternative_to.all()
     return alternatives.distinct()
+  
+  def get_event_people(self):
+    people = set()
+    for event in self.events.all():
+      for person in event.people.all():
+        people.add(person)
+    return people

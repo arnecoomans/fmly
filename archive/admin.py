@@ -201,13 +201,14 @@ class LocationAdmin(admin.ModelAdmin):
   list_display = ['name', 'parent', 'slug']
 
 class EventAdmin(admin.ModelAdmin):
-  list_display = ('display_str', 'type',)
+  list_display = ('id','display_str', 'type',)
 
   def display_str(self, obj):
     return str(obj)
   
   list_filter = ['type',]
   search_fields = ['title', 'description']
+  sortable_by = ['id', 'type', 'year']
 
 ''' Register Admin Models '''
 admin.site.register(Attachment, AttachmentAdmin)

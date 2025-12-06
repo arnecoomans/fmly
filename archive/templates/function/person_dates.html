@@ -1,21 +1,33 @@
 {% load static %}
-{% if not person.get_date_of_birth and not person.get_date_of_death and not ajax.editable %}
-  <div class="flex-grow-1">    
-    <!-- Empty -->  
-    <div class="d-flex py-1">
-      <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'life'|capfirst %}:</div>
-      <div class="col">
-        <div class="text-muted">{% translate 'no birth or death information available'|capfirst %}</div>
+<div class="d-flex">
+  <div class="flex-grow-1"> 
+    <!-- No dates available -->
+     {% if not person.birth and not person.death and not ajax.editable %}
+      <div class="d-flex py-1">
+        <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'life'|capfirst %}:</div>
+        <div class="col">
+          <div class="text-muted">{% translate 'no birth or death information available'|capfirst %}</div>
+        </div>
       </div>
+    {% endif %}
+    <!-- Birth -->
+    <div id="date_of_birth">
+      {% include 'function/person_get_date_of_birth.html' %}
+    </div>
+    <!-- Death -->
+    <div id="date_of_death">
+      {% include 'function/person_get_date_of_death.html' %}
     </div>
   </div>
-{% endif %}
-<div class="d-flex" id="date_of_birth">
-  {% include 'function/person_get_date_of_birth.html' %}
+  <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
+      {% include 'element/reusable_edit_column.html' with object_name='person' object=person field='dates' no_save='true'%}
+    </div>
 </div>
-<div class="d-flex mt-3" id="date_of_death">
-  {% include 'function/person_get_date_of_death.html' %}
-</div>
+
+
+
+
+
 
 {% if user.is_staff %}
   <div class="d-flex">
@@ -26,33 +38,9 @@
         <div class="d-flex py-1">
           <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'born'|capfirst %} (old):</div>
           <div class="col">
-            {% if ajax.editable and perms.archive.change_person %}
-              <form>
-                <div class="input-group">
-                  <span class="input-group-text">{% translate 'day'|capfirst %}:</span>
-                  <input type="number" class="form-control" name="day_of_birth" value="{{ person.day_of_birth }}" min="1" max="31">
-                  <span class="input-group-text">{% translate 'month'|capfirst %}:</span>
-                  <select class="form-select" name="month_of_birth">
-                    <option value="" {% if not person.month_of_birth %}selected{% endif %}>--</option>
-                    {% for month in person.months %}
-                      <option value="{{ month.0 }}" {% if person.month_of_birth == month.0 %}selected{% endif %}>{{ month.1 }}</option>
-                    {% endfor %}
-                  </select>
-                  <span class="input-group-text">{% translate 'year'|capfirst %}:</span>
-                  <input type="number" class="form-control" name="year_of_birth" value="{{ person.year_of_birth }}">
-                </div>
-                <div class="input-group mt-2">
-                  <span class="input-group-text">{% translate 'place'|capfirst %}:</span>
-                  <input  type="text" 
-                          class="form-control" 
-                          name="place_of_birth" 
-                          value="{{ person.place_of_birth }}"
-                  >
-                </div>
-              </form>
-            {% else %}
+            
               {{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}
-            {% endif %}
+            
           </div>
         </div>
       {% endif %}
@@ -61,31 +49,9 @@
         <div class="d-flex border-bottom py-1">
           <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'died'|capfirst %} (old):</div>
           <div class="col">
-            {% if ajax.editable and perms.archive.change_person %}
-            <div class="input-group">
-              <span class="input-group-text">{% translate 'day'|capfirst %}:</span>
-              <input type="number" class="form-control" name="day_of_death" value="{{ person.day_of_death }}" min="1" max="31">
-              <span class="input-group-text">{% translate 'month'|capfirst %}:</span>
-              <select class="form-select" name="month_of_death">
-                <option value="" {% if not person.month_of_death %}selected{% endif %}>--</option>
-                {% for month in person.months %}
-                  <option value="{{ month.0 }}" {% if person.month_of_death == month.0 %}selected{% endif %}>{{ month.1 }}</option>
-                {% endfor %}
-              </select>
-              <span class="input-group-text">{% translate 'year'|capfirst %}:</span>
-              <input type="number" class="form-control" name="year_of_death" value="{{ person.year_of_death }}">
-            </div>
-            <div class="input-group mt-2">
-              <span class="input-group-text">{% translate 'place'|capfirst %}:</span>
-              <input  type="text" 
-                      class="form-control" 
-                      name="place_of_death" 
-                      value="{{ person.place_of_death }}"
-              >
-            </div>
-            {% else %}
+            
               {{ person.day_of_death|default:'?' }}-{{ person.month_of_death|default:'?' }}-{{ person.year_of_death|default:'?' }} {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}{% if person.ageatdeath %} ({{ person.ageatdeath }}){% endif %}
-            {% endif %}
+            
           </div>
         </div>
       {% endif %}
