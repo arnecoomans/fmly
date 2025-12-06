@@ -7,19 +7,19 @@
   <div class="flex-grow-1">
     <!-- Category -->
       <div id="category">
-        {% include 'field/image_category.html' %}
+        {% include 'field/image/category.html' %}
       </div>
     <!-- Tags -->
       <div id="tag">
-        {% include 'field/image_tag.html' with tag=classification.tag %}
+        {% include 'field/image/tag.html' with tag=classification.tag %}
       </div>
     <!-- Groups -->
       <div id="in_group">
-        {% include 'field/image_in_group.html' with groups=classification.groups grouped_items=classification.grouped_items %}
+        {% include 'field/image/in_group.html' with groups=classification.groups grouped_items=classification.grouped_items %}
       </div>
     <!-- Family Collection -->
     <div id="family">
-      {% include 'field/image_family.html' with classification=classification %}
+      {% include 'field/image/family.html' with classification=classification %}
     </div>
     <div class="spacer border-bottom my-2"></div>
   </div>
