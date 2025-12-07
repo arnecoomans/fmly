@@ -61,7 +61,10 @@ class Event(BaseModel):
     ordering = ['-year', '-month', '-day', 'title', 'type']
   
   def __str__(self):
-    return f"{ self.type} - { self.title }"
+    try:
+      return self.get_title()
+    except:
+      return f"{ self.type} - { self.title }"
   
   def get_title(self):
     title = []

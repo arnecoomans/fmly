@@ -62,7 +62,7 @@
                       data-action
                       data-method="POST"
                       data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.birth.id person.birth.token %}"
-                      data-params='{"locations__id":"{{ person.birth.locations.first.id }}","locations__token":"{{ person.birth.locations.first.token }}"}'
+                      data-body='{"locations__id":"{{ person.birth.locations.first.id }}","locations__token":"{{ person.birth.locations.first.token }}"}'
                       data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}"
                       data-refresh-params='{"editable":"{{ ajax.editable }}"}'
                       data-refresh-map='{"get_date_of_birth":"#date_of_birth"}'
