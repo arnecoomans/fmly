@@ -9,11 +9,19 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse_lazy, reverse
 from math import floor
 from django.utils.translation import gettext_lazy as _
+from django.db.models import Value, CharField
+from functools import reduce
+from operator import or_
 
 from .Event import Event
 
 from cmnsd.models.cmnsd_basemodel import BaseModel, VisibilityModel
 from cmnsd.models.cmnsd_basemethod import ajax_function, searchable_function
+
+def annotate_relation(qs, label):
+  return qs.annotate(
+    relation=Value(label, output_field=CharField())
+  )
 
 
 class Person(BaseModel):
@@ -79,13 +87,17 @@ class Person(BaseModel):
       name += f" ({ self.get_lifespan() })"
     return name
 
+  ''' PROPERTIES '''
   @property
   def months(self):
+    """ Return the months choices, usable in forms and filters """
     return self.MONTHS
   @property
   def genders(self):
+    """ Return the gender choices, usable in forms and filters """
     return self.GENDERS
   
+  ''' AJAX FUNCTIONS FOR BUILDING DETAIL PAGE '''
   @ajax_function
   def names(self):
     return {
@@ -109,28 +121,7 @@ class Person(BaseModel):
       'day_of_death': self.day_of_death,
       'moment_of_death_unconfirmed': self.moment_of_death_unconfirmed,
     }
-  
-  def name(self):
-    return ' '.join([self.first_names, self.last_name])
-
-  def full_name(self):
-    if self.private:
-      return ' '.join([self.first_names, self.last_name]).strip()
-    else:
-      value = self.first_names
-      if self.given_name:
-        value += f" ({ self.given_name})"
-      if self.married_name:
-        value += f" { self.married_name } - { self.last_name }"
-      else:
-        value += f" { self.last_name }"
-      return value.strip()
-  
-  def short_name(self):
-    if self.given_name:
-      return f"{ self.given_name } { self.last_name }"
-    return f"{ self.first_names.split(' ')[0] } { self.last_name }"
-  
+  ''' SEARCHABLE FUNCTIONS '''
   @searchable_function
   def century(self):
     if self.year_of_birth:
@@ -159,32 +150,31 @@ class Person(BaseModel):
           families.append(name)
     return families
   
+
+  def name(self):
+    return ' '.join([self.first_names, self.last_name])
+
+  def full_name(self):
+    if self.private:
+      return ' '.join([self.first_names, self.last_name]).strip()
+    else:
+      value = self.first_names
+      if self.given_name:
+        value += f" ({ self.given_name})"
+      if self.married_name:
+        value += f" { self.married_name } - { self.last_name }"
+      else:
+        value += f" { self.last_name }"
+      return value.strip()
   
-  ## Life Events
-  def get_major_events(self):
-    events = (
-      self.events
-      .annotate(
-        effective_importance_db=Coalesce('importance', F('type__importance'))
-      )
-      .filter(effective_importance_db__gte=1)
-    )
-    return events.order_by('year', 'month', 'day').distinct()
+  def short_name(self):
+    if self.given_name:
+      return f"{ self.given_name } { self.last_name }"
+    return f"{ self.first_names.split(' ')[0] } { self.last_name }"
   
-  def get_all_events(self):
-    events = self.events.all()
-    print("Starting events", events)
-    for parent in self.get_parents() or []:
-      events = events | parent.events.filter(type__slug='birth') | parent.events.filter(type__slug='death')
-      print(events)
-    for partner in self.get_partners() or []:
-      events = events | partner.events.filter(type__slug='death')
-    for child in self.get_children() or []:
-      events = events | child.events.filter(type__slug='birth') | child.events.filter(type__slug='death')
-    events = events |Event.objects.filter(type__is_global=True)
-    events = events.filter(year__gte=self.year_of_birth or 0, year__lte=self.year_of_death or datetime.datetime.now().year+1)
-    return events.order_by('year', 'month', 'day').distinct()
   
+  
+  ''' EVENTS '''
   @ajax_function
   def get_date_of_birth(self):
     if self.events.filter(type='birth').exists():
@@ -205,15 +195,41 @@ class Person(BaseModel):
     return self.events.filter(type='birth').first()
   def death(self):
     return self.events.filter(type='death').first()
+  ''' Timeline functions'''  
+  def has_timeline(self):
+    return True if self.events.exists() else False
   
   @ajax_function
-  def event(self, event__id, event__token):
-    try:
-      event = self.events.filter(id=event__id, token=event__token).first()
-      return event
-    except:
-      return 'FOO'
-    
+  def timeline(self):
+    events = self.events.all()
+    # Include Parent events
+    for parent in self.get_parents() or []:
+      events = events | parent.events.filter(type__in=['birth', 'death', 'marriage'])
+    # Include Children events
+    for child in self.get_children() or []:
+      events = events | child.events.filter(type__in=['birth', 'death', 'marriage'])
+    # Include Partner events
+    for partner in self.get_partners() or []:
+      events = events | partner.events.filter(type__in=['birth', 'death', 'marriage'])
+    # Include General events
+    events = events | Event.objects.filter(type='general')
+    # Crop events between birth and death
+    if self.birth():
+      events = events.filter(
+        models.Q(year__gt=self.birth().year) |
+        models.Q(year=self.birth().year, month__gte=Coalesce(self.birth().month, 1)) |
+        models.Q(year=self.birth().year, month=Coalesce(self.birth().month, 1), day__gte=Coalesce(self.birth().day, 1))
+      )
+    if self.death():
+      events = events.filter(
+        models.Q(year__lt=self.death().year) |
+        models.Q(year=self.death().year, month__lte=Coalesce(self.death().month, 12)) |
+        models.Q(year=self.death().year, month=Coalesce(self.death().month, 12), day__lte=Coalesce(self.death().day, 31))
+      )
+    return events.order_by('year', 'month', 'day').distinct()
+  
+
+
   def get_lifespan(self):
     lifespan = ''
     if self.year_of_birth:

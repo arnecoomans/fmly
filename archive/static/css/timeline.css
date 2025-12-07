@@ -1,68 +1,189 @@
 .timeline {
   position: relative;
-  margin-left: 40px;
-  padding-left: 20px;
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 15px 0;
 }
 
-.timeline:before {
-  content: "";
+.timeline::after {
+  content: '';
   position: absolute;
+  width: 2px;
+  background: var(--colour-dark);
   top: 0;
   bottom: 0;
-  left: 6px;
-  width: 2px;
-  background: #ddd;
+  left: 50%;
+  margin-left: -1px;
 }
 
 .timeline-item {
+  padding: 5px 20px;
   position: relative;
-  margin-bottom: 30px;
+  background: inherit;
+  width: 50%;
 }
 
-.timeline-marker {
-  width: 12px;
-  height: 12px;
-  background: #007bff;
-  border-radius: 50%;
+.timeline-item.left {
+  left: 0;
+}
+
+.timeline-item.right {
+  left: 50%;
+}
+
+.timeline-item::after {
+  content: '';
   position: absolute;
-  left: -1px;
-  top: 5px;
+  width: 16px;
+  height: 16px;
+  top: calc(50% - 8px);
+  right: -8px;
+  background: #ffffff;
+  border: 2px solid var(--colour-dark);
+  border-radius: 16px;
+  z-index: 1;
 }
 
-.global-marker {
-  background: #b30000;
+.timeline-item.right::after {
+  left: -8px;
 }
 
-.death-marker {
-  background: #333;
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 2px;
+  top: calc(50% - 1px);
+  right: 8px;
+  background: var(--colour-dark);
+  z-index: 1;
 }
 
-.timeline-content {
-  margin-left: 25px;
+.timeline-item.right::before {
+  left: 8px;
 }
 
-.timeline-date {
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.timeline-location,
-.timeline-age,
-.timeline-person,
-.timeline-note {
-  font-size: 0.9rem;
-  margin-top: 2px;
-}
-
-.timeline-note {
-  font-style: italic;
-  color: #444;
-}
-
-.timeline-year-separator {
+.timeline-item .date {
+  position: absolute;
+  display: inline-block;
+  top: calc(50% - 8px);
+  text-align: center;
+  font-size: 14px;
   font-weight: bold;
-  margin: 20px 0 10px 0;
-  padding-left: 25px;
-  color: #444;
-  font-size: 1.1rem;
+  color: var(--colour-dark);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  z-index: 1;
+}
+
+.timeline-item.left .date {
+  right: -130px;
+}
+
+.timeline-item.right .date {
+  left: -130px;
+}
+
+.timeline-item .icon {
+  position: absolute;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  padding: 9px 0;
+  top: calc(50% - 20px);
+  background: var(--colour-light);
+  border: 2px solid var(--colour-dark);
+  border-radius: 40px;
+  text-align: center;
+  font-size: 18px;
+  color: #006E51;
+  z-index: 1;
+}
+
+.timeline-item.left .icon {
+  right: 56px;
+}
+
+.timeline-item.right .icon {
+  left: 56px;
+}
+
+.timeline-item .content {
+  padding: 10px 70px 10px 30px;
+  background: orange;
+  position: relative;
+  border-radius: 0 20px 20px 0;
+}
+.timeline-item.personal .content {
+  background: var(--colour-light);
+}
+.timeline-item.related .content {
+  background: #f8e1c2;
+}
+.timeline-item.general .content {
+  background: #adadad;
+}
+.timeline-item.right .content {
+  padding: 10px 10px 10px 70px;
+  border-radius: 20px 0 0 20px;
+}
+
+.timeline-item .content h2 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: normal;
+  color: #006E51;
+}
+
+.timeline-item .content p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 22px;
+  color: #000000;
+}
+
+@media (max-width: 767.98px) {
+  .timeline::after {
+    left: 90px;
+  }
+
+  .timeline-item {
+    width: 100%;
+    padding-left: 120px;
+    padding-right: 30px;
+  }
+
+  .timeline-item.right {
+    left: 0%;
+  }
+
+  .timeline-item.left::after, 
+  .timeline-item.right::after {
+    left: 82px;
+  }
+
+  .timeline-item.left::before,
+  .timeline-item.right::before {
+    left: 100px;
+    border-color: transparent #006E51 transparent transparent;
+  }
+
+  .timeline-item.left .date,
+  .timeline-item.right .date {
+    right: auto;
+    left: 15px;
+  }
+
+  .timeline-item.left .icon,
+  .timeline-item.right .icon {
+    right: auto;
+    left: 146px;
+  }
+
+  .timeline-item.left .content,
+  .timeline-item.right .content {
+    padding: 30px 30px 30px 90px;
+    border-radius: 500px 0 0 500px;
+  }
 }

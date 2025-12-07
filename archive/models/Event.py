@@ -103,3 +103,4 @@ class Event(BaseModel):
     if not self.year:
       return None
     return datetime.date(year=self.year, month=self.month or 1, day=self.day or 1)
+  

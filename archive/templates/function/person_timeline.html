@@ -1,0 +1,59 @@
+{% load static %}
+{% if ajax.timeline %}
+  <div class="col-md-12 mb-3 mb-md-0">
+    <div class="timeline">
+      {% for event in person.timeline %}
+        {% with side=forloop.counter|divisibleby:2|yesno:"right,left" %}
+          <div class="timeline-item {% if person in event.people.all %}personal left{% else %}related right{% endif %} {{ event.type }}">
+            <div class="date">{{ event.date|date:"d M Y" }}</div>
+            <div class="content">
+              <!-- Header-->
+              <strong>
+                {% if event.type == 'birth' or event.type == 'death' %}
+                  {% translate event.type|capfirst %} {% translate 'of' %} {% for person in event.people.all %}{{ person.full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                  {% if person not in event.people.all %}
+                    {% for p in event.people.all %}
+                      {% if p in person.parents %}({% if p.gender == 'f' %}{% translate 'mother' %}{% elif p.gender == 'm' %}{% translate 'father' %}{% else %}{% translate 'parent' %}{% endif %}){% endif %}
+                      {% if p in person.siblings %}({% translate 'sibling' %}){% endif %}
+                      {% if p in person.children %}({% translate 'child' %}){% endif %}
+                      {% if p in person.partners %}({% translate 'partner' %}){% endif %}
+                      {% if event.type == 'death' or event.type == 'marriage' %}{% with age=event.date|calc_age:p.birth %}{% if age > 0%}({{ age }}){% endif %}{% endwith %}{% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% elif event.type == 'marriage' %} 
+                  {% translate event.type|capfirst %} {% translate 'with' %} {% for person in event.people.all|without:person %}{{ person.full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                {% else %}
+                  {{ event.title }}
+                {% endif %} 
+              </strong>
+              <p>
+                {% for location in event.locations.all %}
+                  {{ location.name }}{% if not forloop.last %}, {% else %}.{% endif %}
+                {% endfor %}
+                {% with age=event.date|calc_age:person.birth %}{% if age > 0 %}<span class="text-muted">({% if person not in event.people.all %}{{ person.given_name|default:person.first_names }} was {% endif %}{{ age }} {% translate 'years old' %})</span>{% endif %}{% endwith %}
+              </p>
+              {% if event.description%}
+                <p >{{ event.description }}</p>
+              {% endif %}
+              
+            </div>
+          </div>
+        {% endwith %}
+      {% endfor %}
+    </div>
+  </div>
+{% else %}
+  <div class="row align-items-start">
+    <div class="col-md-4 text-center mb-3 mb-md-0">
+      <!-- No Image, left empty for alignment -->
+    </div>
+    <!-- CONTENT COLUMN -->
+    <div class="col-md-8">
+      <a data-action 
+      data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'timeline'%}"
+      data-params="timeline"
+      data-map='{"timeline": "#timeline"}'
+      >{% translate 'view full timeline'|capfirst %}</a>
+    </div>
+  </div>
+{% endif %}
