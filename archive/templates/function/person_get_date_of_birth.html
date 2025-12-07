@@ -6,9 +6,12 @@
       {% if ajax.editable %}
         <!-- Date --> 
         <form id="date_of_birth_form">
-          <input type="hidden" name="type" value="birth">
-          <input type="hidden" name="user__id" value="{{ user.id }}">
-          <input type="hidden" name="people__id" value="{{ person.id }}">
+          {% if not person.birth %}
+            <input type="hidden" name="type" value="birth">
+            <input type="hidden" name="user__id" value="{{ user.id }}">
+            <input type="hidden" name="people__id" value="{{ person.id }}">
+            <input type="hidden" name="editable" value="true">
+          {% endif %}
           <div class="input-group">
             <span class="input-group-text">{% translate 'date'|capfirst %}:</span>
             <input type="number" class="form-control" name="day" value="{{ person.birth.day }}" min="1" max="31">
@@ -36,6 +39,7 @@
               <img src="{% static 'img/bootstrap-icons/floppy.svg' %}" alt="{% translate 'save'|capfirst %}">
             </button>
           </div>
+          <textarea class="form-control" name="description" data-auto-resize placeholder="{% translate 'description'|capfirst %}">{% if person.birth %}{{ person.birth.description|default:'' }}{% endif %}</textarea> 
         </form>
         <!-- Location -->
           <form
@@ -95,6 +99,9 @@
         {% if person.birth.weekday %}{% translate person.birth.weekday|default:""|capfirst %} {% endif %}
         {{ person.birth.day|default:'' }} {% if person.birth.month %}{% translate person.birth.get_month_display|default:'' %} {% endif %}{{ person.birth.year|default:'' }} 
         {% if person.birth.locations.all.count > 0 %}{% translate 'in' %} {% for location in person.birth.locations.all %}{{ location.get_display_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
+        {% if person.birth and person.birth.description %}
+          <div class="text-muted small">{{ person.birth.description }}</div>
+        {% endif %}
       {% endif %}
     </div>  
   </div>

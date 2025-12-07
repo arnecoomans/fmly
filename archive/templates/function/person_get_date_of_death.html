@@ -6,9 +6,11 @@
       {% if ajax.editable %}
         <!-- Date --> 
         <form id="date_of_death_form">
-          <input type="hidden" name="type" value="death">
-          <input type="hidden" name="user__id" value="{{ user.id }}">
-          <input type="hidden" name="people__id" value="{{ person.id }}">
+          {% if not person.death %}
+            <input type="hidden" name="type" value="death">
+            <input type="hidden" name="user__id" value="{{ user.id }}">
+            <input type="hidden" name="people__id" value="{{ person.id }}">
+          {% endif %}
           <div class="input-group">
             <span class="input-group-text">{% translate 'date'|capfirst %}:</span>
             <input type="number" class="form-control" name="day" value="{{ person.death.day }}" min="1" max="31">
@@ -36,6 +38,7 @@
               <img src="{% static 'img/bootstrap-icons/floppy.svg' %}" alt="{% translate 'save'|capfirst %}">
             </button>
           </div>
+          <textarea class="form-control" name="description" data-auto-resize placeholder="{% translate 'description'|capfirst %}">{% if person.death %}{{ person.death.description|default:'' }}{% endif %}</textarea> 
         </form>
         <!-- Location -->
           <form
@@ -94,7 +97,10 @@
         {% if person.death.weekday %}{% translate person.death.weekday|default:""|capfirst %} {% endif %}
         {{ person.death.day|default:'' }} {% if person.death.month %}{% translate person.death.get_month_display|default:'' %} {% endif %}{{ person.death.year|default:'' }} 
         {% if person.death.locations.all.count > 0 %}{% translate 'in' %} {% for location in person.death.locations.all %}{{ location.get_display_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
-        {% with age=person.death.date|calc_age:person.birth.date %}{% if age and age > 0 %}<span class="text-muted">({{age}})</span>{% endif %}{% endwith %}
+        {% if person.death and person.birth %}{% with age=person.death.date|calc_age:person.birth.date %}{% if age and age > 0 %}<span class="text-muted">({{age}})</span>{% endif %}{% endwith %}{% endif %}
+        {% if person.death and person.death.description %}
+          <div class="text-muted small">{{ person.death.description }}</div>
+        {% endif %}
       {% endif %}
     </div>
   </div>

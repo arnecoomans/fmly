@@ -100,4 +100,7 @@ class Event(BaseModel):
     return date.strftime('%A')
 
   def date(self):
+    if not self.year:
+      return None
     return datetime.date(year=self.year, month=self.month or 1, day=self.day or 1)
+  
