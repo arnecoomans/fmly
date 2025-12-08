@@ -124,11 +124,11 @@
               <input class="form-check-input" type="checkbox" name="{{ form.visibility_person_page.name }}" id="{{ form.visibility_person_page.id_for_label }}" {% if form.visibility_person_page.value %}checked{% endif %} value="true">
               <label class="form-check-label" for="{{ form.visibility_person_page.id_for_label }}">{% translate 'Show on person overview page' %}</label>
             </div>
-            <div class="form-check form-switch">
+            {% comment %} <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" name="{{ form.is_deleted.name }}" id="{{ form.is_deleted.id_for_label }}" {% if form.is_deleted.value %}checked{% endif %}>
               <label class="form-check-label" for="{{ form.is_deleted.id_for_label }}">{% translate 'Is deleted' %}</label>
               <br><br>
-            </div>
+            </div> {% endcomment %}
           </div>
         </div>
 <!-- Tagged People -->

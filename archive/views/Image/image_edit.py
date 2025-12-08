@@ -29,7 +29,7 @@ class EditImageMaster:
             'category',
             'document_source', 'day', 'month', 'year',
             'people', 'family',
-            'visibility_frontpage', 'visibility_person_page', 'is_deleted',
+            'visibility_frontpage', 'visibility_person_page', 'status',
             'tag', 'in_group', 'attachments', 'is_portrait_of',]
 
   ''' Get Form
