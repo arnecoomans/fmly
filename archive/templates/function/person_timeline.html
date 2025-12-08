@@ -33,7 +33,7 @@
                 {% with age=event.date|calc_age:person.birth %}{% if age > 0 %}<span class="text-muted">({% if person not in event.people.all %}{{ person.given_name|default:person.first_names }} was {% endif %}{{ age }} {% translate 'years old' %})</span>{% endif %}{% endwith %}
               </p>
               {% if event.description%}
-                <p >{{ event.description }}</p>
+                <p >{{ event.description|markdown|safe }}</p>
               {% endif %}
               
             </div>
