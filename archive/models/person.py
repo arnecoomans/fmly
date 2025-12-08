@@ -210,7 +210,7 @@ class Person(BaseModel):
       events = events | child.events.filter(type__in=['birth', 'death', 'marriage'])
     # Include Partner events
     for partner in self.get_partners() or []:
-      events = events | partner.events.filter(type__in=['birth', 'death', 'marriage'])
+      events = events | partner.events.filter(type__in=['birth', 'death',])
     # Include General events
     events = events | Event.objects.filter(type='general')
     # Crop events between birth and death
