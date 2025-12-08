@@ -15,6 +15,6 @@
         {% if event.people.all.count > 1 %} {% translate 'with' %} {% for p in event.people.all|without:person %}<a href="{% url 'archive:person' p.id p.slug %}">{{ p.short_name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
       </div>{% endif %}
       <div class="timeline-title">{% if event.title %}{{ event.title }}</br>{% endif %}</div>
-      <div class="timeline-description">{{ event.description|linebreaks }}</div>
+      <div class="timeline-description">{{ event.description|markdown|safe }}</div>
     </div>
   </div>

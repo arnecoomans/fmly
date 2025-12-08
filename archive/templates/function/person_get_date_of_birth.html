@@ -100,7 +100,7 @@
         {{ person.birth.day|default:'' }} {% if person.birth.month %}{% translate person.birth.get_month_display|default:'' %} {% endif %}{{ person.birth.year|default:'' }} 
         {% if person.birth.locations.all.count > 0 %}{% translate 'in' %} {% for location in person.birth.locations.all %}{{ location.get_display_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
         {% if person.birth and person.birth.description %}
-          <div class="text-muted small">{{ person.birth.description }}</div>
+          <div class="text-muted small">{{ person.birth.description|markdown|safe }}</div>
         {% endif %}
       {% endif %}
     </div>  
