@@ -118,7 +118,7 @@ class EditImageMaster:
     form['family'] = self.request.POST.get('family', None)
     form['visibility_frontpage'] = True if self.request.POST.get('visibility_frontpage', '') == 'true' else False
     form['visibility_person_page'] = True if self.request.POST.get('visibility_person_page', '') == 'true' else False
-    form['is_deleted'] = True if self.request.POST.get('is_deleted', '') == 'true' else False
+    # form['status'] = self.request.POST.get('status', None)
     ''' Relation holding fields, can have multiple values '''
     form['people'] = self.request.POST.getlist('people', None)
     form['tag'] = self.request.POST.getlist('tag', None)
@@ -178,7 +178,7 @@ class EditImageMaster:
       'family': form['family'],
       'visibility_frontpage': form['visibility_frontpage'],
       'visibility_person_page': form['visibility_person_page'],
-      'is_deleted': form['is_deleted'],
+      # 'is_deleted': form['is_deleted'],
       'user': form['user'],
     }
     image = Image.objects.update_or_create(slug=form['slug'],
