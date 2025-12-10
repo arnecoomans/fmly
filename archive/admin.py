@@ -203,6 +203,11 @@ class LocationAdmin(admin.ModelAdmin):
 class EventAdmin(admin.ModelAdmin):
   list_display = ('id','display_str', 'type',)
 
+  def get_changeform_initial_data(self, request):
+    get_data = super(EventAdmin, self).get_changeform_initial_data(request)
+    get_data['user'] = request.user.pk
+    return get_data
+
   def display_str(self, obj):
     return str(obj)
   
