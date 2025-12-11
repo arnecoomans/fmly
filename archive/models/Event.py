@@ -104,3 +104,5 @@ class Event(BaseModel):
       return None
     return datetime.date(year=self.year, month=self.month or 1, day=self.day or 1)
   
+  def image_count(self):
+    return self.images.count()

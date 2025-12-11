@@ -192,9 +192,11 @@ class Person(BaseModel):
       return datetime.date(year=event.year, month=event.month or 1, day=event.day or 1)
   
   def birth(self):
-    return self.events.filter(type='birth').first()
+    return self.events.filter(type='birth').last()
+    
   def death(self):
-    return self.events.filter(type='death').first()
+    return self.events.filter(type='death').last()
+  
   ''' Timeline functions'''  
   def has_timeline(self):
     return True if self.events.exists() else False

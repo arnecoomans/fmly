@@ -5,13 +5,24 @@
     <div class="col">
       {% if ajax.editable %}
         <!-- Date --> 
-        <form id="date_of_birth_form">
-          {% if not person.birth %}
-            <input type="hidden" name="type" value="birth">
-            <input type="hidden" name="user__id" value="{{ user.id }}">
-            <input type="hidden" name="people__id" value="{{ person.id }}">
-            <input type="hidden" name="editable" value="true">
+        <form id="date_of_birth_form"
+          data-action
+          data-method="POST"
+          data-body="#date_of_birth_form"
+          {% if person.birth %}
+            data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.birth.id person.birth.token %}"
+          {% else %}
+            data-url="{% url 'cmnsd:dispatch' 'events' %}"
           {% endif %}
+          data-autosuggest-allow-empty="1"
+          data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}?editable"
+          data-refresh-map	= '{"get_date_of_birth":"#date_of_birth"}'>
+          {% if not person.birth %}
+            <input type="hidden" name="type" value="{{ event.type|default:'birth' }}">
+            <input type="hidden" name="user__id" value="{{ event.user.id|default:user.id }}">
+            <input type="hidden" name="people__id" value="{{ person.id }}">
+          {% endif %}
+          <input type="hidden" name="editable" value="true">
           <div class="input-group">
             <span class="input-group-text">{% translate 'date'|capfirst %}:</span>
             <input type="number" class="form-control" name="day" value="{{ person.birth.day }}" min="1" max="31">
@@ -23,43 +34,16 @@
             </select>
             <input type="number" class="form-control" name="year" value="{{ person.get_date_of_birth.year }}">
             <button class="btn btn-outline-success" 
-                        type="button" 
+                        type="submit" 
                         title="{% translate 'save'|capfirst %} {% translate field|capfirst %}"
-                        data-action
-                        data-method="POST"
-                        data-body="#date_of_birth_form"
-                        {% if person.birth %}
-                          data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.birth.id person.birth.token %}"
-                        {% else %}
-                          data-url="{% url 'cmnsd:dispatch' 'events' %}"
-                        {% endif %}
-                        data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}"
-                        data-refresh-map	= '{"get_date_of_birth":"#date_of_birth"}'
                         >
               <img src="{% static 'img/bootstrap-icons/floppy.svg' %}" alt="{% translate 'save'|capfirst %}">
             </button>
           </div>
-          <textarea class="form-control" name="description" data-auto-resize placeholder="{% translate 'description'|capfirst %}">{% if person.birth %}{{ person.birth.description|default:'' }}{% endif %}</textarea> 
-        </form>
-        <!-- Location -->
-          <form
-          <form
-            data-action
-            data-method="POST"
-            {% if person.birth.locations.all.count == 0 %}
-              data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.birth.id person.birth.token %}"
-            {% else %}
-              data-url="{% url 'cmnsd:dispatch' 'events' %}"
-              data-params='{"type":"birth","user__id":"{{ user.id }}","people__id":"{{ person.id }}"}'
-            {% endif %}
-            data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}"
-            data-refresh-params='{"editable":"{{ ajax.editable }}"}'
-            data-refresh-map='{"get_date_of_birth":"#date_of_birth"}'
-          >
           <div class="input-group">
             <span class="input-group-text">{% translate 'place'|capfirst %}:</span>
             {% if person.birth.locations.all.count > 0 %}
-              <span class="input-group-text">{{ person.birth.locations.first }}</span>
+              <span class="input-group-text">{{ person.birth.locations.last|truncatechars:47 }}</span>
               <button type="button" 
                       class="btn btn-outline-danger remove-related-object"
                       title="{% translate 'remove'|capfirst %} {% translate 'place'|capfirst %}"
@@ -70,6 +54,7 @@
                       data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}"
                       data-refresh-params='{"editable":"{{ ajax.editable }}"}'
                       data-refresh-map='{"get_date_of_birth":"#date_of_birth"}'
+                      data-allow-empty="true"
                       >
                 <img src="{% static 'img/bootstrap-icons/x.svg' %}" alt="{% translate 'remove'|capfirst %}">
               </button>
@@ -86,21 +71,16 @@
                       data-display-fields="name, description"
                       data-container="location"
               >
-              <button type="submit" 
-                      class="btn btn-outline-success add-related-object"
-                      title="{% translate 'add'|capfirst %} {% translate 'place'|capfirst %}"
-                      >
-                <img src="{% static 'img/bootstrap-icons/plus.svg' %}" alt="{% translate 'add'|capfirst %}"> 
-              </button>
             {% endif %}
           </div>
+          <textarea class="form-control" name="description" data-auto-resize placeholder="{% translate 'description'|capfirst %}">{% if person.birth %}{{ person.birth.description|default:'' }}{% endif %}</textarea> 
         </form>
       {% else %}
         {% if person.birth.weekday %}{% translate person.birth.weekday|default:""|capfirst %} {% endif %}
         {{ person.birth.day|default:'' }} {% if person.birth.month %}{% translate person.birth.get_month_display|default:'' %} {% endif %}{{ person.birth.year|default:'' }} 
         {% if person.birth.locations.all.count > 0 %}{% translate 'in' %} {% for location in person.birth.locations.all %}{{ location.get_display_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
         {% if person.birth and person.birth.description %}
-          <div class="text-muted small">{{ person.birth.description }}</div>
+          <div class="text-muted small">{{ person.birth.description|markdown|safe }}</div>
         {% endif %}
       {% endif %}
     </div>  

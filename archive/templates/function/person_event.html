@@ -1,20 +1,41 @@
 {% load static %}
-<!-- {{ event.year}} - {{ event.type }} -->
-  <div class="timeline-item {{ event.type }}">
-    <div class="timeline-marker"></div>
-    <div class="timeline-content">
-      <span class="timeline-date">
-        {% if event.weekday %}{% translate event.weekday|default:""|capfirst %} {% endif %}
-        {{ event.day|default:'' }} {% if event.month %}{% translate event.get_month_display|default:'' %} {% endif %}{{ event.year|default:'?' }} 
-        {% if event.get_date|calc_age:person.get_date_of_birth %}<span class="text-muted">({{ event.get_date|calc_age:person.get_date_of_birth }})</span>{% endif %}
-      </span>
-      <span class="timeline-location">{% if event.locations.all.count > 0 %}{% translate 'in' %} {% for location in event.locations.all %}{{ location.get_display_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}</span>
-      {% if event.type.slug != 'other' %}<div class="timeline-header">
-        {{ event.type|capfirst }}
-        {% if event.people.count == 1 %} {% translate 'of' %} <a href="{% url 'archive:person' event.people.first.id event.people.first.slug %}">{{ event.people.first.short_name }}</a>{% endif %}
-        {% if event.people.all.count > 1 %} {% translate 'with' %} {% for p in event.people.all|without:person %}<a href="{% url 'archive:person' p.id p.slug %}">{{ p.short_name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
-      </div>{% endif %}
-      <div class="timeline-title">{% if event.title %}{{ event.title }}</br>{% endif %}</div>
-      <div class="timeline-description">{{ event.description|linebreaks }}</div>
+<div class="timeline-item {% if person in event.people.all %}personal left{% else %}related right{% endif %} {{ event.type }}">
+    <div class="date">{{ event.date|date:"d M Y" }}</div>
+    <div class="content">
+      <!-- Header-->
+      <strong>
+        {% if event.type == 'birth' or event.type == 'death' %}
+          {% translate event.type|capfirst %} {% translate 'of' %} {% for person in event.people.all %}{% include 'field/person/name.html' with person=person %}{% if not forloop.last %}, {% endif %}{% endfor %}
+          {% if person not in event.people.all %}
+            {% for p in event.people.all %}
+              {% if p in person.parents %}({% if p.gender == 'f' %}{% translate 'mother' %}{% elif p.gender == 'm' %}{% translate 'father' %}{% else %}{% translate 'parent' %}{% endif %}){% endif %}
+              {% if p in person.siblings %}({% translate 'sibling' %}){% endif %}
+              {% if p in person.children %}({% translate 'child' %}){% endif %}
+              {% if p in person.partners %}({% translate 'partner' %}){% endif %}
+              {% if event.type == 'death' or event.type == 'marriage' %}{% with age=event.date|calc_age:p.birth %}{% if age > 0%}({{ age }}){% endif %}{% endwith %}{% endif %}
+            {% endfor %}
+          {% endif %}
+        {% elif event.type == 'marriage' %} 
+          {% translate event.type|capfirst %} {% translate 'with' %} {% for person in event.people.all|without:person %}{% include 'field/person/name.html' with person=person %}{% if person.birth %} ({{ event.date|calc_age:person.birth.date }}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}.
+        {% else %}
+          {{ event.title }}
+        {% endif %} 
+      </strong>
+      <p>
+        {% for location in event.locations.all %}
+          {{ location.name }}{% if not forloop.last %}, {% else %}.{% endif %}
+        {% endfor %}
+        {% with age=event.date|calc_age:person.birth %}{% if age > 0 %}<span class="text-muted">({% if person not in event.people.all %}{{ person.given_name|default:person.first_names }} was {% endif %}{{ age }} {% translate 'years old' %})</span>{% endif %}{% endwith %}
+      </p>
+      {% if event.description%}
+        <p >{{ event.description|markdown|safe }}</p>
+      {% endif %}
+      {% if event.images.count > 0 %}
+        {% for image in event.images.all %}
+          <a href="{% url 'archive:image' image.slug %}" title="{{ image.title }}" bs-tooltip="true" data-bs-placement="top">
+            <img src="{% static 'img/bootstrap-icons/image.svg' %}" alt="{{ image.title }}">
+          </a>
+        {% endfor %}
+      {% endif %}
     </div>
   </div>
