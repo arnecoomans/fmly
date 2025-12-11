@@ -201,7 +201,7 @@ class LocationAdmin(admin.ModelAdmin):
   list_display = ['name', 'parent', 'slug']
 
 class EventAdmin(admin.ModelAdmin):
-  list_display = ('id','display_str', 'type',)
+  list_display = ('id','display_str', 'type', 'image_count')
 
   def get_changeform_initial_data(self, request):
     get_data = super(EventAdmin, self).get_changeform_initial_data(request)
