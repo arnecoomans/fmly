@@ -5,10 +5,16 @@
     <div class="col">
       {% if ajax.editable %}
         <!-- Date --> 
-        <form id="date_of_death_form">
+        <form id="date_of_death_form"
+              data-action
+              data-method="POST"
+              data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.death.id person.death.token %}"
+              data-body='{"locations__id":"{{ person.death.locations.first.id }}","locations__token":"{{ person.death.locations.first.token }}"}'
+              data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_death' %}?editable" 
+              data-refresh-map='{"get_date_of_death":"#date_of_death"}'>
           {% if not person.death %}
-            <input type="hidden" name="type" value="death">
-            <input type="hidden" name="user__id" value="{{ user.id }}">
+            <input type="hidden" name="type" value="{{ event.type|default:'death' }}">
+            <input type="hidden" name="user__id" value="{{ event.id|default:user.id }}">
             <input type="hidden" name="people__id" value="{{ person.id }}">
           {% endif %}
           <div class="input-group">
@@ -38,36 +44,13 @@
               <img src="{% static 'img/bootstrap-icons/floppy.svg' %}" alt="{% translate 'save'|capfirst %}">
             </button>
           </div>
-          <textarea class="form-control" name="description" data-auto-resize placeholder="{% translate 'description'|capfirst %}">{% if person.death %}{{ person.death.description|default:'' }}{% endif %}</textarea> 
-        </form>
-        <!-- Location -->
-          <form
-            data-action
-            data-method="POST"
-            {% if person.death.locations.all.count == 0 %}
-              data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.death.id person.death.token %}"
-            {% else %}
-              data-url="{% url 'cmnsd:dispatch' 'events' %}"
-              data-params='{"type":"death","user__id":"{{ user.id }}","people__id":"{{ person.id }}"}'
-            {% endif %}
-            data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_death' %}"
-            data-refresh-params='{"editable":"{{ ajax.editable }}"}'
-            data-refresh-map='{"get_date_of_death":"#date_of_death"}'
-          >
           <div class="input-group">
             <span class="input-group-text">{% translate 'place'|capfirst %}:</span>
             {% if person.death.locations.all.count > 0 %}
               <span class="input-group-text">{{ person.death.locations.first }}</span>
-              <button type="button" 
+              <button type="submit" 
                       class="btn btn-outline-danger remove-related-object"
                       title="{% translate 'remove'|capfirst %} {% translate 'place'|capfirst %}"
-                      data-action
-                      data-method="POST"
-                      data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.death.id person.death.token %}"
-                      data-body='{"locations__id":"{{ person.death.locations.first.id }}","locations__token":"{{ person.death.locations.first.token }}"}'
-                      data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_death' %}"
-                      data-refresh-params='{"editable":"{{ ajax.editable }}"}'
-                      data-refresh-map='{"get_date_of_death":"#date_of_death"}'
                       >
                 <img src="{% static 'img/bootstrap-icons/x.svg' %}" alt="{% translate 'remove'|capfirst %}">
               </button>
@@ -84,14 +67,25 @@
                       data-display-fields="name, description"
                       data-container="location"
               >
-              <button type="submit" 
-                      class="btn btn-outline-success add-related-object"
-                      title="{% translate 'add'|capfirst %} {% translate 'place'|capfirst %}"
-                      >
-                <img src="{% static 'img/bootstrap-icons/plus.svg' %}" alt="{% translate 'add'|capfirst %}"> 
-              </button>
             {% endif %}
           </div>
+          <textarea class="form-control" name="description" data-auto-resize placeholder="{% translate 'description'|capfirst %}">{% if person.death %}{{ person.death.description|default:'' }}{% endif %}</textarea> 
+        </form>
+        <!-- Location -->
+          <form
+            data-action
+            data-method="POST"
+            {% if person.death.locations.all.count == 0 %}
+              data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.death.id person.death.token %}"
+            {% else %}
+              data-url="{% url 'cmnsd:dispatch' 'events' %}"
+              data-params='{"type":"death","user__id":"{{ user.id }}","people__id":"{{ person.id }}"}'
+            {% endif %}
+            data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_death' %}"
+            data-refresh-params='{"editable":"{{ ajax.editable }}"}'
+            data-refresh-map='{"get_date_of_death":"#date_of_death"}'
+          >
+          
         </form>
       {% else %}
         {% if person.death.weekday %}{% translate person.death.weekday|default:""|capfirst %} {% endif %}
