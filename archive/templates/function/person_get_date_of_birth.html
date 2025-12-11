@@ -14,6 +14,7 @@
           {% else %}
             data-url="{% url 'cmnsd:dispatch' 'events' %}"
           {% endif %}
+          data-autosuggest-allow-empty="1"
           data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}?editable"
           data-refresh-map	= '{"get_date_of_birth":"#date_of_birth"}'>
           {% if not person.birth %}
@@ -42,7 +43,7 @@
           <div class="input-group">
             <span class="input-group-text">{% translate 'place'|capfirst %}:</span>
             {% if person.birth.locations.all.count > 0 %}
-              <span class="input-group-text">{{ person.birth.locations.first }}</span>
+              <span class="input-group-text">{{ person.birth.locations.last|truncatechars:47 }}</span>
               <button type="button" 
                       class="btn btn-outline-danger remove-related-object"
                       title="{% translate 'remove'|capfirst %} {% translate 'place'|capfirst %}"
@@ -53,6 +54,7 @@
                       data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}"
                       data-refresh-params='{"editable":"{{ ajax.editable }}"}'
                       data-refresh-map='{"get_date_of_birth":"#date_of_birth"}'
+                      data-allow-empty="true"
                       >
                 <img src="{% static 'img/bootstrap-icons/x.svg' %}" alt="{% translate 'remove'|capfirst %}">
               </button>
@@ -72,59 +74,6 @@
             {% endif %}
           </div>
           <textarea class="form-control" name="description" data-auto-resize placeholder="{% translate 'description'|capfirst %}">{% if person.birth %}{{ person.birth.description|default:'' }}{% endif %}</textarea> 
-        </form>
-        <!-- Location -->
-          <form
-            data-action
-            data-method="POST"
-            {% if person.birth.locations.all.count == 0 %}
-              data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.birth.id person.birth.token %}"
-            {% else %}
-              data-url="{% url 'cmnsd:dispatch' 'events' %}"
-              data-params='{"type":"birth","user__id":"{{ user.id }}","people__id":"{{ person.id }}"}'
-            {% endif %}
-            data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}"
-            data-refresh-params='{"editable":"{{ ajax.editable }}"}'
-            data-refresh-map='{"get_date_of_birth":"#date_of_birth"}'
-          >
-          {% comment %} <div class="input-group">
-            <span class="input-group-text">{% translate 'place'|capfirst %}:</span>
-            {% if person.birth.locations.all.count > 0 %}
-              <span class="input-group-text">{{ person.birth.locations.first }}</span>
-              <button type="button" 
-                      class="btn btn-outline-danger remove-related-object"
-                      title="{% translate 'remove'|capfirst %} {% translate 'place'|capfirst %}"
-                      data-action
-                      data-method="POST"
-                      data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.birth.id person.birth.token %}"
-                      data-body='{"locations__id":"{{ person.birth.locations.first.id }}","locations__token":"{{ person.birth.locations.first.token }}"}'
-                      data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_birth' %}"
-                      data-refresh-params='{"editable":"{{ ajax.editable }}"}'
-                      data-refresh-map='{"get_date_of_birth":"#date_of_birth"}'
-                      >
-                <img src="{% static 'img/bootstrap-icons/x.svg' %}" alt="{% translate 'remove'|capfirst %}">
-              </button>
-            {% else %}
-              <input  type="text" 
-                      class="form-control" 
-                      placeholder="{% translate 'start typing to search for a place'|capfirst %}"
-                      data-autosuggest
-                      data-url="{% url 'cmnsd:dispatch' 'locations' %}?format=json"
-                      data-param="{{ search_query_character|default:'q' }}"
-                      data-field-input="name"
-                      data-field-hidden="slug"
-                      data-field-prefix="locations__"
-                      data-display-fields="name, description"
-                      data-container="location"
-              >
-              <button type="submit" 
-                      class="btn btn-outline-success add-related-object"
-                      title="{% translate 'add'|capfirst %} {% translate 'place'|capfirst %}"
-                      >
-                <img src="{% static 'img/bootstrap-icons/plus.svg' %}" alt="{% translate 'add'|capfirst %}"> 
-              </button>
-            {% endif %}
-          </div> {% endcomment %}
         </form>
       {% else %}
         {% if person.birth.weekday %}{% translate person.birth.weekday|default:""|capfirst %} {% endif %}

@@ -8,15 +8,19 @@
         <form id="date_of_death_form"
               data-action
               data-method="POST"
-              data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.death.id person.death.token %}"
-              data-body='{"locations__id":"{{ person.death.locations.first.id }}","locations__token":"{{ person.death.locations.first.token }}"}'
+              {% if person.death %}
+                data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.death.id person.death.token %}"
+              {% else %}
+                data-url="{% url 'cmnsd:dispatch' 'events' %}"
+              {% endif %}
               data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_death' %}?editable" 
               data-refresh-map='{"get_date_of_death":"#date_of_death"}'>
           {% if not person.death %}
-            <input type="hidden" name="type" value="{{ event.type|default:'death' }}">
-            <input type="hidden" name="user__id" value="{{ event.id|default:user.id }}">
+            <input type="hidden" name="type" value="{{ event.type|default:'birth' }}">
+            <input type="hidden" name="user__id" value="{{ event.user.id|default:user.id }}">
             <input type="hidden" name="people__id" value="{{ person.id }}">
           {% endif %}
+          <input type="hidden" name="editable" value="true">
           <div class="input-group">
             <span class="input-group-text">{% translate 'date'|capfirst %}:</span>
             <input type="number" class="form-control" name="day" value="{{ person.death.day }}" min="1" max="31">
@@ -28,18 +32,8 @@
             </select>
             <input type="number" class="form-control" name="year" value="{{ person.get_date_of_death.year }}">
             <button class="btn btn-outline-success" 
-                        type="button" 
+                        type="submit" 
                         title="{% translate 'save'|capfirst %} {% translate field|capfirst %}"
-                        data-action
-                        data-method="POST"
-                        data-body="#date_of_death_form"
-                        {% if person.death %}
-                          data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.death.id person.death.token %}"
-                        {% else %}
-                          data-url="{% url 'cmnsd:dispatch' 'events' %}"
-                        {% endif %}
-                        data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_death' %}"
-                        data-refresh-map	= '{"get_date_of_death":"#date_of_death"}'
                         >
               <img src="{% static 'img/bootstrap-icons/floppy.svg' %}" alt="{% translate 'save'|capfirst %}">
             </button>
@@ -47,10 +41,18 @@
           <div class="input-group">
             <span class="input-group-text">{% translate 'place'|capfirst %}:</span>
             {% if person.death.locations.all.count > 0 %}
-              <span class="input-group-text">{{ person.death.locations.first }}</span>
+              <span class="input-group-text">{{ person.death.locations.last|truncatechars:47 }}</span>
               <button type="submit" 
                       class="btn btn-outline-danger remove-related-object"
                       title="{% translate 'remove'|capfirst %} {% translate 'place'|capfirst %}"
+                      data-action
+                      data-method="POST"
+                      data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' person.death.id person.death.token %}"
+                      data-body='{"locations__id":"{{ person.death.locations.last.id }}","locations__token":"{{ person.death.locations.last.token }}"}'
+                      data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_death' %}"
+                      data-refresh-params='{"editable":"{{ ajax.editable }}"}'
+                      data-refresh-map='{"get_date_of_death":"#date_of_death"}'
+                      data-allow-empty="true"
                       >
                 <img src="{% static 'img/bootstrap-icons/x.svg' %}" alt="{% translate 'remove'|capfirst %}">
               </button>
