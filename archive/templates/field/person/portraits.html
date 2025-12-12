@@ -37,7 +37,7 @@
               class="btn btn-primary mt-2"
               data-action
               data-method="PATCH"
-              data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait,portrait_x,portrait_y,portrait_w,portrait_h' %}"
+              data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portraits,portrait_x,portrait_y,portrait_w,portrait_h' %}"
               data-map='{"portraits": "#portraits"}'
               disabled>
         {% translate 'save crop'|title %}
@@ -52,9 +52,9 @@
         <button class="btn btn-secondary mt-2"
                 data-action
                 data-method="post"
-                data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait' %}"
+                data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portraits' %}"
                 data-params='{"editable": true}'
-                data-map='{"portrait": "#portrait"}'
+                data-map='{"portraits": "#portraits"}'
                 >
             {% translate 'crop'|capfirst %}
         </button>
