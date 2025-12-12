@@ -1,82 +1,66 @@
-{% if person.portrait %}
-  {% if person.portrait_x or person.portrait_y or person.portrait_w or person.portrait_h %}
-    <!-- Cropped Portrait -->
-    {% portrait_crop person.portrait src=person.portrait.source|prepend:"/documents/" crop_source=person%}
+{% if person.portraits.exists %}
+  {% for portrait in person.portraits.all %}
+    {% if person.portrait_x or person.portrait_y or person.portrait_w or person.portrait_h %}
+      <!-- Cropped Portrait -->
+      {% portrait_crop portrait src=portrait.source|prepend:"/documents/" crop_source=person%}
 
-    <button class="btn btn-secondary mt-2"
-            data-action
-            data-method="post"
-            data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait,portrait_x,portrait_y,portrait_w,portrait_h' %}"
-            data-body='{"portrait_x": null, "portrait_y": null, "portrait_w": null, "portrait_h": null}'
-            data-map='{"portrait": "#portrait"}'
-            >
-        Reset Crop
-    </button>
-  {% elif ajax.editable %}
-    <!-- Cropper -->
-    <div  id="crop-wrapper"
-          data-cropper
-          data-cropper-debug="1"
-          data-cropper-target="#crop-image"
-          data-cropper-save="#crop-save-btn"
-          data-cropper-fields="x=portrait_x,y=portrait_y,w=portrait_w,h=portrait_h">
-      <img  id="crop-image"
-            src="/documents/{{ person.portrait.source }}"
-            draggable="false"
-            alt="{{ person.portrait.title}}"
-            style="
-                  object-position: -{{ person.portrait_x }}px -{{ person.portrait_y }}px;
-                  width: {{ person.portrait_w }}px;
-                  height: {{ person.portrait_h }}px;
-                ">
-      <!-- Rect can exist or be created automatically -->
-      <div class="cmnsd-crop-rect"></div>
-    </div>
-    <button id="crop-save-btn"
-            class="btn btn-primary mt-2"
-            data-action
-            data-method="PATCH"
-            data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait,portrait_x,portrait_y,portrait_w,portrait_h' %}"
-            data-map='{"portrait": "#portrait"}'
-            disabled>
-      {% translate 'save crop'|title %}
-    </button>
-
-    {% comment %} <div data-cropper
-        data-cropper-target="#crop-image"
-        data-cropper-save="#crop-save-btn"
-        data-cropper-fields="x=portrait_x,y=portrait_y,w=portrait_w,h=portrait_h">
-      <img id="crop-image" src="" class="img-fluid">
-      <div class="crop-rect"></div>
-    </div>
-
-    <button id="crop-save-btn"
-            data-action
-            data-method="PATCH"
-            data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait,portrait_x,portrait_y,portrait_w,portrait_h' %}"
-            data-map='{"portrait": "#portrait"}'
-    >
-      
-    </button> {% endcomment %}
-  {% else %}
-    <a href="{% url 'archive:image-redirect' person.portrait.id %}">
-      <img src="/documents/{{ person.portrait.source }}"
-            alt="{% translate 'portrait of'|capfirst %} {{ person.full_name }}"
-            class="img-fluid rounded shadow-sm profile-photo">
-    </a>
-    {% if perms.archive.change_person %}
       <button class="btn btn-secondary mt-2"
               data-action
               data-method="post"
-              data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait' %}"
-              data-params='{"editable": true}'
-              data-map='{"portrait": "#portrait"}'
+              data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portraits,portrait_x,portrait_y,portrait_w,portrait_h' %}"
+              data-body='{"portrait_x": null, "portrait_y": null, "portrait_w": null, "portrait_h": null}'
+              data-map='{"portraits": "#portraits"}'
               >
-          {% translate 'crop'|capfirst %}
+          Reset Crop
       </button>
+    {% elif ajax.editable %}
+      <!-- Cropper -->
+      <div  id="crop-wrapper"
+            data-cropper
+            data-cropper-debug="1"
+            data-cropper-target="#crop-image"
+            data-cropper-save="#crop-save-btn"
+            data-cropper-fields="x=portrait_x,y=portrait_y,w=portrait_w,h=portrait_h">
+        <img  id="crop-image"
+              src="/documents/{{ portrait.source }}"
+              draggable="false"
+              alt="{{ portrait.title}}"
+              style="
+                    object-position: -{{ person.portrait_x }}px -{{ person.portrait_y }}px;
+                    width: {{ person.portrait_w }}px;
+                    height: {{ person.portrait_h }}px;
+                  ">
+        <!-- Rect can exist or be created automatically -->
+        <div class="cmnsd-crop-rect"></div>
+      </div>
+      <button id="crop-save-btn"
+              class="btn btn-primary mt-2"
+              data-action
+              data-method="PATCH"
+              data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait,portrait_x,portrait_y,portrait_w,portrait_h' %}"
+              data-map='{"portraits": "#portraits"}'
+              disabled>
+        {% translate 'save crop'|title %}
+      </button>
+    {% else %}
+      <a href="{% url 'archive:image-redirect' portrait.id %}">
+        <img src="/documents/{{ portrait.source }}"
+              alt="{% translate 'portrait of'|capfirst %} {{ person.full_name }}"
+              class="img-fluid rounded shadow-sm profile-photo">
+      </a>
+      {% if perms.archive.change_person %}
+        <button class="btn btn-secondary mt-2"
+                data-action
+                data-method="post"
+                data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'portrait' %}"
+                data-params='{"editable": true}'
+                data-map='{"portrait": "#portrait"}'
+                >
+            {% translate 'crop'|capfirst %}
+        </button>
+      {% endif %}
     {% endif %}
-  {% endif %}
+  {% endfor %}
 {% else %}
-  <div class="bg-light border text-muted rounded p-5">No photo</div>
+  <div class="bg-light border text-muted rounded p-5" style="min-height: 300px;">No photo</div>
 {% endif %}
-

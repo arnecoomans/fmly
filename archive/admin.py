@@ -109,6 +109,23 @@ class GroupAdmin(admin.ModelAdmin):
     return get_data
 
   
+class HasOldPortraitFilter(admin.SimpleListFilter):
+  title = "has old portrait"
+  parameter_name = "has_old_portrait"
+
+  def lookups(self, request, model_admin):
+    return (
+      ("1", "Yes"),
+      ("0", "No"),
+    )
+
+  def queryset(self, request, queryset):
+    if self.value() == "1":
+      return queryset.filter(is_portrait_of__isnull=False)
+    if self.value() == "0":
+      return queryset.filter(is_portrait_of__isnull=True)
+    return queryset
+  
 ''' Image Model Admin '''
 class ImageAdmin(admin.ModelAdmin):
   ''' Admin Tasks '''
@@ -138,15 +155,22 @@ class ImageAdmin(admin.ModelAdmin):
   def resetSize(modeladmin, request, queryset):
     for object in queryset:
       object.storeSize()
-
+  @admin.action(description="Migrate portrait to portraits")
+  def migrate_portrait(modeladmin, request, queryset):
+    for image in queryset:
+      if image.is_portrait_of:
+        image.portrait_of.add(image.is_portrait_of)
+        image.is_portrait_of = None
+        image.save()
+    messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully migrated portraits for selected images.') }")
 
   list_display = ['id', 'slug', 'category', 'getSize', 'visibility_frontpage', 'year']
   list_display_links =['slug',]
   search_fields = ['title', 'description']
   exclude = []
   empty_value_display = '---'
-  actions = [toggle_show, softdelete, softundelete, setSlugFromTitle, reset_thumbnail, resetSize,  ]
-  list_filter = ['tag', 'visibility_frontpage', 'people']
+  actions = [toggle_show, softdelete, softundelete, setSlugFromTitle, reset_thumbnail, resetSize, migrate_portrait]
+  list_filter = [HasOldPortraitFilter, 'visibility_frontpage', ]
   def get_changeform_initial_data(self, request):
     get_data = super(ImageAdmin, self).get_changeform_initial_data(request)
     get_data['user'] = request.user.pk

@@ -1,11 +1,11 @@
 {% load static %}
-{% if ajax.editable and perms.archive.change_image and not image.is_portrait_of and not person.portrait%}
+{% if ajax.editable and perms.archive.change_image and person.portraits.all.count == 0 %}
   <button 
     class="btn btn-outline-danger btn-sm ms-2"
     data-action
-    data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'people, is_portrait_of' %}"
+    data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'people, portrait_of' %}"
     data-method="POST"
-    data-body='{"is_portrait_of__id": "{{ person.id}}", "editable": true}'
+    data-body='{"portrait_of__id": "{{ person.id}}", "editable": true}'
     data-map='{"people":"#people"}'
   ><img src="{% static 'img/bootstrap-icons/person-badge.svg' %}" alt="set portrait" title="{% translate 'set image image as portrait of'|capfirst %} {{ person.full_name }}" data-bs-toggle="tooltip" data-bs-placement="top"></button>
 {% endif %}

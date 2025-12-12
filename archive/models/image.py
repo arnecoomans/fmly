@@ -137,6 +137,7 @@ class Image(BaseModel):
   tag                 = models.ManyToManyField(Tag, blank=True, related_name='images')
   attachments         = models.ManyToManyField(Attachment, blank=True, related_name='images')
   is_portrait_of      = models.OneToOneField(Person, on_delete=models.CASCADE, related_name='portrait', blank=True, null=True)
+  portrait_of         = models.ManyToManyField(Person, blank=True, related_name='portraits', help_text='Tag people for whom this image is a portrait')
   in_group            = models.ManyToManyField(Group, blank=True, related_name='images', help_text='Group images')
   family              = models.CharField(max_length=64, null=True, blank=True, help_text=_('Add image to family collection if no family member can be tagged'))
   # Dating
@@ -159,6 +160,10 @@ class Image(BaseModel):
   def __str__(self):
     return self.get_indexed_name()
 
+  @property
+  def has_old_portrait(self):
+    return True if self.is_portrait_of else False
+  
   @ajax_function
   def origin(self):
     return {

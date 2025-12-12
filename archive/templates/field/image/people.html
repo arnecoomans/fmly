@@ -5,14 +5,14 @@
     <!-- Portrait -->
      
     <!-- Portrait settings -->
-    <div id="is_portrait_of">
+    <div id="is_portrait">
       {% include 'field/image/is_portrait_of.html' with image=image metadata=metadata ajax=ajax %}
     </div>
     <!-- People-->
     <div class="d-flex py-1">
       <div class="col">
         {% for person in image.people.all %}
-          {% if person != image.is_portrait_of %}
+          {% if person not in image.portrait_of.all %}
             <img src="{% static 'img/bootstrap-icons/person-fill.svg' %}" alt="{% translate 'person' %}" title="{% translate 'person on this photo' %}" data-bs-toggle="tooltip" data-bs-placement="left"> {% include 'element/person_full_name.html' with person=person %}
             {% if ajax.editable and perms.archive.change_image %}
               {% include 'element/person_set_portrait.html' with person=person image=image %}
