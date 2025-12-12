@@ -14,16 +14,9 @@
 {% endif %}
 <!-- Life Events -->
 <div class="timeline">
-  {% comment %} {% for event in person.get_major_events.all %} {% endcomment %}
   {% for event in person.get_all_events.all %}
     <div id="event-{{ event.id }}">
       {% include 'function/person_event.html' with event=event person=person %}
     </div>
   {% endfor %}
 </div>
-  {% comment %} <div id="event-{{ event.id }}" class="d-flex">
-    {% include 'function/person_event.html' with event=event person=person %}
-  </div> {% endcomment %}
-
-
-  

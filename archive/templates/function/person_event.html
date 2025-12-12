@@ -16,7 +16,7 @@
             {% endfor %}
           {% endif %}
         {% elif event.type == 'marriage' %} 
-          {% translate event.type|capfirst %} {% translate 'with' %} {% for person in event.people.all|without:person %}{% include 'field/person/name.html' with person=person %}{% if person.birth %} ({{ event.date|calc_age:person.birth.date }}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}.
+          {% translate event.type|capfirst %}{% if event.people.all.count > 1%} {% translate 'with' %} {% for person in event.people.all|without:person %}{% include 'field/person/name.html' with person=person %}{% if person.birth %} ({{ event.date|calc_age:person.birth.date }}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}.
         {% else %}
           {{ event.title }}
         {% endif %} 
