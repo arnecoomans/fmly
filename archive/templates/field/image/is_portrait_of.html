@@ -1,21 +1,21 @@
 {% load static %}
 <div class="d-flex py-1">
   <div class="col">
-    {% if image.is_portrait_of %}
-      <img src="{% static 'img/bootstrap-icons/person-badge-fill.svg' %}" alt="{% translate 'portrait' %}" title="{% translate 'this image is a portrait of'|capfirst %} {{ image.is_portrait_of.full_name }}" data-bs-toggle="tooltip" data-bs-placement="left"> {% include 'element/person_full_name.html' with person=image.is_portrait_of %}
+    {% for person in image.portrait_of.all %}
+      <img src="{% static 'img/bootstrap-icons/person-badge-fill.svg' %}" alt="{% translate 'portrait' %}" title="{% translate 'this image is a portrait of'|capfirst %} {{ person.full_name }}" data-bs-toggle="tooltip" data-bs-placement="left"> {% include 'element/person_full_name.html' with person=person %}
       {% if ajax.editable and perms.archive.change_image %}
-        <img src="{% static 'img/bootstrap-icons/robot.svg' %}" alt="{% translate 'automated action' %}" title="{% translate 'this image is portrait of'|capfirst %} {{ image.is_portrait_of.full_name}}. {% translate 'remove portrait setting before removing person from this photo'|capfirst %}." data-bs-toggle="tooltip" data-bs-placement="right">
+        <img src="{% static 'img/bootstrap-icons/robot.svg' %}" alt="{% translate 'automated action' %}" title="{% translate 'this image is portrait of'|capfirst %} {{ person.full_name}}. {% translate 'remove portrait setting before removing person from this photo'|capfirst %}." data-bs-toggle="tooltip" data-bs-placement="right">
         <button 
           class="btn btn-outline-danger btn-sm ms-2"
           data-action
-          data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'people, is_portrait_of' %}"
+          data-url = "{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'image' image.id image.slug 'people, portrait_of' %}"
           data-method="POST"
-          data-body='{"is_portrait_of__id": "{{ image.is_portrait_of.id}}", "editable": true}'
+          data-body='{"portrait_of__id": "{{ person.id}}", "editable": true}'
           data-map='{"people":"#people"}'
-          data-confirm="{% translate 'are you sure you want to remove this image as a portrait of'|capfirst %} {{ image.is_portrait_of.full_name }}"
-        ><img src="{% static 'img/bootstrap-icons/person-x.svg' %}" alt="remove" title="{% translate 'remove image as portrait of'|capfirst %} {{ image.is_portrait_of.full_name }}" data-bs-toggle="tooltip" data-bs-placement="right"></button>
+          data-confirm="{% translate 'are you sure you want to remove this image as a portrait of'|capfirst %} {{ person.full_name }}"
+        ><img src="{% static 'img/bootstrap-icons/person-x.svg' %}" alt="remove" title="{% translate 'remove image as portrait of'|capfirst %} {{ person.full_name }}" data-bs-toggle="tooltip" data-bs-placement="right"></button>
       {% endif %}
-    {% else %}
-    {% endif %}
+      {% if not forloop.last %}<br>{% endif %}
+    {% endfor %}
   </div>
 </div>
