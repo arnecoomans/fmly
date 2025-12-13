@@ -1,1 +1,1 @@
-<a href="{% url 'archive:person' person.id person.slug %}">{{ person.full_name }}</a>{% if person.get_lifespan %} <span class="text-muted">({{ person.get_lifespan }})</span>{% endif %}
+<a href="{% url 'archive:person' person.id person.slug %}">{{ person.full_name }}</a>{% if person.get_lifespan %} <span class="text-muted">({{ person.get_lifespan|safe }})</span>{% endif %}
