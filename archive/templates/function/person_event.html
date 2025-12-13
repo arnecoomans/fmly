@@ -5,7 +5,7 @@
       <!-- Header-->
       <strong>
         {% if event.type == 'birth' or event.type == 'death' %}
-          {% translate event.type|capfirst %} {% translate 'of' %} {% for person in event.people.all %}{% include 'field/person/name.html' with person=person %}{% if not forloop.last %}, {% endif %}{% endfor %}
+          {% translate event.type|capfirst %} {% translate 'of' %} {% for person in event.people.all %}{% include 'element/person_full_name.html' with person=person %}{% if not forloop.last %}, {% endif %}{% endfor %}
           {% if person not in event.people.all %}
             {% for p in event.people.all %}
               {% if p in person.parents %}({% if p.gender == 'f' %}{% translate 'mother' %}{% elif p.gender == 'm' %}{% translate 'father' %}{% else %}{% translate 'parent' %}{% endif %}){% endif %}
@@ -16,7 +16,7 @@
             {% endfor %}
           {% endif %}
         {% elif event.type == 'marriage' %} 
-          {% translate event.type|capfirst %} {% translate 'with' %} {% for person in event.people.all|without:person %}{% include 'field/person/name.html' with person=person %}{% if person.birth %} ({{ event.date|calc_age:person.birth.date }}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}.
+          {% translate event.type|capfirst %}{% if event.people.all.count > 1%} {% translate 'with' %} {% for person in event.people.all|without:person %}{% include 'element/person_full_name.html' with person=person %}{% if person.birth %} ({{ event.date|calc_age:person.birth.date }}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}.
         {% else %}
           {{ event.title }}
         {% endif %} 

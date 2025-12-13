@@ -162,7 +162,9 @@ class Person(BaseModel):
       if self.given_name:
         value += f" ({ self.given_name})"
       if self.married_name:
-        value += f" { self.married_name } - { self.last_name }"
+        value += f" { self.married_name }"
+        if self.last_name:
+          value += f" - { self.last_name }"
       else:
         value += f" { self.last_name }"
       return value.strip()
@@ -234,12 +236,18 @@ class Person(BaseModel):
 
   def get_lifespan(self):
     lifespan = ''
-    if self.year_of_birth:
-      lifespan += str(self.year_of_birth)
-    if self.year_of_death or self.moment_of_death_unconfirmed:
-      lifespan += ' - '
-    if self.year_of_death:
-      lifespan += str(self.year_of_death)
+    if self.birth():
+      if self.birth().year:
+        lifespan += str(self.birth().year)
+      if self.death() or self.moment_of_death_unconfirmed:
+        lifespan += ' - '
+    if self.death():
+      if not self.birth():
+        lifespan += '&dagger;'
+      elif not self.birth().year:
+          lifespan += '&dagger;'
+      if self.death().year:
+        lifespan += str(self.death().year)
     return lifespan
 
   def get_lifespan_display(self):
