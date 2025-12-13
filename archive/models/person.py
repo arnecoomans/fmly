@@ -239,15 +239,18 @@ class Person(BaseModel):
     if self.birth():
       if self.birth().year:
         lifespan += str(self.birth().year)
-      if self.death() or self.moment_of_death_unconfirmed:
-        lifespan += ' - '
+      else:
+        lifespan += '*'
+    else:
+      lifespan += '*'
     if self.death():
-      if not self.birth():
-        lifespan += '&dagger;'
-      elif not self.birth().year:
-          lifespan += '&dagger;'
+      lifespan += ' - '
       if self.death().year:
         lifespan += str(self.death().year)
+      else:
+        lifespan += '&dagger;'
+    elif self.moment_of_death_unconfirmed:
+      lifespan += ' - &dagger;'
     return lifespan
 
   def get_lifespan_display(self):
