@@ -83,8 +83,11 @@ class Person(BaseModel):
   def __str__(self):
     ''' Return the name of the person with year of birth and death '''
     name = self.full_name()
-    if len(self.get_lifespan()) > 0:
-      name += f" ({ self.get_lifespan() })"
+    try:
+      if len(self.get_lifespan()) > 0:
+        name += f" ({ self.get_lifespan() })"
+    except:
+      pass
     return name
 
   ''' PROPERTIES '''
