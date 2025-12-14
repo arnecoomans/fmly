@@ -84,6 +84,7 @@ class Person(BaseModel):
     ''' Return the name of the person with year of birth and death '''
     name = self.full_name()
     try:
+      # Wrap in lifespan if available - in a try to avoid recursion issues
       if len(self.get_lifespan()) > 0:
         name += f" ({ self.get_lifespan() })"
     except:
