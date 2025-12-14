@@ -16,7 +16,7 @@
               data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'get_date_of_death' %}?editable" 
               data-refresh-map='{"get_date_of_death":"#date_of_death"}'>
           {% if not person.death %}
-            <input type="hidden" name="type" value="{{ event.type|default:'birth' }}">
+            <input type="hidden" name="type" value="{{ event.type|default:'death' }}">
             <input type="hidden" name="user__id" value="{{ event.user.id|default:user.id }}">
             <input type="hidden" name="people__id" value="{{ person.id }}">
           {% endif %}
