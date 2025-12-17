@@ -47,7 +47,7 @@
             <dd class="gender">
                 {{ form.gender }}
             </dd>
-          <dt>{% translate 'born'|capfirst %}:</dt>
+          {% comment %} <dt>{% translate 'born'|capfirst %}:</dt>
             <dd class="date">
               {{ form.day_of_birth }}
               {{ form.month_of_birth }}
@@ -82,7 +82,7 @@
                   {{ form.place_of_death.errors }}
                 </p>
               {% endif %}
-            </dd>
+            </dd> {% endcomment %}
           <dt><label for="{{ form.bio.id_for_label }}">{% translate 'biography'|capfirst %}:</label></dt>
             <dd>
               {{ form.bio }}
