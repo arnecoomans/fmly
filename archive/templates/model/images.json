@@ -1,0 +1,5 @@
+{
+  {% for image in images %}
+  {% include 'model/image.json' with image=image %}{% if not forloop.last %},{% endif %}
+  {% endfor %}
+}

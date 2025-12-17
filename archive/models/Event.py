@@ -57,6 +57,8 @@ class Event(BaseModel):
   locations = models.ManyToManyField('Location', blank=True, related_name='events', verbose_name=_('locations'))
   images = models.ManyToManyField('Image', blank=True, related_name='events', verbose_name=_('images'))
 
+  # ajax_template_name = 'function/person_event'
+
   class Meta:
     ordering = ['-year', '-month', '-day', 'title', 'type']
   
@@ -69,7 +71,7 @@ class Event(BaseModel):
   def get_title(self):
     title = []
     if self.type in ['birth', 'death', 'marriage']:
-      title.append(self.get_type_display())
+      title.append(str(_(self.get_type_display())))
       if self.people.exists():
         title.append(f"{ _('of') }")
     if self.people.exists():
@@ -78,14 +80,14 @@ class Event(BaseModel):
     if self.locations.exists():
       location_names = ', '.join([str(location) for location in self.locations.all()])
       title.append(f"{ _('at') } { location_names }")
-    title.append(f"{ _('on') }")
-    if self.day:
-      title.append(f"{ self.day }")
-    if self.month:
-      title.append(f"{ self.get_month_display() }")
-    title.append(f"{ self.year }")
-    if self.title:
-      title.append(f": { self.title }")
+    # title.append(f"{ _('on') }")
+    # if self.day:
+    #   title.append(f"{ self.day }")
+    # if self.month:
+    #   title.append(f"{ self.get_month_display() }")
+    # title.append(f"{ self.year }")
+    # if self.title:
+    #   title.append(f": { self.title }")
     return " ".join(title)
   
   @property
@@ -106,3 +108,14 @@ class Event(BaseModel):
   
   def image_count(self):
     return self.images.count()
+  
+  def editable(self):
+    if self.type in ['birth', 'death']:
+      return False
+    return True
+  
+  def show_type(self):
+    if self.type in ['birth', 'death', 'marriage']:
+      return True
+    return False
+  

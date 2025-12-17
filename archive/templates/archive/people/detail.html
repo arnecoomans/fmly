@@ -203,4 +203,56 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 </script>
 
+<!-- Event Editing -->
+<script>
+  (function () {
+
+    function updateToggle(select) {
+      const targetSelector = select.dataset.toggleTarget;
+      const value = select.dataset.toggleValue;
+
+      if (!targetSelector || !value) return;
+
+      // scope to the same form
+      const form = select.closest('form') || document;
+      const target = form.querySelector(targetSelector);
+
+      if (!target) return;
+
+      const show = select.value === value;
+
+      // Toggle target field
+      target.style.display = show ? '' : 'none';
+      if (!show) {
+        target.value = '';
+      }
+
+      // ✅ Toggle select sizing classes
+      select.classList.toggle('w-auto', show);
+      select.classList.toggle('flex-grow-0', show);
+    }
+
+    // 🔁 Delegated change handler (AJAX-safe)
+    document.addEventListener('change', (e) => {
+      const select = e.target.closest('select[data-toggle-target]');
+      if (!select) return;
+      updateToggle(select);
+    });
+
+    // 🔁 Initialize existing selects
+    function init(root = document) {
+      root.querySelectorAll('select[data-toggle-target]').forEach(updateToggle);
+    }
+
+    // Initial run
+    document.addEventListener('DOMContentLoaded', () => init());
+
+    // After cmnsd AJAX insert
+    document.addEventListener('cmnsd:content:applied', (e) => {
+      init(e.detail?.container || document);
+    });
+
+  })();
+</script>
+
 {% endblock %}

@@ -1,22 +1,3 @@
-{% if not person.get_major_events.all %}
-  <div class="d-flex">
-    <!-- LEFT SECTION (labels + values stacked) -->
-    <div class="flex-grow-1">
-      <!-- No Events -->        
-      <div class="d-flex py-1">
-        <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'life'|capfirst %}:</div>
-        <div class="col">
-          <div class="text-muted">{% translate 'no life events recorded'|capfirst %}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-{% endif %}
-<!-- Life Events -->
-<div class="timeline">
-  {% for event in person.get_all_events.all %}
-    <div id="event-{{ event.id }}">
-      {% include 'function/person_event.html' with event=event person=person %}
-    </div>
-  {% endfor %}
-</div>
+{% for event in events %}
+  {% include 'function/person_event.html' with event=event person=person %}
+{% endfor %}
