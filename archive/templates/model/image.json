@@ -1,0 +1,6 @@
+"{{ image.id }}": {
+    "slug": "{{ image.slug }}",
+    "title": "{{ image.title|highlight:query|escapejs }}",
+    "description": "{% if image.description %}{{ image.description|markdown|truncatechars_html:100|highlight:query|escapejs }}{% endif %}",
+    "category": "{{ image.get_category_display|escapejs }}"
+  }

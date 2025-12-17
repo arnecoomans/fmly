@@ -1,5 +1,6 @@
 "{{ person.id }}": {
   "id": {{ person.id }},
+  "slug": "{{ person.slug }}",
   "nickname": "{{ person.nickname }}",
   "first_names": "{{ person.first_names }}",
   "given_name": "{{ person.given_name }}",
@@ -8,5 +9,7 @@
   "full_name": "{{ person.full_name }}",
   "place_of_birth": "{{ person.place_of_birth }}",
   "place_of_death": "{{ person.place_of_death }}",
-  "lifespan": "{{ person.get_lifespan_display }}"
+  "lifespan": "{{ person.get_lifespan_display }}",
+  "full_name": "{{ person.full_name|highlight:query|safe }}",
+  "gender": "{{ person.get_gender_display }}"
 }

@@ -292,3 +292,8 @@ section > header * div.action.list {
   text-align: right;
 }
 
+.img-thumbnail {
+  max-width: 30%;
+  height: auto;
+  margin: 0.5em 0;
+}

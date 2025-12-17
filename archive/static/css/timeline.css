@@ -115,6 +115,12 @@
   position: relative;
   border-radius: 0 20px 20px 0;
 }
+.timeline-item .editable-content {
+  padding: 10px 70px 10px 30px;
+  background: #ddd;
+  position: relative;
+  border-radius: 0 20px 20px 0;
+}
 .timeline-item.personal .content {
   background: var(--colour-light);
 }
@@ -187,3 +193,21 @@
     border-radius: 500px 0 0 500px;
   }
 }
+.toggle-wrapper {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.25s ease, opacity 0.2s ease;
+}
+
+.toggle-wrapper.is-visible {
+  opacity: 1;
+}
+
+.rings {
+  display: inline-block;
+  position: relative;
+  width: 1.6em;
+  height: 1.2em;
+}
+
