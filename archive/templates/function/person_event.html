@@ -29,116 +29,132 @@
         <input type="hidden" name="event__id" value="{{ event.id }}">
         <input type="hidden" name="event__token" value="{{ event.token }}">
         <!-- Date Inputs -->
-        <div class="input-group input-group-sm">
-          <input type="number" name="day" class="form-control" value="{{ event.day }}" min="1" max="31" placeholder="{% translate 'day'|capfirst %}">
-          <select name="month" class="form-select w-auto flex-grow-0">
-            <option value="">--{% translate 'month'|capfirst %}--</option>
-            {% for month in person.months %}
-              <option value="{{ month.0 }}" {% if event.month == month.0 %}selected{% endif %}>{% translate month.1|capfirst %}</option>
-            {% endfor %}
-          </select>
-          <input type="number" name="year" class="form-control" value="{{ event.year }}" min="{% if person.birth %}{{ person.birth.year }}{% else %}1400{% endif %}" max="{% if person.death %}{{ person.death.year }}{% else %}{% now "Y" %}{% endif %}" placeholder="{% translate 'year'|capfirst %}" {% if event.type != 'birth' and event.type != 'death' %}required{% endif %}>
-        </div>
-        <!-- Type and Title-->
-        <div class="input-group input-group-sm">
-          <select name="type" 
-                  class="form-select w-auto flex-grow-0"
-                  data-toggle-target="#event-{{ event.id }}-title"
-                  data-toggle-value="other"
-          >
-            {% if event or not person.birth %}<option value="birth" {% if event.type == 'birth' %}selected{% endif %}>{% translate 'birth'|capfirst %}</option>{% endif %}
-            {% if event or not person.death %}<option value="death" {% if event.type == 'death' %}selected{% endif %}>{% translate 'death'|capfirst %}</option>{% endif %}
-            <option value="marriage" {% if event.type == 'marriage' %}selected{% endif %}>{% translate 'marriage'|capfirst %}</option>
-            <option value="other" {% if event.type == 'other' %}selected{% endif %}>{% translate 'other'|capfirst %}</option>
-          </select>
-          <input type="text" name="title" id="event-{{ event.id }}-title" class="form-control" value="{{ event.title }}" placeholder="{% translate 'Event Title' %}">
-        </div>
-        <!-- Description-->
-        <div class="input-group input-group-sm">
-          <textarea data-autoresize name="description" class="form-control" placeholder="{% translate 'event description'|capfirst %}">{{ event.description|default:''}}</textarea>
-        </div>
-        <!-- People -->
-        {% if not event %}
+        {% if event.type == 'birth' or event.type == 'death' %}
+          <strong>
+            {% translate event.type %}
+            {% translate 'of' %}
+            {{ person.full_name }}
+            {% translate 'on' %}
+            {{ event.date|date:"d M Y" }}
+            {% if event.locations.all.count > 0 %}
+              {% translate 'at' %}
+              {% for loc in event.locations.all %}
+                {{ loc }}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            {% endif %}
+          </strong>
+        {% else %}
           <div class="input-group input-group-sm">
-            <span class="input-group-text">{% translate 'people'|capfirst %}:</span>
-              <span class="input-group-text">{{ person.short_name }}</span>
-            </span>
-            <input type="hidden" name="people__id" value="{{ person.id }}">
-            <input type="hidden" name="people__slug" value="{{ person.slug }}">
+            <input type="number" name="day" class="form-control" value="{{ event.day }}" min="1" max="31" placeholder="{% translate 'day'|capfirst %}">
+            <select name="month" class="form-select w-auto flex-grow-0">
+              <option value="">--{% translate 'month'|capfirst %}--</option>
+              {% for month in person.months %}
+                <option value="{{ month.0 }}" {% if event.month == month.0 %}selected{% endif %}>{% translate month.1|capfirst %}</option>
+              {% endfor %}
+            </select>
+            <input type="number" name="year" class="form-control" value="{{ event.year }}" min="{% if person.birth %}{{ person.birth.year }}{% else %}1400{% endif %}" max="{% if person.death %}{{ person.death.year }}{% else %}{% now "Y" %}{% endif %}" placeholder="{% translate 'year'|capfirst %}" {% if event.type != 'birth' and event.type != 'death' %}required{% endif %}>
           </div>
-        {% elif event.people.all.count > 0 %}
+          <!-- Type and Title-->
           <div class="input-group input-group-sm">
-            <span class="input-group-text">{% translate 'people'|capfirst %}:</span>
-            {% for p in event.people.all %}
-              <span class="input-group-text">{{ p.short_name }}</span>
-              <button type="button" 
-                      class="btn btn-outline-danger btn-sm remove-person" 
-                      data-action 
-                      {% if event %}
+            <select name="type" 
+                    class="form-select w-auto flex-grow-0"
+                    data-toggle-target="#event-{{ event.id }}-title"
+                    data-toggle-value="other"
+            >
+              {% if event or not person.birth %}<option value="birth" {% if event.type == 'birth' %}selected{% endif %}>{% translate 'birth'|capfirst %}</option>{% endif %}
+              {% if event or not person.death %}<option value="death" {% if event.type == 'death' %}selected{% endif %}>{% translate 'death'|capfirst %}</option>{% endif %}
+              <option value="marriage" {% if event.type == 'marriage' %}selected{% endif %}>{% translate 'marriage'|capfirst %}</option>
+              <option value="other" {% if event.type == 'other' %}selected{% endif %}>{% translate 'other'|capfirst %}</option>
+            </select>
+            <input type="text" name="title" id="event-{{ event.id }}-title" class="form-control" value="{{ event.title }}" placeholder="{% translate 'Event Title' %}">
+          </div>
+          <!-- Description-->
+          <div class="input-group input-group-sm">
+            <textarea data-autoresize name="description" class="form-control" placeholder="{% translate 'event description'|capfirst %}">{{ event.description|default:''}}</textarea>
+          </div>
+          <!-- People -->
+          {% if not event %}
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">{% translate 'people'|capfirst %}:</span>
+                <span class="input-group-text">{{ person.short_name }}</span>
+              </span>
+              <input type="hidden" name="people__id" value="{{ person.id }}">
+              <input type="hidden" name="people__slug" value="{{ person.slug }}">
+            </div>
+          {% elif event.people.all.count > 0 %}
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">{% translate 'people'|capfirst %}:</span>
+              {% for p in event.people.all %}
+                <span class="input-group-text">{{ p.short_name }}</span>
+                <button type="button" 
+                        class="btn btn-outline-danger btn-sm remove-person" 
+                        data-action 
+                        {% if event %}
+                          data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' event.id event.token %}"
+                        {% else %}
+                          data-url="{% url 'cmnsd:dispatch' 'event' %}"
+                        {% endif %}
+                        data-params='{"people__id":"{{ p.id }}","people__slug":"{{ p.slug }}"}'
+                        data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'events' %}"
+                        data-refresh-params='{"editable":"true","id":"{{ event.id }}","token":"{{ event.token }}"}'
+                        data-refresh-map='{"events": "#event-{{ event.id }}"}'
+                        >&times;</button>
+              {% endfor %}
+            </div>
+          {% endif %}
+          {% if event %}
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">{% translate 'add person'|capfirst %}:</span>
+              <input  type="text" 
+                        class="form-control" 
+                        placeholder="{% translate 'start typing...'|capfirst %}"
+                        data-autosuggest
+                        data-url="{% url 'cmnsd:dispatch' 'people' %}?format=json"
+                        data-param="{{ search_query_character|default:'q' }}"
+                        data-field-input="full_name"
+                        data-field-hidden="slug"
+                        data-field-prefix="people__"
+                        data-display-fields="full_name, lifespan"
+                        data-container="person"
+                        data-allow-create="0"
+                >
+            </div>
+          {% endif %}
+          <!-- Location -->
+          {% if event.locations.all.count > 0 %}
+            <div class="input-group input-group-sm mt-2">
+              <span class="input-group-text">{% translate 'locations'|capfirst %}:</span>
+              {% for location in event.locations.all %}
+                <span class="input-group-text">{{ location.name }}</span>
+                <button type="button" 
+                        class="btn btn-outline-danger btn-sm remove-location" 
+                        data-action 
                         data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' event.id event.token %}"
-                      {% else %}
-                        data-url="{% url 'cmnsd:dispatch' 'event' %}"
-                      {% endif %}
-                      data-params='{"people__id":"{{ p.id }}","people__slug":"{{ p.slug }}"}'
-                      data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'events' %}"
-                      data-refresh-params='{"editable":"true","id":"{{ event.id }}","token":"{{ event.token }}"}'
-                      data-refresh-map='{"events": "#event-{{ event.id }}"}'
-                      >&times;</button>
-            {% endfor %}
-          </div>
-        {% endif %}
-        {% if event %}
+                        data-params='{"locations__id":"{{ location.id }}","locations__slug":"{{ location.slug }}"}'
+                        data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'events' %}"
+                        data-refresh-params='{"editable":"true","id":"{{ event.id }}","token":"{{ event.token }}"}'
+                        data-refresh-map='{"events": "#event-{{ event.id }}"}'
+                        >&times;</button>
+              {% endfor %}
+            </div>
+          {% endif %}
           <div class="input-group input-group-sm">
-            <span class="input-group-text">{% translate 'add person'|capfirst %}:</span>
+            <span class="input-group-text">{% translate 'add location'|capfirst %}:</span>
             <input  type="text" 
                       class="form-control" 
                       placeholder="{% translate 'start typing...'|capfirst %}"
                       data-autosuggest
-                      data-url="{% url 'cmnsd:dispatch' 'people' %}?format=json"
+                      data-url="{% url 'cmnsd:dispatch' 'locations' %}?format=json"
                       data-param="{{ search_query_character|default:'q' }}"
-                      data-field-input="full_name"
+                      data-field-input="name"
                       data-field-hidden="slug"
-                      data-field-prefix="people__"
-                      data-display-fields="full_name, lifespan"
-                      data-container="person"
-                      data-allow-create="0"
+                      data-field-prefix="locations__"
+                      data-display-fields="name, description"
+                      data-container="location"
+                      data-allow-empty="1"
               >
           </div>
         {% endif %}
-        <!-- Location -->
-        {% if event.locations.all.count > 0 %}
-          <div class="input-group input-group-sm mt-2">
-            <span class="input-group-text">{% translate 'locations'|capfirst %}:</span>
-            {% for location in event.locations.all %}
-              <span class="input-group-text">{{ location.name }}</span>
-              <button type="button" 
-                      class="btn btn-outline-danger btn-sm remove-location" 
-                      data-action 
-                      data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'event' event.id event.token %}"
-                      data-params='{"locations__id":"{{ location.id }}","locations__slug":"{{ location.slug }}"}'
-                      data-refresh-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'events' %}"
-                      data-refresh-params='{"editable":"true","id":"{{ event.id }}","token":"{{ event.token }}"}'
-                      data-refresh-map='{"events": "#event-{{ event.id }}"}'
-                      >&times;</button>
-            {% endfor %}
-          </div>
-        {% endif %}
-        <div class="input-group input-group-sm">
-          <span class="input-group-text">{% translate 'add location'|capfirst %}:</span>
-          <input  type="text" 
-                    class="form-control" 
-                    placeholder="{% translate 'start typing...'|capfirst %}"
-                    data-autosuggest
-                    data-url="{% url 'cmnsd:dispatch' 'locations' %}?format=json"
-                    data-param="{{ search_query_character|default:'q' }}"
-                    data-field-input="name"
-                    data-field-hidden="slug"
-                    data-field-prefix="locations__"
-                    data-display-fields="name, description"
-                    data-container="location"
-                    data-allow-empty="1"
-            >
-        </div>
         <!-- Proof / Images -->
         {% if event.images.all.count > 0 %}
           <div class="input-group input-group-sm">
@@ -204,6 +220,7 @@
     <div class="content">
       <!-- Header of event-->
       <strong>
+        <!-- Event Type or Title-->
         {% if event.show_type %}
           {% if event.type == 'birth' %}* {% elif event.type == 'death' %}&dagger; {% endif %}{% translate event.type|capfirst %}
           {% if event.people.all.count > 0 %}
@@ -304,7 +321,7 @@
       <div class="event-actions d-flex gap-2 mt-2">
         {% if perms.archive.change_event %}
           {% if ajax.editable %}
-          {% elif event.editable and person in event.people.all %}
+          {% elif person in event.people.all %}
             <a title="{% translate 'edit event'|capfirst %}"
                 data-bs-toggle="tooltip"
                 data-bs-placement="bottom"
@@ -320,142 +337,3 @@
     </div>
   {% endif %}
 </div>
-{% comment %} 
-
-<div class="timeline-item {% if person in event.people.all %}personal left{% else %}related right{% endif %} {{ event.type }}">
-    <div class="date">{{ event.date|date:"d M Y" }}</div>
-    <div class="content">
-      {% if ajax.editable %}
-        <form>
-          <div class="input-group">
-            {% if event.type == 'marriage' %}
-              <select name="type" class="form-select">
-                <option value="marriage" {% if event.type == 'marriage' %}selected{% endif %}>{% translate 'marriage'|capfirst %}</option>
-                <option value="other" {% if event.type == 'other' %}selected{% endif %}>{% translate 'other'|capfirst %}</option>
-              </select>
-            {% else %}
-              <input type="text" name="title" class="form-control" value="{{ event.title }}" placeholder="{% translate 'Event Title' %}">
-            {% endif %}
-            </div>
-          <div class="input-group">
-            <input type="number" name="day" class="form-control" value="{{ event.day }}" min="1" max="31">
-            <select name="month" class="form-select">
-              <option value="">{% translate 'Month' %}</option>
-              {% for month in event.months %}
-                <option value="{{ month.0 }}" {% if event.month == month.0 %}selected{% endif %}>{% translate month.1 %}</option>
-              {% endfor %}
-            <input type="number" name="year" class="form-control" value="{{ event.year }}" min="1400" max="{{ current_year }}">
-          </div>
-          <div class="input-group">
-            <textarea data-autoresize name="description" class="form-control" placeholder="{% translate 'event description'|capfirst %}">{{ event.description|default:''}}</textarea>
-          </div>
-          <!-- People -->
-           <div class="input-group mt-2">
-            <span class="input-group-text">{% translate 'people'|capfirst %}:</span>
-            {% for person in event.people.all %}
-              <span class="input-group-text">{{ person.name }}</span><button type="button" class="btn btn-outline-danger btn-sm remove-person">&times;</button>
-            {% endfor %}
-          </div>
-          <div class="input-group">
-            <span class="input-group-text">{% translate 'add person'|capfirst %}:</span>
-            <input  type="text" 
-                      class="form-control" 
-                      placeholder="{% translate 'start typing...'|capfirst %}"
-                      data-autosuggest
-                      data-url="{% url 'cmnsd:dispatch' 'people' %}?format=json"
-                      data-param="{{ search_query_character|default:'q' }}"
-                      data-field-input="full_name"
-                      data-field-hidden="slug"
-                      data-field-prefix="people__"
-                      data-display-fields="full_name, lifespan"
-                      data-container="person"
-              >
-          </div>
-          <!-- Locations -->
-          <div class="input-group mt-2">
-            <span class="input-group-text">{% translate 'locations'|capfirst %}:</span>
-            {% for location in event.locations.all %}
-              <span class="input-group-text">{{ location.name }}</span><button type="button" class="btn btn-outline-danger btn-sm remove-location">&times;</button>
-            {% endfor %}
-          </div>
-          <div class="input-group">
-            <span class="input-group-text">{% translate 'add location'|capfirst %}:</span>
-            <input  type="text" 
-                      class="form-control" 
-                      placeholder="{% translate 'start typing...'|capfirst %}"
-                      data-autosuggest
-                      data-url="{% url 'cmnsd:dispatch' 'locations' %}?format=json"
-                      data-param="{{ search_query_character|default:'q' }}"
-                      data-field-input="name"
-                      data-field-hidden="slug"
-                      data-field-prefix="locations__"
-                      data-display-fields="name, description"
-                      data-container="location"
-              >
-          </div>
-          <!-- Proof -->
-        </form>
-      {% else %}
-        <strong>
-          {% if event.type == 'birth' or event.type == 'death' %}
-            {% translate event.type|capfirst %} {% translate 'of' %} {% for person in event.people.all %}{% include 'element/person_full_name.html' with person=person %}{% if not forloop.last %}, {% endif %}{% endfor %}
-            {% if person not in event.people.all %}
-              {% for p in event.people.all %}
-                {% if p in person.parents %}({% if p.gender == 'f' %}{% translate 'mother' %}{% elif p.gender == 'm' %}{% translate 'father' %}{% else %}{% translate 'parent' %}{% endif %}){% endif %}
-                {% if p in person.siblings %}({% translate 'sibling' %}){% endif %}
-                {% if p in person.children %}({% translate 'child' %}){% endif %}
-                {% if p in person.partners %}({% translate 'partner' %}){% endif %}
-                {% if event.type == 'death' or event.type == 'marriage' %}{% with age=event.date|calc_age:p.birth %}{% if age > 0%}({{ age }}){% endif %}{% endwith %}{% endif %}
-              {% endfor %}
-            {% endif %}
-          {% elif event.type == 'marriage' %} 
-            {% translate event.type|capfirst %}{% if event.people.all.count > 1%} {% translate 'with' %} {% for person in event.people.all|without:person %}{% include 'element/person_full_name.html' with person=person %}{% if person.birth %} ({{ event.date|calc_age:person.birth.date }}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}.
-          {% else %}
-            {{ event.title }}
-          {% endif %} 
-        </strong>
-        <p>
-          {% if event.people.all|without:person|length > 0%}
-            {% if event.type is not 'birth' and event.type is not 'death' and event.type is not 'marriage' %}
-              {% translate 'with' %} 
-              {% for person in event.people.all|without:person %}
-                {% include 'element/person_full_name.html' with person=person %}
-                {% if not forloop.last %}, {% endif %}
-              {% endfor %}
-            {% endif %}
-          {% endif %}
-          {% if event.locations.all.count > 0 %}
-            {% translate 'at' %}
-            {% for location in event.locations.all %}
-              {{ location.name }}{% if not forloop.last %}, {% else %}.{% endif %}
-            {% endfor %}
-          {% endif %}
-          {% with age=event.date|calc_age:person.birth %}{% if age > 0 %}<span class="text-muted">({% if person not in event.people.all %}{{ person.given_name|default:person.first_names }} was {% endif %}{{ age }} {% translate 'years old' %})</span>{% endif %}{% endwith %}
-        </p>
-        {% if event.description%}
-          <p >{{ event.description|markdown|safe }}</p>
-        {% endif %}
-      {% endif %}
-      <!-- Event Action List-->
-      <div class="event-actions d-flex gap-2 mt-2">
-        {% if event.images.count > 0 %}
-          {% for image in event.images.all %}
-            <a href="{% url 'archive:image' image.slug %}" title="{{ image.title }}" bs-tooltip="true" data-bs-placement="top">
-              <img src="{% static 'img/bootstrap-icons/image.svg' %}" alt="{{ image.title }}">
-            </a>
-          {% endfor %}
-        {% endif %}
-        {% if perms.archive.change_event %}
-          {% if ajax.editable %}
-          {% elif event.editable and person in event.people.all%}
-<a
-  data-action
-  data-url="{% url 'cmnsd:dispatch_field_of_object_by_id_and_slug' 'person' person.id person.slug 'events' %}"
-  data-params='{"editable":"true","id":"{{ event.id }}","token":"{{ event.token }}"}'
->
-  <img src="{% static 'img/bootstrap-icons/pencil-square.svg' %}">
-</a>          {% endif %}
-        {% endif %}
-      </div>
-    </div>
-  </div> {% endcomment %}
