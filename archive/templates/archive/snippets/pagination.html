@@ -9,9 +9,53 @@
           {% if page_obj.has_previous %}</a>{% else %}</span>{% endif %}
       </li>
       <!-- Pages -->
-      {% for page in page_obj.paginator.page_range %}
+      {% comment %} {% for page in page_obj.paginator.page_range %}
         <li class="page-item{% if page_obj.number == page %} active{% endif %}"><a class="page-link" href="?{% include 'archive/snippets/fixparams.html' with ignore='page' %}page={{ page }}{% if focus %}#{{ focus }}{% endif %}">{{ page }}</a></li>
-      {% endfor %}
+      {% endfor %} {% endcomment %}
+      {% with current=page_obj.number total=page_obj.paginator.num_pages %}
+        {% for page in page_obj.paginator.page_range %}
+          {# --- Always show first 3 pages --- #}
+          {% if page <= 3 %}
+            <li class="page-item{% if current == page %} active{% endif %}">
+              <a class="page-link"
+                href="?{% include 'archive/snippets/fixparams.html' with ignore='page' %}page={{ page }}{% if focus %}#{{ focus }}{% endif %}">
+                {{ page }}
+              </a>
+            </li>
+
+          {# --- Ellipsis after first block --- #}
+          {% elif page == 4 and current > 5 %}
+            <li class="page-item disabled">
+              <span class="page-link">…</span>
+            </li>
+
+          {# --- Pages around current page --- #}
+          {% elif page >= current|add:"-1" and page <= current|add:"1" %}
+            <li class="page-item{% if current == page %} active{% endif %}">
+              <a class="page-link"
+                href="?{% include 'archive/snippets/fixparams.html' with ignore='page' %}page={{ page }}{% if focus %}#{{ focus }}{% endif %}">
+                {{ page }}
+              </a>
+            </li>
+
+          {# --- Ellipsis before last block --- #}
+          {% elif page == total|add:"-3" and current < total|add:"-4" %}
+            <li class="page-item disabled">
+              <span class="page-link">…</span>
+            </li>
+
+          {# --- Always show last 3 pages --- #}
+          {% elif page > total|add:"-3" %}
+            <li class="page-item{% if current == page %} active{% endif %}">
+              <a class="page-link"
+                href="?{% include 'archive/snippets/fixparams.html' with ignore='page' %}page={{ page }}{% if focus %}#{{ focus }}{% endif %}">
+                {{ page }}
+              </a>
+            </li>
+
+          {% endif %}
+        {% endfor %}
+      {% endwith %}
       <!-- Next/Last -->
       <li class="page-item{% if not page_obj.has_next %} disabled{% endif %}">
         {% if page_obj.has_next %}<a class="page-link" href="?{% include 'archive/snippets/fixparams.html' with ignore='page' %}page={{ page_obj.next_page_number }}{% if focus %}#{{ focus }}{% endif %}" aria-label="next">{% else %}<span class="page-link">{% endif %}
