@@ -1,0 +1,102 @@
+{% load static %}
+{% if not location.sublocations.exists %}
+  <div class="col-md-2">
+    {% ifchanged location.country %}{{ location.country.name }}{% endifchanged %}
+  </div>
+  <div class="col-md-3">
+    {% ifchanged location.region %}<a href="{% url 'archive:locations' %}?name={{ location.region.name }}">{{ location.region.name }}</a>{% endifchanged %}
+  </div>
+  <div class="col-md-6">
+    <strong>{{ location.name }}</strong>
+    <!-- Alternatives-->
+    {% if location.alternatives.exists %}
+      <div class="alternatives">
+        {% for alternative in location.alternatives.all %}
+          <em class="alternative">{{ alternative.name }}</em>{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+    <!-- Description -->
+    {% if location.description %}
+      <div class="description">{{ location.description|safe }}</div>
+    {% endif %}
+    <!-- People -->
+    {% if location.people|length > 0 %}
+      <div class="people">
+        {% for person in location.people %}
+         {% include 'element/person_full_name.html' with person=person %}
+         {% if location in person.birth.locations.all %}*{% elif location in person.death.locations.all %}&dagger;{% endif %}
+         {% if not forloop.last %}<br>{% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% if ajax.editable %}
+      <div class="edit location">
+        <form
+            data-action
+            data-method="post"
+            data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'location' location.id location.slug %}"
+            data-map='{"location": "#location-{{ location.id }}"}'
+            data-refresh-url="{% url 'cmnsd:dispatch' 'locations' %}"
+            data-refresh-map='{"location": "#locations"}'
+            >
+          <div class="input-group input-group-sm">
+            <span class="input-group-text">{% translate 'name' %}</span>
+            <input type="text" class="form-control" name="name" value="{{ location.name }}" />
+          </div>
+          <div class="input-group input-group-sm">
+            <span class="input-group-text">{% translate 'description' %}</span>
+            <textarea class="form-control" name="description">{{ location.description }}</textarea>
+          </div>
+          <div class="input-group input-group-sm">
+            <span class="input-group-text">{% translate 'parent location' %}:</span>
+            {% if location.parent %}
+              <span class="input-group-text">
+                {{ location.parent }}
+                <a data-action
+                    data-method="post"
+                    data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'location' location.id location.slug %}"
+                    data-params='{"parent__id": "{{ location.parent.id }}"}'
+                    data-map='{"location": "#location-{{ location.id }}"}'
+                    data-refresh-url="{% url 'cmnsd:dispatch' 'locations' %}"
+                    data-refresh-map='{"location": "#locations"}'
+                    >
+                  <img src="{% static 'img/bootstrap-icons/x.svg' %}" 
+                       alt="{% translate 'remove parent location' %}" 
+                       title="{% translate 'remove parent location' %}" 
+                      />
+                </a>
+              </span>
+            {% else %}
+              <input type="text" class="form-control" name="parent" placeholder="{% translate 'start typing...' %}" 
+                      data-autosuggest
+                        data-url="{% url 'cmnsd:dispatch' 'locations' %}?format=json"
+                        data-param="{{ search_query_character|default:'q' }}"
+                        data-field-input="name"
+                        data-field-hidden="slug"
+                        data-field-prefix="parent__"
+                        data-display-fields="name, description"
+                        data-container="location"
+                        data-allow-empty="1">
+            {% endif %}
+          </div>
+          <button type="submit" class="btn btn-sm btn-primary">{% translate 'save' %}</button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+  <div class="col-md-1 text-end">
+    {% if perms.archive.change_location %}
+      <a class="btn btn-sm btn-primary-outline">
+        <img  src="{% if ajax.editable %}{% static 'img/bootstrap-icons/x.svg' %}{% else %}{% static 'img/bootstrap-icons/pencil.svg' %}{% endif %}" 
+              alt="{% translate 'edit' %}" 
+              title="{% translate 'edit' %}" 
+              data-action
+              data-url="{% url 'cmnsd:dispatch_object_by_id_and_slug' 'location' location.id location.slug %}"
+              data-map='{"location": "#location-{{ location.id }}"}'
+              {% if not ajax.editable %}data-params='{"editable": "true"}'{% endif %}
+              />
+      </a>
+    {% endif %}
+    </div>
+{% endif %}
