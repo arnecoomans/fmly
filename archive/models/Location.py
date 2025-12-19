@@ -23,7 +23,7 @@ class Location(BaseModel, BaseIcon):
     super().save(*args, **kwargs)
   
   class Meta:
-    ordering = ['name']
+    ordering = ['parent__parent__name', 'parent__name', 'name']
     unique_together = ('parent', 'name')
   
   def get_display_name(self):
@@ -44,3 +44,18 @@ class Location(BaseModel, BaseIcon):
       for person in event.people.all():
         people.add(person)
     return people
+  def people(self):
+    return self.get_event_people()
+  
+  def country(self):
+    if self.parent and self.parent.parent:
+      return self.parent.parent
+    elif self.parent:
+      return self.parent
+    else:
+      return None
+  def region(self):
+    if self.parent and self.parent.parent:
+      return self.parent
+    else:
+      return None

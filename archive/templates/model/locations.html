@@ -1,0 +1,5 @@
+{% for location in locations.all %}
+  <div class="row" id="location-{{ location.id }}">
+    {% include 'object/location.html' %}
+  </div>
+{% endfor %}

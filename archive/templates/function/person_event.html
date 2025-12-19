@@ -275,7 +275,7 @@
         <div class="location-reference">
           {% translate 'at'|capfirst %}
           {% for loc in event.locations.all %}
-            {{ loc }}{% if not forloop.last %}, {% endif %}
+            <a href="{% url 'archive:locations' %}?name={{ loc.name }}">{{ loc }}</a>{% if not forloop.last %}, {% endif %}
           {% endfor %}
         </div>
       {% endif %}

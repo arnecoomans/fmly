@@ -92,7 +92,7 @@
       {% else %}
         {% if person.death.weekday %}{% translate person.death.weekday|default:""|capfirst %} {% endif %}
         {{ person.death.day|default:'' }} {% if person.death.month %}{% translate person.death.get_month_display|default:'' %} {% endif %}{{ person.death.year|default:'' }} 
-        {% if person.death.locations.all.count > 0 %}{% translate 'in' %} {% for location in person.death.locations.all %}{{ location.get_display_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
+        {% if person.death.locations.all.count > 0 %}{% translate 'in' %} {% for location in person.death.locations.all %}<a href="{% url 'archive:locations' %}?name={{ location.name }}">{{ location.get_display_name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
         {% if person.death and person.birth %}{% with age=person.death.date|calc_age:person.birth.date %}{% if age and age > 0 %}<span class="text-muted">({{age}})</span>{% endif %}{% endwith %}{% endif %}
         {% if person.death and person.death.description %}
           <div class="text-muted small">{{ person.death.description|markdown|safe}}</div>
