@@ -7,7 +7,9 @@
           {% include 'function/person_event.html' with event=event person=person %}
         </div>
       {% endfor %}
-      {% include 'function/person_event.html' with event=None person=person editable=True %}
+        <div id="event-new">
+          {% include 'function/person_event.html' with event=None person=person editable=True %}
+        </div>
     </div>
   </div>
 {% else %}

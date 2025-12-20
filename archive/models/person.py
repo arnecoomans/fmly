@@ -598,6 +598,11 @@ class FamilyRelations(models.Model):
 
   class Meta:
     unique_together = ('up', 'down', 'type', )
+    indexes = [
+      models.Index(fields=["up", "type"]),
+      models.Index(fields=["down", "type"]),
+      models.Index(fields=["up", "down", "type"]),
+    ]
 
   def __str__(self):
     try:

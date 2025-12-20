@@ -61,7 +61,10 @@ class Event(BaseModel):
 
   class Meta:
     ordering = ['-year', '-month', '-day', 'title', 'type']
-  
+    indexes = [
+      models.Index(fields=["type"])
+    ]
+
   def __str__(self):
     try:
       return self.get_title()
