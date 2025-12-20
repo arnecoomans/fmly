@@ -127,17 +127,17 @@ class Person(BaseModel):
   ''' SEARCHABLE FUNCTIONS '''
   @searchable_function
   def century(self):
-    if self.birth():
+    if self.birth() and self.birth().year:
       return floor(self.birth().year/100)*100
   @searchable_function
   def decade(self):
     decades = []
-    if self.birth():
+    if self.birth() and self.birth().year:
       decade = floor(self.birth().year/10)*10
       if decade not in decades:
         decades.append(decade)
       # return floor(self.birth().year/10)*10
-      if self.death():
+      if self.death() and self.death().year:
         max = 0
         while decade <= floor(self.death().year/10)*10:
           decade +=10
