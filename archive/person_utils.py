@@ -55,24 +55,51 @@ def get_person_filters(request):
       filters[filter] = default_value
   return filters
 
+def annotate_qs(queryset):
+  birth_qs = (
+    Event.objects
+    .filter(people=OuterRef("pk"), type="birth")
+    .order_by("-year", "-month", "-day")
+  )
+
+  death_qs = (
+    Event.objects
+    .filter(people=OuterRef("pk"), type="death")
+    .order_by("-year", "-month", "-day")
+  )
+
+  queryset = queryset.annotate(
+    birth_year=Subquery(birth_qs.values("year")[:1], IntegerField()),
+    death_year=Subquery(death_qs.values("year")[:1], IntegerField()),
+  )
+  return queryset
 
 ''' Get a list of centuries of all People '''
 def get_centuries(queryset):
-  centuries = []
-  for person in queryset:
-    if person.century():
-      if not person.century() in centuries:
-        centuries.append(person.century())
-  centuries.sort()
-  return centuries
+  centuries = set()
+  queryset = annotate_qs(queryset)
+  qs = queryset.exclude(birth_year__isnull=True)
+
+  for birth, death in qs.values_list("birth_year", "death_year"):
+    start = (birth // 100) * 100
+    end = ((death or birth) // 100) * 100
+
+    for decade in range(start, end + 1, 10):
+      centuries.add(decade)
+
+  return sorted(centuries)
   
 ''' Get a list of all decades a Person has been born in '''
 def get_decades(queryset):
-  decades = []
-  for person in queryset:
-    if person.decade():
-      for decade in person.decade():
-        if not decade in decades:
-          decades.append(decade) 
-  decades.sort()
-  return decades
+  decades = set()
+  queryset = annotate_qs(queryset)
+  qs = queryset.exclude(birth_year__isnull=True)
+
+  for birth, death in qs.values_list("birth_year", "death_year"):
+    start = (birth // 10) * 10
+    end = ((death or birth) // 10) * 10
+
+    for decade in range(start, end + 1, 10):
+      decades.add(decade)
+
+  return sorted(decades)
