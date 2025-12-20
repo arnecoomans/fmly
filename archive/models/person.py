@@ -12,6 +12,11 @@ from django.utils.translation import gettext_lazy as _
 from django.db.models import Value, CharField
 from functools import reduce
 from operator import or_
+from django.db.models import (
+    Exists, OuterRef, Case, When, Value, CharField,
+    Subquery, IntegerField, F, BooleanField
+)
+from django.db.models import Q
 
 from .Event import Event
 
@@ -211,13 +216,13 @@ class Person(BaseModel):
   def timeline(self):
     events = self.events.all()
     # Include Parent events
-    for parent in self.get_parents() or []:
+    for parent in self.get_parents().all() or []:
       events = events | parent.events.filter(type__in=['birth', 'death', 'marriage'])
     # Include Children events
-    for child in self.get_children() or []:
+    for child in self.get_children().all() or []:
       events = events | child.events.filter(type__in=['birth', 'death', 'marriage'])
     # Include Partner events
-    for partner in self.get_partners() or []:
+    for partner in self.get_partners().all() or []:
       events = events | partner.events.filter(type__in=['birth', 'death',])
     # Include General events
     events = events | Event.objects.filter(type='general')
@@ -315,6 +320,7 @@ class Person(BaseModel):
   
   @ajax_function
   def family(self):
+    return self.get_family()
     return {
       'parents': [parent.id for parent in self.get_parents()] if self.get_parents() else [],
       'children': [child.id for child in self.get_children()] if self.get_children() else [],
@@ -355,86 +361,171 @@ class Person(BaseModel):
         places.append(person.place_of_death)
     return places
 
-  def get_parents(self, person=None):
-    if not person:
-      person = self
-    if person.relation_up:
-      parents = []
-      for parent in person.relation_up.filter(type='parent').order_by('up__year_of_birth'):
-        parent.up.relation_id = parent.id
-        parents.append(parent.up)
-      return parents
-  def get_father(self):
-    if self.relation_up:
-      for parent in self.relation_up.filter(type='parent', up__gender='m').order_by('up__year_of_birth'):
-        return parent.up
-  def get_mother(self):
-    if self.relation_up:
-      for parent in self.relation_up.filter(type='parent', up__gender='f').order_by('up__year_of_birth'):
-        return parent.up
-  
-  ''' get_children()
-      Childern have a simple relation
-      down is child of parent up
-  '''
-  def get_children(self, person=None):
-    if not person:
-      person = self
-    if person.relation_down:
-      children = []
-      for child in person.relation_down.filter(type='parent').order_by('down__year_of_birth'):
-        child_obj = child.down
-        child_obj.relation_id = child.id
-        children.append(child_obj)
-      return children
-  
-  ''' get_partners()
-      partners have a two-sided relation
-      a is partner of b, or b is partner of a
-  '''
-  def get_partners(self, person=None):
-    if not person:
-      person = self
-    if person.relation_down:
-      partners = []
-      ''' Partner is the other parent of a child '''
-      for child in self.get_children():
-        for parent in self.get_parents(child):
-          if parent not in partners and parent != person:
-            # A relation is assumed because of shared parentage,
-            # but relation_id is assigned in get_parents(). 
-            # Force to None here.
-            parent.relation_id = None
-            partners.append(parent)
-      ''' Partner is also found by relation type=partner '''
-      for partner in person.relation_up.filter(type='partner'):
-        if partner.up not in partners:
-          partner_obj = partner.up
-          partner_obj.relation_id = partner.id
-          partners.append(partner_obj)
-      for partner in person.relation_down.filter(type='partner'):
-        if partner.down not in partners:
-          partner_obj = partner.down
-          partner_obj.relation_id = partner.id
-          partners.append(partner_obj)
-      return partners
 
-  ''' get_siblings
-      siblings have a two-hop relation:
-      for each parent, fetch children
-  '''
-  def get_siblings(self, person=None):
-    if not person:
-      person = self
-    if person.relation_up:
-      siblings = []
-      for parent in self.get_parents():
-        for child in self.get_children(parent):
-          if child not in siblings and child != person:
-            child.relation_id = child.id
-            siblings.append(child)
-      return siblings
+  ''' FAMILY RELATIONS METHODS '''
+  def get_family(self):
+    """
+    Returns a queryset of all family members:
+    parents, children, siblings, partners.
+
+    Annotates:
+      - relation_type: parent | child | sibling | partner
+      - birth_year / month / day
+    """
+
+    PersonModel = self.__class__
+
+    # --------------------------------------------------
+    # Parent: someone who is parent of self
+    # --------------------------------------------------
+    is_parent = FamilyRelations.objects.filter(
+      down_id=self.pk,
+      type="parent",
+      up_id=OuterRef("pk"),
+    )
+
+    # --------------------------------------------------
+    # Child: someone who is child of self
+    # --------------------------------------------------
+    is_child = FamilyRelations.objects.filter(
+      up_id=self.pk,
+      type="parent",
+      down_id=OuterRef("pk"),
+    )
+
+    # --------------------------------------------------
+    # Partner: explicit partner relation
+    # --------------------------------------------------
+    explicit_partner = FamilyRelations.objects.filter(
+      type="partner",
+    ).filter(
+      Q(up_id=self.pk, down_id=OuterRef("pk")) |
+      Q(down_id=self.pk, up_id=OuterRef("pk"))
+    )
+
+    # --------------------------------------------------
+    # Partner via shared child
+    # --------------------------------------------------
+    shared_child_partner = FamilyRelations.objects.filter(
+        type="parent",
+      ).filter(
+        # I am parent of a child
+        Q(
+          up_id=self.pk,
+          down__relation_up__type="parent",
+          down__relation_up__up_id=OuterRef("pk"),
+        )
+      )
+
+    # --------------------------------------------------
+    # Siblings (FIXED: direct siblings only)
+    # --------------------------------------------------
+    self_parents = FamilyRelations.objects.filter(
+      down_id=self.pk,
+      type="parent",
+    ).values("up_id")
+
+    is_sibling = FamilyRelations.objects.filter(
+      type="parent",
+      up_id__in=Subquery(self_parents),
+      down_id=OuterRef("pk"),
+    ).exclude(
+      down_id=self.pk
+    )
+
+    # --------------------------------------------------
+    # Birth subquery (ordering)
+    # --------------------------------------------------
+    birth_qs = (
+      Event.objects
+      .filter(people=OuterRef("pk"), type="birth")
+      .order_by("-year", "-month", "-day")
+    )
+
+    qs = (
+      PersonModel.objects
+      .exclude(pk=self.pk)
+
+      # --- relationship existence checks ---
+      .annotate(
+        _is_parent=Exists(is_parent),
+        _is_child=Exists(is_child),
+        _is_sibling=Exists(is_sibling),
+        _is_partner_explicit=Exists(explicit_partner),
+        _is_partner_shared=Exists(shared_child_partner),
+      )
+
+      # --- combine partner logic ---
+      .annotate(
+        _is_partner=Case(
+          When(
+            Q(_is_partner_explicit=True) | Q(_is_partner_shared=True),
+            then=Value(True),
+          ),
+          default=Value(False),
+          output_field=BooleanField(),
+        )
+      )
+
+      # --- OR filter ---
+      .filter(
+        Q(_is_parent=True) |
+        Q(_is_child=True) |
+        Q(_is_sibling=True) |
+        Q(_is_partner=True)
+      )
+
+      # --- relation label + birth ordering ---
+      .annotate(
+        relation_type=Case(
+          When(_is_parent=True, then=Value("parent")),
+          When(_is_child=True, then=Value("child")),
+          When(_is_partner=True, then=Value("partner")),
+          When(_is_sibling=True, then=Value("sibling")),
+          default=Value("family"),
+          output_field=CharField(),
+        ),
+
+        birth_year=Subquery(
+          birth_qs.values("year")[:1],
+          output_field=IntegerField(),
+        ),
+        birth_month=Subquery(
+          birth_qs.values("month")[:1],
+          output_field=IntegerField(),
+        ),
+        birth_day=Subquery(
+          birth_qs.values("day")[:1],
+          output_field=IntegerField(),
+        ),
+      )
+
+      .order_by(
+        F("birth_year").asc(nulls_last=True),
+        F("birth_month").asc(nulls_last=True),
+        F("birth_day").asc(nulls_last=True),
+      )
+    )
+
+    return qs
   
+  def get_parents(self):
+    return self.get_family().filter(relation_type="parent")
+
+  def get_children(self):
+    return self.get_family().filter(relation_type="child")
+
+  def get_partners(self):
+    return self.get_family().filter(relation_type="partner")
+
+  def get_siblings(self):
+    return self.get_family().filter(relation_type="sibling")
+
+  def get_father(self):
+    return self.get_parents().filter(gender='m')
+  def get_mother(self):
+    return self.get_parents().filter(gender='f')
+
   @property
   def get_family_relations(self):
     return ['parent', 'child', 'partner', 'sibling']

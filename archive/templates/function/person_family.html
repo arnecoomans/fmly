@@ -2,6 +2,7 @@
 <div class="d-flex">
   <!-- LEFT SECTION (labels + values stacked) -->
   <div class="flex-grow-1">
+    {% comment %} {{ person.family }} {% endcomment %}
     <!-- Family -->
     {% if not person.parents and not person.siblings and not person.children and not person.partners and not ajax.editable %}
       <div class="d-flex py-1">
@@ -30,11 +31,11 @@
       </div>
     {% endif %}
     <!-- Siblings -->
-    {% if person.siblings or ajax.editable and perms.archive.change_person %}
+    {% if person.siblings.exists or ajax.editable and perms.archive.change_person %}
       <div class="d-flex py-1">
         <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% blocktranslate count counter=person.get_siblings|length  %}Brother/Sister{% plural %}Brothers/Sisters{% endblocktranslate %}:</div>
         <div class="col">
-          {% for sibling in person.siblings %}
+          {% for sibling in person.siblings.all %}
             {% include 'element/person_full_name.html' with person=sibling %}
             {% comment %} <a href="{% url 'archive:person' sibling.id sibling.slug %}">{{ sibling.full_name }}</a> {% endcomment %}
             {% comment %} Siblings cannot be removed since they are auto-computed by parent overlap {% include 'element/reusable_delete_family_relation.html' with relation=sibling person=person %} {% endcomment %}
@@ -47,11 +48,11 @@
       </div>
     {% endif %}
     <!-- Partners -->
-    {% if person.partners or ajax.editable and perms.archive.change_person %}
+    {% if person.partners.exists or ajax.editable and perms.archive.change_person %}
       <div class="d-flex py-1">
         <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'partners'|capfirst %}:</div>
         <div class="col">
-          {% for partner in person.partners %}
+          {% for partner in person.partners.all %}
             {% include 'element/person_full_name.html' with person=partner %}
             {% include 'element/reusable_delete_family_relation.html' with relation=partner person=person %}
             {% if not forloop.last %}<br> {% endif %}
@@ -62,22 +63,22 @@
       </div>
     {% endif %}
     <!-- Children -->
-    {% if person.children or ajax.editable and perms.archive.change_person %}
+    {% if person.children.exists or ajax.editable and perms.archive.change_person %}
       <div class="d-flex {% if not ajax.editable %}border-bottom {% endif %} py-1">
         <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'children'|capfirst %}:</div>
         <div class="col">
-          {% for child in person.children %}
-            {% with partner=child.parents|remove:person %}
-              {% ifchanged partner %}
-                <span class="text-muted">{% translate 'with' %}
-                  {% for p in partner %}
-                    {{ p.full_name }}{% if not forloop.last %}, {% else %}:{% endif %}
-                  {% endfor %}
-                  {% if not partner %}
-                    {% translate 'unregistered partner' %}:
-                  {% endif %}
-                </span><br>
-              {% endifchanged %}
+          {% for child in person.children.all %}
+            {% with partner=child.parents.all|without:person %}
+              {% with partner=partner.first %}
+                {% ifchanged partner %}
+                  <span class="text-muted">{% translate 'with' %}
+                    {{ partner.full_name }}:
+                    {% if not partner %}
+                      {% translate 'unregistered partner' %}:
+                    {% endif %}
+                  </span><br>
+                {% endifchanged %}
+              {% endwith %}
             {% endwith %}
             {% include 'element/person_full_name.html' with person=child %}
             {% comment %} <a href="{% url 'archive:person' child.id child.slug %}">{{ child.full_name }}</a> {% endcomment %}
