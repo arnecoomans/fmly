@@ -19,47 +19,8 @@
       {% include 'function/person_get_date_of_death.html' %}
     </div>
   </div>
+  
   <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
       {% include 'element/reusable_edit_column.html' with object_name='person' object=person field='dates' no_save='true'%}
     </div>
 </div>
-
-
-
-
-
-
-{% if user.is_staff %}
-  <div class="d-flex">
-    <!-- LEFT SECTION (labels + values stacked) -->
-    <div class="flex-grow-1">
-      <!-- Legacy Birth -->
-      {% if person.year_of_birth or person.month_of_birth or person_day_of_birth or person.place_of_birth  or ajax.editable%}
-        <div class="d-flex py-1">
-          <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'born'|capfirst %} (old):</div>
-          <div class="col">
-            
-              {{ person.day_of_birth|default:'?' }}-{{ person.month_of_birth|default:'?' }}-{{ person.year_of_birth|default:'?' }} {% if person.place_of_birth %}te {{ person.place_of_birth }}{% endif %}
-            
-          </div>
-        </div>
-      {% endif %}
-      <!-- Death -->
-      {% if person.year_of_death or person.month_of_death or person_day_of_death or moment_of_death_unconfirmed or person.place_of_death or ajax.editable %}
-        <div class="d-flex border-bottom py-1">
-          <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'died'|capfirst %} (old):</div>
-          <div class="col">
-            
-              {{ person.day_of_death|default:'?' }}-{{ person.month_of_death|default:'?' }}-{{ person.year_of_death|default:'?' }} {% if person.place_of_death %}te {{ person.place_of_death }}{% endif %}{% if person.ageatdeath %} ({{ person.ageatdeath }}){% endif %}
-            
-          </div>
-        </div>
-      {% endif %}
-    </div>
-
-    <!-- RIGHT SECTION (icons spanning vertically) -->
-    <div class="ms-3 d-flex flex-column align-items-end justify-content-start flex-shrink-0">
-      
-    </div>
-  </div>
-{% endif %}

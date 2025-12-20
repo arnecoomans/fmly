@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from datetime import date
 from math import floor
 
-from ..person_utils import get_person_filters, get_person_queryset, get_centuries, get_decades
+from ..person_utils import get_person_filters, get_centuries, get_decades
 
 from archive.models import Person, FamilyRelations, Image
 
@@ -23,8 +23,6 @@ from cmnsd.views.utils__request import RequestMixin
 '''
 def get_fields():
   return ['first_names', 'given_name', 'last_name', 'married_name', 'nickname', 'gender',
-          'day_of_birth', 'month_of_birth', 'year_of_birth', 'place_of_birth', 
-          'day_of_death', 'month_of_death', 'year_of_death', 'place_of_death',
           'moment_of_death_unconfirmed',
           'bio', 'private']
 
@@ -112,7 +110,6 @@ class PersonListView(FilterMixin, RequestMixin, ListView):
   translate_orderby = {
     'last_name': 'achternaam',
     'first_names': 'voornaam',
-    'year_of_birth': 'geboortejaar',
   }
 
   ''' Check if a current filters are different than default values '''
@@ -186,20 +183,20 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
     ''' If year of birth is known, remove everyone who has died before this person was born 
         or who was born 100 years before this person
     '''
-    if person.year_of_birth:
-      available_relations = available_relations.exclude(year_of_death__lt=person.year_of_birth-1)
-      available_relations = available_relations.exclude(year_of_birth__lt=person.year_of_birth-100)
-      ''' If the person is older than 100 years, remove all entries without date of birth and date of death
-      '''
-      if person.year_of_death:
-        if person.year_of_birth <= date.today().year - 100 or person.year_of_death <= date.today().year:
-          available_relations = available_relations.exclude(
-              year_of_birth=None, year_of_death=None)
+    # if person.year_of_birth:
+    #   available_relations = available_relations.exclude(year_of_death__lt=person.year_of_birth-1)
+    #   available_relations = available_relations.exclude(year_of_birth__lt=person.year_of_birth-100)
+    #   ''' If the person is older than 100 years, remove all entries without date of birth and date of death
+    #   '''
+    #   if person.year_of_death:
+    #     if person.year_of_birth <= date.today().year - 100 or person.year_of_death <= date.today().year:
+    #       available_relations = available_relations.exclude(
+    #           year_of_birth=None, year_of_death=None)
     ''' If year of death is known, remove everyone who was born after the person died
         or who was born more than 100 years before the person died
     '''
-    if person.year_of_death:
-      available_relations = available_relations.exclude(year_of_birth__gt=person.year_of_death)
+    # if person.year_of_death:
+    #   available_relations = available_relations.exclude(year_of_birth__gt=person.year_of_death)
     
     available_relations = available_relations.order_by('first_names', 'last_name')
     return available_relations
@@ -269,20 +266,20 @@ class PersonAddRelationView(PermissionRequiredMixin, CreateView):
     if type == 'parent':
       ''' Add Parent Relation '''
       ''' Check age difference before adding relation '''
-      if person.year_of_birth and subject.year_of_birth:
-        message = None
-        if person.year_of_birth > subject.year_of_birth:
-          ''' Check age difference before adding relation '''
-          message = f"{ person.first_names } ({ person.year_of_birth }) was nog niet geboren toen { subject.first_names } ({ subject.year_of_birth }) werd geboren"
-        elif person.year_of_birth + 12 > subject.year_of_birth:
-          ''' Parent was under 12 when child was born '''
-          message = f"{ person.first_names } ({ person.year_of_birth }) is te jong om ouder te zijn van { subject.first_names } ({ subject.year_of_birth })"
-        elif subject.year_of_birth - person.year_of_birth > 80:
-          ''' Parent was over 80 when child was born '''
-          message = f"{ person.first_names } ({ person.year_of_birth }) is te oud om ouder te zijn van { subject.first_names } ({ subject.year_of_birth })"
-        if message:
-          messages.add_message(self.request, messages.WARNING, f"Relatie kan niet worden toegevoegd: { message }.")
-          return redirect('archive:person-edit', subject.id )
+      # if person.year_of_birth and subject.year_of_birth:
+      #   message = None
+      #   if person.year_of_birth > subject.year_of_birth:
+      #     ''' Check age difference before adding relation '''
+      #     message = f"{ person.first_names } ({ person.year_of_birth }) was nog niet geboren toen { subject.first_names } ({ subject.year_of_birth }) werd geboren"
+      #   elif person.year_of_birth + 12 > subject.year_of_birth:
+      #     ''' Parent was under 12 when child was born '''
+      #     message = f"{ person.first_names } ({ person.year_of_birth }) is te jong om ouder te zijn van { subject.first_names } ({ subject.year_of_birth })"
+      #   elif subject.year_of_birth - person.year_of_birth > 80:
+      #     ''' Parent was over 80 when child was born '''
+      #     message = f"{ person.first_names } ({ person.year_of_birth }) is te oud om ouder te zijn van { subject.first_names } ({ subject.year_of_birth })"
+      #   if message:
+      #     messages.add_message(self.request, messages.WARNING, f"Relatie kan niet worden toegevoegd: { message }.")
+      #     return redirect('archive:person-edit', subject.id )
       try:
         relation = FamilyRelations(up_id=person.id, down_id=subject.id, type='parent')
         relation.save()
@@ -292,20 +289,20 @@ class PersonAddRelationView(PermissionRequiredMixin, CreateView):
     elif type == 'child':
       ''' Add Child Relation '''
       ''' Check age difference before adding relation '''
-      if person.year_of_birth and subject.year_of_birth:
-        message = None
-        if subject.year_of_birth > person.year_of_birth:
-          ''' Child was born before parent '''
-          message = f"{ subject.first_names } ({ subject.year_of_birth }) was nog niet geboren toen { person.first_names } ({ person.year_of_birth }) werd geboren"
-        elif subject.year_of_birth + 12 > person.year_of_birth:
-          ''' Parent was under 12 when child was born '''
-          message = f"{ subject.first_names } ({ subject.year_of_birth }) is te jong om ouder te zijn van { person.first_names } ({ person.year_of_birth })"
-        elif person.year_of_birth - subject.year_of_birth > 80:
-          ''' Parent was over 80 when child was born '''
-          message = f"{ subject.first_names } ({ subject.year_of_birth }) is te oud om ouder te zijn van { person.first_names } ({ person.year_of_birth })"
-        if message:
-          messages.add_message(self.request, messages.WARNING, f"Relatie kan niet worden toegevoegd: { message }.")
-          return redirect('archive:person-edit', subject.id )
+      # if person.year_of_birth and subject.year_of_birth:
+      #   message = None
+      #   if subject.year_of_birth > person.year_of_birth:
+      #     ''' Child was born before parent '''
+      #     message = f"{ subject.first_names } ({ subject.year_of_birth }) was nog niet geboren toen { person.first_names } ({ person.year_of_birth }) werd geboren"
+      #   elif subject.year_of_birth + 12 > person.year_of_birth:
+      #     ''' Parent was under 12 when child was born '''
+      #     message = f"{ subject.first_names } ({ subject.year_of_birth }) is te jong om ouder te zijn van { person.first_names } ({ person.year_of_birth })"
+      #   elif person.year_of_birth - subject.year_of_birth > 80:
+      #     ''' Parent was over 80 when child was born '''
+      #     message = f"{ subject.first_names } ({ subject.year_of_birth }) is te oud om ouder te zijn van { person.first_names } ({ person.year_of_birth })"
+      #   if message:
+      #     messages.add_message(self.request, messages.WARNING, f"Relatie kan niet worden toegevoegd: { message }.")
+      #     return redirect('archive:person-edit', subject.id )
       ''' Proceed with setting relation '''
       try:
         relation = FamilyRelations(up_id=subject.id, down_id=person.id, type='parent')
@@ -327,12 +324,12 @@ class PersonAddRelationView(PermissionRequiredMixin, CreateView):
     elif type == 'partner':
       ''' Add Partner relation'''
       ''' Check if both person and subject were alive during their relationship '''
-      if person.year_of_birth and subject.year_of_birth and person.year_of_death and subject.year_of_death:
-        ''' if person died before subject was born or subject died before person was born '''
-        if person.year_of_birth > subject.year_of_death or subject.year_of_birth > person.year_of_death:
-          message = f"{ subject.first_names } ({ subject.year_of_birth }) en { person.first_names } ({ person.year_of_birth }) leefden niet tegelijkertijd."
-          messages.add_message(self.request, messages.WARNING, f"Relatie kan niet worden toegevoegd: { message }.")
-          return redirect('archive:person-edit', subject.id )
+      # if person.year_of_birth and subject.year_of_birth and person.year_of_death and subject.year_of_death:
+      #   ''' if person died before subject was born or subject died before person was born '''
+      #   if person.year_of_birth > subject.year_of_death or subject.year_of_birth > person.year_of_death:
+      #     message = f"{ subject.first_names } ({ subject.year_of_birth }) en { person.first_names } ({ person.year_of_birth }) leefden niet tegelijkertijd."
+      #     messages.add_message(self.request, messages.WARNING, f"Relatie kan niet worden toegevoegd: { message }.")
+      #     return redirect('archive:person-edit', subject.id )
       ''' Proceed with setting relation '''
       try:
         relation = FamilyRelations(up_id=subject.id, down_id=person.id, type='partner')
