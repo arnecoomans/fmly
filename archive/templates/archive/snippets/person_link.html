@@ -1,6 +1,9 @@
 <span class="name">
   {% if not person.private %}<a href="{% url 'archive:person' person.id person.slug|default:'details' %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Bekijk details van {{ person.full_name }}">{% endif %}{{ person.full_name }}{% if not person.private %}</a>{% endif %}</span>
-<span class="date">{% if person.year_of_birth %}{{ person.year_of_birth }}{% elif person.year_of_death %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}{% if person.year_of_death or person.moment_of_death_unconfirmed %} - {% if person.year_of_death %}{{ person.year_of_death }}{% else %}?{% endif %}{% endif %}</span>
+<span class="date">
+  {{ person.birth.year|default:'&nbsp;&nbsp;&nbsp;*'}} - {{ person.death.year|default:'&dagger;' }}
+  {% comment %} {% if person.birth %}{{ person.birth.year }}{% elif person.death %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}{% if person.death or person.moment_of_death_unconfirmed %} - {% if person.death %}{{ person.death.year }}{% else %}&dagger;{% endif %}{% endif %} {% endcomment %}
+</span>
 {% if not suppress_icons %}
   <span class="icons">
     <!-- bio -->{% if person.bio %}<i class="bi bi-journal-text" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.name }} heeft een biografie"></i>{% endif %}

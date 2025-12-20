@@ -53,14 +53,14 @@ class Person(BaseModel):
   place_of_death      = models.CharField(max_length=255, blank=True)
   # Dating
   MONTHS = [(1, 'januari'), (2, 'februari'), (3, 'maart'), (4, 'april'), (5, 'mei'), (6, 'juni'), (7, 'juli'), (8, 'augustus'), (9, 'september'), (10, 'oktober'), (11, 'november'), (12, 'december')]
-  date_of_birth       = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
-  year_of_birth       = models.PositiveSmallIntegerField(blank=True, null=True, help_text='Is automatically filled when date is supplied')
-  month_of_birth      = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', choices=MONTHS)
-  day_of_birth        = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', validators=[MaxValueValidator(31), MinValueValidator(1)])
-  date_of_death       = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
-  year_of_death       = models.PositiveSmallIntegerField(blank=True, null=True, help_text='Is automatically filled when date is supplied')
-  month_of_death      = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', choices=MONTHS)
-  day_of_death        = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
+  # date_of_birth       = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
+  # year_of_birth       = models.PositiveSmallIntegerField(blank=True, null=True, help_text='Is automatically filled when date is supplied')
+  # month_of_birth      = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', choices=MONTHS)
+  # day_of_birth        = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', validators=[MaxValueValidator(31), MinValueValidator(1)])
+  # date_of_death       = models.DateField(null=True, blank=True, help_text='Format: year-month-date, for example 1981-08-11')
+  # year_of_death       = models.PositiveSmallIntegerField(blank=True, null=True, help_text='Is automatically filled when date is supplied')
+  # month_of_death      = models.PositiveSmallIntegerField(blank=True, null=True, help_text='', choices=MONTHS)
+  # day_of_death        = models.PositiveSmallIntegerField(blank=True, null=True, help_text='')
 
   moment_of_death_unconfirmed = models.BooleanField(default=False, help_text='Set True if moment of death is unknown but person has deceased.')
 
@@ -120,25 +120,35 @@ class Person(BaseModel):
   @ajax_function
   def dates(self):
     return {
-      'date_of_birth': self.date_of_birth,
-      'date_of_death': self.date_of_death,
-      'year_of_birth': self.year_of_birth,
-      'year_of_death': self.year_of_death,
-      'month_of_birth': self.month_of_birth,
-      'month_of_death': self.month_of_death,
-      'day_of_birth': self.day_of_birth,
-      'day_of_death': self.day_of_death,
+      'date_of_birth': self.get_date_of_birth(),
+      'date_of_death': self.get_date_of_death(),
       'moment_of_death_unconfirmed': self.moment_of_death_unconfirmed,
     }
   ''' SEARCHABLE FUNCTIONS '''
   @searchable_function
   def century(self):
-    if self.year_of_birth:
-      return floor(self.year_of_birth/100)*100
+    if self.birth():
+      return floor(self.birth().year/100)*100
   @searchable_function
   def decade(self):
-    if self.year_of_birth:
-      return floor(self.year_of_birth/10)*10
+    decades = []
+    if self.birth():
+      decade = floor(self.birth().year/10)*10
+      if decade not in decades:
+        decades.append(decade)
+      # return floor(self.birth().year/10)*10
+      if self.death():
+        max = 0
+        while decade <= floor(self.death().year/10)*10:
+          decade +=10
+          max +=1
+          if decade not in decades and decade <= floor(self.death().year/10)*10:
+            decades.append(decade)
+          if max > 8:
+            break
+    decades.sort()
+    return decades
+    
   
   @searchable_function
   def last_names(self):
@@ -242,60 +252,57 @@ class Person(BaseModel):
     return events.order_by('year', 'month', 'day').distinct()
   
 
+  def get_lifespan_data(self):
+    data = {
+      'birth_year': None,
+      'death_year': None,
+      'moment_of_death_unconfirmed': self.moment_of_death_unconfirmed,
+    }
+    if self.birth() and self.birth().year:
+      data['birth_year'] = self.birth().year
+    if self.death() and self.death().year:
+      data['death_year'] = self.death().year
+    return data
 
   def get_lifespan(self):
     lifespan = ''
-    if self.birth():
-      if self.birth().year:
-        lifespan += str(self.birth().year)
-      else:
-        lifespan += '*'
+    if self.get_lifespan_data()['birth_year']:
+      lifespan += str(self.get_lifespan_data()['birth_year'])
     else:
       lifespan += '*'
-    if self.death():
-      lifespan += ' - '
-      if self.death().year:
-        lifespan += str(self.death().year)
-      else:
-        lifespan += '&dagger;'
-    elif self.moment_of_death_unconfirmed:
+    if self.get_lifespan_data()['death_year']:
+      lifespan += ' - ' + str(self.get_lifespan_data()['death_year'])
+    elif self.get_lifespan_data()['moment_of_death_unconfirmed']:
       lifespan += ' - &dagger;'
     return lifespan
 
   def get_lifespan_display(self):
     lifespan = ''
-    if self.date_of_birth:
-      lifespan += self.date_of_birth.strftime('%d-%m-%Y')
-    elif self.year_of_birth:
-      lifespan += str(self.year_of_birth)
-    if self.place_of_birth:
-      lifespan += f" ({ self.place_of_birth })"
-    if self.date_of_death or self.year_of_death or self.moment_of_death_unconfirmed:
+    if self.get_lifespan_data()['birth_year']:
+      lifespan += str(self.birth().date().strftime('%d-%m-%Y'))
+    if self.birth():
+      locations = []
+      for location in self.birth().locations.all():
+        if location not in locations:
+          locations.append(location.name)
+      if locations:
+        lifespan += f" ({', '.join(locations)})"
+    if self.get_lifespan_data()['death_year'] or self.get_lifespan_data()['moment_of_death_unconfirmed']:
       lifespan += ' - '
-    if self.date_of_death:
-      lifespan += self.date_of_death.strftime('%d-%m-%Y')
-    elif self.year_of_death:
-      lifespan += str(self.year_of_death)
-    if self.place_of_death:
-      lifespan += f" ({ self.place_of_death })"
+      if self.get_lifespan_data()['death_year']:
+        lifespan += str(self.death().date().strftime('%d-%m-%Y'))
+      if self.death():
+        locations = []
+        for location in self.death().locations.all():
+          if location not in locations:
+            locations.append(location.name)
+        if locations:
+          lifespan += f" ({', '.join(locations)})"
+      else:
+        if self.get_lifespan_data()['moment_of_death_unconfirmed']:
+          lifespan += '&dagger;'
     return lifespan
-  
-  def has_dates(self):
-    if self.date_of_birth or self.month_of_birth or self.year_of_birth or self.place_of_birth or \
-       self.date_of_death or self.month_of_death or self.year_of_death or self.place_of_death:
-      return True
-    return False
-  
-
-  def ageatdeath(self):
-    if self.date_of_birth and self.date_of_death:
-      age = self.date_of_death.year - self.date_of_birth.year
-      age -= ((self.date_of_birth.month, self.date_of_birth.day) <
-         (self.date_of_birth.month, self.date_of_birth.day))
-      return age
-    elif self.year_of_birth and self.year_of_death:
-      return self.year_of_death - self.year_of_birth
-
+    
   ''' Family Relations
       There are two family relations stored:
       * A (up) is parent of B (down)
