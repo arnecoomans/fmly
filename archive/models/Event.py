@@ -61,7 +61,10 @@ class Event(BaseModel):
 
   class Meta:
     ordering = ['-year', '-month', '-day', 'title', 'type']
-  
+    indexes = [
+      models.Index(fields=["type"])
+    ]
+
   def __str__(self):
     try:
       return self.get_title()
@@ -80,14 +83,6 @@ class Event(BaseModel):
     if self.locations.exists():
       location_names = ', '.join([str(location) for location in self.locations.all()])
       title.append(f"{ _('at') } { location_names }")
-    # title.append(f"{ _('on') }")
-    # if self.day:
-    #   title.append(f"{ self.day }")
-    # if self.month:
-    #   title.append(f"{ self.get_month_display() }")
-    # title.append(f"{ self.year }")
-    # if self.title:
-    #   title.append(f": { self.title }")
     return " ".join(title)
   
   @property
