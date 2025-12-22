@@ -177,16 +177,17 @@ class Person(BaseModel):
     if self.private:
       return ' '.join([self.first_names, self.last_name]).strip()
     else:
-      value = self.first_names
+      name = []
+      name.append(self.first_names)
       if self.given_name:
-        value += f" ({ self.given_name})"
+        name.append(f"({ self.given_name})")
       if self.married_name:
-        value += f" { self.married_name }"
+        name.append(self.married_name)
         if self.last_name:
-          value += f" - { self.last_name }"
+          name.append(f"- { self.last_name }")
       else:
-        value += f" { self.last_name }"
-      return value.strip()
+        name.append(self.last_name)
+      return ' '.join(name).strip()
   
   def short_name(self):
     if self.given_name:
