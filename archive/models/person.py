@@ -124,7 +124,11 @@ class Person(BaseModel):
       'date_of_death': self.get_date_of_death(),
       'moment_of_death_unconfirmed': self.moment_of_death_unconfirmed,
     }
+  
   ''' SEARCHABLE FUNCTIONS '''
+  ''' Decade and Century shorthand available for searching people
+      alive in a certain period
+  '''
   @searchable_function
   def century(self):
     if self.birth() and self.birth().year:
@@ -136,7 +140,6 @@ class Person(BaseModel):
       decade = floor(self.birth().year/10)*10
       if decade not in decades:
         decades.append(decade)
-      # return floor(self.birth().year/10)*10
       if self.death() and self.death().year:
         max = 0
         while decade <= floor(self.death().year/10)*10:
@@ -148,8 +151,8 @@ class Person(BaseModel):
             break
     decades.sort()
     return decades
-    
   
+  ''' NAME Displaying '''
   @searchable_function
   def last_names(self):
     last_names = []
