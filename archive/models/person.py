@@ -78,12 +78,9 @@ class Person(BaseModel):
   def __str__(self):
     ''' Return the name of the person with year of birth and death '''
     name = self.full_name()
-    try:
-      # Wrap in lifespan if available - in a try to avoid recursion issues
-      if len(self.get_lifespan()) > 0:
-        name += f" ({ self.get_lifespan() })"
-    except:
-      pass
+    # Remove LifeSpan from __str__ because it requires a search in Events
+    # and slows down admin views and edit views. When lifespan is needed,
+    # Autosuggest or full_name() can be used.
     return name
 
   ''' PROPERTIES '''
