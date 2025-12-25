@@ -160,10 +160,7 @@ class Image(BaseModel):
   def __str__(self):
     return self.get_indexed_name()
 
-  @property
-  def has_old_portrait(self):
-    return True if self.is_portrait_of else False
-  
+  ''' Shorthand Ajax Functions to access multiple fields '''
   @ajax_function
   def origin(self):
     return {
@@ -199,6 +196,7 @@ class Image(BaseModel):
       'automated_family': self.automated_family(),
       'available_families': self.families(),
     }
+  
   @ajax_function
   def actionlist(self):
     return True
