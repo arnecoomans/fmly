@@ -137,16 +137,8 @@ class ImageAdmin(admin.ModelAdmin):
       messages.add_message(request, messages.SUCCESS,
                            f"{ _('Succesfully marked items as') } { _('visible') if item.visibility_frontpage else _('invisible') }: { item.title }")
 
-  @admin.action(description='Set slug from title')
-  def setSlugFromTitle(modeladmin, request, queryset):
-    for object in queryset:
-      object.slug = None
-      object.save()
-      messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully set items title to') }: { object.title }")
-
   @admin.action(description='Reset thumbnails')
   def reset_thumbnail(modeladmin, request, queryset):
-    # queryset.update(thumbnail=None)
     for object in queryset:
       object.thumbnail = None
       object.save()
@@ -155,22 +147,15 @@ class ImageAdmin(admin.ModelAdmin):
   def resetSize(modeladmin, request, queryset):
     for object in queryset:
       object.storeSize()
-  @admin.action(description="Migrate portrait to portraits")
-  def migrate_portrait(modeladmin, request, queryset):
-    for image in queryset:
-      if image.is_portrait_of:
-        image.portrait_of.add(image.is_portrait_of)
-        image.is_portrait_of = None
-        image.save()
-    messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully migrated portraits for selected images.') }")
+      messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully reset size for') }: { object.title }")
 
   list_display = ['id', 'slug', 'category', 'getSize', 'visibility_frontpage', 'year']
   list_display_links =['slug',]
   search_fields = ['title', 'description']
   exclude = []
   empty_value_display = '---'
-  actions = [toggle_show, softdelete, softundelete, setSlugFromTitle, reset_thumbnail, resetSize, migrate_portrait]
-  list_filter = [HasOldPortraitFilter, 'visibility_frontpage', ]
+  actions = [toggle_show, softdelete, softundelete, reset_thumbnail, resetSize]
+  list_filter = ['visibility_frontpage', ]
   def get_changeform_initial_data(self, request):
     get_data = super(ImageAdmin, self).get_changeform_initial_data(request)
     get_data['user'] = request.user.pk
@@ -194,17 +179,13 @@ class PersonAdmin(admin.ModelAdmin):
       item.gender = 'f' if item.gender == 'm' else 'm'
       item.save()
       messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully marked items as') } { _(item.get_gender_display()) }: { item.full_name() }")
-  @admin.action(description='Purge given name')
-  def purge_given_name(modeladmin, request, queryset):
-    queryset.update(given_name='')
-    messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully marked items as') } { _('not deleted') }.")
-
+  
   list_display = ['first_names', 'given_name', 'last_name', 'nickname', 'slug']
   prepopulated_fields = {'slug': ('first_names', 'last_name',), 
                          }
   list_filter = ['last_name', 'images']
   inlines = [FamilyRelationsInline,]
-  actions = [toggleGender, purge_given_name, migrate_dates]
+  actions = [toggleGender, migrate_dates]
 
   def get_changeform_initial_data(self, request):
     get_data = super(PersonAdmin, self).get_changeform_initial_data(request)

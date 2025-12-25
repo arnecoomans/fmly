@@ -173,33 +173,7 @@ class EditPersonView(PermissionRequiredMixin, UpdateView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'people'
-    context['available_relations'] = self.get_available_relations()
     return context
-
-  ''' Filter available relations based on lifespan'''
-  def get_available_relations(self):
-    person = self.get_object()
-    available_relations = Person.objects.exclude(pk=self.object.id)
-    ''' If year of birth is known, remove everyone who has died before this person was born 
-        or who was born 100 years before this person
-    '''
-    # if person.year_of_birth:
-    #   available_relations = available_relations.exclude(year_of_death__lt=person.year_of_birth-1)
-    #   available_relations = available_relations.exclude(year_of_birth__lt=person.year_of_birth-100)
-    #   ''' If the person is older than 100 years, remove all entries without date of birth and date of death
-    #   '''
-    #   if person.year_of_death:
-    #     if person.year_of_birth <= date.today().year - 100 or person.year_of_death <= date.today().year:
-    #       available_relations = available_relations.exclude(
-    #           year_of_birth=None, year_of_death=None)
-    ''' If year of death is known, remove everyone who was born after the person died
-        or who was born more than 100 years before the person died
-    '''
-    # if person.year_of_death:
-    #   available_relations = available_relations.exclude(year_of_birth__gt=person.year_of_death)
-    
-    available_relations = available_relations.order_by('first_names', 'last_name')
-    return available_relations
   
   ''' Build form '''
   def get_form(self):

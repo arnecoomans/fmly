@@ -54,8 +54,7 @@ class EditImageMaster:
       context['portrait'] = self.object.is_portrait_of
       ''' Store who this image can be a portrait of '''
       context['available_portraits'] = self.object.people.all().filter(portrait=None, private=False)
-      ''' Family Collections '''
-      context['active_family_collections_tag'] = self.get_active_family_collections_tag()
+    ''' Family Collections '''
     context['available_family_collections'] = self.get_available_family_collections()
     if self.kwargs.get('subject_id', None):
       context['subject_id'] = self.kwargs.get('subject_id', None)
@@ -73,13 +72,11 @@ class EditImageMaster:
     result = []
     if self.object:
       ''' Loop through tagged people '''
-      for person in self.object.people.all():
-        ''' If tagged-persons last name or married name is of a configured family '''
-        if person.last_name in settings.FAMILIES or person.married_name in settings.FAMILIES:
-          ''' Fetch the matching family name '''
-          family = person.last_name if person.last_name in settings.FAMILIES else person.married_name
-          if family not in result:
-            result.append(family)
+      for last_name in self.object.people.all().values_list('last_name', flat=True):
+        ''' If tagged-persons last name is of a configured family '''
+        if last_name in settings.FAMILIES:
+          if last_name not in result:
+            result.append(last_name)
     return result
   
   ''' Return family collections this image is not yet a member of '''
