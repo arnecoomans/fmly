@@ -142,6 +142,7 @@ class Person(BaseModel):
   ''' NAME Displaying '''
   @searchable_function
   def last_names(self):
+    """ Returns a combined list of last names and married names for searching. """
     last_names = []
     if self.last_name and self.last_name not in last_names:
       last_names.append(self.last_name)
@@ -359,36 +360,6 @@ class Person(BaseModel):
         places.append(person.place_of_death)
     return places
 
-  def get_related_people(self):
-    relations = (
-      FamilyRelations.objects
-      .filter(Q(up=self) | Q(down=self))
-      .annotate(
-        person_id=Case(
-          When(up=self, then=F("down_id")),
-          When(down=self, then=F("up_id")),
-          output_field=IntegerField(),
-        )
-      )
-    )
-
-    return (
-      Person.objects
-      .filter(id__in=relations.values("person_id"))
-      .annotate(
-        relation_id=Subquery(
-          relations
-          .filter(person_id=OuterRef("pk"))
-          .values("id")[:1]
-        ),
-        relation_type=Subquery(
-          relations
-          .filter(person_id=OuterRef("pk"))
-          .values("type")[:1]
-        ),
-      )
-    )
-
   ''' FAMILY RELATIONS METHODS '''
   def get_family(self):
     """
@@ -397,6 +368,7 @@ class Person(BaseModel):
 
     Annotates:
       - relation_type: parent | child | sibling | partner
+      - relation_id: FamilyRelations.id or NULL
       - birth_year / month / day
     """
 
@@ -405,133 +377,159 @@ class Person(BaseModel):
     # --------------------------------------------------
     # Parent: someone who is parent of self
     # --------------------------------------------------
-    is_parent = FamilyRelations.objects.filter(
-      down_id=self.pk,
-      type="parent",
-      up_id=OuterRef("pk"),
+    parent_rel = FamilyRelations.objects.filter(
+        down_id=self.pk,
+        type="parent",
+        up_id=OuterRef("pk"),
     )
 
     # --------------------------------------------------
     # Child: someone who is child of self
     # --------------------------------------------------
-    is_child = FamilyRelations.objects.filter(
-      up_id=self.pk,
-      type="parent",
-      down_id=OuterRef("pk"),
+    child_rel = FamilyRelations.objects.filter(
+        up_id=self.pk,
+        type="parent",
+        down_id=OuterRef("pk"),
     )
 
     # --------------------------------------------------
-    # Partner: explicit partner relation
+    # Partner: explicit partner relation (either direction)
     # --------------------------------------------------
-    explicit_partner = FamilyRelations.objects.filter(
-      type="partner",
+    explicit_partner_rel = FamilyRelations.objects.filter(
+        type="partner",
     ).filter(
-      Q(up_id=self.pk, down_id=OuterRef("pk")) |
-      Q(down_id=self.pk, up_id=OuterRef("pk"))
+        Q(up_id=self.pk, down_id=OuterRef("pk")) |
+        Q(down_id=self.pk, up_id=OuterRef("pk"))
     )
 
     # --------------------------------------------------
     # Partner via shared child
     # --------------------------------------------------
-    shared_child_partner = FamilyRelations.objects.filter(
+    shared_child_partner_rel = FamilyRelations.objects.filter(
         type="parent",
-      ).filter(
-        # I am parent of a child
-        Q(
-          up_id=self.pk,
-          down__relation_up__type="parent",
-          down__relation_up__up_id=OuterRef("pk"),
-        )
-      )
+        up_id=self.pk,
+        down__relation_up__type="parent",
+        down__relation_up__up_id=OuterRef("pk"),
+    )
 
     # --------------------------------------------------
-    # Siblings (FIXED: direct siblings only)
+    # Siblings (direct siblings only)
     # --------------------------------------------------
     self_parents = FamilyRelations.objects.filter(
-      down_id=self.pk,
-      type="parent",
+        down_id=self.pk,
+        type="parent",
     ).values("up_id")
 
-    is_sibling = FamilyRelations.objects.filter(
-      type="parent",
-      up_id__in=Subquery(self_parents),
-      down_id=OuterRef("pk"),
+    sibling_rel = FamilyRelations.objects.filter(
+        type="parent",
+        up_id__in=Subquery(self_parents),
+        down_id=OuterRef("pk"),
     ).exclude(
-      down_id=self.pk
+        down_id=self.pk
     )
 
     # --------------------------------------------------
     # Birth subquery (ordering)
     # --------------------------------------------------
     birth_qs = (
-      Event.objects
-      .filter(people=OuterRef("pk"), type="birth")
-      .order_by("-year", "-month", "-day")
+        Event.objects
+        .filter(people=OuterRef("pk"), type="birth")
+        .order_by("-year", "-month", "-day")
     )
 
     qs = (
-      PersonModel.objects
-      .exclude(pk=self.pk)
+        PersonModel.objects
+        .exclude(pk=self.pk)
 
-      # --- relationship existence checks ---
-      .annotate(
-        _is_parent=Exists(is_parent),
-        _is_child=Exists(is_child),
-        _is_sibling=Exists(is_sibling),
-        _is_partner_explicit=Exists(explicit_partner),
-        _is_partner_shared=Exists(shared_child_partner),
-      )
-
-      # --- combine partner logic ---
-      .annotate(
-        _is_partner=Case(
-          When(
-            Q(_is_partner_explicit=True) | Q(_is_partner_shared=True),
-            then=Value(True),
-          ),
-          default=Value(False),
-          output_field=BooleanField(),
+        # --- existence checks ---
+        .annotate(
+            _is_parent=Exists(parent_rel),
+            _is_child=Exists(child_rel),
+            _is_sibling=Exists(sibling_rel),
+            _is_partner_explicit=Exists(explicit_partner_rel),
+            _is_partner_shared=Exists(shared_child_partner_rel),
         )
-      )
 
-      # --- OR filter ---
-      .filter(
-        Q(_is_parent=True) |
-        Q(_is_child=True) |
-        Q(_is_sibling=True) |
-        Q(_is_partner=True)
-      )
+        # --- combine partner logic ---
+        .annotate(
+            _is_partner=Case(
+                When(
+                    Q(_is_partner_explicit=True) | Q(_is_partner_shared=True),
+                    then=Value(True),
+                ),
+                default=Value(False),
+                output_field=BooleanField(),
+            )
+        )
 
-      # --- relation label + birth ordering ---
-      .annotate(
-        relation_type=Case(
-          When(_is_parent=True, then=Value("parent")),
-          When(_is_child=True, then=Value("child")),
-          When(_is_partner=True, then=Value("partner")),
-          When(_is_sibling=True, then=Value("sibling")),
-          default=Value("family"),
-          output_field=CharField(),
-        ),
+        # --- OR filter ---
+        .filter(
+            Q(_is_parent=True) |
+            Q(_is_child=True) |
+            Q(_is_sibling=True) |
+            Q(_is_partner=True)
+        )
 
-        birth_year=Subquery(
-          birth_qs.values("year")[:1],
-          output_field=IntegerField(),
-        ),
-        birth_month=Subquery(
-          birth_qs.values("month")[:1],
-          output_field=IntegerField(),
-        ),
-        birth_day=Subquery(
-          birth_qs.values("day")[:1],
-          output_field=IntegerField(),
-        ),
-      )
+        # --------------------------------------------------
+        # Relation type + relation_id
+        # --------------------------------------------------
+        .annotate(
+            relation_type=Case(
+                When(_is_parent=True, then=Value("parent")),
+                When(_is_child=True, then=Value("child")),
+                When(_is_partner=True, then=Value("partner")),
+                When(_is_sibling=True, then=Value("sibling")),
+                default=Value("family"),
+                output_field=CharField(),
+            ),
 
-      .order_by(
-        F("birth_year").asc(nulls_last=True),
-        F("birth_month").asc(nulls_last=True),
-        F("birth_day").asc(nulls_last=True),
-      )
+            relation_id=Case(
+                When(
+                    _is_parent=True,
+                    then=Subquery(parent_rel.values("id")[:1]),
+                ),
+                When(
+                    _is_child=True,
+                    then=Subquery(child_rel.values("id")[:1]),
+                ),
+                When(
+                    _is_partner_explicit=True,
+                    then=Subquery(explicit_partner_rel.values("id")[:1]),
+                ),
+                When(
+                    _is_partner_shared=True,
+                    then=Subquery(shared_child_partner_rel.values("id")[:1]),
+                ),
+                When(
+                    _is_sibling=True,
+                    then=Subquery(sibling_rel.values("id")[:1]),
+                ),
+                default=Value(None),
+                output_field=IntegerField(),
+            ),
+        )
+
+        # --- birth ordering ---
+        .annotate(
+            birth_year=Subquery(
+                birth_qs.values("year")[:1],
+                output_field=IntegerField(),
+            ),
+            birth_month=Subquery(
+                birth_qs.values("month")[:1],
+                output_field=IntegerField(),
+            ),
+            birth_day=Subquery(
+                birth_qs.values("day")[:1],
+                output_field=IntegerField(),
+            ),
+        )
+
+        .order_by(
+            F("birth_year").asc(nulls_last=True),
+            F("birth_month").asc(nulls_last=True),
+            F("birth_day").asc(nulls_last=True),
+        )
     )
 
     return qs
