@@ -359,6 +359,35 @@ class Person(BaseModel):
         places.append(person.place_of_death)
     return places
 
+  def get_related_people(self):
+    relations = (
+      FamilyRelations.objects
+      .filter(Q(up=self) | Q(down=self))
+      .annotate(
+        person_id=Case(
+          When(up=self, then=F("down_id")),
+          When(down=self, then=F("up_id")),
+          output_field=IntegerField(),
+        )
+      )
+    )
+
+    return (
+      Person.objects
+      .filter(id__in=relations.values("person_id"))
+      .annotate(
+        relation_id=Subquery(
+          relations
+          .filter(person_id=OuterRef("pk"))
+          .values("id")[:1]
+        ),
+        relation_type=Subquery(
+          relations
+          .filter(person_id=OuterRef("pk"))
+          .values("type")[:1]
+        ),
+      )
+    )
 
   ''' FAMILY RELATIONS METHODS '''
   def get_family(self):
