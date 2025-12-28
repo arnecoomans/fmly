@@ -10,6 +10,6 @@
   "place_of_birth": "{{ person.place_of_birth }}",
   "place_of_death": "{{ person.place_of_death }}",
   "lifespan": "{{ person.get_lifespan_display }}",
-  "full_name": "{{ person.full_name|highlight:query|safe }}",
+  "full_name": "{% if query %}{{ person.full_name|highlight:query|safe }}{% else %}{{ person.full_name }}{% endif %}",
   "gender": "{{ person.get_gender_display }}"
 }

@@ -1,10 +1,23 @@
-from django.views.generic import ListView, DetailView, View
+from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 from django.conf import settings
 from django.contrib import messages
 from django.template.defaultfilters import slugify
+from django.db.models import (
+    IntegerField,
+    Value,
+    Case,
+    When,
+    Exists,
+    OuterRef,
+    Q,
+    F,
+    Subquery,
+  )
+from django import http
+from django.db.models.functions import Coalesce
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from datetime import date
@@ -12,10 +25,12 @@ from math import floor
 
 from ..person_utils import get_person_filters, get_centuries, get_decades
 
-from archive.models import Person, FamilyRelations, Image
+from archive.models import Person, FamilyRelations, Image, Event
 
 from cmnsd.views.cmnsd_filter import FilterMixin
 from cmnsd.views.utils__request import RequestMixin
+from cmnsd.views.utils__response import ResponseMixin
+from cmnsd.views.utils__messages import MessageMixin
 
 ''' Class Functions '''
 ''' get_fields()
@@ -365,3 +380,158 @@ class RemovePortraitView(PermissionRequiredMixin, DetailView):
     image.save()
     messages.add_message(self.request, messages.SUCCESS, f"\"{ image }\" verwijderd als portret van \"{ person }\".")
     return redirect(reverse('archive:image-edit', kwargs={'pk':image.id}))
+
+
+class SuggestFamilyView(RequestMixin, FilterMixin, ResponseMixin, MessageMixin, DetailView):
+  model = Person
+
+  def get_suggestions(self):
+    qs = Person.objects.all()
+    # Apply search and visibility filters
+    qs = self.filter(qs)
+    # Remove self
+    qs = qs.exclude(pk=self.get_object().pk)
+    print(f"Suggestions before family filtering: {qs.count()}")
+    # Remove family members
+    if self.request.GET.get('exclude_family', 'false').lower() == 'true':
+      print('Excluding family members')
+      qs = qs.exclude(pk__in=self.get_object().get_family().values_list('pk', flat=True))
+    elif self.request.GET.get('limit_to_family', 'false').lower() == 'true':
+      print('Limiting to family members')
+      qs = qs.filter(pk__in=self.get_object().get_family().values_list('pk', flat=True))
+    # Apply Relevance ordering
+    print(f"Suggestions before relevance filtering: {qs.count()}")
+    qs = self.with_relevance(qs)
+    print(f"Suggestions after relevance filtering: {qs.count()}")
+    # Order by relevance
+    qs = qs.order_by('-relevance', 'last_name', 'first_names')
+    return qs
+
+  def with_relevance(self, qs):
+    """
+    Annotate a queryset of Person objects with a computed `relevance` score.
+
+    Relevance rules (each adds +1 point):
+      1. Person shares the same last name as the subject.
+      2. Person was alive at any point during the subject's lifespan.
+      3. Person shares an indirect family member with the subject
+        (e.g. shared parent or family overlap), excluding direct relations
+        which are assumed to be filtered out beforehand.
+
+    The resulting queryset is ordered by descending relevance.
+
+    Args:
+      qs (QuerySet): A queryset of Person objects.
+
+    Returns:
+      QuerySet: The annotated and ordered queryset.
+    """
+    PersonModel = self.__class__
+
+    # --------------------------------------------------
+    # Subject birth / death (single-row subqueries)
+    # --------------------------------------------------
+    subject_birth = (
+      Event.objects
+      .filter(people=self.get_object(), type="birth")
+      .values("year")[:1]
+    )
+
+    subject_death = (
+      Event.objects
+      .filter(people=self.get_object(), type="death")
+      .values("year")[:1]
+    )
+
+    # --------------------------------------------------
+    # Candidate birth / death (per-row subqueries)
+    # --------------------------------------------------
+    candidate_birth = (
+      Event.objects
+      .filter(people=OuterRef("pk"), type="birth")
+      .values("year")[:1]
+    )
+
+    candidate_death = (
+      Event.objects
+      .filter(people=OuterRef("pk"), type="death")
+      .values("year")[:1]
+    )
+
+    # --------------------------------------------------
+    # Shared family (indirect relationship)
+    # --------------------------------------------------
+    self_parents = FamilyRelations.objects.filter(
+      type="parent",
+      down_id=self.get_object().pk,
+    ).values("up_id")
+
+    shared_family = FamilyRelations.objects.filter(
+      type="parent",
+      up_id__in=Subquery(self_parents),
+      down_id=OuterRef("pk"),
+    )
+
+    # --------------------------------------------------
+    # Start relevance annotation
+    # --------------------------------------------------
+    qs = qs.annotate(
+      relevance=Value(0, output_field=IntegerField()),
+    )
+
+    # +1 if same last name
+    qs = qs.annotate(
+      relevance=F("relevance") + Case(
+        When(last_name=self.get_object().last_name, then=Value(1)),
+        default=Value(0),
+        output_field=IntegerField(),
+      )
+    )
+
+    # Add birth/death year annotations
+    qs = qs.annotate(
+      candidate_birth_year=Subquery(candidate_birth, IntegerField()),
+      candidate_death_year=Subquery(candidate_death, IntegerField()),
+      subject_birth_year=Subquery(subject_birth, IntegerField()),
+      subject_death_year=Subquery(subject_death, IntegerField()),
+    )
+
+    # +1 if alive during subject's lifespan
+    qs = qs.annotate(
+      candidate_death_year_norm=Coalesce("candidate_death_year", Value(9999)),
+      subject_death_year_norm=Coalesce("subject_death_year", Value(9999)),
+    )
+
+    qs = qs.annotate(
+      relevance=F("relevance") + Case(
+        When(
+          candidate_birth_year__lte=F("subject_death_year_norm"),
+          candidate_death_year_norm__gte=F("subject_birth_year"),
+          then=Value(1),
+        ),
+        default=Value(0),
+        output_field=IntegerField(),
+      )
+    )
+
+    # +1 if shared indirect family member
+    qs = qs.annotate(
+      relevance=F("relevance") + Case(
+        When(Exists(shared_family), then=Value(1)),
+        default=Value(0),
+        output_field=IntegerField(),
+      )
+    )
+    # Return annotated queryset
+    return qs
+  
+  def get(self, request, *args, **kwargs):
+    person = self.get_object()
+    context = {
+      'person': person,
+      'people': self.get_suggestions(),
+    }
+    template_names = ['model/people.json',]
+    
+    rendered_field = self.render(format='json', context=context, template_names=template_names)
+    return self.return_response(payload={'people': rendered_field})

@@ -104,18 +104,18 @@
           {% endif %}
           {% if event %}
             <div class="input-group input-group-sm">
-              <span class="input-group-text">{% translate 'add person'|capfirst %}:</span>
+             <span class="input-group-text">{% translate 'add person'|capfirst %}:</span>
               <input  type="text" 
                         class="form-control" 
                         placeholder="{% translate 'start typing...'|capfirst %}"
                         data-autosuggest
-                        data-url="{% url 'cmnsd:dispatch' 'people' %}?format=json"
+                        data-url="{% url 'archive:suggest-family' person.id person.slug %}?format=json{% for p in event.people.all|without:person %}&exclude=id:{{ p.id }}{% endfor %}"
                         data-param="{{ search_query_character|default:'q' }}"
                         data-field-input="full_name"
                         data-field-hidden="slug"
                         data-field-prefix="people__"
                         data-display-fields="full_name, lifespan"
-                        data-container="person"
+                        data-container="people"
                         data-allow-create="0"
                 >
             </div>
