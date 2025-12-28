@@ -120,10 +120,10 @@
                       name="related_person" 
                       placeholder="{% translate 'search person by name' %}"
                       data-autosuggest
-                      data-url="{% url 'cmnsd:dispatch' 'person'%}"
+                      data-url="{% url 'archive:suggest-family' person.id person.slug %}"
                       data-param="{{ search_query_character }}"
-                      data-extra-params='{"format":"json", "exclude": "id:{{ person.id }},{% for person in person.all_family %}id:{{ person.id }}{% if not forloop.last %},{% endif %}{% endfor %}"}'
-                      data-container="person"
+                      data-extra-params='{"format":"json", "limit_to_family":"false", "exclude_family":"true"}'
+                      data-container="people"
                       data-field-hidden="id"
                       data-display-fields	="full_name,lifespan"
                       data-allow-create="0"

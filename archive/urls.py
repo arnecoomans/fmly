@@ -34,6 +34,7 @@ urlpatterns = [
   # Relationships
   path('person/<int:subject>/<str:type>:<int:removed_person>/delete/', views.PersonRemoveRelationView.as_view(), {'columns': ('up', 'relation', 'down')}, name='remove-relationship'),
   path('person/add-relation/', views.PersonAddRelationView.as_view(), name='add-relationship'),
+  path('person/<int:pk>/<str:slug>/suggest-family/', views.SuggestFamilyView.as_view(), name='suggest-family'),
   # Tree
   path('tree/<int:pk>/', views.TreeView.as_view(), name="tree"),
   # Add Image
