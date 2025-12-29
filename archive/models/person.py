@@ -74,6 +74,9 @@ class Person(BaseModel):
     ordering = ('first_names', 'last_name')
     verbose_name = 'person'
     verbose_name_plural = 'people'
+    indexes = [
+      models.Index(fields=["last_name", "first_names"]),
+    ]
 
   def __str__(self):
     ''' Return the name of the person with year of birth and death '''

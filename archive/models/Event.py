@@ -62,7 +62,7 @@ class Event(BaseModel):
   class Meta:
     ordering = ['-year', '-month', '-day', 'title', 'type']
     indexes = [
-      models.Index(fields=["type"])
+      models.Index(fields=["type", "year"])
     ]
 
   def __str__(self):
