@@ -209,50 +209,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateToggle(select) {
       const targetSelector = select.dataset.toggleTarget;
-      const value = select.dataset.toggleValue;
+      const rawValues = select.dataset.toggleValue;
 
-      if (!targetSelector || !value) return;
+      if (!targetSelector || !rawValues) return;
 
-      // scope to the same form
+      const values = rawValues
+        .split(',')
+        .map(v => v.trim())
+        .filter(Boolean);
+
       const form = select.closest('form') || document;
       const target = form.querySelector(targetSelector);
 
       if (!target) return;
 
-      const show = select.value === value;
+      const show = values.includes(select.value);
 
-      // Toggle target field
+      // Toggle target visibility
       target.style.display = show ? '' : 'none';
-      if (!show) {
+      if (!show && 'value' in target) {
         target.value = '';
       }
 
-      // ✅ Toggle select sizing classes
-      select.classList.toggle('w-auto', show);
-      select.classList.toggle('flex-grow-0', show);
+      // ✅ Width behavior
+      if (show) {
+        select.classList.add('w-auto', 'flex-grow-0');
+      } else {
+        select.classList.remove('w-auto', 'flex-grow-0');
+      }
     }
 
-    // 🔁 Delegated change handler (AJAX-safe)
+    // Delegated change handler (AJAX-safe)
     document.addEventListener('change', (e) => {
       const select = e.target.closest('select[data-toggle-target]');
       if (!select) return;
       updateToggle(select);
     });
 
-    // 🔁 Initialize existing selects
     function init(root = document) {
       root.querySelectorAll('select[data-toggle-target]').forEach(updateToggle);
     }
 
-    // Initial run
     document.addEventListener('DOMContentLoaded', () => init());
-
-    // After cmnsd AJAX insert
     document.addEventListener('cmnsd:content:applied', (e) => {
       init(e.detail?.container || document);
     });
 
   })();
 </script>
-
 {% endblock %}

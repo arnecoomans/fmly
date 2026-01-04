@@ -59,11 +59,12 @@
             <select name="type" 
                     class="form-select w-auto flex-grow-0"
                     data-toggle-target="#event-{{ event.id }}-title"
-                    data-toggle-value="other"
+                    data-toggle-value="general,other"
             >
               {% if event or not person.birth %}<option value="birth" {% if event.type == 'birth' %}selected{% endif %}>{% translate 'birth'|capfirst %}</option>{% endif %}
               {% if event or not person.death %}<option value="death" {% if event.type == 'death' %}selected{% endif %}>{% translate 'death'|capfirst %}</option>{% endif %}
               <option value="marriage" {% if event.type == 'marriage' %}selected{% endif %}>{% translate 'marriage'|capfirst %}</option>
+              {% if user.is_staff %}<option value="general" {% if event.type == 'general' %}selected{% endif %}>{% translate 'general'|capfirst %}</option>{% endif %}
               <option value="other" {% if event.type == 'other' %}selected{% endif %}>{% translate 'other'|capfirst %}</option>
             </select>
             <input type="text" name="title" id="event-{{ event.id }}-title" class="form-control" value="{{ event.title }}" placeholder="{% translate 'Event Title' %}">
