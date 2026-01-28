@@ -225,8 +225,16 @@
         {% if event.show_type %}
           {% if event.type == 'birth' %}* {% elif event.type == 'death' %}&dagger; {% endif %}{% translate event.type|capfirst %}
           {% if event.people.all.count > 0 %}
+            <!-- With/Of -->
             {% if event.type == 'birth' or event.type == 'death' %}
               {% translate 'of' %}
+            {% elif person in event.people.all %}
+              {% translate 'with' %}
+            {% else %}
+              {% translate 'of' %}
+            {% endif %}
+            <!-- List people -->
+            {% if event.type == 'birth' or event.type == 'death' %}
               {% for p in event.people.all %}
                 {% if p == person %}
                   {{ p.full_name }}
@@ -236,11 +244,10 @@
                 {% if not forloop.last %}, {% endif %}
               {% endfor %}
             {% elif event.people.all|without:person|length > 0 %}
-              {% translate 'with' %}
               {% for p in event.people.all|without:person %}
                 <a href="{% url 'archive:person' p.id p.slug %}">{{ p.full_name }}</a>
                 {% if event.type == 'death' or event.type == 'marriage' %}{% with age=event.date|calc_age:p.birth %}{% if age > 0%}<span class="text-muted">({{ age }})</span>{% endif %}{% endwith %}{% endif %}
-                {% if not forloop.last %}, {% endif %}
+                {% if not forloop.last %}{% translate 'and' %} {% endif %}
               {% endfor %}
             {% endif %}
           {% endif %}
