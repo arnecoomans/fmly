@@ -36,8 +36,8 @@
                     data-param="{{ search_query_character}}"
                     data-extra-params='{"format":"json", "exclude": "{% for tag in image.tag.all %}id:{{ tag.id }}{% if not forloop.last %},{% endif %}{% endfor %}"}'
                     data-container="tag"
-                    data-display-fields="title, description"
-                    data-field-input="title"
+                    data-display-fields="name, description"
+                    data-field-input="name"
                     data-field-hidden="slug"
                     data-field-prefix="tag__"
                     >
