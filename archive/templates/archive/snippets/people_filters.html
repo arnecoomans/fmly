@@ -5,7 +5,7 @@
     <span class="option">
       {% translate 'sort results by'|capfirst %}: 
         <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=last_name">{% translate 'last name' %}</a>
-        <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=first_name">{% translate 'first name' %}</a>
+        <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=first_names">{% translate 'first name' %}</a>
         <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=year_of_birth">{% translate 'date of birth' %}</a>
     </span>
   {% endif %}
