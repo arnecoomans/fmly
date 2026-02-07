@@ -16,6 +16,7 @@ from .Category import Category
 
 from cmnsd.models.cmnsd_basemodel import BaseModel, VisibilityModel
 from cmnsd.models.cmnsd_basemethod import ajax_function, searchable_function
+from cmnsd.views.cmnsd_filter import FilterMixin
 
 # Create Thumbnail function
 def get_thumbnail(image):
@@ -123,7 +124,7 @@ import random
 def random_string():
   return str(random.randint(10000, 99999))
 
-class Image(BaseModel):
+class Image(BaseModel, FilterMixin):
   # Document details
   slug                = models.CharField(max_length=255, unique=True, default=random_string)
   source              = models.FileField()
@@ -238,13 +239,14 @@ class Image(BaseModel):
   
   ''' Related Object Methods'''
   def count_comments(self):
-    return self.comments.exclude(status='x').count()
+    return self.get_comments().count()
   def get_comments(self):
-    return self.comments.exclude(status='x')
+    return self.filter(self.comments)
   def count_attachments(self):
-    return self.attachments.exclude(status='x').count()
+    return self.get_attachments().count()
   def get_attachments(self):
-    return self.attachments.exclude(status='x')
+    return self.filter(self.attachments)
+  
   def get_groups(self):
     groups = {}
     for group in self.in_group.all():
@@ -265,7 +267,7 @@ class Image(BaseModel):
   def count_tags(self):
     return self.tag.count()
   def count_people(self):
-    return self.people.count()
+    return self.filter(self.people).count()
   def has_thumbnail(self):
     return True if self.thumbnail else False
   def extension(self):
@@ -275,32 +277,38 @@ class Image(BaseModel):
   @ajax_function
   @searchable_function
   def families(self):
-    families = []
-    for family in getattr(settings, 'FAMILIES', []):
-      if family not in self.family_collection():
-        families.append(family)
-    return families
+    if not hasattr(self, '_families'):
+      families = []
+      for family in getattr(settings, 'FAMILIES', []):
+        if family not in self.family_collection():
+          families.append(family)
+      self._families = families
+    return self._families
     
   @ajax_function
   def family_collection(self):
-    result = []
-    for person in self.people.all():
-      if person.last_name in getattr(settings, 'FAMILIES', []) or person.married_name in getattr(settings, 'FAMILIES', []):
-        family = person.last_name if person.last_name in getattr(settings, 'FAMILIES', []) else person.married_name
-        if family not in result:
-          result.append(family)
-    if self.family in getattr(settings, 'FAMILIES', []) and self.family not in result:
-      result.append(self.family)
-    return result
+    if not hasattr(self, '_family_collection'):
+      result = []
+      for person in self.people.all():
+        if person.last_name in getattr(settings, 'FAMILIES', []) or person.married_name in getattr(settings, 'FAMILIES', []):
+          family = person.last_name if person.last_name in getattr(settings, 'FAMILIES', []) else person.married_name
+          if family not in result:
+            result.append(family)
+      if self.family in getattr(settings, 'FAMILIES', []) and self.family not in result:
+        result.append(self.family)
+      self._family_collection = result
+    return self._family_collection
   
   def automated_family(self):
-    families = []
-    for person in self.people.all():
-      if person.last_name in getattr(settings, 'FAMILIES', []) or person.married_name in getattr(settings, 'FAMILIES', []):
-        family = person.last_name if person.last_name in getattr(settings, 'FAMILIES', []) else person.married_name
-        if family not in families:
-          families.append(family)
-    return families
+    if not hasattr(self, '_automated_family'):
+      families = []
+      for person in self.people.all():
+        if person.last_name in getattr(settings, 'FAMILIES', []) or person.married_name in getattr(settings, 'FAMILIES', []):
+          family = person.last_name if person.last_name in getattr(settings, 'FAMILIES', []) else person.married_name
+          if family not in families:
+            families.append(family)
+      self._automated_family = families
+    return self._automated_family
     
   
   def get_absolute_url(self):
@@ -318,27 +326,31 @@ class Image(BaseModel):
 
   ''' Display Image File size. Calculate if not stored yet '''
   def getSize(self):
-    ''' https://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python '''
-    from math import floor, pow, log
-    if self.size == 0:
-      self.storeSize()
-    if self.size == 0:
-      return "0B"
-    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-    i = int(floor(log(self.size, 1024)))
-    p = pow(1024, i)
-    s = round(self.size / p, 2)
-    return "%s %s" % (s, size_name[i])
+    if not hasattr(self, '_size'):
+      ''' https://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python '''
+      from math import floor, pow, log
+      if self.size == 0:
+        self.storeSize()
+      if self.size == 0:
+        return "0B"
+      size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+      i = int(floor(log(self.size, 1024)))
+      p = pow(1024, i)
+      s = round(self.size / p, 2)
+      self._size = "%s %s" % (s, size_name[i])
+    return self._size
 
   def get_image_dimensions(self):
-    height = 0
-    width = 0
-    try:
-      with PIL.open(self.source) as img:
-        width, height = img.size
-    except Exception as e:
-      return None
-    return height, width
+    if not hasattr(self, '_dimensions'):
+      height = 0
+      width = 0
+      try:
+        with PIL.open(self.source) as img:
+          width, height = img.size
+      except Exception as e:
+        return None
+      self._dimensions = (height, width)
+    return self._dimensions
   
   def save(self, *args, **kwargs):
     ''' If no title is given, use source file name as title '''
