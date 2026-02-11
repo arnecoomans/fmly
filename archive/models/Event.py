@@ -72,18 +72,20 @@ class Event(BaseModel):
       return f"{ self.type} - { self.title }"
   
   def get_title(self):
-    title = []
-    if self.type in ['birth', 'death', 'marriage']:
-      title.append(str(_(self.get_type_display())))
+    if not hasattr(self, '_title'):
+      title = []
+      if self.type in ['birth', 'death', 'marriage']:
+        title.append(str(_(self.get_type_display())))
+        if self.people.exists():
+          title.append(f"{ _('of') }")
       if self.people.exists():
-        title.append(f"{ _('of') }")
-    if self.people.exists():
-      people_names = ', '.join([str(person.short_name()) for person in self.people.all()])
-      title.append(f" { people_names }")
-    if self.locations.exists():
-      location_names = ', '.join([str(location) for location in self.locations.all()])
-      title.append(f"{ _('at') } { location_names }")
-    return " ".join(title)
+        people_names = ', '.join([str(person.short_name()) for person in self.people.all()])
+        title.append(f" { people_names }")
+      if self.locations.exists():
+        location_names = ', '.join([str(location) for location in self.locations.all()])
+        title.append(f"{ _('at') } { location_names }")
+      self._title = " ".join(title)
+    return self._title
   
   @property
   def months(self):
