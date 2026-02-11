@@ -17,6 +17,7 @@ from .Category import Category
 from cmnsd.models.cmnsd_basemodel import BaseModel, VisibilityModel
 from cmnsd.models.cmnsd_basemethod import ajax_function, searchable_function
 from cmnsd.views.cmnsd_filter import FilterMixin
+from cmnsd.views.utils__request import RequestMixin
 
 # Create Thumbnail function
 def get_thumbnail(image):
@@ -124,7 +125,7 @@ import random
 def random_string():
   return str(random.randint(10000, 99999))
 
-class Image(BaseModel, FilterMixin):
+class Image(BaseModel, RequestMixin, FilterMixin):
   # Document details
   slug                = models.CharField(max_length=255, unique=True, default=random_string)
   source              = models.FileField()
