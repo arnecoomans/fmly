@@ -1,12 +1,5 @@
-from django.views.generic import DetailView, ListView, TemplateView
-from django.views.generic.edit import CreateView, UpdateView
-from django.shortcuts import redirect
+from django.views.generic import ListView
 from django.conf import settings
-from django.contrib import messages
-from django.urls import reverse
-from django.utils.translation import gettext as _
-
-from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from archive.models import Location
 
