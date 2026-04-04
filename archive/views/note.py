@@ -5,8 +5,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 
 from archive.models import Note
 
+from cmnsd.mixins import FilterMixin, RequestMixin
+
 ''' Notes List View'''
-class NotesListView(ListView):
+class NotesListView(FilterMixin, RequestMixin, ListView):
   model = Note
   template_name = 'archive/notes/list.html'
 
@@ -17,15 +19,9 @@ class NotesListView(ListView):
 
   def get_queryset(self):
     queryset = Note.objects.all()
-    ''' User filter '''
-    if self.request.GET.get('user', False):
-      queryset = queryset.filter(user__username__iexact=self.request.GET.get('user', ''))
-    ''' Note search '''
-    if self.request.GET.get('search'):
-      search_text = self.request.GET.get('search').lower()
-      queryset = queryset.filter(title__icontains=search_text) | \
-                 queryset.filter(content__icontains=search_text)
+    queryset = self.filter(queryset)
     return queryset
+
 ''' Note Detail View'''
 class NoteView(DetailView):
   model = Note
