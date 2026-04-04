@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.template.defaultfilters import slugify
-from cmnsd.models.cmnsd_basemodel import BaseModel
+from cmnsd.models import BaseModel
 from .BaseIcon import BaseIcon
 
 class Location(BaseModel, BaseIcon):

@@ -20,8 +20,8 @@ from django.db.models import Q
 
 from .Event import Event
 
-from cmnsd.models.cmnsd_basemodel import BaseModel, VisibilityModel
-from cmnsd.models.cmnsd_basemethod import ajax_function, searchable_function
+from cmnsd.models import BaseModel
+from cmnsd.models.BaseMethods import ajax_function, searchable_function
 
 def annotate_relation(qs, label):
   return qs.annotate(

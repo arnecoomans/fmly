@@ -13,8 +13,8 @@ from math import floor
 from archive.models import Image
 from archive.models import Group, Tag, Attachment, Person
 
-from cmnsd.views.cmnsd_filter import FilterMixin
-from cmnsd.views.utils__request import RequestMixin
+from cmnsd.mixins import FilterMixin
+from cmnsd.mixins import RequestMixin
 
 ''' Image List View 
     Show a list of images based on filters

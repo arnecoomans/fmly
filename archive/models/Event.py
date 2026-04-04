@@ -5,7 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 import datetime
 
 
-from cmnsd.models.cmnsd_basemodel import BaseModel
+from cmnsd.models import BaseModel
 from .BaseIcon import BaseIcon
 MONTHS = [
   (1, _('january')),

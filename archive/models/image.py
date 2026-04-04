@@ -8,16 +8,15 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
 
-from math import floor
 
 from .tag import Tag
 from .person import Person
 from .Category import Category
 
-from cmnsd.models.cmnsd_basemodel import BaseModel, VisibilityModel
-from cmnsd.models.cmnsd_basemethod import ajax_function, searchable_function
-from cmnsd.views.cmnsd_filter import FilterMixin
-from cmnsd.views.utils__request import RequestMixin
+from cmnsd.models import BaseModel
+from cmnsd.models.BaseMethods import ajax_function, searchable_function
+from cmnsd.mixins import FilterMixin
+from cmnsd.mixins import RequestMixin
 
 # Create Thumbnail function
 def get_thumbnail(image):

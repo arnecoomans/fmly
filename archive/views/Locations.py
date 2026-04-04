@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from archive.models import Location
 
-from cmnsd.views.cmnsd_filter import FilterMixin
+from cmnsd.mixins import FilterMixin
 
 class LocationListView(FilterMixin, ListView):
   model = Location
