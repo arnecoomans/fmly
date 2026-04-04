@@ -6,13 +6,14 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse
 
 from archive.models import Tag
+from cmnsd.mixins import FilterMixin, RequestMixin
 
 
 ''' Tags
     Tags are referenced in images, groups and attachments and are used to add context.
     Tag detail view is handled by the Image model, where it displays all images with a set tag.
 '''
-class TagListView(ListView):
+class TagListView(FilterMixin, RequestMixin, ListView):
   model = Tag
   template_name = 'archive/tags/list.html'
   
@@ -23,14 +24,7 @@ class TagListView(ListView):
 
   def get_queryset(self):
     queryset = Tag.objects.all()
-    ''' User filter '''
-    if self.request.GET.get('user', False):
-      queryset = queryset.filter(user__username__iexact=self.request.GET.get('user', ''))
-    ''' Tag search '''
-    if self.request.GET.get('search', False):
-      search_text = self.request.GET.get('search').lower()
-      queryset = queryset.filter(title__icontains=search_text) | \
-                 queryset.filter(description__icontains=search_text)
+    queryset = self.filter(queryset)
     return queryset
 
 class AddTagView(PermissionRequiredMixin, CreateView):
