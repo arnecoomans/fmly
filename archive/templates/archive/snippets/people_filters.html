@@ -4,9 +4,9 @@
   {% if 'order_by' not in deactivated_filters %}
     <span class="option">
       {% translate 'sort results by'|capfirst %}: 
-        <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=last_name">{% translate 'last name' %}</a>
-        <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=first_names">{% translate 'first name' %}</a>
-        <a href="?{% include 'archive/snippets/fixparams.html' with ignore='order_by' %}order_by=year_of_birth">{% translate 'date of birth' %}</a>
+        <a href="{{ request.path }}{% update_query_params request replace='last_name' to='order_by' %}">{% translate 'last name' %}</a>
+        <a href="{{ request.path }}{% update_query_params request replace='first_names' to='order_by' %}">{% translate 'first name' %}</a>
+        <a href="{{ request.path }}{% update_query_params request replace='year_of_birth' to='order_by' %}">{% translate 'date of birth' %}</a>
     </span>
   {% endif %}
   <!-- Filter Images Only With image -->
