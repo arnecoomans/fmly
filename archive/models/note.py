@@ -5,7 +5,7 @@ from .person import Person
 from .tag import Tag
 from .image import Image, Attachment
 
-from cmnsd.models.cmnsd_basemodel import BaseModel
+from cmnsd.models import BaseModel
 
 class Note(BaseModel):
   title               = models.CharField(max_length=255, blank=True)

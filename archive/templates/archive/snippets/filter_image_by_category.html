@@ -5,7 +5,7 @@
       {% if category == current_category %}
         {{ category|default:''|title }}
       {% else %}
-        <a href="{% url 'archive:images' %}?{% include '../snippets/fixparams.html' with ignore='category' %}category={{ category }}"{% if category == current_category %} disabled{% endif %}>{{ category|title }}</a>
+        <a href="{% url 'archive:images' %}{% update_query_params request add=category to='category' %}"{% if category == current_category %} disabled{% endif %}>{{ category|title }}</a>
       {% endif %}
       {% if not forloop.last %} | {% endif %}
     {% endif %}

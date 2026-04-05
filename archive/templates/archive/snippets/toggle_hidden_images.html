@@ -4,14 +4,14 @@
     {% blocktranslate count counter=images_hidden %}There is{% plural %}There are{% endblocktranslate %}
     <!-- Images can be shown -->
     {% if images_hidden >  0%}
-      <a href="?{% include 'archive/snippets/fixparams.html' with ignore='hidden' %}hidden=True" 
+      <a href="{{ request.path }}{% update_query_params request add='true' to='hidden' %}" 
          title="{% blocktranslate count counter=images_hidden %}Reload the page, also showing the hidden image{% plural %}Reload the page, also showing {{ images_hidden }} hidden images{% endblocktranslate %}"
          >
           {{ images_hidden }} 
           {% blocktranslate count counter=images_hidden %}hidden image{% plural %}hidden images{% endblocktranslate %}</a>
       {% translate 'to show' %}.
     {% elif images_hidden < 0 %}
-      <a href="?{% include 'archive/snippets/fixparams.html' with ignore='hidden' %}hidden=False" 
+      <a href="{{ request.path }}{% update_query_params request add='false' to='hidden' %}" 
          title="{% blocktranslate count counter=images_hidden|abs %}Reload the page, hiding the hidden image{% plural %}Reload the page, without the hidden images{% endblocktranslate %}"
           >
           {{ images_hidden|abs }}

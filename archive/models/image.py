@@ -8,15 +8,15 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
 
-from math import floor
 
 from .tag import Tag
 from .person import Person
 from .Category import Category
 
-from cmnsd.models.cmnsd_basemodel import BaseModel, VisibilityModel
-from cmnsd.models.cmnsd_basemethod import ajax_function, searchable_function
-from cmnsd.views.cmnsd_filter import FilterMixin
+from cmnsd.models import BaseModel
+from cmnsd.models.BaseMethods import ajax_function, searchable_function
+from cmnsd.mixins import FilterMixin
+from cmnsd.mixins import RequestMixin
 
 # Create Thumbnail function
 def get_thumbnail(image):
@@ -124,7 +124,7 @@ import random
 def random_string():
   return str(random.randint(10000, 99999))
 
-class Image(BaseModel, FilterMixin):
+class Image(BaseModel, RequestMixin, FilterMixin):
   # Document details
   slug                = models.CharField(max_length=255, unique=True, default=random_string)
   source              = models.FileField()
@@ -137,7 +137,7 @@ class Image(BaseModel, FilterMixin):
   people              = models.ManyToManyField(Person, blank=True, related_name='images', help_text='Tag people that are on the photo')
   tag                 = models.ManyToManyField(Tag, blank=True, related_name='images')
   attachments         = models.ManyToManyField(Attachment, blank=True, related_name='images')
-  is_portrait_of      = models.OneToOneField(Person, on_delete=models.CASCADE, related_name='portrait', blank=True, null=True)
+  is_portrait_of      = models.OneToOneField(Person, on_delete=models.SET_NULL, related_name='portrait', blank=True, null=True)
   portrait_of         = models.ManyToManyField(Person, blank=True, related_name='portraits', help_text='Tag people for whom this image is a portrait')
   in_group            = models.ManyToManyField(Group, blank=True, related_name='images', help_text='Group images')
   family              = models.CharField(max_length=64, null=True, blank=True, help_text=_('Add image to family collection if no family member can be tagged'))
@@ -220,12 +220,12 @@ class Image(BaseModel, FilterMixin):
     slug = slugify(title).lower()
     if is_deleted:
       slug = f"[deleted]_{slug}"
-    images = Image.objects.all().values_list('slug')
-    if images.filter(slug=slug).count() > 0:
+    if Image.objects.filter(slug=slug).exists():
+      existing = set(Image.objects.filter(slug__startswith=slug).values_list('slug', flat=True))
       i = 1
-      while images.filter(slug=f"{slug}{str(i)}").count() > 0:
+      while f"{slug}{i}" in existing:
         i += 1
-      slug = f"{slug}{str(i)}"
+      slug = f"{slug}{i}"
     return slug
 
   def get_indexed_name(self):

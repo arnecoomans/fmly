@@ -2,7 +2,7 @@ from django.db import models
 from .image import Image
 from django.urls import reverse
 
-from cmnsd.models.cmnsd_basemodel import BaseModel
+from cmnsd.models import BaseModel
   
 class Comment(BaseModel):
   # Content

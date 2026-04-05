@@ -1,16 +1,9 @@
-from django.views.generic import DetailView, ListView, TemplateView
-from django.views.generic.edit import CreateView, UpdateView
-from django.shortcuts import redirect
-from django.conf import settings
-from django.contrib import messages
-from django.urls import reverse
+from django.views.generic import ListView
 from django.utils.translation import gettext as _
 
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from archive.models import Comment
 
-from archive.models import Comment, Image
-
-from cmnsd.views.cmnsd_filter import FilterMixin
+from cmnsd.mixins import FilterMixin, RequestMixin
 
 ''' Shared View Functions'''
 
@@ -34,7 +27,7 @@ def get_comment_preview(comment):
   return ' '.join(comment)
 
 ''' List comments by date added newest first '''
-class CommentListView(FilterMixin, ListView):
+class CommentListView(FilterMixin, RequestMixin, ListView):
   model = Comment
   template_name = 'archive/comments/list.html'
 

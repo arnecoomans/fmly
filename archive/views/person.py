@@ -27,10 +27,10 @@ from ..person_utils import get_person_filters, get_centuries, get_decades
 
 from archive.models import Person, FamilyRelations, Image, Event
 
-from cmnsd.views.cmnsd_filter import FilterMixin
-from cmnsd.views.utils__request import RequestMixin
-from cmnsd.views.utils__response import ResponseMixin
-from cmnsd.views.utils__messages import MessageMixin
+from cmnsd.mixins import FilterMixin
+from cmnsd.mixins import RequestMixin
+from cmnsd.mixins import ResponseMixin
+from cmnsd.mixins import MessageMixin
 
 ''' Class Functions '''
 ''' get_fields()

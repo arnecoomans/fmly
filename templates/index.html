@@ -8,10 +8,8 @@
     <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
 
     <!-- Bootstrap -->
-    <link rel="stylesheet"  href="{% static 'css/bootstrap/bootstrap.css' %}">
-    <link rel="stylesheet" href="{% static '/img/bootstrap-icons/bootstrap-icons.min.css' %}">
-    {% comment %} <link rel="stylesheet" href="{% static 'css/dynamicOverlay.css' %}">
-    <link rel="stylesheet" href="{% static 'css/manageAttributes.css' %}"> {% endcomment %}
+    <link href="{% static 'css/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
     <!-- cmnsd -->
     <link rel="stylesheet" href="{% static 'css/cmnsd/messages.css' %}">
     <link rel="stylesheet" href="{% static 'css/cmnsd/cmnsd.branding.css' %}">
@@ -20,7 +18,6 @@
     <link rel="stylesheet" href="{% static 'css/cmnsd/actions.css' %}">
     <link rel="stylesheet" href="{% static 'css/cmnsd/cropper.css' %}">
     <link rel="stylesheet" href="{% static 'css/timeline.css' %}">
-    {% comment %} <link rel="stylesheet" href="{% static 'css/cmnsd/dynamicOverlay.css' %}"> {% endcomment %}
 
     {% for file in load_script %}
       <script src="/static/{{ file }}"></script>
@@ -64,8 +61,8 @@
     {% endblock %}
 
     <!-- Javascripts -->
-<script src="{% static '/js/jquery/jquery.min.js' %}"></script>
-<script src="{% static '/js/jquery-ui/jquery-ui.js' %}"></script> 
+<script src="{% static 'js/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui/jquery-ui.js' %}"></script> 
 <script type="module">
   import cmnsd from "{% static 'js/cmnsd/index.js' %}";
   import { initAutosuggest } from "{% static 'js/cmnsd/autosuggest.js' %}";
