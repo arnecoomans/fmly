@@ -148,3 +148,9 @@ DEFAULT_MODEL_VISIBILITY = 'p'
 SEARCH_EXCLUDE_CHARACTER = 'exclude'
 SEARCH_MIN_LENGTH = 2
 SEARCH_QUERY_CHARACTER = 'search'
+
+# Debug toolbar
+if DEBUG:
+  INSTALLED_APPS += ['debug_toolbar']
+  MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+  INTERNAL_IPS = ['127.0.0.1']
