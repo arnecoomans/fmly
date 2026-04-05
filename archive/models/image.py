@@ -220,12 +220,12 @@ class Image(BaseModel, RequestMixin, FilterMixin):
     slug = slugify(title).lower()
     if is_deleted:
       slug = f"[deleted]_{slug}"
-    images = Image.objects.all().values_list('slug')
-    if images.filter(slug=slug).count() > 0:
+    if Image.objects.filter(slug=slug).exists():
+      existing = set(Image.objects.filter(slug__startswith=slug).values_list('slug', flat=True))
       i = 1
-      while images.filter(slug=f"{slug}{str(i)}").count() > 0:
+      while f"{slug}{i}" in existing:
         i += 1
-      slug = f"{slug}{str(i)}"
+      slug = f"{slug}{i}"
     return slug
 
   def get_indexed_name(self):
