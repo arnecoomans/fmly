@@ -9,8 +9,9 @@ __pycache__
 
 # Keep database outside repo
 *.sqlite3
-# Keep settings file outside repo
-settings.py
+
+# Keep secrets outside repo
+.env
 
 # Keep statics and uploads outside repo
 /public/static
@@ -34,7 +35,6 @@ custom_*.css
 # Keep mac-folders outside repo
 .DS_Store
 
-#/family/settings.py
 auth.md
 
 # Development
