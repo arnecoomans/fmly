@@ -137,7 +137,7 @@ class Image(BaseModel, RequestMixin, FilterMixin):
   people              = models.ManyToManyField(Person, blank=True, related_name='images', help_text='Tag people that are on the photo')
   tag                 = models.ManyToManyField(Tag, blank=True, related_name='images')
   attachments         = models.ManyToManyField(Attachment, blank=True, related_name='images')
-  is_portrait_of      = models.OneToOneField(Person, on_delete=models.CASCADE, related_name='portrait', blank=True, null=True)
+  is_portrait_of      = models.OneToOneField(Person, on_delete=models.SET_NULL, related_name='portrait', blank=True, null=True)
   portrait_of         = models.ManyToManyField(Person, blank=True, related_name='portraits', help_text='Tag people for whom this image is a portrait')
   in_group            = models.ManyToManyField(Group, blank=True, related_name='images', help_text='Group images')
   family              = models.CharField(max_length=64, null=True, blank=True, help_text=_('Add image to family collection if no family member can be tagged'))
