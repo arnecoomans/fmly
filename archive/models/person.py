@@ -243,18 +243,14 @@ class Person(BaseModel):
   @ajax_function
   def timeline(self):
     if not hasattr(self, '_timeline'):
-      events = self.events.all()
-      # Include Parent events
-      for parent in self.get_parents().all() or []:
-        events = events | parent.events.filter(type__in=['birth', 'death', 'marriage'])
-      # Include Children events
-      for child in self.get_children().all() or []:
-        events = events | child.events.filter(type__in=['birth', 'death', 'marriage'])
-      # Include Partner events
-      for partner in self.get_partners().all() or []:
-        events = events | partner.events.filter(type__in=['birth', 'death',])
-      # Include General events
-      events = events | Event.objects.filter(type='general')
+      parent_child_qs = (self.get_parents() | self.get_children()).distinct()
+      partner_qs = self.get_partners()
+      events = Event.objects.filter(
+        models.Q(people=self) |
+        models.Q(people__in=parent_child_qs, type__in=['birth', 'death', 'marriage']) |
+        models.Q(people__in=partner_qs, type__in=['birth', 'death']) |
+        models.Q(type='general')
+      ).distinct()
       # Crop events between birth and death
       if self.birth():
         events = events.filter(
