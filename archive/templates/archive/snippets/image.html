@@ -18,8 +18,12 @@
         {% if object.category %}
           <li class="bi">
             <img src="{% static object.category.get_icon_file %}" alt="{% translate 'category' %}" title="{% translate 'category of this photo'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left"> 
-            {% if object.category.parent %}<a href="{% url 'archive:images' %}?category={{ object.category.parent.slug }}" class="tag" title="{{ object.category.parent.images.all.count }} images with category '{{ object.category.parent.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{% translate object.category.parent.name %}</a>: {% endif %}
-            <a href="{% url 'archive:images' %}?category={{ object.category.slug }}" class="tag" title="{{ object.category.images.all.count }} images with category '{{ object.category.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{{ object.category.name }}</a> {% if object.category.images.all.count > 0 %}({{ object.category.images.all.count }}){% endif %}
+            {% if object.category.parent %}<a href="{% url 'archive:images' %}?category={{ object.category.parent.slug }}" class="tag" >{% translate object.category.parent.name %}</a>: {% endif %}
+            {% comment %} <a href="{% url 'archive:images' %}?category={{ object.category.slug }}" class="tag">{{ object.category.name }}</a> {% if object.category.images.all.count > 0 %}({{ object.category.images.all.count }}){% endif %} {% endcomment %}
+            {% with image_count=object.category.images.count %}
+              <a href="{% url 'archive:images' %}?category={{ object.category.slug }}" class="tag">{{ object.category.name }}</a> {% if image_count > 0 %}({{ image_count }}){% endif %}
+            {% endwith %}
+
           </li>
         {% endif %}
         <!-- Date-->

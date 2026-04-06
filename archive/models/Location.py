@@ -35,15 +35,19 @@ class Location(BaseModel, BaseIcon):
     return name
   
   def get_alternatives(self):
-    alternatives = self.alternatives.all() | self.alternative_to.all()
-    return alternatives.distinct()
-  
+    if not hasattr(self, '_alternatives'):
+      self._alternatives = self.alternatives.all() | self.alternative_to.all()
+    return self._alternatives.distinct()
+
   def get_event_people(self):
-    people = set()
-    for event in self.events.all():
-      for person in event.people.all():
-        people.add(person)
-    return people
+    if not hasattr(self, '_event_people'):
+      people = set()
+      for event in self.events.all():
+        for person in event.people.all():
+          people.add(person)
+      self._event_people = people
+    return self._event_people
+
   def people(self):
     return self.get_event_people()
   
@@ -54,6 +58,7 @@ class Location(BaseModel, BaseIcon):
       return self.parent
     else:
       return None
+    
   def region(self):
     if self.parent and self.parent.parent:
       return self.parent

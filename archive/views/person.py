@@ -53,15 +53,16 @@ class PersonView(ListView):
   paginate_by = settings.PAGINATE
   added_context = {}
   
+  def get_person(self):
+    if not hasattr(self, '_person'):
+      self._person = Person.objects.optimized().get(pk=self.kwargs['pk'])
+    return self._person
+
+
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'people'
-    ''' Add Person to the context
-        In a normal situation you'd expect this to be a DetailView. But the larger part 
-        of the person detail view is the related images view. 
-        So this is where the person-object is added to the related data.
-    '''
-    context['person'] = Person.objects.get(pk=self.kwargs['pk'])
+    context['person'] = self.get_person()
     ''' Add additional context created by the get_queryset actions'''
     if len(self.added_context) > 0:
       for key in self.added_context:
@@ -95,16 +96,17 @@ class PersonView(ListView):
   ''' Return filtered queryset with Images for this Person '''
   def get_queryset(self):
     ''' Fetch images with Person in field people '''
-    queryset = Image.objects.filter(people=Person.objects.get(pk=self.kwargs['pk']))
+    queryset = Image.objects.filter(people=self.get_person())
     ''' Always remove deleted images '''
     queryset = queryset.filter(status='p')
     ''' Show or hide hidden files '''
     if not self.show_hidden_files():
-      if queryset.filter(visibility_frontpage=False).count() > 0:
-        self.added_context['images_hidden'] = queryset.filter(visibility_person_page=False).count()
+      hidden_count = queryset.filter(visibility_person_page=False).count()
+      if hidden_count > 0:
+        self.added_context['images_hidden'] = hidden_count
         queryset = queryset.exclude(visibility_person_page=False)
       else:
-        self.added_context['images_hidden'] =  False
+        self.added_context['images_hidden'] = False
     else:
       self.added_context['images_hidden'] = queryset.filter(visibility_person_page=False).count() * -1
     self.added_context['count_images'] = queryset.count()
