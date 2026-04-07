@@ -58,9 +58,7 @@ class ImageListView(FilterMixin, RequestMixin, ListView):
 
 
   def get_queryset(self):
-    queryset = Image.objects.all()
-    ''' Remove Deleted Images '''
-    # queryset = queryset.filter(status='p')
+    queryset = Image.objects.optimized()
     ''' Use CMNSD Filter Mixin to filter '''
     mapping = {
       'tag': 'tag__slug',
@@ -70,10 +68,18 @@ class ImageListView(FilterMixin, RequestMixin, ListView):
     queryset = self.filter(queryset, mapping=mapping)
     ''' Process Custom Query '''
     queryset = self.filter_objects(queryset)
-    
     queryset = queryset.distinct().order_by('-date_created')
-    self.added_context['total_images'] = queryset.count()
+    ''' Store clean count before adding annotations (annotations break paginator COUNT) '''
+    self._clean_count = queryset.count()
+    self.added_context['total_images'] = self._clean_count
+    self._queryset = queryset.with_counts()
+    queryset = queryset.with_counts()
     return queryset
+
+  def get_paginator(self, queryset, per_page, orphans=0, allow_empty_first_page=True, **kwargs):
+    paginator = super().get_paginator(queryset, per_page, orphans, allow_empty_first_page, **kwargs)
+    paginator.count = self._clean_count
+    return paginator
   
   ''' Show Hidden Files
       Returns True if hidden files should be displayed  

@@ -29,6 +29,27 @@ TYPE_CHOICES = [
   ('other', _('other')),
 ]
 
+class EventQuerySet(models.QuerySet):
+  """Custom queryset for Event — adds chainable optimisation methods."""
+
+  def with_relations(self):
+    """Prefetch people, locations and images to avoid per-event queries."""
+    return self.prefetch_related('people', 'locations', 'images')
+
+  def optimized(self):
+    return self.with_relations()
+
+
+class EventManager(models.Manager):
+  """Default manager for Event. Returns EventQuerySet instances."""
+
+  def get_queryset(self):
+    return EventQuerySet(self.model, using=self._db)
+
+  def optimized(self):
+    return self.get_queryset().optimized()
+
+
 class Event(BaseModel):
   type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='other', verbose_name=_('type'))
   title = models.CharField(max_length=200, blank=True, null=True, verbose_name=_('title'))
@@ -59,6 +80,8 @@ class Event(BaseModel):
 
   # ajax_template_name = 'function/person_event'
 
+  objects = EventManager()
+
   class Meta:
     ordering = ['-year', '-month', '-day', 'title', 'type']
     indexes = [
@@ -74,15 +97,17 @@ class Event(BaseModel):
   def get_title(self):
     if not hasattr(self, '_title'):
       title = []
+      people = list(self.people.all())
+      locations = list(self.locations.all())
       if self.type in ['birth', 'death', 'marriage']:
         title.append(str(_(self.get_type_display())))
-        if self.people.exists():
+        if people:
           title.append(f"{ _('of') }")
-      if self.people.exists():
-        people_names = ', '.join([str(person.short_name()) for person in self.people.all()])
+      if people:
+        people_names = ', '.join([str(person.short_name()) for person in people])
         title.append(f" { people_names }")
-      if self.locations.exists():
-        location_names = ', '.join([str(location) for location in self.locations.all()])
+      if locations:
+        location_names = ', '.join([str(location) for location in locations])
         title.append(f"{ _('at') } { location_names }")
       self._title = " ".join(title)
     return self._title
@@ -104,7 +129,7 @@ class Event(BaseModel):
     return datetime.date(year=self.year, month=self.month or 1, day=self.day or 1)
   
   def image_count(self):
-    return self.images.count()
+    return len(self.images.all())
   
   def editable(self):
     if self.type in ['birth', 'death']:

@@ -15,7 +15,7 @@ from functools import reduce
 from operator import or_
 from django.db.models import (
     Exists, OuterRef, Case, When, Value, CharField,
-    Subquery, IntegerField, F, BooleanField
+    Subquery, IntegerField, F, BooleanField, Prefetch, Count
 )
 from django.db.models import Q
 
@@ -26,11 +26,22 @@ from cmnsd.models.BaseMethods import ajax_function, searchable_function
 
 class PersonQuerySet(models.QuerySet):
   """Custom queryset for Person — adds chainable optimisation methods."""
+  def with_images(self):
+    """Prefetch related images for each person."""
+    return self.prefetch_related(
+      'images',
+      'images__category',
+      'images__people',
+      'images__tag',
+      'images__in_group',
+    )
+
   def with_events(self):
     """Prefetch related events for each person."""
     return self.prefetch_related(
       'events',
       'events__locations',
+      'events__people',
     )
   
   def with_relations(self):
@@ -39,10 +50,25 @@ class PersonQuerySet(models.QuerySet):
       'relation_down',
       'relation_up',
     )
-  
+
+  def with_annotations(self):
+    """Annotate birth/death year and image count — avoids per-row queries on list views."""
+    birth_qs = Event.objects.filter(people=OuterRef('pk'), type='birth').values('year')[:1]
+    death_qs = Event.objects.filter(people=OuterRef('pk'), type='death').values('year')[:1]
+    return self.annotate(
+      annotated_birth_year=Subquery(birth_qs, output_field=IntegerField()),
+      annotated_death_year=Subquery(death_qs, output_field=IntegerField()),
+      image_count=Count('images', distinct=True),
+      note_count=Count('notes', distinct=True),
+    )
+
   def optimized(self):
     """Full optimization — prefetch all commonly accessed relations."""
     return self.with_events().with_relations()
+
+  def optimized_list(self):
+    """Optimisation for list views — annotations instead of per-row event queries."""
+    return self.with_annotations()
 
 
 
@@ -50,6 +76,9 @@ class PersonManager(models.Manager):
   """Default manager for Person. Returns PersonQuerySet instances."""
   def get_queryset(self):
     return PersonQuerySet(self.model, using=self._db)
+  
+  def with_images(self):
+    return self.get_queryset().with_images()
   
   def with_events(self):
     return self.get_queryset().with_events()
@@ -59,6 +88,9 @@ class PersonManager(models.Manager):
 
   def optimized(self):
     return self.get_queryset().optimized()
+
+  def optimized_list(self):
+    return self.get_queryset().optimized_list()
 
 
 
@@ -282,12 +314,12 @@ class Person(BaseModel):
   @ajax_function
   def timeline(self):
     if not hasattr(self, '_timeline'):
-      parent_child_qs = (self.get_parents() | self.get_children()).distinct()
-      partner_qs = self.get_partners()
+      parent_child_ids = [p.pk for p in self.get_parents() + self.get_children()]
+      partner_ids = [p.pk for p in self.get_partners()]
       events = Event.objects.filter(
         models.Q(people=self) |
-        models.Q(people__in=parent_child_qs, type__in=['birth', 'death', 'marriage']) |
-        models.Q(people__in=partner_qs, type__in=['birth', 'death']) |
+        models.Q(people__in=parent_child_ids, type__in=['birth', 'death', 'marriage']) |
+        models.Q(people__in=partner_ids, type__in=['birth', 'death']) |
         models.Q(type='general')
       ).distinct()
       # Crop events between birth and death
@@ -312,9 +344,13 @@ class Person(BaseModel):
       'death_year': None,
       'moment_of_death_unconfirmed': self.moment_of_death_unconfirmed,
     }
-    if self.birth() and self.birth().year:
+    if hasattr(self, 'annotated_birth_year'):
+      data['birth_year'] = self.annotated_birth_year
+    elif self.birth() and self.birth().year:
       data['birth_year'] = self.birth().year
-    if self.death() and self.death().year:
+    if hasattr(self, 'annotated_death_year'):
+      data['death_year'] = self.annotated_death_year
+    elif self.death() and self.death().year:
       data['death_year'] = self.death().year
     return data
 
@@ -420,7 +456,7 @@ class Person(BaseModel):
 
   ''' FAMILY RELATIONS METHODS '''
   def get_family(self):
-    if not hasattr(self, '_family_qs'):
+    if not hasattr(self, '_family_list'):
       """
       Returns a queryset of all family members:
       parents, children, siblings, partners.
@@ -589,22 +625,33 @@ class Person(BaseModel):
               F("birth_month").asc(nulls_last=True),
               F("birth_day").asc(nulls_last=True),
           )
+          .prefetch_related(
+              Prefetch('events', queryset=Event.objects.filter(type__in=['birth', 'death']))
+          )
       )
 
-      self._family_qs = qs
-    return self._family_qs
-  
+      self._family_list = list(qs)
+    return self._family_list
+
   def get_parents(self):
-    return self.get_family().filter(relation_type="parent")
+    # Loop through family list and filter parents
+    # Use loop instead of queryset filter to avoid multiple DB hits and use prefetched data
+    return [p for p in self.get_family() if p.relation_type == "parent"]
 
   def get_children(self):
-    return self.get_family().filter(relation_type="child")
+    # Loop through family list and filter children
+    # Use loop instead of queryset filter to avoid multiple DB hits and use prefetched data
+    return [p for p in self.get_family() if p.relation_type == "child"]
 
   def get_partners(self):
-    return self.get_family().filter(relation_type="partner")
+    # Loop through family list and filter partners
+    # Use loop instead of queryset filter to avoid multiple DB hits and use prefetched data
+    return [p for p in self.get_family() if p.relation_type == "partner"]
 
   def get_siblings(self):
-    return self.get_family().filter(relation_type="sibling")
+    # Loop through family list and filter siblings
+    # Use loop instead of queryset filter to avoid multiple DB hits and use prefetched data
+    return [p for p in self.get_family() if p.relation_type == "sibling"]
 
   def get_father(self):
     return self.get_parents().filter(gender='m')

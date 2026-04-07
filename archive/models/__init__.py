@@ -1,5 +1,7 @@
 from .tag import *
 from .person import *
+from .group import *
+from .attachment import *
 from .image import *
 from .comment import *
 from .note import *

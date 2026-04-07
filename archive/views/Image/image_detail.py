@@ -25,6 +25,9 @@ class ImageView(DetailView):
   model = Image
   template_name = 'archive/images/detail.html'
 
+  def get_object(self, queryset=None):
+    return Image.objects.optimized_detail().get(slug=self.kwargs['slug'])
+
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['active_page'] = 'images'
