@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [26.04.2] - planned
+## [26.04.2]
 
 ### Query optimization — Image list view (~400 → 12 queries)
 - Add `ImageQuerySet` and `ImageManager` to `archive/models/image.py` with `with_relations()`, `with_detail()`, `with_counts()`, `optimized()`, and `optimized_detail()` methods
@@ -46,7 +46,7 @@
 - `Group` and `Attachment` models extracted from `archive/models/image.py` to their own files (`group.py`, `attachment.py`); `__init__.py` updated
 - Family relation logic extracted from `Person` model methods into `archive/services/family_relations.py`; model methods are now thin wrappers (`get_family`, `get_parents`, `get_children`, `get_partners`, `get_siblings`, `get_father`, `get_mother`)
 
-## [26.04.1] - planned
+## [26.04.1] - skipped
 - [Bugfix] `Person.all_last_names()` and `all_places()` looped over all Person records in Python — replaced with `.values_list().distinct()` queries (2 queries each instead of N)
 - [Bugfix] `Person.timeline()` fired one DB query per family member — replaced per-member loops with a single Event query using `Q` objects and subqueries
 - [Bugfix] `get_safe_slug()` on Image fired a DB query on every loop iteration — now fetches conflicting slugs upfront in a single query and checks against a set

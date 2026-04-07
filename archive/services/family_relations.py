@@ -90,6 +90,7 @@ def _build_from_prefetch(person):
 
   # Co-parents: batch-query other parents for all children so the template
   # can display "with X:" groupings without triggering get_family() per child.
+  # Also derives implied partners (persons who share a child) from this data.
   children_in_family = [m for m in family if m.relation_type == 'child']
   if children_in_family:
     child_pks = [c.pk for c in children_in_family]
@@ -99,6 +100,13 @@ def _build_from_prefetch(person):
     co_parent_map = {}
     for rel in co_parent_rels:
       co_parent_map.setdefault(rel.down_id, []).append(rel.up)
+      # Implied partner: anyone who shares a child is a partner
+      co_parent = rel.up
+      if co_parent.pk not in seen_pks:
+        co_parent.relation_type = 'partner'
+        co_parent.relation_id = rel.pk
+        family.append(co_parent)
+        seen_pks.add(co_parent.pk)
     for child in children_in_family:
       child.co_parents = co_parent_map.get(child.pk, [])
 
