@@ -67,17 +67,16 @@
         <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'children'|capfirst %}:</div>
         <div class="col">
           {% for child in person.children %}
-            {% with partner=child.parents|without:person %}
-              {% with partner=partner.0 %}
-                {% ifchanged partner %}
-                  <span class="text-muted">{% translate 'with' %}
+            {% with partner=child.co_parents.0 %}
+              {% ifchanged partner %}
+                <span class="text-muted">{% translate 'with' %}
+                  {% if partner %}
                     {{ partner.full_name }}:
-                    {% if not partner %}
-                      {% translate 'unregistered partner' %}:
-                    {% endif %}
-                  </span><br>
-                {% endifchanged %}
-              {% endwith %}
+                  {% else %}
+                    {% translate 'unregistered partner' %}:
+                  {% endif %}
+                </span><br>
+              {% endifchanged %}
             {% endwith %}
             {% include 'element/person_full_name.html' with person=child %}
             {% comment %} <a href="{% url 'archive:person' child.id child.slug %}">{{ child.full_name }}</a> {% endcomment %}

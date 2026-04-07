@@ -96,7 +96,7 @@ class PersonView(ListView):
   ''' Return filtered queryset with Images for this Person '''
   def get_queryset(self):
     ''' Fetch images with Person in field people '''
-    queryset = Image.objects.filter(people=self.get_person())
+    queryset = Image.objects.optimized().filter(people=self.get_person())
     ''' Always remove deleted images '''
     queryset = queryset.filter(status='p')
     ''' Show or hide hidden files '''
@@ -109,11 +109,17 @@ class PersonView(ListView):
         self.added_context['images_hidden'] = False
     else:
       self.added_context['images_hidden'] = queryset.filter(visibility_person_page=False).count() * -1
-    self.added_context['count_images'] = queryset.count()
-    ''' Order images '''
-    queryset = queryset.order_by('date_created')
+    self._clean_count = queryset.count()
+    self.added_context['count_images'] = self._clean_count
+    ''' Order images, then annotate (annotations break paginator COUNT) '''
+    queryset = queryset.order_by('date_created').with_counts()
     ''' Return result '''
     return queryset
+
+  def get_paginator(self, queryset, per_page, orphans=0, allow_empty_first_page=True, **kwargs):
+    paginator = super().get_paginator(queryset, per_page, orphans, allow_empty_first_page, **kwargs)
+    paginator.count = self._clean_count
+    return paginator
 
 ''' PersonListView
     Display a list of people, grouped by family (Last_name or Married_name)
@@ -170,7 +176,7 @@ class PersonListView(FilterMixin, RequestMixin, ListView):
     if hasattr(self, 'queryset') and self.queryset is not None:
       return self.queryset
     # Build initial queryset
-    self.queryset = Person.objects.all()
+    self.queryset = Person.objects.optimized_list()
     self.queryset = self.filter(self.queryset, mapping={})
     self.queryset = self.queryset.distinct().order_by('last_name', 'first_names')
     return self.queryset
@@ -397,10 +403,10 @@ class SuggestFamilyView(RequestMixin, FilterMixin, ResponseMixin, MessageMixin, 
     # Remove family members
     if self.request.GET.get('exclude_family', 'false').lower() == 'true':
       print('Excluding family members')
-      qs = qs.exclude(pk__in=self.get_object().get_family().values_list('pk', flat=True))
+      qs = qs.exclude(pk__in=[p.pk for p in self.get_object().get_family()])
     elif self.request.GET.get('limit_to_family', 'false').lower() == 'true':
       print('Limiting to family members')
-      qs = qs.filter(pk__in=self.get_object().get_family().values_list('pk', flat=True))
+      qs = qs.filter(pk__in=[p.pk for p in self.get_object().get_family()])
     # Apply Relevance ordering
     print(f"Suggestions before relevance filtering: {qs.count()}")
     qs = self.with_relevance(qs)

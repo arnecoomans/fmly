@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Count, Q
+from django.db.models import Prefetch
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -8,10 +10,12 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
 
-
 from .tag import Tag
 from .person import Person
+from .Event import Event
 from .Category import Category
+from .group import Group
+from .attachment import Attachment
 
 from cmnsd.models import BaseModel
 from cmnsd.models.BaseMethods import ajax_function, searchable_function
@@ -48,81 +52,70 @@ def get_thumbnail(image):
   except Exception as e:
     return None
 
-class Group(BaseModel):
-  title               = models.CharField(max_length=255, blank=True)
-  description         = models.CharField(max_length=512, blank=True, null=True)
-  user                = models.ForeignKey(User, on_delete=models.CASCADE)
-  tag                 = models.ManyToManyField(Tag, blank=True, related_name='groups')
-  
-  def __str__(self):
-    title = self.title
-    ''' Prepend title with tag if there is one tag set. 
-        If more tags are set, it would get too messy. 
-    '''
-    if self.tag and self.tag.all().count() == 1:
-      for tag in self.tag.all():
-        title = f"{ tag }: { title }"
-    ''' Append title with short description if set 
-    '''
-    if self.description:
-      title += ' (' + self.description[:32]
-      if len(self.description) > 32:
-        title += '...'
-      self.title += ')'
-    return title
-
-  def count_images(self):
-    return self.images.exclude(status='x').count()
-
-class Attachment(BaseModel):
-  slug                = models.CharField(max_length=255, unique=True)
-  file                = models.FileField(null=True, upload_to='files', help_text='Possible to attach file to an image. Use for pdf, doc, excel, etc.')
-  description         = models.CharField(max_length=512, blank=True, null=True)
-  # Meta
-  size                = models.IntegerField(default=0)
-  is_deleted          = models.BooleanField(default=False)
-
-  def __str__(self) -> str:
-    description = str(self.description)
-    if len(description) < 1:
-      description = self.slug
-    # if self.is_deleted:
-    #   description = f"[Deleted] { description }"
-    return str(description)
-    
-  def get_absolute_url(self):
-      return reverse("archive:attachment", kwargs={"slug": self.slug})
-  
-  def filename(self):
-    return Path(str(self.file)).name
-  
-  def extension(self):
-    return Path(str(self.file)).suffix[1:].lower()
-
-  def storeSize(self):
-    from os import stat
-    file_stats = stat(settings.MEDIA_ROOT.joinpath(str(self.file  )))
-    self.size = file_stats.st_size
-    self.save()
-
-  ''' Display Image File size. Calculate if not stored yet '''
-  def getSize(self):
-    ''' https://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python '''
-    from math import floor, pow, log
-    if self.size == 0:
-      self.storeSize()
-    if self.size == 0:
-      return "0B"
-    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-    i = int(floor(log(self.size, 1024)))
-    p = pow(1024, i)
-    s = round(self.size / p, 2)
-    return "%s %s" % (s, size_name[i])
-
 ''' Use default random value when migrating to slug '''
 import random
 def random_string():
   return str(random.randint(10000, 99999))
+
+class ImageQuerySet(models.QuerySet):
+  def with_relations(self):
+    """ Optimised Queryset to retrieve related objects in one query using select_related and prefetch_related 
+        Target use: List View
+    """
+    return self.select_related(
+      'category',
+      'category__parent',
+      'is_portrait_of',
+    ).prefetch_related(
+      Prefetch('people', queryset=Person.objects.prefetch_related(
+        Prefetch('events', queryset=Event.objects.filter(type__in=['birth', 'death']))
+      )),
+      Prefetch('tag', queryset=Tag.objects.with_counts()),
+      'in_group',
+      'loved_by',
+    )
+  
+  def with_detail(self):
+    """ Optimised Queryset to retrieve related objects in one query using select_related and prefetch_related 
+        Target use: Detail View
+    """
+    return self.prefetch_related(
+      'attachments',
+      'in_group',
+      'events',
+      'portrait_of',
+    )
+  def with_counts(self):
+    """Annotate related counts to avoid per-row COUNT queries."""
+    return self.annotate(
+      category_image_count=Count('category__images', distinct=True),
+      category_parent_image_count=Count('category__parent__images', distinct=True),
+      people_count=Count('people', distinct=True),
+      tag_count=Count('tag', distinct=True),
+      group_count=Count('in_group', distinct=True),
+      comment_count=Count('comments', filter=Q(comments__status='p'), distinct=True),
+      attachment_count=Count('attachments', distinct=True),
+    )
+
+  def optimized(self):
+    return self.with_relations()
+
+  def optimized_detail(self):
+    return self.with_relations().with_detail()
+  
+class ImageManager(models.Manager):
+  def get_queryset(self):
+    return ImageQuerySet(self.model, using=self._db)
+  
+  def with_relations(self):
+    return self.get_queryset().with_relations()
+  def with_detail(self):
+    return self.get_queryset().with_detail()
+  def optimized(self):
+    return self.get_queryset().optimized()
+  def optimized_detail(self):
+    return self.get_queryset().optimized_detail()
+  
 
 class Image(BaseModel, RequestMixin, FilterMixin):
   # Document details
@@ -158,6 +151,8 @@ class Image(BaseModel, RequestMixin, FilterMixin):
     """ Returns the date of the image by combining the year, month and day fields """
     return f"{self.day} {self.MONTHS[self.month-1][1]} {self.year}"
   
+  objects = ImageManager()  # Provides access to optimised querysets
+
   def __str__(self):
     return self.get_indexed_name()
 
@@ -239,10 +234,14 @@ class Image(BaseModel, RequestMixin, FilterMixin):
   
   ''' Related Object Methods'''
   def count_comments(self):
+    if hasattr(self, 'comment_count'):
+      return self.comment_count
     return self.get_comments().count()
   def get_comments(self):
     return self.filter(self.comments)
   def count_attachments(self):
+    if hasattr(self, 'attachment_count'):
+      return self.attachment_count
     return self.get_attachments().count()
   def get_attachments(self):
     return self.filter(self.attachments)

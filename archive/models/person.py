@@ -14,8 +14,7 @@ from django.db.models import Value, CharField
 from functools import reduce
 from operator import or_
 from django.db.models import (
-    Exists, OuterRef, Case, When, Value, CharField,
-    Subquery, IntegerField, F, BooleanField
+    Value, CharField, Subquery, IntegerField, Count, OuterRef, Prefetch
 )
 from django.db.models import Q
 
@@ -26,23 +25,54 @@ from cmnsd.models.BaseMethods import ajax_function, searchable_function
 
 class PersonQuerySet(models.QuerySet):
   """Custom queryset for Person — adds chainable optimisation methods."""
+  def with_images(self):
+    """Prefetch related images for each person."""
+    return self.prefetch_related(
+      'images',
+      'images__category',
+      'images__people',
+      'images__tag',
+      'images__in_group',
+    )
+
   def with_events(self):
     """Prefetch related events for each person."""
     return self.prefetch_related(
       'events',
       'events__locations',
+      'events__people',
     )
   
   def with_relations(self):
-    """Prefetch family relations (parents, children, partners)."""
+    """Prefetch family relations (parents, children, partners) with related persons."""
+    from archive.models.person import FamilyRelations
     return self.prefetch_related(
-      'relation_down',
-      'relation_up',
+      Prefetch('relation_down', queryset=FamilyRelations.objects.select_related('down').prefetch_related(
+        Prefetch('down__events', queryset=Event.objects.filter(type__in=['birth', 'death']))
+      )),
+      Prefetch('relation_up', queryset=FamilyRelations.objects.select_related('up').prefetch_related(
+        Prefetch('up__events', queryset=Event.objects.filter(type__in=['birth', 'death']))
+      )),
     )
-  
+
+  def with_annotations(self):
+    """Annotate birth/death year and image count — avoids per-row queries on list views."""
+    birth_qs = Event.objects.filter(people=OuterRef('pk'), type='birth').values('year')[:1]
+    death_qs = Event.objects.filter(people=OuterRef('pk'), type='death').values('year')[:1]
+    return self.annotate(
+      annotated_birth_year=Subquery(birth_qs, output_field=IntegerField()),
+      annotated_death_year=Subquery(death_qs, output_field=IntegerField()),
+      image_count=Count('images', distinct=True),
+      note_count=Count('notes', distinct=True),
+    )
+
   def optimized(self):
     """Full optimization — prefetch all commonly accessed relations."""
     return self.with_events().with_relations()
+
+  def optimized_list(self):
+    """Optimisation for list views — annotations instead of per-row event queries."""
+    return self.with_annotations()
 
 
 
@@ -50,6 +80,9 @@ class PersonManager(models.Manager):
   """Default manager for Person. Returns PersonQuerySet instances."""
   def get_queryset(self):
     return PersonQuerySet(self.model, using=self._db)
+  
+  def with_images(self):
+    return self.get_queryset().with_images()
   
   def with_events(self):
     return self.get_queryset().with_events()
@@ -59,6 +92,9 @@ class PersonManager(models.Manager):
 
   def optimized(self):
     return self.get_queryset().optimized()
+
+  def optimized_list(self):
+    return self.get_queryset().optimized_list()
 
 
 
@@ -282,12 +318,12 @@ class Person(BaseModel):
   @ajax_function
   def timeline(self):
     if not hasattr(self, '_timeline'):
-      parent_child_qs = (self.get_parents() | self.get_children()).distinct()
-      partner_qs = self.get_partners()
+      parent_child_ids = [p.pk for p in self.get_parents() + self.get_children()]
+      partner_ids = [p.pk for p in self.get_partners()]
       events = Event.objects.filter(
         models.Q(people=self) |
-        models.Q(people__in=parent_child_qs, type__in=['birth', 'death', 'marriage']) |
-        models.Q(people__in=partner_qs, type__in=['birth', 'death']) |
+        models.Q(people__in=parent_child_ids, type__in=['birth', 'death', 'marriage']) |
+        models.Q(people__in=partner_ids, type__in=['birth', 'death']) |
         models.Q(type='general')
       ).distinct()
       # Crop events between birth and death
@@ -312,9 +348,13 @@ class Person(BaseModel):
       'death_year': None,
       'moment_of_death_unconfirmed': self.moment_of_death_unconfirmed,
     }
-    if self.birth() and self.birth().year:
+    if hasattr(self, 'annotated_birth_year'):
+      data['birth_year'] = self.annotated_birth_year
+    elif self.birth() and self.birth().year:
       data['birth_year'] = self.birth().year
-    if self.death() and self.death().year:
+    if hasattr(self, 'annotated_death_year'):
+      data['death_year'] = self.annotated_death_year
+    elif self.death() and self.death().year:
       data['death_year'] = self.death().year
     return data
 
@@ -420,196 +460,30 @@ class Person(BaseModel):
 
   ''' FAMILY RELATIONS METHODS '''
   def get_family(self):
-    if not hasattr(self, '_family_qs'):
-      """
-      Returns a queryset of all family members:
-      parents, children, siblings, partners.
+    from archive.services.family_relations import get_family
+    return get_family(self)
 
-      Annotates:
-        - relation_type: parent | child | sibling | partner
-        - relation_id: FamilyRelations.id or NULL
-        - birth_year / month / day
-      """
-
-      PersonModel = self.__class__
-
-      # --------------------------------------------------
-      # Parent: someone who is parent of self
-      # --------------------------------------------------
-      parent_rel = FamilyRelations.objects.filter(
-          down_id=self.pk,
-          type="parent",
-          up_id=OuterRef("pk"),
-      )
-
-      # --------------------------------------------------
-      # Child: someone who is child of self
-      # --------------------------------------------------
-      child_rel = FamilyRelations.objects.filter(
-          up_id=self.pk,
-          type="parent",
-          down_id=OuterRef("pk"),
-      )
-
-      # --------------------------------------------------
-      # Partner: explicit partner relation (either direction)
-      # --------------------------------------------------
-      explicit_partner_rel = FamilyRelations.objects.filter(
-          type="partner",
-      ).filter(
-          Q(up_id=self.pk, down_id=OuterRef("pk")) |
-          Q(down_id=self.pk, up_id=OuterRef("pk"))
-      )
-
-      # --------------------------------------------------
-      # Partner via shared child
-      # --------------------------------------------------
-      shared_child_partner_rel = FamilyRelations.objects.filter(
-          type="parent",
-          up_id=self.pk,
-          down__relation_up__type="parent",
-          down__relation_up__up_id=OuterRef("pk"),
-      )
-
-      # --------------------------------------------------
-      # Siblings (direct siblings only)
-      # --------------------------------------------------
-      self_parents = FamilyRelations.objects.filter(
-          down_id=self.pk,
-          type="parent",
-      ).values("up_id")
-
-      sibling_rel = FamilyRelations.objects.filter(
-          type="parent",
-          up_id__in=Subquery(self_parents),
-          down_id=OuterRef("pk"),
-      ).exclude(
-          down_id=self.pk
-      )
-
-      # --------------------------------------------------
-      # Birth subquery (ordering)
-      # --------------------------------------------------
-      birth_qs = (
-          Event.objects
-          .filter(people=OuterRef("pk"), type="birth")
-          .order_by("-year", "-month", "-day")
-      )
-
-      qs = (
-          PersonModel.objects
-          .exclude(pk=self.pk)
-
-          # --- existence checks ---
-          .annotate(
-              _is_parent=Exists(parent_rel),
-              _is_child=Exists(child_rel),
-              _is_sibling=Exists(sibling_rel),
-              _is_partner_explicit=Exists(explicit_partner_rel),
-              _is_partner_shared=Exists(shared_child_partner_rel),
-          )
-
-          # --- combine partner logic ---
-          .annotate(
-              _is_partner=Case(
-                  When(
-                      Q(_is_partner_explicit=True) | Q(_is_partner_shared=True),
-                      then=Value(True),
-                  ),
-                  default=Value(False),
-                  output_field=BooleanField(),
-              )
-          )
-
-          # --- OR filter ---
-          .filter(
-              Q(_is_parent=True) |
-              Q(_is_child=True) |
-              Q(_is_sibling=True) |
-              Q(_is_partner=True)
-          )
-
-          # --------------------------------------------------
-          # Relation type + relation_id
-          # --------------------------------------------------
-          .annotate(
-              relation_type=Case(
-                  When(_is_parent=True, then=Value("parent")),
-                  When(_is_child=True, then=Value("child")),
-                  When(_is_partner=True, then=Value("partner")),
-                  When(_is_sibling=True, then=Value("sibling")),
-                  default=Value("family"),
-                  output_field=CharField(),
-              ),
-
-              relation_id=Case(
-                  When(
-                      _is_parent=True,
-                      then=Subquery(parent_rel.values("id")[:1]),
-                  ),
-                  When(
-                      _is_child=True,
-                      then=Subquery(child_rel.values("id")[:1]),
-                  ),
-                  When(
-                      _is_partner_explicit=True,
-                      then=Subquery(explicit_partner_rel.values("id")[:1]),
-                  ),
-                  When(
-                      _is_partner_shared=True,
-                      then=Subquery(shared_child_partner_rel.values("id")[:1]),
-                  ),
-                  When(
-                      _is_sibling=True,
-                      then=Subquery(sibling_rel.values("id")[:1]),
-                  ),
-                  default=Value(None),
-                  output_field=IntegerField(),
-              ),
-          )
-
-          # --- birth ordering ---
-          .annotate(
-              birth_year=Subquery(
-                  birth_qs.values("year")[:1],
-                  output_field=IntegerField(),
-              ),
-              birth_month=Subquery(
-                  birth_qs.values("month")[:1],
-                  output_field=IntegerField(),
-              ),
-              birth_day=Subquery(
-                  birth_qs.values("day")[:1],
-                  output_field=IntegerField(),
-              ),
-          )
-
-          .order_by(
-              F("birth_year").asc(nulls_last=True),
-              F("birth_month").asc(nulls_last=True),
-              F("birth_day").asc(nulls_last=True),
-          )
-      )
-
-      self._family_qs = qs
-    return self._family_qs
-  
   def get_parents(self):
-    return self.get_family().filter(relation_type="parent")
+    from archive.services.family_relations import get_parents
+    return get_parents(self)
 
   def get_children(self):
-    return self.get_family().filter(relation_type="child")
+    from archive.services.family_relations import get_children
+    return get_children(self)
 
   def get_partners(self):
-    return self.get_family().filter(relation_type="partner")
+    from archive.services.family_relations import get_partners
+    return get_partners(self)
 
   def get_siblings(self):
-    return self.get_family().filter(relation_type="sibling")
+    from archive.services.family_relations import get_siblings
+    return get_siblings(self)
 
   def get_father(self):
-    return self.get_parents().filter(gender='m')
+    return [p for p in self.get_parents() if p.gender == 'm']
+
   def get_mother(self):
-    return self.get_parents().filter(gender='f')
+    return [p for p in self.get_parents() if p.gender == 'f']
 
   @property
   def get_family_relations(self):
