@@ -1,8 +1,9 @@
 {% load static %}
-{% if image.get_attachments.all.count > 0 or ajax.editable %}
+{% with attachments=image.attachments.all %}
+{% if attachments or ajax.editable %}
   <div class="d-flex py-1">
     <div class="col">
-      {% for attachment in image.get_attachments %}
+      {% for attachment in attachments %}
         <img src="{% static 'img/bootstrap-icons/paperclip.svg' %}" alt="{% translate 'attachment' %}" title="{% translate 'this image has an attachment'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left" >
         <a href="{% url 'archive:attachment' attachment.slug %}" class="attachment" target="_blank" rel="noopener noreferrer" title="{{ attachment.description }}">{{ attachment.description|truncatechars:52 }}</a> {{ attachment.extension }}, {{ attachment.getSize }}
         {% if ajax.editable %}
@@ -51,3 +52,4 @@
     </div>
   {% endif %}
 {% endif %}
+{% endwith %}

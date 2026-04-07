@@ -1,4 +1,5 @@
 import datetime
+from django.core.cache import cache
 from django.db import models
 from django.db.models import F
 from django.db.models.functions import Coalesce
@@ -22,6 +23,44 @@ from .Event import Event
 
 from cmnsd.models import BaseModel
 from cmnsd.models.BaseMethods import ajax_function, searchable_function
+
+class PersonQuerySet(models.QuerySet):
+  """Custom queryset for Person — adds chainable optimisation methods."""
+  def with_events(self):
+    """Prefetch related events for each person."""
+    return self.prefetch_related(
+      'events',
+      'events__locations',
+    )
+  
+  def with_relations(self):
+    """Prefetch family relations (parents, children, partners)."""
+    return self.prefetch_related(
+      'relation_down',
+      'relation_up',
+    )
+  
+  def optimized(self):
+    """Full optimization — prefetch all commonly accessed relations."""
+    return self.with_events().with_relations()
+
+
+
+class PersonManager(models.Manager):
+  """Default manager for Person. Returns PersonQuerySet instances."""
+  def get_queryset(self):
+    return PersonQuerySet(self.model, using=self._db)
+  
+  def with_events(self):
+    return self.get_queryset().with_events()
+  
+  def with_relations(self):
+    return self.get_queryset().with_relations()
+
+  def optimized(self):
+    return self.get_queryset().optimized()
+
+
 
 def annotate_relation(qs, label):
   return qs.annotate(
@@ -77,6 +116,8 @@ class Person(BaseModel):
     indexes = [
       models.Index(fields=["last_name", "first_names"]),
     ]
+
+  objects = PersonManager()  # Provides access to optimised querysets
 
   def __str__(self):
     ''' Return the name of the person with year of birth and death '''
@@ -202,38 +243,36 @@ class Person(BaseModel):
   ''' EVENTS '''
   @ajax_function
   def get_date_of_birth(self):
-    birth = self.birth()
-    if birth and birth.year:
-      return datetime.date(year=birth.year, month=birth.month or 1, day=birth.day or 1)
-    return None
-    # if self.events.filter(type='birth').exists():
-    #   event = self.events.filter(type='birth').first()
-    #   if not event.year:
-    #     return None
-    #   return datetime.date(year=event.year, month=event.month or 1, day=event.day or 1)
-  
+    if not hasattr(self, '_date_of_birth'):
+      birth = self.birth()
+      if birth and birth.year:
+        self._date_of_birth = datetime.date(year=birth.year, month=birth.month or 1, day=birth.day or 1)
+      else:
+        self._date_of_birth = None
+    return self._date_of_birth
+    
   @ajax_function
   def get_date_of_death(self):
-    death = self.death()
-    if death and death.year:
-      return datetime.date(year=death.year, month=death.month or 1, day=death.day or 1)
-    return None
-    # if self.events.filter(type='death').exists():
-    #   event = self.events.filter(type='death').first()
-    #   if not event.year:
-    #     return None
-    #   return datetime.date(year=event.year, month=event.month or 1, day=event.day or 1)
+    if not hasattr(self, '_date_of_death'):
+      death = self.death()
+      if death and death.year:
+        self._date_of_death = datetime.date(year=death.year, month=death.month or 1, day=death.day or 1)
+      else:
+        self._date_of_death = None
+    return self._date_of_death
   
   def birth(self):
     if not hasattr(self, '_birth'):
-      self._birth = self.events.filter(type='birth').last()
+      events = [e for e in self.events.all() if e.type == 'birth']
+      self._birth = events[-1] if events else None
     return self._birth
-    
+
   def death(self):
     if not hasattr(self, '_death'):
-      self._death = self.events.filter(type='death').last()
+      events = [e for e in self.events.all() if e.type == 'death']
+      self._death = events[-1] if events else None
     return self._death
-  
+
   ''' Timeline functions'''  
   def has_timeline(self):
     if not hasattr(self, '_has_timeline'):
@@ -362,26 +401,22 @@ class Person(BaseModel):
   
   @ajax_function
   def all_last_names(self):
-    if not hasattr(self, '_all_last_names'):
-      last_names = []
-      for person in Person.objects.all():
-        if person.last_name not in last_names:
-          last_names.append(person.last_name)
-        if person.married_name and person.married_name not in last_names:
-          last_names.append(person.married_name)
-      self._all_last_names = last_names
-    return self._all_last_names
-  
+    result = cache.get('person_all_last_names')
+    if result is None:
+      last_names = Person.objects.exclude(last_name='').values_list('last_name', flat=True).distinct()
+      married_names = Person.objects.exclude(married_name='').values_list('married_name', flat=True).distinct()
+      result = list(set(last_names) | set(married_names))
+      cache.set('person_all_last_names', result, timeout=3600)
+    return result
+
   def all_places(self):
-    if not hasattr(self, '_all_places'):
-      places = []
-      for person in Person.objects.all():
-        if person.place_of_birth and person.place_of_birth.lower() not in [p.lower() for p in places]:
-          places.append(person.place_of_birth)
-        if person.place_of_death and person.place_of_death.lower() not in [p.lower() for p in places]:
-          places.append(person.place_of_death)
-      self._all_places = places
-    return self._all_places
+    result = cache.get('person_all_places')
+    if result is None:
+      birth_places = Person.objects.exclude(place_of_birth='').values_list('place_of_birth', flat=True).distinct()
+      death_places = Person.objects.exclude(place_of_death='').values_list('place_of_death', flat=True).distinct()
+      result = list(set(birth_places) | set(death_places))
+      cache.set('person_all_places', result, timeout=3600)
+    return result
 
   ''' FAMILY RELATIONS METHODS '''
   def get_family(self):
@@ -581,15 +616,14 @@ class Person(BaseModel):
     return ['parent', 'child', 'partner', 'sibling']
   
   def previous_person(self):
-    try:
-      return Person.objects.filter(id__lt=self.id).order_by('-id').first()
-    except Person.DoesNotExist:
-      return None
+    if not hasattr(self, '_previous_person'):
+      self._previous_person = Person.objects.filter(id__lt=self.id).order_by('-id').first()
+    return self._previous_person
+
   def next_person(self):
-    try:
-      return Person.objects.filter(id__gt=self.id).order_by('id').first()
-    except Person.DoesNotExist:
-      return None
+    if not hasattr(self, '_next_person'):
+      self._next_person = Person.objects.filter(id__gt=self.id).order_by('id').first()
+    return self._next_person
     
   
   ''' Absolute URL
@@ -622,6 +656,8 @@ class Person(BaseModel):
       self.related_user.email = self.email
     if self.related_user:
       self.related_user.save()
+    cache.delete('person_all_last_names')
+    cache.delete('person_all_places')
     return super(Person, self).save(*args, **kwargs)
 
 

@@ -1,30 +1,32 @@
 {% load static %}
-{% if image in user.preference.favorites.all and image.loved_by.all.count > 1 or image.loved_by.all.count > 0 %}
+{% with loved_count=image.loved_by.all|length %}
+{% if user.preference in image.loved_by.all and loved_count > 1 or loved_count > 0 %}
   <div class="d-flex py-1">
     <div class="col">
-      <img src="{% if image in user.preference.favorites.all %}{% static 'img/bootstrap-icons/heart-fill.svg' %}{% else %}{% static 'img/bootstrap-icons/heart.svg' %}{% endif %}" alt="{% translate 'information' %}" title="{% translate 'this image is loved'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left"> 
+      <img src="{% if user.preference in image.loved_by.all %}{% static 'img/bootstrap-icons/heart-fill.svg' %}{% else %}{% static 'img/bootstrap-icons/heart.svg' %}{% endif %}" alt="{% translate 'information' %}" title="{% translate 'this image is loved'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left">
       {% translate 'this image is loved by '|capfirst %}
-      {% if image in user.preference.favorites.all %}
+      {% if user.preference in image.loved_by.all %}
         {% translate 'you' %}
-        {% if image.loved_by.all.count > 1 %}
-          {% translate 'and' %} {{ image.loved_by.all.count|add:"-1" }} 
-          {% if image.loved_by.all.count|add:"-1" > 1 %}
+        {% if loved_count > 1 %}
+          {% translate 'and' %} {{ loved_count|add:"-1" }}
+          {% if loved_count|add:"-1" > 1 %}
             {% translate 'other people' %}.
           {% else %}
             {% translate 'other person' %}.
           {% endif %}
         {% endif %}
-      {% elif image.loved_by.all.count > 0 %}
-        {{ image.loved_by.all.count }} 
-        {% if image.loved_by.all.count > 1 %}
+      {% elif loved_count > 0 %}
+        {{ loved_count }}
+        {% if loved_count > 1 %}
           {% translate 'people' %}.
         {% else %}
           {% translate 'person' %}.
         {% endif %}
       {% endif %}
-      {% if image.loved_by.all.count == 0 %}
+      {% if loved_count == 0 %}
         {% translate 'absolutely nobody' %}
       {% endif %}
     </div>
   </div>
 {% endif %}
+{% endwith %}

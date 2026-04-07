@@ -4,18 +4,9 @@
 {% if not suppress_icons %}
   <span class="icons">
     <!-- bio -->{% if person.bio %}<i class="bi bi-journal-text" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.name }} heeft een biografie"></i>{% endif %}
-    <!-- images -->{% if person.images.all.count > 0 %} <i class="bi bi-image{% if person.images.all.count > 1 %}s{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.images.all.count }} afbeeldingen met {{ person.name }}"></i>{{ person.images.all.count }}{% endif %}
-    <!-- notes -->{% if person.notes.all.count > 0 %} <i class="bi-stick{% if person.notes.all.count > 1 %}ies{% else %}y{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.notes.all.count }} notities met {{ person.name }}"></i>{{ person.notes.all.count }}{% endif %}
-    <!-- comments -->{% if person.related_user.comments.all.count > 0 %} <a href="{% url 'archive:comments' %}?user={{ person.related_user.username }}" class="bi bi-chat" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.related_user.comments.all.count }} reacties door {{ person.name }}">{{ person.related_user.comments.all.count }}</a>{% endif %}
+    <!-- images -->{% if person.images|length > 0 %} <i class="bi bi-image{% if person.images|length > 1 %}s{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.images|length }} afbeeldingen met {{ person.name }}"></i>{{ person.images|length }}{% endif %}
+    <!-- notes -->{% if person.notes|length > 0 %} <i class="bi-stick{% if person.notes|length > 1 %}ies{% else %}y{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.notes|length }} notities met {{ person.name }}"></i>{{ person.notes|length }}{% endif %}
+    <!-- comments -->{% if person.related_user.comments|length > 0 %} <a href="{% url 'archive:comments' %}?user={{ person.related_user.username }}" class="bi bi-chat" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.related_user.comments|length }} reacties door {{ person.name }}">{{ person.related_user.comments|length }}</a>{% endif %}
   </span>
 {% endif %}
-{% comment %} {% if perms.archive.change_image and not disallow_delete_attribute %}<span class="clickable"
-        data-slug="{{ person.slug }}"
-        data-url="{% url 'archive:json-set-attribute-by-pk-slug' 'image' image.id image.slug 'people' %}?obj_id={{ person.id }}" 
-        data-success-url="{% url 'archive:json-get-attributes-by-pk-slug' 'image' image.id image.slug 'people' %}"
-        data-attribute="people"
-        data-action="setAttribute"
-        title="{% translate 'remove'|capfirst %} '{{ person.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">
-      <i class="bi bi-x"></i>
-  </span>{% endif %} {% endcomment %}
 </li>
