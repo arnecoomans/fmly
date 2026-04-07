@@ -42,8 +42,8 @@
         </form>
       {% else %}
         <img src="{% static image.category.get_icon_file %}" alt="{% translate 'category' %}" title="{% translate 'category of this photo'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left"> 
-        {% if image.category.parent %}<a href="{% url 'archive:images' %}?category={{ image.category.parent.slug }}" class="tag" title="{{ image.category.parent.images.all.count }} afbeeldingen met categorie '{{ image.category.parent.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{% translate image.category.parent.name %}</a>: {% endif %}
-        <a href="{% url 'archive:images' %}?category={{ image.category.slug }}" class="tag" title="{{ image.category.images.all.count }} afbeeldingen met categorie '{{ image.category.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{{ image.category.name }}</a> {% if image.category.images.all.count > 0 %}({{ image.category.images.all.count }}){% endif %}
+        {% if image.category.parent %}<a href="{% url 'archive:images' %}?category={{ image.category.parent.slug }}" class="tag" title="{{ image.category_parent_image_count }} afbeeldingen met categorie '{{ image.category.parent.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{% translate image.category.parent.name %}</a>: {% endif %}
+        <a href="{% url 'archive:images' %}?category={{ image.category.slug }}" class="tag" title="afbeeldingen met categorie '{{ image.category.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{{ image.category.name }}</a>
       {% endif %}
     </div>
   </div>

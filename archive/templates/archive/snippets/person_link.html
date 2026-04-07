@@ -1,14 +1,14 @@
 <span class="name">
   {% if not person.private %}<a href="{% url 'archive:person' person.id person.slug|default:'details' %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Bekijk details van {{ person.full_name }}">{% endif %}{{ person.full_name }}{% if not person.private %}</a>{% endif %}</span>
 <span class="date">
-  {{ person.birth.year|default:'&nbsp;&nbsp;&nbsp;*'}} - {{ person.death.year|default:'&dagger;' }}
+  {{ person.get_lifespan_data.birth_year|default:'&nbsp;&nbsp;&nbsp;*'}} - {% if person.get_lifespan_data.death_year %}{{ person.get_lifespan_data.death_year }}{% else %}&dagger;{% endif %}
   {% comment %} {% if person.birth %}{{ person.birth.year }}{% elif person.death %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}{% if person.death or person.moment_of_death_unconfirmed %} - {% if person.death %}{{ person.death.year }}{% else %}&dagger;{% endif %}{% endif %} {% endcomment %}
 </span>
 {% if not suppress_icons %}
   <span class="icons">
     <!-- bio -->{% if person.bio %}<i class="bi bi-journal-text" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.name }} heeft een biografie"></i>{% endif %}
-    <!-- images -->{% if person.images.all.count > 0 %} <i class="bi bi-image{% if person.images.all.count > 1 %}s{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.images.all.count }} afbeeldingen met {{ person.name }}"></i>{{ person.images.all.count }}{% endif %}
-    <!-- notes -->{% if person.notes.all.count > 0 %} <i class="bi-stick{% if person.notes.all.count > 1 %}ies{% else %}y{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.notes.all.count }} notities met {{ person.name }}"></i>{{ person.notes.all.count }}{% endif %}
+    <!-- images -->{% if person.image_count > 0 %} <i class="bi bi-image{% if person.image_count > 1 %}s{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.image_count }} afbeeldingen met {{ person.name }}"></i>{{ person.image_count }}{% endif %}
+    <!-- notes -->{% if person.note_count > 0 %} <i class="bi-stick{% if person.note_count > 1 %}ies{% else %}y{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.note_count }} notities met {{ person.name }}"></i>{{ person.note_count }}{% endif %}
     <!-- comments -->{% if person.related_user.comments.all.count > 0 %} <a href="{% url 'archive:comments' %}?user={{ person.related_user.username }}" class="bi bi-chat" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ person.related_user.comments.all.count }} reacties door {{ person.name }}">{{ person.related_user.comments.all.count }}</a>{% endif %}
   </span>
 {% endif %}

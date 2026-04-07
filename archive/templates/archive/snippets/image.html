@@ -19,11 +19,7 @@
           <li class="bi">
             <img src="{% static object.category.get_icon_file %}" alt="{% translate 'category' %}" title="{% translate 'category of this photo'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left"> 
             {% if object.category.parent %}<a href="{% url 'archive:images' %}?category={{ object.category.parent.slug }}" class="tag" >{% translate object.category.parent.name %}</a>: {% endif %}
-            {% comment %} <a href="{% url 'archive:images' %}?category={{ object.category.slug }}" class="tag">{{ object.category.name }}</a> {% if object.category.images.all.count > 0 %}({{ object.category.images.all.count }}){% endif %} {% endcomment %}
-            {% with image_count=object.category.images.count %}
-              <a href="{% url 'archive:images' %}?category={{ object.category.slug }}" class="tag">{{ object.category.name }}</a> {% if image_count > 0 %}({{ image_count }}){% endif %}
-            {% endwith %}
-
+            <a href="{% url 'archive:images' %}?category={{ object.category.slug }}" class="tag">{{ object.category.name }}</a>
           </li>
         {% endif %}
         <!-- Date-->
@@ -34,13 +30,13 @@
         <!-- Image is hidden -->
         {% if not object.visibility_frontpage %}<li class="bi bi-info-circle-fill"> {% translate 'hidden'|capfirst %}</li>{% endif %}
         <!-- Love image? -->
-        {% if object in user.preference.favorites.all %}<li class="bi bi-heart-fill"> {% translate 'you love this image'|capfirst %}</li>{% endif %}
+        {% if user.preference in object.loved_by.all %}<li class="bi bi-heart-fill"> {% translate 'you love this image'|capfirst %}</li>{% endif %}
         <!-- People -->
-        {% if perms.archive.view_person and object.people.all.count > 0 and object.people.all.count < 6 %}
+        {% if perms.archive.view_person and object.people_count > 0 and object.people_count < 6 %}
           {% for person in object.people.all %}
             <li class="bi bi-person-fill"> <a href="{% url 'archive:person' person.id person.name %}" data-bs-toggle="tooltip" title="{% translate 'see information of'|capfirst %} {{ person.full_name }}">{{ person.name }}</a></li>
           {% endfor %}
-        {% elif perms.archive.view_person and object.people.all.count > 6 %}
+        {% elif perms.archive.view_person and object.people_count > 6 %}
           {% for person in object.people.all %}
             {% if forloop.counter < 4 %}
               <li class="bi bi-person-fill"> <a href="{% url 'archive:person' person.id person.name %}" title="Bekijk gegevens van {{ person.full_name }}">{{ person.name }}</a></li>
@@ -54,8 +50,8 @@
           <li class=" bi bi-collection" data-bs-toggle="tooltip" data-bs-placement="right" title="{% translate 'this image is part of a family collection'|capfirst %}."> {% for family in object.family_collection %}<a href="{% url 'archive:images' %}?family={{ family }}" title="{% translate 'Open family collection of' %} {{ family }}">{{ family }}</a>{% if not forloop.last %}, {% endif %}{% endfor %} </li>
         {% endif %}
         <!-- Tags -->
-        {% if perms.archive.view_tag and object.tag.all.count > 0 %}
-          {% if object.tag.all.count > 5 %}
+        {% if perms.archive.view_tag and object.tag_count|length > 0 %}
+          {% if object.tag_count|length > 5 %}
             {% for tag in object.tag.all %}
               {% if forloop.counter < 6 %}
                 {% include 'archive/snippets/tag.html' with compact=True %}
@@ -70,18 +66,18 @@
           {% endif %}
         {% endif %}
         <!-- Grouping -->
-        {% if object.in_group.all.count > 0 %}
+        {% if object.group_count > 0 %}
               {% for group in object.in_group.all %}
-                <li class="bi bi-collection-fill"> {{ group.title }} ({{ group.images.all.count}})</li>
+                <li class="bi bi-collection-fill"> {{ group.title }} ({{ group.group_count }})</li>
               {% endfor %}
             {% endif %}
         <!-- Comments -->
         {% if perms.archive.view_comment and object.count_comments > 0 %}
-          <li class="comments bi bi-chat-right-fill"> <a href="{% url 'archive:image' object.slug|default:'needs-a-title' %}#comments" title="{{ object.title }}">{{ object.count_comments }} reactie{{ object.count_comments|pluralize:'s' }}</a></li>  
+          <li class="comments bi bi-chat-right-fill"> <a href="{% url 'archive:image' object.slug|default:'needs-a-title' %}#comments" title="{{ object.title }}">{{ object.count_comments }} {% translate 'reactie' %}{{ object.count_comments|pluralize:'s' }}</a></li>  
         {% endif %}
         <!-- Attachments -->
         {% if perms.archive.view_attachment and object.count_attachments > 0 %}
-          <li class="attachments bi-paperclip"> {{object.attachments.all.count }} bijlage{% if object.attachments.all.count > 1 %}n{% endif%}</li>
+          <li class="attachments bi-paperclip"> {{object.count_attachments }} bijlage{% if object.count_attachments > 1 %}n{% endif%}</li>
         {% endif %}
       </ul>
     </div>

@@ -3,15 +3,16 @@
   <div class="d-flex py-1">
     <div class="col">
       {% for group in image.grouped_items.all %}
+        {% with group_images=group.images.all %}
         <img src="{% static 'img/bootstrap-icons/collection-fill.svg' %}" alt="{% translate 'group' %}" title="{% translate 'this image belongs to group'|capfirst %} {{ group.title }}" data-bs-toggle="tooltip" data-bs-placement="left">
-        {% if compact %}{{ group.title|title|truncatechars:12 }}{% else %}{{ group.title|title }}{% endif %} {% if group.images.count > 0 %}({{ group.images.count }}){% endif %}
+        {% if compact %}{{ group.title|title|truncatechars:12 }}{% else %}{{ group.title|title }}{% endif %} {% if group_images %}({{ group_images|length }}){% endif %}
         {% if ajax.editable and perms.archive.change_image %}
           {% include 'element/reusable_delete_button.html' with field='in_group' map_id="id" map_value=group.id confirm=True %}
         {% endif %}
         {% if not forloop.last %}<br>{% endif %}
-        {% if group.images.all.count > 0 %}
+        {% if group_images %}
           <ul style="list-style-type: none; margin-left: 10px;">
-            {% for object in group.images.all %}
+            {% for object in group_images %}
               <li>
                 <img src="{% static 'img/bootstrap-icons/image.svg' %}" alt="{% translate 'image' %}" title="{% translate 'image in this group'|capfirst %}" data-bs-toggle="tooltip" data-bs-placement="left">
                 <a href="{% url 'archive:image' object.slug %}">{{ object.title }}</a>
@@ -19,6 +20,7 @@
             {% endfor %}
           </ul>
         {% endif %}
+        {% endwith %}
       {% endfor %}
     </div>
   </div>

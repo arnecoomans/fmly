@@ -11,7 +11,7 @@
         data-body='{"loved_by__id":"{{ user.preference.id }}"}'
         data-map='{"metadata":"#metadata","love":"#love","actionlist":"#actionlist"}'
         >
-        <img src="{% if image in user.preference.favorites.all %}{% static 'img/bootstrap-icons/heart-fill.svg' %}{% else %}{% static 'img/bootstrap-icons/heart.svg' %}{% endif %}" alt="{% translate 'love/unlove image' %}" title="{% if image in user.preference.favorites.all %}{% translate 'unlove image' %}{% else %}{% translate 'love image' %}{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top">
+        <img src="{% if user.preference in image.loved_by.all %}{% static 'img/bootstrap-icons/heart-fill.svg' %}{% else %}{% static 'img/bootstrap-icons/heart.svg' %}{% endif %}" alt="{% translate 'love/unlove image' %}" title="{% if user.preference in image.loved_by.all %}{% translate 'unlove image' %}{% else %}{% translate 'love image' %}{% endif %}" data-bs-toggle="tooltip" data-bs-placement="top">
       </button>
     {% endif %}
     <!-- Activate Edit Mode on Page -->

@@ -31,15 +31,13 @@
       </div>
     {% endif %}
     <!-- Siblings -->
-    {% if person.siblings.exists or ajax.editable and perms.archive.change_person %}
+    {% if person.siblings or ajax.editable and perms.archive.change_person %}
       <div class="d-flex py-1">
         <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% blocktranslate count counter=person.get_siblings|length  %}Brother/Sister{% plural %}Brothers/Sisters{% endblocktranslate %}:</div>
         <div class="col">
-          {% for sibling in person.siblings.all %}
+          {% for sibling in person.siblings %}
             {% include 'element/person_full_name.html' with person=sibling %}      
-            {% if sibling.parents.all|without:person.parents.all|length > 0%}
-              {% for p in sibling.parents.all|match_queryset:person.parents.all %}<img src="{% static 'img/bootstrap-icons/person-fill-exclamation.svg' %}" title="{% translate 'common parent'|capfirst %}: {{ p.short_name }}" data-bs-toggle="tooltip" data-bs-placement="top">{% endfor %}
-            {% endif %}
+            {% comment %} common parent indicator disabled — parents() returns list, without/match_queryset filters require queryset {% endcomment %}
             {% if not forloop.last %}<br> {% endif %}
           {% empty %}
             <span class="text-muted">None recorded</span>
@@ -49,11 +47,11 @@
       </div>
     {% endif %}
     <!-- Partners -->
-    {% if person.partners.exists or ajax.editable and perms.archive.change_person %}
+    {% if person.partners or ajax.editable and perms.archive.change_person %}
       <div class="d-flex py-1">
         <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'partners'|capfirst %}:</div>
         <div class="col">
-          {% for partner in person.partners.all %}
+          {% for partner in person.partners %}
             {% include 'element/person_full_name.html' with person=partner %}
             {% include 'element/reusable_delete_family_relation.html' with relation=partner person=person %}
             {% if not forloop.last %}<br> {% endif %}
@@ -64,13 +62,13 @@
       </div>
     {% endif %}
     <!-- Children -->
-    {% if person.children.exists or ajax.editable and perms.archive.change_person %}
+    {% if person.children or ajax.editable and perms.archive.change_person %}
       <div class="d-flex {% if not ajax.editable %}border-bottom {% endif %} py-1">
         <div class="col-4 col-sm-3 text-muted small text-uppercase fw-semibold">{% translate 'children'|capfirst %}:</div>
         <div class="col">
-          {% for child in person.children.all %}
-            {% with partner=child.parents.all|without:person %}
-              {% with partner=partner.first %}
+          {% for child in person.children %}
+            {% with partner=child.parents|without:person %}
+              {% with partner=partner.0 %}
                 {% ifchanged partner %}
                   <span class="text-muted">{% translate 'with' %}
                     {{ partner.full_name }}:
