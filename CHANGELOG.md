@@ -17,12 +17,13 @@
 - `in_group.html` refactored: `group.images.all` evaluated once per group via `{% with %}`, reused for count (`|length`) and iteration — removes 3 queries per group
 - `actionlist.html` and `love.html` use `user.preference in image.loved_by.all` (prefetch cache) instead of `image in user.preference.favorites.all` (full favorites scan)
 
-### Query optimization — Person detail view (200 → 27 queries)
+### Query optimization — Person detail view (200 → 31 queries)
 - `PersonView.get_queryset()` uses `Image.objects.optimized()` — eliminates N+1 per image for category, people, tags, groups
 - `PersonView` applies `with_counts()` after storing `_clean_count` and overrides `get_paginator()` — same paginator fix as image list view
 - `Person.get_family()` now returns a plain Python list (evaluated once); `get_parents()`, `get_children()`, `get_partners()`, `get_siblings()` filter the list in Python — eliminates 3+ repeated family SQL queries per page load
 - Nested `Prefetch('events', queryset=Event.objects.filter(type__in=['birth', 'death']))` added inside the people prefetch — batches birth/death lookups for all tagged persons in one query
 - `Person.objects.optimized()` no longer calls `with_images()` — images are fetched by the ListView queryset, not the person object
+- Family logic extracted to `archive/services/family_relations.py`; `_build_from_prefetch` uses already-prefetched `relation_down`/`relation_up` (zero extra queries for direct family); siblings fetched in one query with events pre-warmed via nested `Prefetch`; co-parents for children batched in one query and stored as `child.co_parents` — eliminates per-child `get_family()` DB fallback from template
 
 ### Query optimization — Person list view (1169 → 22 queries for 211 people)
 - Add `PersonQuerySet.with_annotations()` — annotates `annotated_birth_year`, `annotated_death_year` (correlated subqueries) and `image_count`, `note_count` (COUNT annotations) on the queryset
@@ -43,6 +44,7 @@
 
 ### Refactor
 - `Group` and `Attachment` models extracted from `archive/models/image.py` to their own files (`group.py`, `attachment.py`); `__init__.py` updated
+- Family relation logic extracted from `Person` model methods into `archive/services/family_relations.py`; model methods are now thin wrappers (`get_family`, `get_parents`, `get_children`, `get_partners`, `get_siblings`, `get_father`, `get_mother`)
 
 ## [26.04.1] - planned
 - [Bugfix] `Person.all_last_names()` and `all_places()` looped over all Person records in Python — replaced with `.values_list().distinct()` queries (2 queries each instead of N)
