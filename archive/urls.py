@@ -66,6 +66,9 @@ urlpatterns = [
   
   # Locations
   path('locations/', views.LocationListView.as_view(), name='locations'),
+
+  # Calendar
+  path('calendar/birthdays/', views.BirthdayCalendarView.as_view(), name='birthday-calendar'),
   
   # Accounts
   path('settings/', views.PreferencesView.as_view(), name='settings'),

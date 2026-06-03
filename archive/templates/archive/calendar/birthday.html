@@ -1,0 +1,52 @@
+{% extends 'index.html' %}
+{% load i18n %}
+
+{% block content %}
+  <header>
+    <h2>{% translate 'birthday calendar'|title %}</h2>
+  </header>
+
+  <div class="row row-cols-1 row-cols-md-2 g-3 mt-1">
+    {% for month_num, month_label, days in calendar %}
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-header">
+            <strong>{% translate month_label|title %}</strong>
+          </div>
+          <ul class="list-group list-group-flush">
+            {% for day_num, entries in days %}
+              {% if entries %}
+                <li class="list-group-item{% if month_num == today.month and day_num == today.day %} list-group-item-warning{% endif %}">
+                  {% for person, birth_year, death_year in entries %}
+                    <div class="calendar-entry">
+                      <span class="fw-semibold{% if not forloop.first %} invisible{% endif %}">{{ day_num }}</span>
+                      <span>
+                        <a href="{% url 'archive:person' person.pk person.slug %}">{{ person.short_name }}</a>
+                      </span>
+                      <span class="text-muted small">
+                        {% if birth_year %}{{ birth_year }}{% endif %}{% if death_year %} – {{ death_year }}{% endif %}
+                      </span>
+                    </div>
+                  {% endfor %}
+                </li>
+              {% else %}
+                <li class="list-group-item list-group-item-light py-1">
+                  <span class="calendar-day text-muted small">{{ day_num }}</span>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block css %}
+.calendar-entry {
+  display: grid;
+  grid-template-columns: 2rem 1fr auto;
+  align-items: baseline;
+  gap: 0 0.5rem;
+}
+{% endblock %}
