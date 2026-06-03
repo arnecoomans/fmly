@@ -11,4 +11,4 @@ class LocationListView(FilterMixin, ListView):
   def get_queryset(self):
     queryset = super().get_queryset()
     queryset = self.filter(queryset)
-    return queryset.order_by('parent__parent__name', 'parent__name', 'name')
+    return queryset.order_by('parent__parent__name', 'parent__name', 'name') 
