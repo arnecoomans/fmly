@@ -29,6 +29,7 @@ INSTALLED_APPS = [
   'archive',
   # 'datepicker',
   'cmnsd',
+  'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +69,7 @@ TEMPLATES = [
         'cmnsd.templatetags.math_filters',
         'cmnsd.templatetags.humanize_date',
         'cmnsd.templatetags.cmnsd',
+        'cmnsd.templatetags.visibility_choices',
       ],
     },
   },
@@ -148,6 +150,9 @@ DEFAULT_MODEL_VISIBILITY = 'p'
 SEARCH_EXCLUDE_CHARACTER = 'exclude'
 SEARCH_MIN_LENGTH = 2
 SEARCH_QUERY_CHARACTER = 'search'
+
+# SORL Thumbnail
+THUMBNAIL_DEBUG = env('DEBUG', default=False)  # True while developing, if you want verbose errors instead of silent fallback
 
 # Debug toolbar
 if DEBUG:

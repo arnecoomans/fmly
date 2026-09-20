@@ -32,6 +32,11 @@
             <a class="nav-link bi bi-chat-text-fill{% if active_page == 'comments' %} active{% endif %}" href="{% url 'archive:comments' %}"  accesskey="r"> {% translate 'comments'|title %}</a>
           </li>
         {% endif %}
+        {% if perms.archive.view_collection %}
+          <li class="nav-item">
+            <a class="nav-link bi bi-book-fill{% if active_page == 'collections' %} active{% endif %}" href="{% url 'archive:book-collections' %}"  accesskey="c"> {% translate 'books'|title %}</a>
+          </li>
+        {% endif %}
         {% if user.is_authenticated %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle bi bi-gear-fill" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -87,6 +92,21 @@
               {% if perms.archive.create_attachment %}
                 <li><a class="dropdown-item bi bi-paperclip " href="{% url 'archive:add-attachment' %}"> {% translate 'add'|title %} {% translate 'attachment'|title %}</a></li>
               {% endif %}
+              <!-- Books -->
+              {% if perms.archive.add_book %}
+                <li><a class="dropdown-item bi bi-book-fill" href="{% url 'archive:add-book' %}"> {% translate 'add'|title %} {% translate 'book'|title %}</a></li>
+              {% endif %}
+              {% if book and perms.archive.change_book %}
+                <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:edit-book' book.id %}"> {% translate 'edit this'|capfirst %} {% translate 'book'|title %}</a></li>
+              {% endif %}
+              <!-- Book Collections -->
+              {% if perms.archive.add_collection %}
+                <li><a class="dropdown-item bi bi-book-half" href="{% url 'archive:add-book-collection' %}"> {% translate 'add'|title %} {% translate 'book collection'|title %}</a></li>
+              {% endif %}
+              {% if collection and perms.archive.change_collection %}
+                <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:edit-book-collection' collection.slug %}"> {% translate 'edit this'|capfirst %} {% translate 'book collection'|title %}</a></li>
+              {% endif %}
+              <li><div class="dropdown-divider"></div></li>
               <!-- Admin -->
               {% if user.is_staff %}
                 <li><div class="dropdown-divider"></div></li>

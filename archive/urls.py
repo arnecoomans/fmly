@@ -37,7 +37,9 @@ urlpatterns = [
   path('person/<int:pk>/<str:slug>/suggest-family/', views.SuggestFamilyView.as_view(), name='suggest-family'),
   # Tree
   path('tree/<int:pk>/', views.TreeView.as_view(), name="tree"),
-  # Add Image
+  # path('chart/<int:pk>/', views.FamilyChartView.as_view(), name="chart"),
+  # path('chart/<int:pk>/data/', views.FamilyChartDataView.as_view(), name="chart-data"),
+  # # Add Image
   path('person/<int:subject_id>:<str:subject_slug>/add-image/', views.AddImageView.as_view(), name='add-person-image'),
   
   # Tags 
@@ -51,6 +53,17 @@ urlpatterns = [
   path('note/<int:pk>/', views.NoteView.as_view(), name='note'),
   path('note/<int:pk>/<title>/', views.NoteView.as_view(), name='note-with-name'),
   path('note/new/', views.AddNoteView.as_view(), name='add-note'),
+
+  # Books
+  path('books/', views.BookListView.as_view(), name='books'),
+  path('books/collections/', views.BookCollectionListView.as_view(), name='book-collections'),
+  path('books/collection/new/', views.BookCollectionCreateView.as_view(), name='add-book-collection'),
+  path('books/collection/<str:slug>/', views.BookCollectionDetailView.as_view(), name='book-collection-detail'),
+  path('books/collection/<str:slug>/edit/', views.BookCollectionUpdateView.as_view(), name='edit-book-collection'),
+  path('book/<int:pk>/', views.BookDetailView.as_view(), name='book-detail'),
+  path('book/new/', views.BookCreateView.as_view(), name='add-book'),
+  path('book/<int:pk>/edit/', views.BookUpdateView.as_view(), name='edit-book'),
+
 
   # Comments
   path('comments/', views.CommentListView.as_view(), name='comments'),

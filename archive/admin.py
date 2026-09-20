@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 from cmnsd.admin import ReadOnlyAdmin
 
 from .models import *
+
 ''' Admin Actions - Used by more than one Model '''
 @admin.action(description=_('Softdelete'))
 def softdelete(modeladmin, request, queryset):
@@ -233,3 +234,35 @@ admin.site.register(Tag, TagAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Location, LocationAdmin)
 admin.site.register(Event, EventAdmin)
+
+class CollectionItemInline(admin.TabularInline):
+    model = CollectionItem
+    extra = 0
+    autocomplete_fields = ['book']
+    filter_horizontal = ['tags']
+
+
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
+    list_display = ['title', 'author', 'year', 'isbn']
+    list_filter = ['tags', 'year']
+    search_fields = ['title', 'author', 'isbn']
+    filter_horizontal = ['tags', 'people', 'attachments']
+
+
+@admin.register(Collection)
+class CollectionAdmin(admin.ModelAdmin):
+    list_display = ['name', 'user']
+    list_filter = ['tags']
+    search_fields = ['name']
+    # filter_horizontal = ['tags', 'people']
+    inlines = [CollectionItemInline]
+
+
+@admin.register(CollectionItem)
+class CollectionItemAdmin(admin.ModelAdmin):
+    list_display = ['collection', 'book', 'read']
+    list_filter = ['tags', 'read']
+    search_fields = ['collection__name', 'book__title']
+    autocomplete_fields = ['collection', 'book']
+    filter_horizontal = ['tags']

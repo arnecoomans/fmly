@@ -1,8 +1,8 @@
 # Python
-pip >= 26.0.1
+pip >= 26.1
 
 # Django 
-Django >= 6.0.3
+Django >= 6.0.4
 psycopg[binary] >= 3.2
 Pillow >= 12.1.1
 gunicorn >= 25.1.0
@@ -32,3 +32,6 @@ django-minify-html >= 1.14.0
 
 # Django Toolbar
 django-debug-toolbar >= 6.2.0
+
+# Thumbnails
+sorl-thumbnail >= 13.0.0
