@@ -62,7 +62,7 @@ class BookCreateView(PermissionRequiredMixin, CreateView):
     return super().form_valid(form)
  
   def get_success_url(self):
-    return reverse('archive:book_detail', kwargs={'pk': self.object.pk})
+    return reverse('archive:book-detail', kwargs={'pk': self.object.pk})
  
  
 class BookUpdateView(PermissionRequiredMixin, UpdateView):
@@ -77,7 +77,7 @@ class BookUpdateView(PermissionRequiredMixin, UpdateView):
     return super().form_valid(form)
  
   def get_success_url(self):
-    return reverse('archive:book_detail', kwargs={'pk': self.object.pk})
+    return reverse('archive:book-detail', kwargs={'pk': self.object.pk})
  
  
 class BookCollectionCreateView(PermissionRequiredMixin, CreateView):
@@ -98,7 +98,7 @@ class BookCollectionCreateView(PermissionRequiredMixin, CreateView):
  
 class BookCollectionUpdateView(PermissionRequiredMixin, UpdateView):
   model = Collection
-  template_name = 'archive/book/book_collection_form.html'
+  template_name = 'archive/book/book_collection_  form.html'
   context_object_name = 'collection'
   fields = ['name', 'description', 'user', 'people', 'tags']
   permission_required = 'archive.change_collection'
