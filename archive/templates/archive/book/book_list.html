@@ -1,0 +1,30 @@
+{% extends 'index.html' %}
+{% load i18n %}
+
+{% block content %}
+  {% if not perms.archive.view_book %}
+    {% include  'archive/snippets/error_no_access.html' with object_type='books' %}
+  {% else %}
+    <header>
+      <h2>{% if collection %}{{ collection.name }}{% else %}{% translate 'books'|title %}{% endif %}:</h2>
+      {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+      {% if collection %}
+        {% if collection.description %}<p>{{ collection.description|markdown|safe }}</p>{% endif %}
+        {% if collection.people.all.exists %}
+          <p>{% translate 'these books are linked to'|capfirst %}:
+            {% for person in collection.people.all %}
+              <a href="{% url 'archive:person' person.id person.name %}">{{ person.name }}</a>{% if not forloop.last %}, {% else %}.{% endif %}
+            {% endfor %}
+          </p>
+        {% endif %}
+        <a href="">{% translate 'add a book to this collection'|capfirst %}</a>
+      {% endif %}
+    </header>
+    <div class="objects">
+      {% for book in books %}
+        {% include 'objects/book.html' with book=book %}
+        {% comment %} <li><a href="">{{ book.title|title }}</a>{% if book.author %} by {{ book.author }}{% endif %}{% if book.year %} ({{ book.year }}){% endif %}</li> {% endcomment %}
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

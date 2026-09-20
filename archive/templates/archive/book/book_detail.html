@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+{% load i18n %}{% load thumbnail %}
+
+{% block content %}
+  {% if not perms.archive.view_book %}
+    {% include  'archive/snippets/error_no_access.html' with object_type='book' %}
+  {% else %}
+    <header>
+      <h2>{{ book.title|title }}{% if book.author %} by {{ book.author }}{% endif %}{% if book.year %} ({{ book.year }}){% endif %}</h2>
+      {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+    </header>
+    <div class="object">
+      <div class="column left">
+        {% if book.cover %}
+          {% thumbnail book.cover "480x760" crop="center" as thumb %}
+            <a href="{{ book.cover.url }}" target="_blank">
+              <img src="{{ thumb.url }}" width="{{ thumb.width }}" height="{{ thumb.height }}" alt="{{ book.title }}">
+            </a>
+          {% endthumbnail %}
+        {% endif %}
+      </div>
+      <div class="column right">
+        <ul class="metadata no-bullets">
+          {% if book.description %}<li>{{ book.description|markdown|safe }}</li>{% endif %}
+          {% if book.author %}<li><strong>{% translate 'author'|title %}:</strong> {{ book.author }}</li>{% endif %}
+          {% if book.year %}<li><strong>{% translate 'year'|title %}:</strong> {{ book.year }}</li>{% endif %}
+          {% if book.publisher %}<li><strong>{% translate 'publisher'|title %}:</strong> {{ book.publisher }}</li>{% endif %}
+          {% if book.read_count %}<li><strong>{% translate 'read'|title %}:</strong> {{ book.read_count }} {% if book.read_count > 1 %}{% translate 'people' %}{% else %}{% translate 'person' %}{% endif %}</li>{% endif %}
+          {% if book.isbn %}<li><strong>{% translate 'isbn'|title %}:</strong> {{ book.isbn }}</li>{% endif %}
+          {% if book.tags.all %}<li><strong>{% translate 'tags'|title %}:</strong> {{ book.tags.all|join:", " }}</li>{% endif %}
+          {% if book.people.all %}<li><strong>{% translate 'people'|title %}:</strong> {{ book.people.all|join:", " }}</li>{% endif %}
+          {% if book.collection_items.all %}<li><strong>{% translate 'collections'|title %}:</strong> 
+            {% for collection_item in book.collection_items.all %}
+              <a href="{{ collection_item.collection.get_absolute_url }}">{{ collection_item.collection.name }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+          </li>{% endif %}
+          
+        </ul>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

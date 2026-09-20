@@ -1,0 +1,22 @@
+{% extends 'index.html' %}
+{% load i18n %}
+
+{% block content %}
+  {% if not perms.archive.view_book %}
+    {% include  'archive/snippets/error_no_access.html' with object_type='collection' %}
+  {% elif not collections %}
+    {% include  'archive/snippets/error_no_objects.html' with object_type='collection' %}
+  {% else %}
+    <header>
+      <h2>{% translate 'book collections'|title %}:</h2>
+      {% if page_description %}<div class="page_description">{{ page_description|safe }}.{% endif %}
+    </header>
+    <div class="objects">
+      <ul class="no-bullets">
+        {% for collection in collections %}
+          <li><a href="{% url 'archive:book-collection-detail' slug=collection.slug %}">{{ collection.name|title }}</a> ({{ collection.book_count }} books)</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+{% endblock %}

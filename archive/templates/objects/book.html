@@ -1,0 +1,23 @@
+{% load thumbnail %}
+
+<div class="object">
+  <h3><a href="{{ book.get_absolute_url }}">{{ book.title|truncatewords_html:3 }}</a></h3>
+  <div class="column left">
+    {% if book.cover %}
+      {% thumbnail book.cover "150x200" crop="center" as thumb %}
+        <a href="{{ book.get_absolute_url }}">
+          <img src="{{ thumb.url }}" width="{{ thumb.width }}" height="{{ thumb.height }}" alt="{{ book.title }}">
+        </a>
+      {% endthumbnail %}
+    {% endif %}
+  </div>
+  <div class="column right">
+    <ul class="metadata no-bullets">
+      {% if book.description %}<li>{{ book.description|markdown|safe|truncatewords_html:10 }}</li>{% endif %}
+      {% if book.author %}<li><strong>{% translate 'author'|title %}:</strong> {{ book.author }}</li>{% endif %}
+      {% if book.year %}<li><strong>{% translate 'year'|title %}:</strong> {{ book.year }}</li>{% endif %}
+      {% if book.publisher %}<li><strong>{% translate 'publisher'|title %}:</strong> {{ book.publisher }}</li>{% endif %}
+
+    </ul>
+  </div>
+</div>

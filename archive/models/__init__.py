@@ -9,3 +9,4 @@ from .preference import *
 from .Category import *
 from .Location import *
 from .Event import *
+from .Book import *

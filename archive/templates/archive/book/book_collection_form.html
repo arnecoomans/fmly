@@ -1,0 +1,37 @@
+{% extends "index.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% if object %}{% trans "Edit collection" %}{% else %}{% trans "New collection" %}{% endif %}</h1>
+
+<form method="post">
+  {% csrf_token %}
+
+  <fieldset>
+    <legend>{% trans "Details" %}</legend>
+    <div>{{ form.name.errors }}</div>
+    <strong>{% translate 'name'|capfirst %}</strong>
+    {{ form.name }}
+
+    <div>{{ form.description.errors }}</div>
+    <strong>{% translate 'description'|capfirst %}</strong>
+    {{ form.description }}
+  </fieldset>
+
+  <fieldset>
+    <legend>{% trans "Attribution" %}</legend>
+    <input type="hidden" name="user" value="{{ user.id }}">
+
+    {{ form.people.errors }}
+    {{ form.people }}
+    <small>{% trans "Historical person(s) this collection belongs to, e.g. a grandparent's shelf." %}</small>
+  </fieldset>
+
+  <fieldset>
+    <legend>{% trans "Tags" %}</legend>
+    {{ form.tags }}
+  </fieldset>
+
+  <button type="submit">{% trans "Save" %}</button>
+</form>
+{% endblock %}

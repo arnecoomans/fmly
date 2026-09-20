@@ -1,0 +1,39 @@
+{% extends 'index.html' %}
+{% load thumbnail %}
+
+{% block content %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <fieldset>
+      <legend>{% trans "Details" %}</legend>
+      <ul class="metadata no-bullets">
+        <li><strong>{% trans "Title" %}:</strong> {{ form.title }}</li>
+        <li><strong>{% trans "Author" %}:</strong> {{ form.author }}</li>
+        <li><strong>{% trans "Year" %}:</strong> {{ form.year }}</li>
+        <li><strong>{% trans "Publisher" %}:</strong> {{ form.publisher }}</li>
+        <li><strong>{% trans "ISBN" %}:</strong> {{ form.isbn }}</li>
+      </ul>
+    </fieldset>
+
+    <fieldset>
+      <legend>{% trans "Description & cover" %}</legend>
+      {{ form.description }}
+      {% if object.cover %}
+        {% thumbnail object.cover "150x225" crop="center" as thumb %}
+          <img src="{{ thumb.url }}" alt="{{ object.title }}">
+        {% endthumbnail %}
+      {% endif %}
+      {{ form.cover }}
+    </fieldset>
+
+    <fieldset>
+      <legend>{% trans "Relations" %}</legend>
+      {{ form.tags }}
+      {{ form.people }}
+      {{ form.attachments }}
+    </fieldset>
+
+    <button type="submit">{% trans "Save" %}</button>
+  </form>
+{% endblock %}

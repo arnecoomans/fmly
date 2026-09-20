@@ -12,3 +12,4 @@ from .aComment import *
 from .People import *
 from .Locations import *
 from .calendar import *
+from .Book import *
