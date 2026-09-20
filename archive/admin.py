@@ -10,11 +10,11 @@ from .models import *
 ''' Admin Actions - Used by more than one Model '''
 @admin.action(description=_('Softdelete'))
 def softdelete(modeladmin, request, queryset):
-  queryset.update(is_deleted=True)
+  queryset.update(status='x')
   messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully marked items as') } { _('deleted') }.")
 @admin.action(description=_('Softundelete'))
 def softundelete(modeladmin, request, queryset):
-  queryset.update(is_deleted=False)
+  queryset.update(status='p')
   messages.add_message(request, messages.SUCCESS, f"{ _('Succesfully marked items as') } { _('not deleted') }.")
 
 def get_location(name, request):
