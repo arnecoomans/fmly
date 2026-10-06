@@ -247,14 +247,16 @@ class FieldBlockTests(TestCase):
 
   def test_book_publication_and_isbn(self):
     self.item = self.make_book()
-    data = self.post('publication', {'publication-publisher': 'De Bezige Bij', 'publication-publication_year': '2021',
-                                     'publication-author': 'Anne-Lot Hoek'}).json()
-    self.assertIn('De Bezige Bij, 2021', data['html'])
+    data = self.post('publication', {'publication-publisher': 'De Bezige Bij', 'publication-author': 'Anne-Lot Hoek'}).json()
+    self.assertIn('De Bezige Bij', data['html'])
     self.post('isbn', {'isbn-isbn': '9789403152318'})
     detail = Content.objects.get(pk=self.item.pk).book_detail
-    self.assertEqual((detail.publisher, detail.publication_year, detail.author, detail.isbn),
-                     ('De Bezige Bij', 2021, 'Anne-Lot Hoek', '9789403152318'))
+    self.assertEqual((detail.publisher, detail.author, detail.isbn), ('De Bezige Bij', 'Anne-Lot Hoek', '9789403152318'))
     form = self.open_form('publication').json()['html'].replace('"', '')
+    self.assertNotIn('publication_year', form)              # one date per book: the item's own (the date block)
+    html = self.date(year='2021').json()['html']
+    self.assertIn('Published', html)                        # a book's date is when it was published
+    self.assertIn('2021', html)
     self.assertIn('data-cmnsd-suggest=/api/content/suggest/publisher/', form)
     self.assertIn('<datalist id=id_publication-publisher-suggestions>', form)
 

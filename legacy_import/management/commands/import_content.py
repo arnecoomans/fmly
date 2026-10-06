@@ -348,11 +348,11 @@ class Command(BaseCommand):
       'description': f['description'] or '',
       'status': f['status'],
       'user_id': f['user'] or 1,
+      'year': f['year'],   # the year published: a book's date (no year of its own)
     }, f['cover'], f)
     detail = content.get_detail()
     detail.author = f['author'] or ''
     detail.publisher = f['publisher'] or ''
-    detail.publication_year = f['year']
     detail.isbn = f['isbn'] or ''
     detail.save()
 

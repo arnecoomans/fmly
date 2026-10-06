@@ -214,7 +214,7 @@
                 <div><dt>{% translate "author"|capfirst %}</dt><dd>{{ book.author }}</dd></div>
               {% endif %}
             {% endwith %}
-            {% if book.publisher or book.publication_year or edit_relations %}{% include 'cmnsd/edit/block.html' with model='content' obj=content block='publication' %}{% endif %}
+            {% if book.publisher or edit_relations %}{% include 'cmnsd/edit/block.html' with model='content' obj=content block='publication' %}{% endif %}
             {% if book.isbn or edit_relations %}{% include 'cmnsd/edit/block.html' with model='content' obj=content block='isbn' %}{% endif %}
           {% endif %}
         {% endwith %}

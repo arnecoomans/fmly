@@ -1,9 +1,9 @@
 {% comment %}
-  A book's publisher and year (BookContent) - a field row; an editable
-  block (form: BookPublicationForm - also the author as text), shown even
-  when empty in edit mode.
+  A book's publisher (BookContent) - a field row; an editable block (form:
+  BookPublicationForm - also the author as text), shown even when empty in
+  edit mode. The year it was published is the item's date (blocks/date.html).
 {% endcomment %}
 {% with book=content.book_detail %}
 <dt>{% translate "publisher"|capfirst %}</dt>
-<dd>{% if book.publisher or book.publication_year %}{{ book.publisher }}{% if book.publisher and book.publication_year %}, {% endif %}{{ book.publication_year|default_if_none:'' }}{% else %}<span class="edit-block__empty">{% translate "unknown" %}</span>{% endif %}</dd>
+<dd>{% if book.publisher %}{{ book.publisher }}{% else %}<span class="edit-block__empty">{% translate "unknown" %}</span>{% endif %}</dd>
 {% endwith %}

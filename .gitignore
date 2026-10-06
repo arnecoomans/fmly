@@ -17,6 +17,11 @@ __pycache__
 /public/static
 /private
 
+# Keep production data outside repo: pato.sh's database dumps and backups
+# (accounts, password hashes, private content) and its server settings
+/fixtures/
+.pato
+
 # Keep the legacy import data outside repo: family documents and scans,
 # personal details and password hashes (import/fixtures/auth_user.json)
 /import

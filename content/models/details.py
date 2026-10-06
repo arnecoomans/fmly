@@ -60,7 +60,8 @@ class BookContent(models.Model):
   authors = models.ManyToManyField('people.Person', blank=True, related_name='authored_books')
   author = models.CharField(max_length=255, blank=True, help_text=_("As written on the book; link the author as a person above"))
   publisher = models.CharField(max_length=255, blank=True)
-  publication_year = models.SmallIntegerField(null=True, blank=True)
+  # No year of its own: a book's date (Content.year/month/day) is when it was
+  # published - one date for sorting, timelines and loose ends.
   isbn = models.CharField(max_length=20, blank=True)
 
   def __str__(self):

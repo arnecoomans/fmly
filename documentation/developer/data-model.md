@@ -17,7 +17,7 @@ Birth and death are **events**, not fields: `person.birth` and `person.death` fi
 ## Content
 
 **`Content`** (`content/models/Content.py`) - one uploaded file per row.
-- `kind`: *photo*, *document*, *book*, *object*, *recording* or *unknown*; a detail row per kind holds what's specific (`PhotoContent.photo_kind`, `DocumentContent.document_kind` and language, `BookContent` author and publisher).
+- `kind`: *photo*, *document*, *book*, *object*, *recording* or *unknown*; a detail row per kind holds what's specific (`PhotoContent.photo_kind`, `DocumentContent.document_kind` and language, `BookContent` author and publisher - a book's date is when it was published, it has no year of its own).
 - `name`, `description`, `source`, a partial date (`PartialDateMixin`), `file` with `original_filename`, `checksum` (SHA-256), `width` and `height` as shown, and its own thumbnail crop (`thumb_crop_*`, `thumb_rotation`).
 - Links: `people`, `tags`, `places`, `events`.
 - **Parts:** `parent` and `position` - the pages of a book or a letter. One level deep: a part has no parts. Position 0 marks a variant of the whole (a colorized version).
