@@ -20,6 +20,7 @@ from people.models import Person
 from legacy_import.links import link_event_images, rewrite_old_links
 from legacy_import.pk_offsets import ATTACHMENT_CONTENT_PK_OFFSET, BOOK_CONTENT_PK_OFFSET
 from legacy_import.tag_layout import COLORIZATION_MARKER_SLUG, IMPORTED_TAG_ACCESS, ensure_access, tag_layout
+from legacy_import.sequences import reset_sequences
 
 # Every legacy document is Dutch unless changed by hand afterwards.
 LEGACY_DOCUMENT_LANGUAGE = 'nl'
@@ -135,6 +136,7 @@ class Command(BaseCommand):
     # import_events - whichever of the two runs last completes the set.
     self.stats['event_links'], self.stats['event_links_waiting'] = link_event_images(self.fixtures)
 
+    reset_sequences()   # PostgreSQL: new rows get ids after the imported ones (legacy_import/sequences.py)
     self.stdout.write(self.style.SUCCESS(
       "Content: {created} created, {updated} updated; {files} files copied, {reused} reused, "
       "{moved} moved, {missing} records without a file; {portraits} portraits, {crops} crops set; "

@@ -8,6 +8,7 @@ from django.utils.dateparse import parse_datetime
 
 from events.models import Event
 from people.models import Person
+from legacy_import.sequences import reset_sequences
 
 User = get_user_model()
 
@@ -104,6 +105,7 @@ class Command(BaseCommand):
         death_event.people.set([obj])
         dateless_deaths_created += 1
 
+    reset_sequences()   # PostgreSQL: new rows get ids after the imported ones (legacy_import/sequences.py)
     self.stdout.write(self.style.SUCCESS(
       f"People: {created} created, {updated} updated, {len(rows)} total "
       f"({emails_set} old per-person email(s) actually carried over to a "

@@ -38,6 +38,7 @@ import/
 
 - **Old ids are kept** where possible, so a rerun finds each record again and updates it: no duplicates. Sources that share a model get fixed offsets (`legacy_import/pk_offsets.py`).
 - **Nothing an import creates may take an old id** before that id is imported: such rows are made after the legacy rows (the dateless deaths, the *Collection* tag).
+- **Id sequences follow the imported ids.** PostgreSQL doesn't move a sequence past an id inserted explicitly, so every import command ends with `reset_sequences()` (`legacy_import/sequences.py`) - otherwise the next new row, on the site too, collides with an imported one. On SQLite it does nothing.
 - **Decisions live in the importer**, not in data migrations: renamed tags (`legacy_import/tag_layout.py`), kind mappings, links rewritten to new addresses (`legacy_import/links.py`).
 
 ## Re-running

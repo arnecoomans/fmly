@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 from django.utils.dateparse import parse_datetime
 
 from places.models import Place
+from legacy_import.sequences import reset_sequences
 
 
 class Command(BaseCommand):
@@ -85,6 +86,7 @@ class Command(BaseCommand):
         Place.objects.get(pk=row['pk']).alternatives.add(alt_pk)
         alt_pairs_added += 1
 
+    reset_sequences()   # PostgreSQL: new rows get ids after the imported ones (legacy_import/sequences.py)
     self.stdout.write(self.style.SUCCESS(
       f"Places: {created} created, {updated} updated, {len(rows)} total "
       f"({alt_pairs_added} alternative-pair link(s) added)."

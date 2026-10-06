@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from people.models import PersonRelation
+from legacy_import.sequences import reset_sequences
 
 
 class Command(BaseCommand):
@@ -46,6 +47,7 @@ class Command(BaseCommand):
       else:
         updated += 1
 
+    reset_sequences()   # PostgreSQL: new rows get ids after the imported ones (legacy_import/sequences.py)
     self.stdout.write(self.style.SUCCESS(
       f"Person relations: {created} created, {updated} updated, {len(rows)} total."
     ))

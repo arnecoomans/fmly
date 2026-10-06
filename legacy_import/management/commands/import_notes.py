@@ -7,6 +7,7 @@ from django.utils.dateparse import parse_datetime
 
 from legacy_import.links import rewrite_old_links
 from notes.models import Note
+from legacy_import.sequences import reset_sequences
 
 # What each legacy note is (Note.Kind) - decided per note, by its legacy pk
 # (only to look it up here - the note itself gets a new pk);
@@ -74,6 +75,7 @@ class Command(BaseCommand):
         date_created=parse_datetime(f['date_created']), date_modified=parse_datetime(f['date_modified']),
       )
 
+    reset_sequences()   # PostgreSQL: new rows get ids after the imported ones (legacy_import/sequences.py)
     self.stdout.write(self.style.SUCCESS(
       f"Notes: {created} created, {updated} updated, {len(rows)} total; "
       f"{people} people and {tags} tag links, {rewritten} old-site links rewritten."

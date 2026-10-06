@@ -8,6 +8,7 @@ from django.utils.dateparse import parse_datetime
 from core.models import Tag
 from legacy_import.pk_offsets import CATEGORY_TAG_PK_OFFSET
 from legacy_import.tag_layout import IMPORTED_TAG_ACCESS, tag_layout
+from legacy_import.sequences import reset_sequences
 
 
 class Command(BaseCommand):
@@ -80,6 +81,9 @@ class Command(BaseCommand):
         date_modified=parse_datetime(f['date_modified']),
       )
 
+    # The root tags below are new rows without a pk: PostgreSQL's next id must
+    # be past the tags just imported (legacy_import/sequences.py).
+    reset_sequences(Tag)
     for row in tag_rows:
       _name, parent = tag_layout(row['fields'].get('slug', ''), row['fields'].get('name', ''))
       Tag.objects.filter(pk=row['pk']).update(parent=parent)
@@ -113,6 +117,7 @@ class Command(BaseCommand):
           parent_id=parent_pk + CATEGORY_TAG_PK_OFFSET,
         )
 
+    reset_sequences()   # PostgreSQL: new rows get ids after the imported ones (legacy_import/sequences.py)
     self.stdout.write(self.style.SUCCESS(
       f"Tags: {created} created, {updated} updated, "
       f"{len(tag_rows) + len(category_rows)} total "

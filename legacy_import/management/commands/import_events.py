@@ -7,6 +7,7 @@ from django.utils.dateparse import parse_datetime
 
 from events.models import Event
 from legacy_import.links import link_event_images
+from legacy_import.sequences import reset_sequences
 
 # 5 old 'other'-type rows (pks 278-282) have no title, no description and no
 # people - only a location - so there's nothing to derive a kind_freetext
@@ -92,6 +93,7 @@ class Command(BaseCommand):
     # import_content - whichever of the two runs last completes the set.
     linked, waiting = link_event_images(Path(settings.BASE_DIR) / 'import' / 'fixtures')
 
+    reset_sequences()   # PostgreSQL: new rows get ids after the imported ones (legacy_import/sequences.py)
     self.stdout.write(self.style.SUCCESS(
       f"Events: {created} created, {updated} updated, {len(rows)} total "
       f"({recast_as_historical} 'other'-without-label row(s) imported as HISTORICAL); "

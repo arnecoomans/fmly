@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.utils.dateparse import parse_datetime
+from legacy_import.sequences import reset_sequences
 
 User = get_user_model()
 
@@ -59,6 +60,7 @@ class Command(BaseCommand):
       else:
         updated += 1
 
+    reset_sequences()   # PostgreSQL: new rows get ids after the imported ones (legacy_import/sequences.py)
     self.stdout.write(self.style.SUCCESS(
       f"Users: {created} created, {updated} updated, {len(rows)} total "
       f"({skipped_groups} had groups/permissions dropped - no equivalent in this project)."
