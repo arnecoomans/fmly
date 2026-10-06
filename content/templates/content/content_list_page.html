@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}{% translate "photos & documents"|capfirst %}{% endblock %}
+
+{% block template_css %}
+<link rel="stylesheet" href="{% static 'css/fmly/content.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-list">
+  {% comment %}
+    A plain GET form, so search works without JS (reloads /content/?q=...).
+    With load_on_ready on, cmnsd.js (list.js) searches live through
+    api/content/ and swaps #content-list-results.
+  {% endcomment %}
+  <header class="content-list__header">
+    <h1 class="content-list__title">{% translate "photos & documents"|capfirst %}</h1>
+    {% if perms.content.add_content %}<a class="btn btn--secondary btn--sm content-list__add" href="{% url 'content:upload' %}"><i class="bi bi-plus-lg"></i> {% translate "add content"|capfirst %}</a>{% endif %}
+    <form class="content-list__search" method="get" action="{% url 'content:list' %}" role="search"
+          {% if load_on_ready %}data-cmnsd-list="content" data-cmnsd-target="#content-list-results"{% endif %}>
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <input type="search" name="{{ search_character }}" value="{{ search_query }}"
+             placeholder="{% translate 'search by name or description'|capfirst %}"
+             aria-label="{% translate 'search by name or description'|capfirst %}" autocomplete="off">
+    </form>
+  </header>
+  <div id="content-list-results">
+    {% include 'content/content_list.html' %}
+  </div>
+</div>
+{% endblock %}

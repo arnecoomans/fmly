@@ -1,0 +1,23 @@
+{% load relationship %}
+{% comment %}
+  Function template for Person.get_relation_to_user() - the canonical
+  rendering of "what is this person to the current viewer", used both via
+  {% include %} (e.g. the profile card in person_detail.html) and, since
+  it matches <model>/functions/<field>.html, automatically picked up
+  and packed into the JSON response by the API dispatcher
+  (cmnsd/views/api/object_fields.py) for anyone fetching this field
+  through the API instead. One place this markup lives, not two.
+
+  Context: `person` (required), `request` (required - the filter needs it
+  to resolve the viewer; get_relation_to_user() has no way to see the
+  real request otherwise, see templatetags/relationship.py).
+{% endcomment %}
+{% with relation=person|relation_to_user:request %}
+  {% if relation %}
+    <span class="person-relation-pill">
+        <i class="bi bi-link-45deg"></i>
+        {{ relation }}
+    </span>
+  {% endif %}
+{% endwith %}
+

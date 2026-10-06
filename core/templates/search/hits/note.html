@@ -1,0 +1,6 @@
+{% load text_filters %}
+<a class="search-hit-row" href="{{ hit.get_absolute_url }}">
+  <span class="search-hit-row__thumb search-hit-row__thumb--icon"><i class="bi bi-journal-text"></i></span>
+  <span class="search-hit-row__name">{% highlight_search search_query %}{{ hit }}{% endhighlight_search %}</span>
+  {% include 'search/hits/_snippet.html' %}
+</a>

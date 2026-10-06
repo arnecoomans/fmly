@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% comment %}
+  The notes overview (notes.views.NoteListView): every note this viewer may
+  see, open work first (to do, questions, hypotheses), pills to narrow to
+  one kind (?kind=, kept in the address). "+ New note" for someone who may
+  add notes - a private draft, opened to write.
+{% endcomment %}
+
+{% block title %}{% translate "notes"|capfirst %}{% endblock %}
+
+{% block content %}
+<div class="tag-page note-page">
+  <header class="tag-page__header note-overview__header">
+    <div class="tag-page__intro">
+      <h1 class="tag-page__name">{% translate "notes"|capfirst %}</h1>
+      <p class="tag-page__counts">{% translate "Research: leads, questions, hypotheses, conclusions and background - linked to people, content, places and events." %}</p>
+    </div>
+    {% if perms.notes.add_note %}{% include 'note/_new_note.html' %}{% endif %}
+  </header>
+
+  {% if notes %}
+    {% if kinds|length > 1 %}
+      <div class="content-grid-pills" data-cmnsd-filter="#note-list" data-cmnsd-filter-param="kind" hidden>
+        <button type="button" class="content-grid-pill is-active" data-filter="" aria-pressed="true">{% translate "all"|capfirst %} {{ notes|length }}</button>
+        {% for kind, label, count in kinds %}
+          <button type="button" class="content-grid-pill" data-filter="{{ kind }}" aria-pressed="false">{{ label|capfirst }} {{ count }}</button>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <ul class="note-list" id="note-list">
+      {% for note in notes %}{% include 'note/_note_row.html' %}{% endfor %}
+    </ul>
+  {% else %}
+    <div class="list-empty-state">
+      <i class="bi bi-journal-text list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "no notes yet"|capfirst %}</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

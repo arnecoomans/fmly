@@ -1,0 +1,8 @@
+{% comment %}
+  The chip for what the link action just linked (EditableRelationsMixin) -
+  appended to the person's tags by cmnsd.js. Context: person, result
+  ({relation, object}), request.
+{% endcomment %}
+{% if result.relation == 'tags' %}
+  <span class="chip-edit">{% include 'tag/tag.html' with tag=result.object %}{% include 'cmnsd/edit/unlink.html' with model='person' owner=person relation='tags' object=result.object %}</span>
+{% endif %}

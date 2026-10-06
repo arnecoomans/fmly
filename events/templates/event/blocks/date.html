@@ -1,0 +1,7 @@
+{% load content_tags %}
+{% comment %}
+  When, as a field row - an editable block (form: event/forms/date.html),
+  shown even when unknown.
+{% endcomment %}
+<dt>{% translate "date"|capfirst %}</dt>
+<dd>{% with date=event|partial_date %}{% if date %}{% if event.calendar_date %}{{ event.calendar_date|date:"l"|capfirst }} {% endif %}{{ date }}{% else %}<span class="edit-block__empty">{% translate "unknown" %}</span>{% endif %}{% endwith %}</dd>

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load content_tags %}
+{% load edit_mode %}
+{% comment %}
+  A place's page (places.views.PlaceDetailView): where it lies (the
+  parents, as a path), its name, other spelling and description, a cover
+  (the earliest image), then the same place in another era, the places
+  within it, its events and its content (the shared content grid,
+  remembered sort). Only what this viewer may see.
+  In edit mode, for someone with places.change_place: name, other
+  spelling, parent and description are editable blocks
+  (cmnsd/edit/block.html, Place.api_edit_forms), the alternatives get
+  their "×" and a picker, and every place within it shows - also empty ones.
+{% endcomment %}
+
+{% block title %}{{ place.name }}{% endblock %}
+
+{% block content %}
+<div class="tag-page place-page">
+  <header class="tag-page__header">
+    {% if cover %}
+      <a class="tag-page__cover" href="{{ cover.get_absolute_url }}" title="{{ cover }}">
+        <img src="{{ cover|thumb_url:'card' }}" alt="{{ cover }}">
+      </a>
+    {% endif %}
+    <div class="tag-page__intro">
+      {% include 'cmnsd/edit/block.html' with model='place' obj=place block='parent' %}
+      {% include 'cmnsd/edit/block.html' with model='place' obj=place block='name' %}
+      {% include 'cmnsd/edit/block.html' with model='place' obj=place block='alias' %}
+      <p class="tag-page__counts">
+        {% blocktranslate count counter=items|length %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktranslate %} · {% blocktranslate count counter=events|length %}{{ counter }} event{% plural %}{{ counter }} events{% endblocktranslate %}
+      </p>
+      {% include 'cmnsd/edit/block.html' with model='place' obj=place block='description' %}
+    </div>
+  </header>
+
+  {% if alternatives or editing %}
+    <section class="tag-page__section">
+      <h2 class="section-title">{% translate "in another era"|capfirst %}</h2>
+      <div class="tag-list" id="place-alternatives">{% for alternative in alternatives %}{% include 'place/_alternative.html' %}{% endfor %}</div>
+      {% if editing %}
+        {% translate "add the same place in another era" as add_label %}
+        {% include 'cmnsd/edit/link_picker.html' with model='place' owner=place relation='alternatives' picker_model='place' target='#place-alternatives' label=add_label|capfirst placeholder=add_label|capfirst can_create=perms.places.add_place exclude=alternative_tokens %}
+      {% endif %}
+    </section>
+  {% endif %}
+
+  {% if sub_places %}
+    <section class="tag-page__section">
+      {% blocktranslate with name=place.name asvar within %}places in {{ name }}{% endblocktranslate %}
+      <h2 class="section-title">{{ within|capfirst }}</h2>
+      <ul class="place-tree">{% for place in sub_places %}{% include 'place/_tree_node.html' %}{% endfor %}</ul>
+    </section>
+  {% endif %}
+
+  {% if events %}
+    <section class="tag-page__section">
+      <h2 class="section-title">{% translate "events"|capfirst %}</h2>
+      <ul class="place-page__events">{% for event in events %}{% include 'place/_event.html' %}{% endfor %}</ul>
+    </section>
+  {% endif %}
+
+  {% include 'note/_notes_section.html' with obj=place key='place.notes' %}
+
+  {% if items %}
+    <section class="tag-page__section">
+      <h2 class="section-title">{% translate "content"|capfirst %}</h2>
+      {% include 'content/_content_grid.html' with items=items sort=sort save_key='place.content' grid_id='place-content-grid' %}
+    </section>
+  {% endif %}
+
+  {% if not items and not events and not sub_places and not alternatives %}
+    <div class="list-empty-state">
+      <i class="bi bi-geo-alt list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "nothing here yet"|capfirst %}</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

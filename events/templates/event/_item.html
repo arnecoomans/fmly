@@ -1,0 +1,10 @@
+{% load edit_mode %}{% load content_tags %}
+{% comment %}
+  An item documenting an event, on its page; in edit mode with its "×".
+  Also what the link action returns. Context: item, event, request.
+{% endcomment %}
+{% if edit_mode and event|can_edit:request %}
+  <span class="chip-edit"><a class="tag" href="{{ item.get_absolute_url }}"><i class="bi bi-{{ item|kind_icon }}"></i>{{ item }}</a>{% include 'cmnsd/edit/unlink.html' with model='event' owner=event relation='content' object=item %}</span>
+{% else %}
+  <a class="tag" href="{{ item.get_absolute_url }}"><i class="bi bi-{{ item|kind_icon }}"></i>{{ item }}</a>
+{% endif %}

@@ -1,3 +1,0 @@
-<li class="tag bi bi-tag-fill">
-  <a href="{% url 'archive:image-with-tag' tag.slug %}" class="tag" title="{% translate 'other images with'|capfirst %} {{ tag.name|title }}'" data-bs-toggle="tooltip" data-bs-placement="top">{% if compact %}{{ tag.name|title|truncatechars:12 }}{% else %}{{ tag.name|title }}{% endif %}</a>
-</li>

@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% comment %}
+  The transcribe page (content.views.TranscribeView): the item's image,
+  zoomable (cmnsd.js viewer.js), beside one transcript, which saves itself
+  (autosave.js - through cmnsd's child-record endpoints, the same checks as
+  on the item page). Full height, no site header or footer: the work is the
+  page. Top bar: back to the item, the transcripts as tabs (+ new), the
+  pages of the whole and its parts, and Close - usable only once
+  everything is saved (autosave.js). The left side shows the image or - to
+  translate - the original's text (?left=image|original; a translation
+  opens on the original).
+{% endcomment %}
+
+{% block title %}{% translate "transcribe"|capfirst %}: {{ content }}{% endblock %}
+{% block template_css %}
+<link rel="stylesheet" href="{% static 'css/fmly/content.css' %}">
+{% endblock %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="transcribe">
+  <header class="transcribe__bar">
+    <a class="transcribe__back" href="{{ content.get_absolute_url }}"><i class="bi bi-arrow-left"></i> {{ content }}</a>
+    <nav class="transcribe__tabs" aria-label="{% translate 'transcripts'|capfirst %}">
+      {% for item in transcripts %}
+        <a class="transcribe__tab{% if item.pk == transcript.pk %} is-active{% endif %}" href="?transcript={{ item.pk }}"{% if item.pk == transcript.pk %} aria-current="page"{% endif %}>{{ item.get_language_display }}{% if item.kind == 'translation' %} · {% translate "translation" %}{% endif %}{% if item.incomplete %} · {% translate "incomplete" %}{% endif %}</a>
+      {% endfor %}
+      {% if can_add %}<a class="transcribe__tab{% if not transcript %} is-active{% endif %}" href="?transcript=new"><i class="bi bi-plus-lg"></i> {% translate "new" %}</a>{% endif %}
+    </nav>
+    {% if show_left_switch %}
+      <nav class="transcribe__left" aria-label="{% translate 'show on the left'|capfirst %}">
+        {% if image %}<a class="transcribe__tab{% if left == 'image' %} is-active{% endif %}" href="{{ switch_image }}"><i class="bi bi-image"></i> {% translate "image" %}</a>{% endif %}
+        {% if can_show_original %}<a class="transcribe__tab{% if left == 'original' %} is-active{% endif %}" href="{{ switch_original }}"><i class="bi bi-file-text"></i> {% translate "original text" %}</a>{% endif %}
+        {% if has_source_text %}<a class="transcribe__tab{% if left == 'source' %} is-active{% endif %}" href="{{ switch_source }}"><i class="bi bi-newspaper"></i> {% translate "Delpher text" %}</a>{% endif %}
+      </nav>
+    {% endif %}
+    {% if page_count %}
+      <nav class="transcribe__pages" aria-label="{% translate 'pages'|capfirst %}">
+        {% if previous_page %}<a href="{{ previous_page }}" rel="prev" title="{% translate 'previous page'|capfirst %}"><i class="bi bi-chevron-left"></i></a>{% endif %}
+        <span>{% blocktranslate with number=page_number count=page_count %}page {{ number }} of {{ count }}{% endblocktranslate %}</span>
+        {% if next_page %}<a href="{{ next_page }}" rel="next" title="{% translate 'next page'|capfirst %}"><i class="bi bi-chevron-right"></i></a>{% endif %}
+      </nav>
+    {% endif %}
+  </header>
+
+  <div class="transcribe__panes">
+    {% if left == 'source' %}
+      {# The Delpher article's own OCR text - to compare, or copy from. #}
+      <div class="transcribe__original">
+        <p class="transcribe__original-meta">{% translate "Delpher - the article's text" %}</p>
+        {% if source_error %}<p class="transcribe__error">{{ source_error }}</p>{% endif %}
+        {% if source_text %}
+          {% if source_text.0 %}<p class="transcribe__original-text"><strong>{{ source_text.0 }}</strong></p>{% endif %}
+          {% for paragraph in source_text.1 %}<p class="transcribe__original-text">{{ paragraph }}</p>{% endfor %}
+        {% endif %}
+      </div>
+    {% elif left_original %}
+      <div class="transcribe__original">
+        <p class="transcribe__original-meta">{{ left_original.get_language_display }} · {% translate "original" %}{% if left_original.incomplete %} · {% translate "incomplete" %}{% endif %}</p>
+        <div class="transcribe__original-text">{{ left_original.text|linebreaksbr }}</div>
+      </div>
+    {% elif image %}
+      <div class="transcribe__image" data-cmnsd-viewer>
+        <img data-viewer-image src="{% url 'content:file' content.token %}" alt="{{ content }}">
+        <div class="transcribe__viewer-tools">
+          <button type="button" data-viewer-zoom-in title="{% translate 'zoom in'|capfirst %} (Alt +)"><i class="bi bi-zoom-in"></i></button>
+          <button type="button" data-viewer-zoom-out title="{% translate 'zoom out'|capfirst %} (Alt −)"><i class="bi bi-zoom-out"></i></button>
+          <button type="button" data-viewer-fit title="{% translate 'fit'|capfirst %} (Alt 0)"><i class="bi bi-arrows-angle-contract"></i></button>
+          <button type="button" data-viewer-rotate title="{% translate 'rotate'|capfirst %} (Alt R)"><i class="bi bi-arrow-clockwise"></i></button>
+        </div>
+      </div>
+    {% else %}
+      <div class="transcribe__image transcribe__image--none">
+        <p>{% translate "This item has no image to show here." %}{% if content.file %} <a href="{% url 'content:file' content.token %}" target="_blank" rel="noopener">{% translate "open the original"|capfirst %} <i class="bi bi-box-arrow-up-right"></i></a>{% endif %}</p>
+      </div>
+    {% endif %}
+
+    <form class="transcribe__form" id="transcribe-form" data-cmnsd-autosave="{% if not transcript %}new{% endif %}" action="{{ form_action }}" method="post">
+      <input type="hidden" name="_modified" value="{{ modified }}">
+      <div class="transcribe__fields">
+        {% for field in form %}{% if field.name != 'text' and field.name != 'incomplete' %}
+          <label class="transcribe__field">{{ field.label|capfirst }} {{ field }}</label>
+        {% endif %}{% endfor %}
+        <label class="transcribe__check">{{ form.incomplete }} {{ form.incomplete.label|capfirst }}</label>
+        <a class="btn btn--primary btn--sm transcribe__close" href="{{ content.get_absolute_url }}" data-autosave-close="transcribe-form">{% translate "close"|capfirst %}</a>
+        <span class="transcribe__status" data-autosave-status aria-live="polite"
+              data-text-saving="{% translate 'saving…'|capfirst %}" data-text-saved="{% translate 'saved'|capfirst %}"
+              data-text-unsaved="{% translate 'not saved yet'|capfirst %}" data-text-error="{% translate 'not saved'|capfirst %}"></span>
+      </div>
+      {% if guess_options %}
+        {# A first version of the text, from a named source - one button each, no hidden default (content/transcription). Only while the text is empty. #}
+        <div class="transcribe__guess" data-guess-url="{% url 'content:transcribe_guess' content.token %}">
+          {% for option in guess_options %}
+            <div class="transcribe__source{% if not option.enabled %} is-unavailable{% endif %}">
+              <button type="button" class="btn btn--secondary btn--sm" data-guess="{{ option.name }}"{% if not option.enabled %} disabled{% endif %}><i class="bi bi-{{ option.icon }}"></i> {{ option.label }}</button>
+              <small>{% if option.enabled %}{{ option.explanation }}{% else %}{{ option.reason|capfirst }}.{% endif %}</small>
+            </div>
+          {% endfor %}
+          <p class="transcribe__guess-note" data-guess-note></p>
+        </div>
+      {% endif %}
+      <textarea class="transcribe__text" name="{{ form.text.html_name }}" spellcheck="false" placeholder="{% translate 'Type what is written - a ? where you can’t read it.' %}" aria-label="{% translate 'text'|capfirst %}">{{ form.text.value|default_if_none:'' }}</textarea>
+      <p class="transcribe__error" data-cmnsd-error hidden></p>
+      <p class="transcribe__hint">{% translate "Saves itself · Ctrl+S saves now · Alt + arrows / plus / minus moves the image" %}</p>
+    </form>
+  </div>
+</div>
+<script type="module">
+  import { request } from "{% static 'cmnsd.js/api.js' %}";
+  // A source button (Delpher, OCR): its text goes into the field, marked
+  // automatic (not checked) - autosave then stores it like typed text.
+  const guessBox = document.querySelector('.transcribe__guess');
+  guessBox?.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-guess]');
+    if (!button || button.disabled) return;
+    const form = document.querySelector('.transcribe__form');
+    const text = form.querySelector('.transcribe__text');
+    const note = guessBox.querySelector('[data-guess-note]');
+    if (text.value.trim() && !window.confirm("{% translate 'Replace your text with this?' %}")) return;
+    guessBox.querySelectorAll('button').forEach((b) => { b.dataset.wasDisabled = b.disabled; b.disabled = true; });
+    note.textContent = "{% translate 'Fetching…' %}";
+    const { ok, data } = await request(guessBox.dataset.guessUrl, { method: 'POST', json: { source: button.dataset.guess } });
+    guessBox.querySelectorAll('button').forEach((b) => { b.disabled = b.dataset.wasDisabled === 'true'; });
+    if (!ok) {
+      note.textContent = data.error;
+      return;
+    }
+    text.value = data.text;
+    form.querySelector('[name="transcripts-method"]').value = 'automatic';
+    const language = form.querySelector('[name="transcripts-language"]');
+    if (!language.value && data.language) language.value = data.language;
+    note.textContent = data.note;
+    guessBox.querySelectorAll('.transcribe__source').forEach((el) => { el.hidden = true; });
+    text.dispatchEvent(new Event('input', { bubbles: true }));   // autosave takes it from here
+    text.focus();
+  });
+
+  // A new transcript, once saved, gets its own address - so a reload opens it.
+  document.querySelector('.transcribe__form')?.addEventListener('cmnsd:autosaved', (event) => {
+    const child = event.detail.child;
+    if (!child) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('transcript', child.id);
+    history.replaceState(history.state, '', url);
+  });
+</script>
+{% endblock %}

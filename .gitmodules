@@ -1,3 +1,4 @@
 [submodule "cmnsd"]
 	path = cmnsd
-	url = https://github.com/arnecoomans/cmnsd/
+	url = https://github.com/arnecoomans/cmnsd.git
+	branch = fmly

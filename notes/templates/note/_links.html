@@ -1,0 +1,19 @@
+{% comment %}
+  What a note links to, one section per kind of link (note/_link_section.html)
+  - only what this viewer may see. Empty sections only in edit mode, with a
+  picker to add to them. People and events have more fields than a name:
+  their picker links to the add page in the admin. Context: note, links,
+  link_tokens, editing, perms.
+{% endcomment %}
+{% translate "add a person" as add_person %}{% translate "new person" as new_person %}{% url 'cmnsd_api:object_create' 'person' as new_person_dialog %}
+{% include 'note/_link_section.html' with relation='people' title=_('people') picker_model='person' objects=links.people add_label=add_person exclude=link_tokens.people new_dialog=new_person_dialog new_param='given_name' new_label=new_person can_new=perms.people.add_person %}
+{% translate "add content" as add_content %}
+{% include 'note/_link_section.html' with relation='content' title=_('content') picker_model='content' objects=links.content add_label=add_content exclude=link_tokens.content %}
+{% translate "add an event" as add_event %}{% translate "new event" as new_event %}{% url 'cmnsd_api:object_create' 'event' as new_event_dialog %}
+{% include 'note/_link_section.html' with relation='events' title=_('events') picker_model='event' objects=links.events add_label=add_event exclude=link_tokens.events new_dialog=new_event_dialog new_param='title' new_label=new_event can_new=perms.events.add_event %}
+{% translate "add a place" as add_place %}
+{% include 'note/_link_section.html' with relation='places' title=_('places') picker_model='place' objects=links.places add_label=add_place exclude=link_tokens.places can_create=perms.places.add_place %}
+{% translate "add a tag" as add_tag %}
+{% include 'note/_link_section.html' with relation='tags' title=_('tags') picker_model='tag' objects=links.tags add_label=add_tag exclude=link_tokens.tags can_create=perms.core.add_tag %}
+{% translate "link another note" as add_note %}
+{% include 'note/_link_section.html' with relation='related_notes' title=_('links to') picker_model='note' objects=links.related_notes add_label=add_note exclude=link_tokens.related_notes %}

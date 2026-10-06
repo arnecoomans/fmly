@@ -1,0 +1,26 @@
+{% load comments %}
+{% comment %}
+  The comment thread itself, without a heading: the comments this viewer
+  may see (oldest first) and - signed in, with cmnsd.js on - the form
+  that posts through the API (add_comment) and appends the new comment.
+  Used by comment/comments.html (with its own heading, e.g. the content
+  page) and as the body of a collapsible section (the person page).
+  Context: `target` (a CommentableMixin object), `model` (its API
+  registry name), `request`.
+{% endcomment %}
+{% with comments=target|visible_comments:request %}
+  <div class="comment-list" id="comments-{{ target.token }}">
+    {% for comment in comments %}
+      {% include 'comment/comment.html' with comment=comment %}
+    {% endfor %}
+    <p class="comments__empty">{% translate "no comments yet"|capfirst %}</p>
+  </div>
+  {% if perms.core.add_comment and load_on_ready %}
+    <form class="comment-form" data-cmnsd-action="add_comment" data-model="{{ model }}" data-object-token="{{ target.token }}"
+          data-cmnsd-target="#comments-{{ target.token }}" data-cmnsd-insert="append">
+      <textarea name="content" rows="3" required maxlength="5000" placeholder="{% translate 'Write a comment…' %}" aria-label="{% translate 'comment'|capfirst %}"></textarea>
+      <p class="comment-form__error" data-cmnsd-error hidden></p>
+      <button class="btn" type="submit">{% translate "post comment"|capfirst %}</button>
+    </form>
+  {% endif %}
+{% endwith %}

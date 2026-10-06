@@ -1,0 +1,6 @@
+{% load edit_mode %}
+{% comment %}
+  The item's kind - a choice block, edit mode only (content_detail.html's
+  choices panel); changing it reloads the page (ContentKindForm).
+{% endcomment %}
+{% edit_choices content 'kind' %}

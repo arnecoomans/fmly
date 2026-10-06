@@ -1,0 +1,22 @@
+{% comment %}
+  "Fine as it is" for one item of a loose end (dashboard.views.LooseEndView,
+  a POST): off this list, with an optional note why - or, on the dismissed
+  view, who/when/why and "back on the list". Context: item, name,
+  show_dismissed.
+{% endcomment %}
+{% if show_dismissed %}
+  <form class="loose-end__dismiss" method="post">
+    {% csrf_token %}<input type="hidden" name="action" value="restore"><input type="hidden" name="object_id" value="{{ item.pk }}">
+    {% with row=item.dismissal %}{% if row %}<span class="loose-end__dismissed">{{ row.user.get_full_name|default:row.user.username|default:'?' }} · {{ row.date_created|date:"j M Y" }}{% if row.note %} · {{ row.note }}{% endif %}</span>{% endif %}{% endwith %}
+    <button type="submit" class="btn btn--secondary btn--sm">{% translate "back on the list"|capfirst %}</button>
+  </form>
+{% else %}
+  <details class="loose-end__dismiss">
+    <summary>{% translate "fine as it is" %}</summary>
+    <form method="post">
+      {% csrf_token %}<input type="hidden" name="object_id" value="{{ item.pk }}">
+      <input type="text" name="note" maxlength="255" placeholder="{% translate 'why (optional)' %}" aria-label="{% translate 'why (optional)' %}">
+      <button type="submit" class="btn btn--secondary btn--sm">{% translate "off the list"|capfirst %}</button>
+    </form>
+  </details>
+{% endif %}

@@ -1,0 +1,17 @@
+{% load markdown %}
+{% comment %}
+  One note in a list (the notes overview, a "Notes" section on a person's,
+  item's or place's page): its kind, title, the start of its text, its
+  date and whether it's a draft or private. data-filter-value: its kind,
+  for the kind pills. Context: note.
+{% endcomment %}
+<li class="note-row" data-filter-value="{{ note.kind }}">
+  <a class="note-row__link" href="{{ note.get_absolute_url }}">
+    <span class="note-kind note-kind--{{ note.kind }}">{{ note.get_kind_display }}</span>
+    <span class="note-row__title">{{ note }}</span>
+    {% if note.needs_attention %}<span class="badge-status badge-status--draft">{{ note.get_status_display }}</span>{% endif %}
+    {% if note.is_private %}<i class="bi bi-lock-fill note-row__private" title="{% translate 'only you' %}"></i>{% endif %}
+  </a>
+  {% if note.title and note.body %}<p class="note-row__excerpt">{{ note.body|markdown|striptags|truncatewords:28 }}</p>{% endif %}
+  <p class="note-row__meta">{% if note.confidence %}{{ note.get_confidence_display|capfirst }} · {% endif %}{% translate "changed" %} {{ note.date_modified|date:"j M Y" }}</p>
+</li>

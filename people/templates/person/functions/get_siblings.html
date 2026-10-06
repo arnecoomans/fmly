@@ -1,0 +1,10 @@
+{% with siblings=person.get_siblings %}
+  {% if siblings %}
+    <h3 class="section-title">{% translate "siblings"|capfirst %}</h3>
+    <div class="person-relationship-group__list">
+      {% for sibling in siblings %}
+        {% include 'people/_person_row.html' with related=sibling.person role=sibling.is_half|yesno:"Half-sibling,Sibling" derived=True meta_with=sibling.shared_parent %}
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}

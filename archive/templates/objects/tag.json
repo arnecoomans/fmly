@@ -1,4 +1,0 @@
-{ 
-  "slug": "{{ tag.slug }}", 
-  "display_text": "{{ tag.title|highlight:query|safe }}"
-}

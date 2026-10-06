@@ -1,0 +1,6 @@
+{% comment %}
+  The chip for what the link action just linked (EditableRelationsMixin) -
+  appended to that relation's list by cmnsd.js. Context: note, result
+  ({relation, object}), request.
+{% endcomment %}
+{% with relation=result.relation object=result.object %}{% include 'note/_link.html' %}{% endwith %}

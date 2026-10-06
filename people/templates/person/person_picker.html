@@ -1,0 +1,26 @@
+{% load text_filters %}
+{% comment %}
+  Person picker results (GET api/person/?q=...&format=picker - cmnsd.js
+  picker.js): the first 20 people this viewer may see, with avatar and
+  lifespan (person/functions/get_full_name.html - also its handling of
+  private people), so two people with the same name can be told apart.
+  The search term is marked as in the People list ({% highlight_search %},
+  mark.search-hit).
+  data-picker-name: the full name, for the picker's exact-match check.
+  Context: person_list (with lifespans and portraits attached - the
+  person queryset's for_list()).
+{% endcomment %}
+{% with shown=person_list|slice:":20" %}
+  {% if shown %}
+    <ul class="picker-results">
+      {% for person in shown %}
+        <li data-picker-row>
+          <button type="button" class="picker-result" data-picker-choose="{{ person.token }}" data-picker-name="{{ person.get_full_name }}">
+            <span class="picker-result__thumb picker-result__thumb--avatar">{% include 'person/avatar.html' with person=person size='sm' %}</span>
+            <span class="picker-result__name picker-result__name--single">{% highlight_search search_query %}{% include 'person/functions/get_full_name.html' with person=person lifespan=True suppress_link=True %}{% endhighlight_search %}</span>
+          </button>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}

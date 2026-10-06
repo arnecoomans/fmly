@@ -1,0 +1,31 @@
+{% load text_filters %}
+{% comment %}
+  The results of /search/ (core/search.py): a section per kind with hits,
+  each its first few (all, narrowed to one kind) and "show all".
+  Rendered in the page and, while typing, alone (SearchView's JSON).
+  Context: sections, search_query, kind, too_short, search_character.
+{% endcomment %}
+{% if sections %}
+  {% for section in sections %}
+    <section class="search-section">
+      <h2 class="search-section__title"><i class="bi bi-{{ section.icon }}"></i> {{ section.label|capfirst }} <span class="tag__count">{{ section.count }}</span></h2>
+      <ul class="search-hits">
+        {% for hit in section.hits %}
+          <li>{% include 'search/hits/'|add:section.kind|add:'.html' %}</li>
+        {% endfor %}
+      </ul>
+      {% if section.more %}
+        <a class="search-section__more" href="?{{ search_character }}={{ search_query|urlencode }}&amp;kind={{ section.kind }}">{% blocktranslate count counter=section.count %}show all {{ counter }}{% plural %}show all {{ counter }}{% endblocktranslate %}</a>
+      {% endif %}
+    </section>
+  {% endfor %}
+{% elif too_short %}
+  <p class="search-page__hint">{% translate "type at least two letters"|capfirst %}</p>
+{% elif search_query %}
+  <div class="list-empty-state">
+    <i class="bi bi-search list-empty-state__icon"></i>
+    <p class="list-empty-state__title">{% translate "nothing matches"|capfirst %} &ldquo;{{ search_query }}&rdquo;</p>
+  </div>
+{% else %}
+  <p class="search-page__hint">{% translate "Names, titles and descriptions - and the text of transcripts, biographies and notes." %}</p>
+{% endif %}

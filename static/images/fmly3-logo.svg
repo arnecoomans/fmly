@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="180" viewBox="0 0 600 180" role="img" aria-label="FMLY3">
+  <rect x="1" y="1" width="598" height="178" rx="28" fill="#FAF6F1" stroke="#E2D8CC" stroke-width="2"/>
+  <rect x="30" y="30" width="120" height="120" rx="24" fill="#A8522E"/>
+  <text x="90" y="124" text-anchor="middle" font-family="Lora, Georgia, 'Times New Roman', serif" font-weight="700" font-size="92" fill="#F6EEE4">F</text>
+  <text x="184" y="124" font-family="Lora, Georgia, 'Times New Roman', serif" font-weight="700" font-size="96" fill="#2B2622">FMLY<tspan fill="#A8522E" font-family="'Times New Roman', Times, serif" font-size="100">3</tspan></text>
+</svg>

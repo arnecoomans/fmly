@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load content_tags %}
+{% comment %}
+  A tag's page (core.views.TagDetailView): the parent as a breadcrumb
+  (e.g. "Collection"), the name and description - the context the tag
+  gives - a cover (the earliest image), then its child tags, the people
+  carrying it (above the content: a short list, the grid can be long) and
+  its content (the shared content grid, remembered sort).
+{% endcomment %}
+
+{% block title %}{{ tag.name }}{% endblock %}
+
+{% block content %}
+<div class="tag-page">
+  <header class="tag-page__header">
+    {% if cover %}
+      <a class="tag-page__cover" href="{{ cover.get_absolute_url }}" title="{{ cover }}">
+        <img src="{{ cover|thumb_url:'card' }}" alt="{{ cover }}">
+      </a>
+    {% endif %}
+    <div class="tag-page__intro">
+      {% if tag.parent %}
+        <a class="tag-page__parent" href="{{ tag.parent.get_absolute_url }}">{{ tag.parent.name }} <i class="bi bi-chevron-right"></i></a>
+      {% endif %}
+      <h1 class="tag-page__name">{{ tag.name }}</h1>
+      {% if tag.needs_attention %}
+        {# Only its creator and staff reach this page for a concept/revoked tag. #}
+        <span class="badge-status badge-status--draft tag-page__status">{{ tag.get_status_display }} · {% translate "not published" %}</span>
+      {% endif %}
+      {% if tag.description %}<div class="tag-page__description reading-copy">{{ tag.description|linebreaks }}</div>{% endif %}
+      <p class="tag-page__counts">
+        {% blocktranslate count counter=items|length %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktranslate %}{% if people %} · {% blocktranslate count counter=people|length %}{{ counter }} person{% plural %}{{ counter }} people{% endblocktranslate %}{% endif %}
+      </p>
+    </div>
+  </header>
+
+  {% if children %}
+    <section class="tag-page__section">
+      <h2 class="section-title">{{ tag.name }}</h2>
+      <div class="tag-list">{% for child in children %}{% include 'tag/tag.html' with tag=child hide_parent=True %}{% endfor %}</div>
+    </section>
+  {% endif %}
+
+  {% if people %}
+    <section class="tag-page__section">
+      <h2 class="section-title">{% translate "people"|capfirst %}</h2>
+      <div class="tag-page__people">
+        {% for person in people %}
+          {% include 'people/_person_row.html' with related=person show_visibility=True %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if items %}
+    <section class="tag-page__section">
+      <h2 class="section-title">{% translate "content"|capfirst %}</h2>
+      {% include 'content/_content_grid.html' with items=items sort=sort save_key='tag.content' grid_id='tag-content-grid' %}
+    </section>
+  {% endif %}
+
+  {% if not items and not people and not children %}
+    <div class="list-empty-state">
+      <i class="bi bi-tag list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "nothing with this tag yet"|capfirst %}</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

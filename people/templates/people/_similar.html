@@ -1,0 +1,25 @@
+{% load tags %}{% comment %}
+  Possible duplicates of a new person (people/similar.py, views/similar.py):
+  under the names, while typing. Each links to the person (in the dialog:
+  in a new tab, so the form stays) and, in the dialog, "use this one" -
+  the dialog answers with that person instead of making a new one (cmnsd.js
+  dialog.js data-cmnsd-dialog-answer; a picker then chooses them).
+  Context: similar, similar_count, in_dialog.
+{% endcomment %}
+{% if similar %}
+  <div class="person-similar">
+    <p class="person-similar__title"><i class="bi bi-exclamation-circle"></i> {% blocktranslate count counter=similar_count %}Already in the archive? {{ counter }} person with these names{% plural %}Already in the archive? {{ counter }} people with these names{% endblocktranslate %}</p>
+    <ul class="person-similar__list">
+      {% for person in similar %}
+        <li class="person-similar__row">
+          {% include 'person/avatar.html' with person=person size='sm' %}
+          {% with url=person|person_url:request %}{% if url %}<a class="person-similar__name" href="{{ url }}"{% if in_dialog %} target="_blank" rel="noopener"{% endif %}>{% else %}<span class="person-similar__name">{% endif %}{% include 'person/functions/get_full_name.html' with person=person lifespan=True suppress_link=True %}{% if url and in_dialog %} <i class="bi bi-box-arrow-up-right"></i>{% endif %}{% if url %}</a>{% else %}</span>{% endif %}{% endwith %}
+          {% if in_dialog %}
+            <button type="button" class="btn btn--secondary btn--sm person-similar__use" data-cmnsd-dialog-answer='{"created": {"token": "{{ person.token }}", "name": "{{ person.get_full_name|escapejs }}", "url": "{{ person|person_url:request }}"}, "existing": true}'>{% translate "use this one"|capfirst %}</button>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+    {% if similar_count > similar|length %}<p class="person-similar__more">{% translate "more - add a name to narrow down"|capfirst %}</p>{% endif %}
+  </div>
+{% endif %}

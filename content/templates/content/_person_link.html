@@ -1,0 +1,16 @@
+{% load edit_mode %}{% load content_tags %}
+{% comment %}
+  One person on an item's page (people/_person_row.html) - in edit mode,
+  for someone who may change the item, with its "×"
+  (cmnsd/edit/unlink.html). Also what the link action returns for a newly
+  added person (content/actions/link.html). A portrait icon when this
+  photo is the person's portrait (portrait_from).
+  Context: person (with lifespan + portrait attached), content, request.
+{% endcomment %}
+{% with portrait_here=person|portrait_from:content %}
+{% if edit_mode and content|can_edit:request %}
+  <div class="chip-edit chip-edit--row">{% include 'people/_person_row.html' with related=person show_visibility=True %}{% include 'cmnsd/edit/unlink.html' with model='content' owner=content relation='people' object=person %}</div>
+{% else %}
+  {% include 'people/_person_row.html' with related=person show_visibility=True %}
+{% endif %}
+{% endwith %}

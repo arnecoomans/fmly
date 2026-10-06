@@ -1,0 +1,18 @@
+{% load edit_mode %}
+{% comment %}
+  The person's parents (oldest first). In edit mode, for someone who may
+  change the person: each row with its "×", and a picker to add a parent
+  - the group shows even without parents then.
+{% endcomment %}
+{% with parents=person.get_parents editing=edit_mode %}
+  {% if parents or editing and person|can_edit:request %}
+    <h3 class="section-title">{% translate "parents"|capfirst %}</h3>
+    <div class="person-relationship-group__list">
+      {% for parent in parents %}
+        {% include 'people/_person_row.html' with related=parent role="Parent" unlink_owner=person unlink_relation='parent' %}
+      {% endfor %}
+    </div>
+    {% translate "add a parent" as add_label %}
+    {% include 'person/_relative_picker.html' with kind='parent' %}
+  {% endif %}
+{% endwith %}

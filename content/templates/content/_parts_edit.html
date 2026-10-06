@@ -1,0 +1,67 @@
+{% load content_tags %}
+{% comment %}
+  The parts editor - edit mode only (ContentDetailView._edit_parts_context,
+  `edit_parts`). Every change is an API action on Content (content/
+  parts.py: permission checked, logged to the admin history) and reloads
+  the page: the gallery, the thumbnails and "part n of m" all follow the
+  order.
+
+  - per part: earlier / later (moves its number group - variants go
+    along), variant of the whole (0) and back, share the previous number
+    (variants of each other) or take its own again, and remove (it
+    becomes a separate item again; nothing is deleted).
+  - "add a part": a picker (cmnsd.js picker.js) - always added to the
+    whole, also from a part's page.
+  - "make this item a part of...": for an item that is neither a part nor
+    has parts.
+  Context: parts_whole, edit_part_rows, can_become_part, content,
+  search_character.
+{% endcomment %}
+<div class="parts-edit">
+  {% if edit_part_rows %}
+    <ol class="parts-edit__rows">
+      {% for part in edit_part_rows %}
+        <li class="parts-edit__row{% if part.pk == content.pk %} is-current{% endif %}">
+          <span class="parts-edit__number" title="{% if part.edit_is_variant %}{% translate 'variant of the whole' %}{% else %}{% translate 'part' %} {{ part.position }}{% endif %}">{% if part.edit_is_variant %}0{% else %}{{ part.position }}{% endif %}</span>
+          <a class="parts-edit__name" href="{{ part.get_absolute_url }}">{{ part }}</a>
+          <span class="parts-edit__note">{% if part.edit_is_variant %}{% translate "variant of the whole" %}{% elif part.edit_shared %}{% translate "variant - shares its number" %}{% endif %}</span>
+          <span class="parts-edit__actions">
+            {% with token=part.token %}
+              <button type="button" class="icon-btn" data-cmnsd-action="move_part" name="direction" value="earlier" data-model="content" data-object-token="{{ token }}" data-cmnsd-insert="reload" title="{% translate 'earlier'|capfirst %}"{% if part.edit_first %} disabled{% endif %}><i class="bi bi-arrow-up"></i></button>
+              <button type="button" class="icon-btn" data-cmnsd-action="move_part" name="direction" value="later" data-model="content" data-object-token="{{ token }}" data-cmnsd-insert="reload" title="{% translate 'later'|capfirst %}"{% if part.edit_last %} disabled{% endif %}><i class="bi bi-arrow-down"></i></button>
+              {% if part.edit_shared %}
+                <button type="button" class="icon-btn" data-cmnsd-action="separate_part" data-model="content" data-object-token="{{ token }}" data-cmnsd-insert="reload" title="{% translate 'give it its own number'|capfirst %}"><i class="bi bi-intersect"></i></button>
+              {% else %}
+                <button type="button" class="icon-btn" data-cmnsd-action="join_previous" data-model="content" data-object-token="{{ token }}" data-cmnsd-insert="reload" title="{% translate 'same number as the previous part (variants of each other)'|capfirst %}"{% if part.edit_first %} disabled{% endif %}><i class="bi bi-union"></i></button>
+              {% endif %}
+              <button type="button" class="icon-btn{% if part.edit_is_variant %} is-active{% endif %}" data-cmnsd-action="toggle_variant" data-model="content" data-object-token="{{ token }}" data-cmnsd-insert="reload" aria-pressed="{{ part.edit_is_variant|yesno:'true,false' }}" title="{% if part.edit_is_variant %}{% translate 'make it a part again'|capfirst %}{% else %}{% translate 'variant of the whole (e.g. a colorized version)'|capfirst %}{% endif %}"><i class="bi bi-layers"></i></button>
+              <button type="button" class="icon-btn icon-btn--danger" data-cmnsd-action="detach_part" data-model="content" data-object-token="{{ token }}" data-cmnsd-insert="reload" data-cmnsd-confirm="{% blocktranslate with item=part %}Remove “{{ item }}” from this item? It becomes a separate item again; nothing is deleted.{% endblocktranslate %}" title="{% translate 'remove from this item'|capfirst %}"><i class="bi bi-x-lg"></i></button>
+            {% endwith %}
+          </span>
+        </li>
+      {% endfor %}
+    </ol>
+  {% endif %}
+
+  <form class="picker" data-cmnsd-picker="content" data-picker-param="{{ search_character }}" data-picker-exclude="{{ parts_whole.token }}{% for part in edit_part_rows %},{{ part.token }}{% endfor %}"
+        data-cmnsd-action="add_part" data-model="content" data-object-token="{{ parts_whole.token }}" data-cmnsd-insert="reload">
+    <label class="picker__label"><i class="bi bi-plus-lg"></i>{% if parts_whole.pk == content.pk %}{% translate "add a part"|capfirst %}{% else %}{% blocktranslate with whole=parts_whole %}add a part to “{{ whole }}”{% endblocktranslate %}{% endif %}
+      <input type="search" data-picker-input autocomplete="off" placeholder="{% translate 'search content by name'|capfirst %}">
+    </label>
+    <input type="hidden" name="token" value="" data-picker-value>
+    <div data-picker-results></div>
+    <p class="picker__error" data-cmnsd-error hidden></p>
+  </form>
+
+  {% if can_become_part %}
+    <form class="picker" data-cmnsd-picker="content" data-picker-param="{{ search_character }}" data-picker-exclude="{{ content.token }}" data-picker-as="object"
+          data-cmnsd-action="add_part" data-model="content" data-object-token="" data-cmnsd-insert="reload">
+      <label class="picker__label"><i class="bi bi-box-arrow-in-up-right"></i>{% translate "make this item a part of…"|capfirst %}
+        <input type="search" data-picker-input autocomplete="off" placeholder="{% translate 'search for the whole'|capfirst %}">
+      </label>
+      <input type="hidden" name="token" value="{{ content.token }}">
+      <div data-picker-results></div>
+      <p class="picker__error" data-cmnsd-error hidden></p>
+    </form>
+  {% endif %}
+</div>

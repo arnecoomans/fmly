@@ -1,0 +1,18 @@
+{% load tag_counts %}
+{% load tags %}
+{% comment %}
+  The chip for what the link action just linked (EditableRelationsMixin) -
+  appended to that relation's list by cmnsd.js. Context: content, result
+  ({relation, object}), request.
+{% endcomment %}
+{% if result.relation == 'tags' %}
+  {% with tag=result.object|with_content_count:request %}{% include 'content/_tag_chip.html' %}{% endwith %}
+{% elif result.relation == 'places' %}
+  {% with place=result.object %}{% include 'content/_place_link.html' %}{% endwith %}
+{% elif result.relation == 'events' %}
+  {% with event=result.object %}{% include 'content/_event_link.html' %}{% endwith %}
+{% elif result.relation == 'authors' %}
+  {% with author=result.object %}{% include 'content/_author_link.html' %}{% endwith %}
+{% elif result.relation == 'people' %}
+  {% with person=result.object|for_row %}{% include 'content/_person_link.html' %}{% endwith %}
+{% endif %}

@@ -1,0 +1,13 @@
+{% load markdown %}{% if person.biography %}
+  <section class="person-biography">
+    <h2 class="section-title">{% translate "biography"|capfirst %}</h2>
+    <input type="checkbox" id="bio-expand-{{ person.pk }}" class="clamp-toggle">
+    <div class="reading-copy clamp-content">
+      {{ person.biography|markdown }}
+    </div>
+    <label for="bio-expand-{{ person.pk }}" class="clamp-toggle-label">
+      <span class="is-more">{% translate "read more"|capfirst %}</span>
+      <span class="is-less">{% translate "read less"|capfirst %}</span>
+    </label>
+  </section>
+{% endif %}

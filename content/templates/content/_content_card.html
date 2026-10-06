@@ -1,0 +1,55 @@
+{% load content_tags %}
+{% comment %}
+  One content item as a .content-card (components.css), linking to its
+  detail page. Cross-app: the person page's Content section today, the
+  content list later.
+
+  Composition by what can be shown, not by kind: an image file (a photo,
+  but also a scanned document) gets the thumbnail-forward card, with the
+  'card' preset via content:thumbnail; anything else - a PDF, audio, a
+  book without a cover, a record whose file isn't supplied yet - gets the
+  icon-forward card. data-filter-value carries the kind, for the filter
+  pills (cmnsd.js filter.js); data-sort-added / data-sort-date feed the
+  sort switch (sort.js).
+
+  A draft (or revoked) item - only its creator and staff see it - is marked:
+  .content-card--draft, a dashed frame and its status as a badge.
+  An item with a transcript (item.transcript) shows a text icon, top
+  right - outlined when it's marked incomplete.
+  An item with parts (item.has_parts, set by the grid's mark_wholes) gets
+  a count badge - .content-card--has-parts: the whole plus its parts
+  (item.group_size), as on the item's page.
+
+  Context: `item` (Content). `item.by_this_person` (set by
+  Person.get_visible_content): the person whose page this is wrote it -
+  shown as "author".
+{% endcomment %}
+{% with date=item|partial_date sub=item.sub_kind_display %}
+{% if item.file and item.media_type == 'image' %}
+  <a class="content-card{% if item.has_parts %} content-card--has-parts{% endif %}{% if item.needs_attention %} content-card--draft{% endif %}" href="{{ item.get_absolute_url }}" data-filter-value="{{ item.kind }}" data-sort-added="{{ item.date_created|date:'c' }}" data-sort-date="{{ item|date_sort_key }}">
+    <span class="content-card__thumb">
+      <img src="{{ item|thumb_url:'card' }}" alt="" loading="lazy">
+      <span class="content-card__kind-icon" title="{{ item.get_kind_display|capfirst }}"><i class="bi bi-{{ item|kind_icon }}"></i></span>
+      {% if item.has_parts %}{% include 'content/_parts_badge.html' %}{% endif %}
+      {% if item.transcript %}{% include 'content/_transcript_badge.html' %}{% endif %}
+    </span>
+    <span class="content-card__body">
+      <span class="content-card__title">{% if item.needs_attention %}<span class="badge-status badge-status--draft content-card__status">{{ item.get_status_display }}</span> {% endif %}{{ item }}</span>
+      {% if date or sub or item.by_this_person %}<span class="content-card__subtitle">{% if item.by_this_person %}<span class="content-card__role">{% translate "author" %}</span>{% if date or sub %} · {% endif %}{% endif %}{{ date }}{% if date and sub %} · {% endif %}{{ sub }}</span>{% endif %}
+    </span>
+  </a>
+{% else %}
+  <a class="content-card content-card--icon{% if item.has_parts %} content-card--has-parts{% endif %}{% if item.needs_attention %} content-card--draft{% endif %}" href="{{ item.get_absolute_url }}" data-filter-value="{{ item.kind }}" data-sort-added="{{ item.date_created|date:'c' }}" data-sort-date="{{ item|date_sort_key }}">
+    {% if item.has_parts %}{% include 'content/_parts_badge.html' %}{% endif %}
+    {% if item.transcript %}{% include 'content/_transcript_badge.html' %}{% endif %}
+    <span class="content-card__body">
+      <span class="content-card__icon-chip"><i class="bi bi-{{ item|kind_icon }}"></i></span>
+      <span class="content-card__text">
+        <span class="content-card__kind-label">{{ item.get_kind_display }}{% if sub %} · {{ sub }}{% endif %}{% if item.by_this_person %} · <span class="content-card__role">{% translate "author" %}</span>{% endif %}</span>
+        <span class="content-card__title">{% if item.needs_attention %}<span class="badge-status badge-status--draft content-card__status">{{ item.get_status_display }}</span> {% endif %}{{ item }}</span>
+        {% if date %}<span class="content-card__subtitle">{{ date }}</span>{% elif not item.file %}<span class="content-card__subtitle">{% translate "file not available yet" %}</span>{% endif %}
+      </span>
+    </span>
+  </a>
+{% endif %}
+{% endwith %}

@@ -1,0 +1,20 @@
+{% load text_filters %}
+{% comment %}
+  Note picker results (GET api/note/?q=...&format=picker - cmnsd.js
+  picker.js), for "link another note": the first 20, each with its kind,
+  the search term marked. Context: note_list, search_query.
+{% endcomment %}
+{% with shown=note_list|slice:":20" %}
+  {% if shown %}
+    <ul class="picker-results">
+      {% for note in shown %}
+        <li data-picker-row>
+          <button type="button" class="picker-result picker-result--plain" data-picker-choose="{{ note.token }}" data-picker-name="{{ note }}">
+            <span class="picker-result__name"><i class="bi bi-journal-text"></i> {% highlight_search search_query %}{{ note }}{% endhighlight_search %}</span>
+            <span class="picker-result__meta">{{ note.get_kind_display|capfirst }}</span>
+          </button>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}

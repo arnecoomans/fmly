@@ -1,0 +1,32 @@
+{% load content_tags %}
+{% load text_filters %}
+{% comment %}
+  Picker results (GET api/content/?q=...&format=picker - cmnsd.js
+  picker.js): compact rows to choose from, the first 20. Wholes only
+  (Content.objects.for_list), what this viewer may see. Each row's button
+  carries the token; the action decides whether the choice is allowed
+  (e.g. an item with parts can't become a part) and says why if not.
+  Context: content_list, search_query.
+{% endcomment %}
+{% with shown=content_list|slice:":20" %}
+  {% if shown %}
+    <ul class="picker-results">
+      {% for item in shown %}
+        <li data-picker-row>
+          <button type="button" class="picker-result" data-picker-choose="{{ item.token }}">
+            {% if item.file and item.media_type == 'image' %}
+              <img class="picker-result__thumb" src="{{ item|thumb_url:'avatar' }}" alt="" loading="lazy">
+            {% else %}
+              <span class="picker-result__thumb picker-result__thumb--icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>
+            {% endif %}
+            <span class="picker-result__name">{% highlight_search search_query %}{{ item }}{% endhighlight_search %}</span>
+            <span class="picker-result__meta">{{ item.get_kind_display }}{% if item.year %} · {{ item|partial_date }}{% endif %}{% with count=item.parts.count %}{% if count %} · {% blocktranslate count counter=count %}{{ counter }} part{% plural %}{{ counter }} parts{% endblocktranslate %}{% endif %}{% endwith %}</span>
+          </button>
+        </li>
+      {% endfor %}
+    </ul>
+    {% if content_list|length > 20 %}<p class="picker-more">{% translate "more results - type more to narrow down"|capfirst %}</p>{% endif %}
+  {% else %}
+    <p class="picker-more">{% translate "nothing found"|capfirst %}</p>
+  {% endif %}
+{% endwith %}

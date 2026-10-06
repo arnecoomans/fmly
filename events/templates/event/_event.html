@@ -1,0 +1,38 @@
+{% load content_tags %}{% load markdown %}{% load events %}{% load visibility %}
+{% comment %}
+  An event, built from its parts rather than one sentence (Event.display_for
+  stays for pickers and the admin): what it is, when (and the person's age
+  then), who, where, the description, and the items documenting it - its
+  name linking to the event's own page. Used on
+  a person's timeline, an item's page and a place's page.
+  Context: event, request; optional:
+  - others: the people to name - required: a person's timeline leaves the
+    person out (life_timeline), an item's or place's page passes
+    event.people.all;
+  - relative + relation: a family event on a person's timeline ("son" Eric);
+  - age: 'aged 28' / 'about 28';
+  - history: a historical event in a person's lifetime - marked as such, quiet;
+  - hide_places: on a place's own page.
+  People are named as this viewer may see them (get_full_name.html obfuscates);
+  at a marriage, each spouse with their age then - only a spouse the viewer
+  may see (an age gives away a birth date).
+{% endcomment %}
+<article class="event{% if relative %} event--family{% endif %}{% if history %} event--history{% endif %} event--{{ event.kind }}">
+  <span class="event__symbol" aria-hidden="true">{% include 'event/_symbol.html' %}</span>
+  <div class="event__body">
+    <header class="event__header">
+      <span class="event__what"><a class="event__link" href="{{ event.get_absolute_url }}">{{ event.label }}</a>{% if relative %} <span class="event__relation">· {{ relation }} {% include 'person/functions/get_full_name.html' with person=relative %}</span>{% endif %}{% if history %} <span class="event__relation">· {% translate "history" %}</span>{% endif %}</span>
+      <span class="event__when">{% if event.year %}{{ event|partial_date }}{% else %}<span class="event__undated">{% translate "date unknown" %}</span>{% endif %}{% if age %} <span class="event__age">· {{ age }}</span>{% endif %}</span>
+    </header>
+    {% with people=others %}{% if people %}
+      <p class="event__people">{% for person in people %}{% if not forloop.first %} · {% endif %}{% include 'person/functions/get_full_name.html' with person=person %}{% if event.kind == 'marriage' and person|visible_to:request.user %}{% with spouse_age=person|age_at_event:event %}{% if spouse_age %}<span class="event__age">{{ spouse_age }}</span>{% endif %}{% endwith %}{% endif %}{% endfor %}</p>
+    {% endif %}{% endwith %}
+    {% if not hide_places %}{% with places=event.places.all %}{% if places %}
+      <p class="event__places"><i class="bi bi-geo-alt"></i> {% for place in places %}{% if not forloop.first %}, {% endif %}{% include 'field/places/name.html' with place=place %}{% endfor %}</p>
+    {% endif %}{% endwith %}{% endif %}
+    {% if event.description %}<div class="event__description reading-copy">{{ event.description|markdown }}</div>{% endif %}
+    {% if event.visible_content %}
+      <p class="event__content">{% for item in event.visible_content %}<a href="{{ item.get_absolute_url }}" title="{{ item }}"><i class="bi bi-{{ item|kind_icon }}"></i></a>{% endfor %}</p>
+    {% endif %}
+  </div>
+</article>

@@ -1,0 +1,23 @@
+{% comment %}
+  Function template for Person.get_relationships() - the Relationships
+  section body (parents, siblings, partners, children). Rendered in the
+  page when the section is open, or through the API when it's opened
+  (cmnsd/section.html). In edit mode, parents, partners and children are
+  edited in place: an "×" per row, a picker per group
+  (person/_relative_picker.html). Siblings follow from shared parents.
+  Context: `person`, `request`.
+{% endcomment %}
+<div class="person-relationships">
+  <div class="object function" data-model="person" data-function="list">
+    {% include 'person/functions/get_parents.html' with person=person %}
+  </div>
+  <div class="object function" data-model="person" data-function="list">
+    {% include 'person/functions/get_siblings.html' with person=person %}
+  </div>
+  <div class="object function" data-model="person" data-function="list">
+    {% include 'person/functions/get_partners.html' with person=person %}
+  </div>
+  <div class="object function" data-model="person" data-function="list">
+    {% include 'person/functions/get_children.html' with person=person %}
+  </div>
+</div>

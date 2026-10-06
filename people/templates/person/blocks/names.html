@@ -1,0 +1,6 @@
+{% comment %}
+  The person's name as shown (Person.get_full_name - given names, nickname,
+  married name, née), with the called name marked - an editable block
+  (form: PersonNamesForm, all five name fields).
+{% endcomment %}
+<h1 class="person-profile-card__name">{% include 'person/functions/get_full_name.html' with person=person suppress_link=True %}</h1>

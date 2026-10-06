@@ -1,0 +1,18 @@
+{% load edit_mode %}
+{% comment %}
+  The person's partners. In edit mode, for someone who may change the
+  person: each row with its "×", and a picker to add a partner - the group
+  shows even without partners then.
+{% endcomment %}
+{% with partners=person.get_partners editing=edit_mode %}
+  {% if partners or editing and person|can_edit:request %}
+    <h3 class="section-title">{% translate "partners"|capfirst %}</h3>
+    <div class="person-relationship-group__list">
+      {% for partner in partners %}
+        {% include 'people/_person_row.html' with related=partner role="Partner" unlink_owner=person unlink_relation='partner' %}
+      {% endfor %}
+    </div>
+    {% translate "add a partner" as add_label %}
+    {% include 'person/_relative_picker.html' with kind='partner' %}
+  {% endif %}
+{% endwith %}

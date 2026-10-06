@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% comment %}
+  The comment list (core.views.CommentListView): the latest comments this
+  viewer may see, newest first. Consecutive comments on the same item or
+  person are grouped under one header saying what they're on
+  (comment/_target.html). The same comment row as in a thread - its
+  controls work here too (API actions). A group whose last comment is
+  deleted hides itself (CSS :has).
+{% endcomment %}
+
+{% block title %}{% translate "comments"|capfirst %}{% endblock %}
+
+{% block content %}
+<div class="comment-page">
+  <header class="comment-page__header">
+    <h1>{% translate "comments"|capfirst %}</h1>
+    <nav class="comment-page__filters" aria-label="{% translate 'filter comments'|capfirst %}">
+      {% for value, label in filters %}
+        <a class="comment-page__filter{% if value == active_filter %} is-active{% endif %}" href="?{% if value %}on={{ value }}{% endif %}"{% if value == active_filter %} aria-current="page"{% endif %}>{{ label|capfirst }}</a>
+      {% endfor %}
+    </nav>
+  </header>
+
+  {% if comments %}
+    {% regroup comments by target as groups %}
+    <div class="comment-feed">
+      {% for group in groups %}
+        <section class="comment-feed__group">
+          {% include 'comment/_target.html' with target=group.grouper %}
+          <div class="comment-list">
+            {% for comment in group.list %}
+              {% include 'comment/comment.html' with comment=comment %}
+            {% endfor %}
+          </div>
+        </section>
+      {% endfor %}
+    </div>
+    {% if is_paginated %}
+      <nav class="comment-page__pagination" aria-label="{% translate 'pages'|capfirst %}">
+        {% if page_obj.has_previous %}<a class="btn" href="?{% if active_filter %}on={{ active_filter }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">{% translate "newer"|capfirst %}</a>{% endif %}
+        <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a class="btn" href="?{% if active_filter %}on={{ active_filter }}&amp;{% endif %}page={{ page_obj.next_page_number }}">{% translate "older"|capfirst %}</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <div class="list-empty-state">
+      <i class="bi bi-chat-left-text list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "no comments yet"|capfirst %}</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

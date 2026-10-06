@@ -1,0 +1,39 @@
+{% load comments %}
+{% load viewer_name %}
+{% load content_tags %}
+{% comment %}
+  What a group of comments in the comment list is on: a content item
+  (thumbnail or kind icon, name, kind and date), a person (avatar, name
+  with lifespan) or an event (symbol, what it is, date). The whole header links there. New commentable models
+  get a plain name until they get their own branch here.
+  Context: `target`, `request`.
+{% endcomment %}
+{% with kind=target|model_name %}
+<a class="comment-target" href="{{ target.get_absolute_url }}{% if kind == 'content' %}#comments{% endif %}">
+  {% if kind == 'content' %}
+    {% if target.file and target.media_type == 'image' %}
+      <img class="comment-target__thumb" src="{{ target|thumb_url:'avatar' }}" alt="" loading="lazy">
+    {% else %}
+      <span class="comment-target__thumb comment-target__thumb--icon"><i class="bi bi-{{ target|kind_icon }}"></i></span>
+    {% endif %}
+    <span class="comment-target__text">
+      <span class="comment-target__name">{{ target }}</span>
+      <span class="comment-target__kind">{{ target.get_kind_display|capfirst }}{% with date=target|partial_date %}{% if date %} · {{ date }}{% endif %}{% endwith %}</span>
+    </span>
+  {% elif kind == 'person' %}
+    {% include 'person/avatar.html' with person=target size='md' %}
+    <span class="comment-target__text">
+      <span class="comment-target__name">{% include 'person/functions/get_full_name.html' with person=target lifespan=True suppress_link=True %}</span>
+      <span class="comment-target__kind">{% translate "person"|capfirst %}</span>
+    </span>
+  {% elif kind == 'event' %}
+    <span class="comment-target__thumb comment-target__thumb--icon">{% include 'event/_symbol.html' with event=target %}</span>
+    <span class="comment-target__text">
+      <span class="comment-target__name">{{ target.label }}</span>
+      <span class="comment-target__kind">{% translate "event"|capfirst %}{% with date=target|partial_date %}{% if date %} · {{ date }}{% endif %}{% endwith %}</span>
+    </span>
+  {% else %}
+    <span class="comment-target__text"><span class="comment-target__name">{{ target|viewer_name:request|capfirst }}</span></span>
+  {% endif %}
+</a>
+{% endwith %}

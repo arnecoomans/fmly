@@ -1,0 +1,14 @@
+{% comment %}
+  One transcript in edit mode (a child record - cmnsd/edit/child.html):
+  its language, kind and how it was made, and the full text (no "read
+  more" here - you're editing).
+  Context: child (the Transcript), content.
+{% endcomment %}
+<div class="content-transcript">
+  <p class="content-transcript__meta">
+    {{ child.get_language_display }} · {{ child.get_kind_display }}
+    {% if child.is_unchecked %}<span class="badge-status badge-status--draft">{{ child.get_method_display }}</span>{% endif %}
+    {% if child.incomplete %}<span class="badge-status badge-status--draft">{% translate "incomplete" %}</span>{% endif %}
+  </p>
+  <div class="content-transcript__text">{{ child.text|linebreaksbr }}</div>
+</div>

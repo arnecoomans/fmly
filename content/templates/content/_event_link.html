@@ -1,0 +1,13 @@
+{% load edit_mode %}
+{% comment %}
+  One event on an item's page, as event/_event.html (what, when, who,
+  where, description). In edit mode, for someone who may change the item,
+  with its "×" (cmnsd/edit/unlink.html) - also what the link action
+  returns for a newly added event (content/actions/link.html).
+  Context: event, content, request.
+{% endcomment %}
+{% if edit_mode and content|can_edit:request %}
+  <li class="chip-edit chip-edit--row event-row">{% include 'event/_event.html' with others=event.people.all %}{% include 'cmnsd/edit/unlink.html' with model='content' owner=content relation='events' object=event %}</li>
+{% else %}
+  <li class="event-row">{% include 'event/_event.html' with others=event.people.all %}</li>
+{% endif %}

@@ -1,0 +1,11 @@
+{% load text_filters %}{% load content_tags %}
+<a class="search-hit-row" href="{{ hit.get_absolute_url }}">
+  {% if hit.file and hit.media_type == 'image' %}
+    <img class="search-hit-row__thumb" src="{{ hit|thumb_url:'avatar' }}" alt="" loading="lazy">
+  {% else %}
+    <span class="search-hit-row__thumb search-hit-row__thumb--icon"><i class="bi bi-{{ hit|kind_icon }}"></i></span>
+  {% endif %}
+  <span class="search-hit-row__name">{% highlight_search search_query %}{{ hit }}{% endhighlight_search %}</span>
+  <span class="search-hit-row__meta">{{ hit.get_kind_display }}{% if hit.year %} · {{ hit|partial_date }}{% endif %}</span>
+  {% include 'search/hits/_snippet.html' %}
+</a>

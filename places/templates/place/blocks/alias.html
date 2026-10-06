@@ -1,0 +1,10 @@
+{% comment %}
+  Another spelling or language for the same place at the same time
+  (Place.alias) - an editable block (form: PlaceAliasForm), shown even
+  when empty in edit mode.
+{% endcomment %}
+{% if place.alias %}
+  <p class="place-page__alias">{% translate "also written as" %} <strong>{{ place.alias }}</strong></p>
+{% elif edit_mode %}
+  <p class="place-page__alias"><span class="edit-block__empty">{% translate "No other spelling." %}</span></p>
+{% endif %}

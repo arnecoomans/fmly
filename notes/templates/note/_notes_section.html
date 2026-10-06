@@ -1,0 +1,13 @@
+{% load notes %}
+{% comment %}
+  "Notes" on a person's, item's or place's page: the notes linked to it
+  that this viewer may see (open work first), and "+ New note" - a draft
+  that starts linked to this page - for someone who may add notes. A
+  collapsible section (cmnsd/section.html, rendered with the page: eager).
+  Context: obj (the person, item or place), key (the section's key, e.g.
+  'person.notes'), request, perms.
+{% endcomment %}
+{% with notes=obj|visible_notes:request on=obj|note_target %}
+  {% translate "notes" as title %}
+  {% include 'cmnsd/section.html' with title=title|capfirst count=notes|length body='note/_notes_section_body.html' eager=True empty_body=perms.notes.add_note %}
+{% endwith %}

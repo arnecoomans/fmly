@@ -1,0 +1,22 @@
+{% load tags %}{% load edit_mode %}
+{% comment %}
+  Function template for Person.get_visible_events() - the Events section
+  body: the person's life as a timeline (people/timeline.py) - their own
+  events and their close family's (children's births and deaths, parents'
+  and partners' deaths) and history (historical events without people) within
+  their life, by date, each with their age then; family and history events
+  quieter, with the relation or "history". Each event as
+  event/_event.html. Rendered in the page when the section is open, or
+  through the API when it's opened. Context: `person`, `request`.
+{% endcomment %}
+<ol class="timeline">
+  {% for entry in person|life_timeline:request %}
+    <li class="timeline__entry">{% include 'event/_event.html' with event=entry.event others=entry.others relative=entry.relative relation=entry.relation age=entry.age history=entry.history %}</li>
+  {% empty %}
+    <li class="timeline__empty">{% translate "No events yet." %}</li>
+  {% endfor %}
+</ol>
+{% if edit_mode and perms.events.add_event and person|can_edit:request %}
+  {# A new event with this person in it, in a dialog - the timeline reloads. #}
+  <button type="button" class="btn btn--secondary btn--sm timeline__new" data-cmnsd-create="{% url 'cmnsd_api:object_create' 'event' %}?person={{ person.token }}" data-cmnsd-create-title="{% translate 'new event'|capfirst %}" data-cmnsd-create-then="reload"><i class="bi bi-plus-lg"></i> {% translate "add an event"|capfirst %}</button>
+{% endif %}

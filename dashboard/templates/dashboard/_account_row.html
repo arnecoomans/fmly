@@ -1,0 +1,14 @@
+{% comment %}
+  One active account (dashboard/accounts.py activity): its name - the
+  person's when linked - groups, last sign-in and last activity.
+  Context: account.
+{% endcomment %}
+<li class="account-row">
+  <span class="account-row__name">{% if account.person %}{% include 'person/functions/get_full_name.html' with person=account.person %}{% else %}{{ account.get_full_name|default:account.username }}{% endif %}
+    <span class="account-row__meta">{{ account.username }}{% for group in account.groups.all %} · {{ group.name }}{% endfor %}{% if account.is_staff %} · staff{% endif %}</span>
+  </span>
+  <span class="account-row__when">
+    {% if account.last_login %}{% blocktranslate with when=account.last_login|timesince %}signed in {{ when }} ago{% endblocktranslate %}{% else %}{% translate "never signed in" %}{% endif %}
+    {% if account.last_activity %}<br>{% blocktranslate with what=account.last_activity_kind when=account.last_activity|timesince %}last {{ what }} {{ when }} ago{% endblocktranslate %}{% endif %}
+  </span>
+</li>

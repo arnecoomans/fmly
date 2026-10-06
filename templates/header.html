@@ -1,3 +1,101 @@
-<header class="container-fluid">
-  <h1><a href="/" title="Home">{{ website_title|title }}</a></h1>
+{% comment %}
+  Shared global chrome (CSS_BRIEFING.md section 6) - one header for every
+  page, replacing the old per-page contextual bar pattern (back arrow +
+  title + inline Edit). A page's own h1 carries its title; this never does.
+
+  The search field: a plain GET form to /search/ (core.views.SearchView),
+  signed-in only like the search itself. Left out on the search page,
+  which has its own field; on a narrow screen an icon leads there instead.
+{% endcomment %}
+<header class="app-topbar">
+  <a class="app-topbar__logo" href="{% url 'dashboard:home' %}">FMLY</a>
+
+  {% include 'navigation.html' %}
+
+  {% if request.user.is_authenticated and request.resolver_match.view_name != 'core:search' %}
+    <form class="app-topbar__search" method="get" action="{% url 'core:search' %}" role="search">
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <input type="search" name="{{ search_character }}" placeholder="{% translate 'search'|capfirst %}" aria-label="{% translate 'search'|capfirst %}" autocomplete="off">
+    </form>
+    <a class="nav-link app-topbar__search-link" href="{% url 'core:search' %}" title="{% translate 'search'|capfirst %}" aria-label="{% translate 'search'|capfirst %}"><i class="bi bi-search"></i></a>
+  {% endif %}
+
+  {% if can_edit_mode %}
+    {% comment %}
+      The edit-mode switch (cmnsd/edit/mode.py): a plain form POST that
+      comes back to this page - only for users with a change permission.
+      While on, pages render their edit controls; body.is-edit-mode.
+    {% endcomment %}
+    <form class="edit-toggle" method="post" action="{% url 'cmnsd_ui:edit_mode' %}"{% if edit_mode %} data-cmnsd-unsaved="{% translate 'You have unsaved changes. Leave edit mode and lose them?' %}"{% endif %}>
+      {% csrf_token %}
+      <input type="hidden" name="on" value="{{ edit_mode|yesno:'0,1' }}">
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button type="submit" class="edit-toggle__button{% if edit_mode %} is-active{% endif %}" aria-pressed="{{ edit_mode|yesno:'true,false' }}" title="{% if edit_mode %}{% translate 'stop editing'|capfirst %}{% else %}{% translate 'edit this archive'|capfirst %}{% endif %}">
+        <i class="bi bi-pencil"></i><span class="nav-link__label">{% if edit_mode %}{% translate "editing"|capfirst %}{% else %}{% translate "edit"|capfirst %}{% endif %}</span>
+      </button>
+    </form>
+  {% endif %}
+
+
+  {% if request.user.is_authenticated %}
+    <details class="user-menu" data-cmnsd-menu>
+      <summary class="user-menu__trigger">
+        {% if request.user.person %}{{ request.user.person.initials }}{% else %}{{ request.user.username|first|upper }}{% endif %}
+      </summary>
+      <div class="user-menu__panel">
+        <div class="user-menu__name">{{ request.user.get_full_name|default:request.user.username }}</div>
+        {# You: your record and your account. #}
+        <div class="user-menu__group" role="group" aria-label="{% translate 'you'|capfirst %}">
+          {% if request.user.person %}
+            <a class="user-menu__item" href="{{ request.user.person.page_url }}"><i class="bi bi-person"></i> {% translate "my record"|capfirst %}</a>
+          {% endif %}
+          {# Name and email (cmnsd auth), and your preferences - language, who's family. #}
+          <a class="user-menu__item" href="{% url 'profile' %}"><i class="bi bi-person-gear"></i> {% translate "profile"|capfirst %}</a>
+          <a class="user-menu__item" href="{% url 'core:preferences' %}"><i class="bi bi-sliders"></i> {% translate "preferences"|capfirst %}</a>
+        </div>
+        {# Staff: maintaining the site - shown only to someone with at least one of these. #}
+        {% if request.user.is_superuser or request.user.is_staff and perms.auth.change_user or request.user.is_staff and perms.content.delete_content %}
+          <div class="user-menu__group user-menu__group--staff" role="group" aria-labelledby="user-menu-staff">
+            <div class="user-menu__heading" id="user-menu-staff">{% translate "staff"|capfirst %}</div>
+            {% if request.user.is_staff and perms.auth.change_user %}
+              {# Accounts: waiting for approval, who's active - the same check as dashboard/accounts.py may_manage_accounts. #}
+              <a class="user-menu__item" href="{% url 'dashboard:accounts' %}"><i class="bi bi-people"></i> {% translate "accounts"|capfirst %}</a>
+            {% endif %}
+            {% if request.user.is_staff and perms.content.delete_content %}
+              {# Housekeeping: storage, deleted items, duplicates - the same check as dashboard/housekeeping.py may_housekeep. #}
+              <a class="user-menu__item" href="{% url 'dashboard:housekeeping' %}"><i class="bi bi-trash3"></i> {% translate "housekeeping"|capfirst %}</a>
+            {% endif %}
+            {% if request.user.is_superuser %}
+              <a class="user-menu__item" href="{% url 'admin:index' %}"><i class="bi bi-gear"></i> {% translate "open django admin"|capfirst %}</a>
+              {% if person %}
+                <a class="user-menu__item" href="{% url 'admin:people_person_change' person.id %}"><i class="bi bi-gear"></i> {% translate "edit this person in django admin"|capfirst %}</a>
+              {% endif %}
+              {% if content %}
+                <a class="user-menu__item" href="{% url 'admin:content_content_change' content.id %}"><i class="bi bi-gear"></i> {% translate "edit this content in django admin"|capfirst %}</a>
+              {% endif %}
+              {% if tag %}
+                <a class="user-menu__item" href="{% url 'admin:core_tag_change' tag.id %}"><i class="bi bi-gear"></i> {% translate "edit this tag in django admin"|capfirst %}</a>
+              {% endif %}
+              {% if event %}
+                <a class="user-menu__item" href="{% url 'admin:events_event_change' event.id %}"><i class="bi bi-gear"></i> {% translate "edit this event in django admin"|capfirst %}</a>
+              {% endif %}
+              {% if place %}
+                <a class="user-menu__item" href="{% url 'admin:places_place_change' place.id %}"><i class="bi bi-gear"></i> {% translate "edit this place in django admin"|capfirst %}</a>
+              {% endif %}
+              {% if note %}
+                <a class="user-menu__item" href="{% url 'admin:notes_note_change' note.id %}"><i class="bi bi-gear"></i> {% translate "edit this note in django admin"|capfirst %}</a>
+              {% endif %}
+            {% endif %}
+          </div>
+        {% endif %}
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          {# Django logout requires POST, not a plain <a> - see feedback_force_login-adjacent convention already used for cmnsd logout elsewhere. #}
+          <button type="submit" class="user-menu__item user-menu__item--muted"><i class="bi bi-box-arrow-right"></i> {% translate "log out"|capfirst %}</button>
+        </form>
+      </div>
+    </details>
+  {% else %}
+    <a class="nav-link" href="{% url 'login' %}">{% translate "sign in"|capfirst %}</a>
+  {% endif %}
 </header>

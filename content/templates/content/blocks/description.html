@@ -1,0 +1,18 @@
+{% load markdown %}
+{% comment %}
+  The item's description - what you see, so it stays with the item -
+  as Markdown. An editable block (cmnsd/edit/block.html, form:
+  ContentDescriptionForm); in edit mode shown even when empty, so it can
+  be filled in.
+{% endcomment %}
+{% if content.description %}
+  <section class="content-detail__description">
+    <h2 class="section-title">{% translate "description"|capfirst %}</h2>
+    <div class="reading-copy">{{ content.description|markdown }}</div>
+  </section>
+{% elif edit_mode %}
+  <section class="content-detail__description">
+    <h2 class="section-title">{% translate "description"|capfirst %}</h2>
+    <p class="edit-block__empty">{% translate "No description yet." %}</p>
+  </section>
+{% endif %}

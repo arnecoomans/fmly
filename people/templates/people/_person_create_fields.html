@@ -1,0 +1,46 @@
+{% comment %}
+  The fields of a new person (PersonCreateForm): the names in a grid, then
+  gender, family (not asked for a relative of someone: inherited) and
+  visibility - and, for a new child, the other parent
+  (PersonCreateForm.prepare) - on /people/new/ and in the "+ new person"
+  dialog (person/forms/new.html). Under the names, while typing: people
+  already in the archive with these names (people/similar.py, asked by
+  cmnsd.js hints.js). Context: form, in_dialog (the dialog: "use this one").
+{% endcomment %}
+<div class="person-create__names">
+  {% for field in form.visible_fields %}{% if field.name in form.name_fields %}
+    <div class="edit-form__field">
+      <label for="{{ field.id_for_label }}">{{ field.label|capfirst }}</label>
+      {{ field }}
+      {% for error in field.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
+    </div>
+  {% endif %}{% endfor %}
+</div>
+{% if load_on_ready %}
+  <div class="person-create__similar" aria-live="polite"
+       data-cmnsd-hint="{% url 'people:person_similar' %}{% if in_dialog %}?dialog=1{% endif %}"
+       data-cmnsd-hint-fields="{{ form.name_fields|join:' ' }}"></div>
+{% endif %}
+{% for field in form.hidden_fields %}{{ field }}{% endfor %}
+{% if form.relative %}
+  {# A relative of someone: family as they are (PersonCreateForm._inherit_family_connection), not asked. #}
+  <p class="edit-form__help person-create__inherited"><i class="bi bi-diagram-3"></i> {% blocktranslate with connection=form.relative.get_family_connection_display name=form.relative.get_full_name %}{{ connection }}, like {{ name }}{% endblocktranslate %}</p>
+{% endif %}
+{% if form.other_parent %}
+  {# The other parent of a new child: toggle buttons, at most one pressed (cmnsd.js toggles.js); none = not set. #}
+  <div class="edit-form__field">
+    <span class="edit-form__label" id="other-parent-label">{{ form.other_parent.label|capfirst }}</span>
+    <div class="toggle-choices" role="group" aria-labelledby="other-parent-label" data-cmnsd-toggle-single>
+      {% for option in form.other_parent %}<label class="choice-btn toggle-choice">{{ option.tag }}{{ option.choice_label }}</label>{% endfor %}
+    </div>
+    <small class="edit-form__help">{% translate "Leave unpressed when the other parent is unknown." %}</small>
+    {% for error in form.other_parent.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
+  </div>
+{% endif %}
+{% for field in form.visible_fields %}{% if field.name not in form.name_fields and field.name != 'other_parent' %}
+  <div class="edit-form__field">
+    <label for="{{ field.id_for_label }}">{{ field.label|capfirst }}</label>
+    {{ field }}
+    {% for error in field.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
+  </div>
+{% endif %}{% endfor %}

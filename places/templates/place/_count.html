@@ -1,0 +1,5 @@
+{% comment %}
+  What a place holds for this viewer (places/places.py attach_counts): one
+  number, the split in its tooltip. Context: place.
+{% endcomment %}
+<span class="tag__count" title="{% blocktranslate count counter=place.content_count %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktranslate %} · {% blocktranslate count counter=place.event_count %}{{ counter }} event{% plural %}{{ counter }} events{% endblocktranslate %}">{{ place.count }}</span>

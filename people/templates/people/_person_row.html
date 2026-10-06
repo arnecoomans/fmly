@@ -1,0 +1,89 @@
+{% load design_tokens %}
+{% load text_filters %}
+{% load visibility %}
+{% load edit_mode %}
+{% comment %}
+  Cross-app contract markup (CSS_BRIEFING.md section 4) for rendering a
+  Person as a .person-row - used by people's own relationships grid and
+  the People list (section 9) today, and meant to be reused by content/
+  event templates once they need to show a linked person. Don't
+  reimplement this markup elsewhere - include this partial instead.
+
+  Context vars: `related` (Person), `role` (display label, e.g. "Parent"),
+  `derived` (bool, optional - dashed border for a computed relation like a
+  sibling, not a lesser one), `meta_with` (Person, optional - renders
+  "with {short name}" under the name, e.g. naming the one parent a
+  half-sibling shares with the viewed person; section 2). `meta_with` is
+  for naming a THIRD person the row's relationship runs through - it is
+  not a place for arbitrary text, and it is never a substitute for
+  `role`: a person's name doesn't belong in the role pill (sized for one
+  fixed word), so this exists precisely so callers aren't tempted to put
+  it there instead.
+
+  `show_visibility` (bool, optional, section 9.2) - renders this person's
+  compact `.badge-visibility` (icon-only, components.css) in the role
+  slot instead of `role` text, for a context with no relationship role to
+  show at all (the People list) rather than one row among a person's
+  Parents/Siblings/Partners/Children. Mutually exclusive with `role` -
+  pass one or the other, never both; a caller with an actual relationship
+  role keeps using `role`, this is only for a flat, role-less listing.
+
+  `search_query` (inherited, optional - set by list_context() on a list
+  page) marks the matching part of the name via {% highlight_search %},
+  so it's visible why a row matched a search. Unset elsewhere (e.g. the
+  relationships grid), where the name renders unchanged.
+
+  No {% if related.get_absolute_url %} branch here - the link lives
+  inside function/people/get_full_name.html (wraps only the name, not the
+  whole row), which already handles the private/no-detail-page case. This
+  wrapper is a plain <div>, not <a>, since it's not itself the clickable
+  element.
+
+  `portrait_here` (bool, optional - a photo's page): this photo is the
+  person's portrait - a small portrait icon after the name.
+
+  `unlink_owner` + `unlink_relation` (optional, the family view in edit
+  mode): an "×" at the end of the row that removes this relative from
+  unlink_owner (Person.remove_relative) - only for someone who may change
+  unlink_owner; the page reloads after.
+
+  Status: the row only renders if this viewer may see the person's status
+  (status_visible_to: concept for its creator and staff, revoked for
+  staff). Deleted people never get here - they're dropped from every
+  list before rendering (FamilyShorthand._drop_deleted, cmnsd
+  filter_accessible). A concept or revoked row is marked
+  (.person-row--needs-attention + a status badge): for people, concept
+  isn't a normal step, so it's something to resolve.
+{% endcomment %}
+{% if related|status_visible_to:request.user %}
+<div class="person-row{% if derived %} person-row--derived{% endif %}{% if related.needs_attention %} person-row--needs-attention{% endif %}">
+  {% include 'person/avatar.html' with person=related size='md' %}
+  <span class="person-row__body">
+    <span class="person-row__name">{% highlight_search search_query %}{% include 'person/functions/get_full_name.html' with person=related lifespan=True %}{% endhighlight_search %}{% if portrait_here %} <i class="bi bi-person-bounding-box person-row__portrait" title="{% translate 'Their portrait is from this photo' %}" aria-label="{% translate 'Their portrait is from this photo' %}"></i>{% endif %}</span>
+    {% if meta_with and meta_with|status_visible_to:request.user %}
+      <span class="person-row__meta">{% translate "with"|capfirst %} {% include 'person/functions/get_short_name.html' with person=meta_with %}</span>
+    {% endif %}
+    {% if related.needs_attention %}
+      <span class="person-row__meta"><span class="badge-status badge-status--draft">{{ related.get_status_display }} · {% translate "not published" %}</span></span>
+    {% endif %}
+  </span>
+  {% if show_visibility and request.user.is_staff %}
+    <span class="badge-visibility badge-visibility--{{ related.get_visibility_display|lower }}" title="{{ related.get_visibility_display }}">
+      {% if related.is_private %}
+        <i class="bi bi-lock-fill"></i>
+      {% elif related.is_family %}
+        <i class="bi bi-people-fill"></i>
+      {% elif related.is_community %}
+        <i class="bi bi-diagram-3-fill"></i>
+      {% else %}
+        <i class="bi bi-globe"></i>
+      {% endif %}
+    </span>
+  {% elif role %}
+    <span class="person-row__role">{{ role }}</span>
+  {% endif %}
+  {% if unlink_owner and edit_mode and unlink_owner|can_edit:request %}
+    {% include 'cmnsd/edit/unlink.html' with model='person' owner=unlink_owner relation=unlink_relation object=related action='remove_relative' insert='reload' %}
+  {% endif %}
+</div>
+{% endif %}

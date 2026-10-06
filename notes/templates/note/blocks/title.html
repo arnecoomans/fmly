@@ -1,0 +1,5 @@
+{% comment %}
+  The note's title - or, without one, its first line (Note.__str__). An
+  editable block (form: NoteTitleForm).
+{% endcomment %}
+<h1 class="tag-page__name note-page__title{% if not note.title %} note-page__title--untitled{% endif %}">{{ note }}</h1>

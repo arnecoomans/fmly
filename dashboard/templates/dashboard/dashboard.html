@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load content_tags %}{% load dashboard %}{% load markdown %}{% load viewer_name %}
+{% comment %}
+  The dashboard (dashboard.views.DashboardView): where you land. Left, for
+  everyone: on this day, recently added, the conversation, one item from the
+  archive. Right: your work (the inbox with a dropzone, open notes) and the
+  loose ends - for someone who edits - then your own record and the archive
+  in numbers. Each block only what this viewer may see; an empty block
+  isn't shown.
+{% endcomment %}
+
+{% block title %}{% translate "dashboard"|capfirst %}{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+  <header class="dashboard__header">
+    <h1 class="dashboard__title">{% if request.user.is_authenticated %}{% blocktranslate with name=request.user.first_name|default:request.user.username %}Welcome, {{ name }}{% endblocktranslate %}{% else %}{% translate "family archive"|capfirst %}{% endif %}</h1>
+  </header>
+
+  {% if not request.user.is_authenticated %}
+    {# Signed out: nothing advertised - a way in. #}
+    <section class="dashboard__guest">
+      <p>{% translate "Photos, documents and the stories of the family - for family members." %}</p>
+      <p class="dashboard__guest-actions">
+        <a class="btn btn--primary btn--sm" href="{% url 'login' %}?next=/">{% translate "sign in"|capfirst %}</a>
+        <a class="btn btn--secondary btn--sm" href="{% url 'register' %}">{% translate "request an account"|capfirst %}</a>
+      </p>
+      {% if approval %}<p class="dashboard__guest-note">{% translate "A new account is checked before it can be used." %}</p>{% endif %}
+    </section>
+  {% else %}
+
+  <div class="dashboard__columns">
+    <div class="dashboard__main">
+      {% if anniversaries or request.user.is_authenticated %}
+        <section class="dashboard__block">
+          <h2 class="section-title">{{ anniversaries_label|capfirst }} <a class="dashboard__more" href="{% url 'events:calendar' %}#day-{% now 'j' %}">{% translate "calendar" %} →</a></h2>
+          {% if not anniversaries %}<p class="timeline__empty">{% translate "Nothing on this day or in the coming week." %}</p>{% endif %}
+          <ol class="events-page__list">
+            {% for event in anniversaries %}
+              <li class="event-row dashboard__anniversary">{% include 'event/_event.html' with others=event.people.all %}<span class="dashboard__years-ago">{{ event|years_ago }}</span></li>
+            {% endfor %}
+          </ol>
+        </section>
+      {% endif %}
+
+      {% if recent %}
+        <section class="dashboard__block">
+          <h2 class="section-title">{% translate "recently added"|capfirst %} <a class="dashboard__more" href="{% url 'content:list' %}">{% translate "all content" %} →</a></h2>
+          <div class="dashboard__thumbs dashboard__thumbs--recent">
+            {% for item in recent %}
+              <a class="dashboard__thumb" href="{{ item.get_absolute_url }}" title="{{ item }}">
+                {% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}
+                <span class="dashboard__thumb-name">{{ item }}</span>
+              </a>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+      {% if comments %}
+        <section class="dashboard__block">
+          <h2 class="section-title">{% translate "conversation"|capfirst %} <a class="dashboard__more" href="{% url 'core:comment_list' %}">{% translate "all comments" %} →</a></h2>
+          <ul class="dashboard__comments">
+            {% for comment in comments %}
+              <li class="dashboard__comment">
+                <span class="dashboard__comment-meta">{% if comment.user.person %}{% include 'person/functions/get_short_name.html' with person=comment.user.person %}{% else %}{{ comment.user.username }}{% endif %} · <a href="{{ comment.target.get_absolute_url }}">{{ comment.target|viewer_name:request }}</a> · {{ comment.date_created|date:"j M" }}</span>
+                <span class="dashboard__comment-text">{{ comment.content|markdown|striptags|truncatewords:30 }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </section>
+      {% endif %}
+
+      {% if random_item %}
+        <section class="dashboard__block dashboard__random" id="from-the-archive">
+          {% include 'dashboard/_random.html' %}
+        </section>
+      {% endif %}
+    </div>
+
+    <aside class="dashboard__side">
+      {% if work.inbox %}
+        <section class="dashboard__block">
+          <h2 class="section-title">{% translate "your inbox"|capfirst %} <span class="tag__count" id="dashboard-inbox-count">{{ work.inbox.count }}</span> <a class="dashboard__more" href="{% url 'content:inbox' %}">{% translate "open" %} →</a></h2>
+          {% if others_drafts %}<p class="dashboard__others-drafts"><a href="{% url 'content:inbox' %}#others-drafts"><i class="bi bi-hourglass-split"></i> {% blocktranslate count counter=others_drafts %}{{ counter }} draft by others{% plural %}{{ counter }} drafts by others{% endblocktranslate %}</a></p>{% endif %}
+          {# The latest drafts - a new upload joins at the front (cmnsd.js upload.js data-upload-thumbs). #}
+          <div class="dashboard__drafts" id="dashboard-drafts"{% if not work.inbox.latest %} hidden{% endif %}>{% for item in work.inbox.latest %}<a href="{{ item.get_absolute_url }}" title="{{ item }}">{% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'avatar' }}" alt="{{ item }}" loading="lazy">{% else %}<i class="bi bi-{{ item|kind_icon }}"></i>{% endif %}</a>{% endfor %}</div>
+          <div class="dropzone dropzone--compact" data-cmnsd-upload="{% url 'content:upload_file' %}" data-upload-count="#dashboard-inbox-count" data-upload-thumbs="#dashboard-drafts" data-upload-thumbs-max="5"
+               data-text-sending="{% translate 'Sending…' %}" data-text-added="{% translate 'Added' %}"
+               data-text-duplicate="{% translate 'Already in the archive:' %}"
+               data-text-duplicate-deleted="{% translate 'Already in the archive (deleted).' %}"
+               data-text-too-large="{% translate 'Too large for the server.' %}" data-text-failed="{% translate 'Not added' %}">
+            <p class="dropzone__text"><i class="bi bi-cloud-arrow-up"></i> {% translate "Drop files here, or" %}
+              <label class="dropzone__choose">{% translate "choose files" %}<input type="file" multiple data-upload-input accept="image/*,application/pdf,audio/*,video/*"></label></p>
+            <ul class="upload-list upload-list--compact" data-upload-list></ul>
+          </div>
+        </section>
+      {% endif %}
+
+      {% if work.notes %}
+        <section class="dashboard__block">
+          <h2 class="section-title">{% translate "your open notes"|capfirst %} <a class="dashboard__more" href="{% url 'notes:list' %}">{% translate "notes" %} →</a></h2>
+          <ul class="note-list note-list--compact">{% for note in work.notes %}{% include 'note/_note_row.html' %}{% endfor %}</ul>
+        </section>
+      {% endif %}
+
+      {% if loose_ends %}
+        <section class="dashboard__block">
+          <h2 class="section-title">{% translate "loose ends"|capfirst %}</h2>
+          <ul class="dashboard__loose-ends">
+            {% for name, label, count in loose_ends %}
+              <li><a href="{% url 'dashboard:loose_end' name %}"><span class="tag__count">{{ count }}</span> {{ label }}</a></li>
+            {% endfor %}
+          </ul>
+        </section>
+      {% endif %}
+
+      {% if accounts %}
+        {# Staff: accounts waiting for approval, and who was active last (dashboard/accounts.py). #}
+        <section class="dashboard__block">
+          <h2 class="section-title">{% translate "accounts"|capfirst %}{% if accounts.waiting %} <span class="tag__count">{{ accounts.waiting|length }} {% translate "waiting" %}</span>{% endif %} <a class="dashboard__more" href="{% url 'dashboard:accounts' %}">{% translate "all" %} →</a></h2>
+          {% if accounts.waiting %}<p class="dashboard__accounts-waiting"><i class="bi bi-person-exclamation"></i> {% for account in accounts.waiting %}{% if not forloop.first %}, {% endif %}{{ account.get_full_name|default:account.username }}{% endfor %} - <a href="{% url 'dashboard:accounts' %}">{% translate "approve or decline" %}</a></p>{% endif %}
+          <ul class="account-list account-list--compact">{% for account in accounts.active %}{% include 'dashboard/_account_row.html' %}{% endfor %}</ul>
+        </section>
+      {% endif %}
+
+      {% if you %}
+        <section class="dashboard__block">
+          <h2 class="section-title">{% translate "you in the archive"|capfirst %}</h2>
+          <p class="dashboard__you">
+            {% include 'person/avatar.html' with person=you.person size='md' %}
+            <span><a href="{{ you.person.page_url }}">{% translate "your record" %}</a><br>
+            {% blocktranslate count counter=you.content %}in {{ counter }} item{% plural %}in {{ counter }} items{% endblocktranslate %}</span>
+          </p>
+        </section>
+      {% endif %}
+
+      <section class="dashboard__block">
+        <h2 class="section-title">{% translate "the archive"|capfirst %}</h2>
+        <ul class="dashboard__numbers">
+          <li><a href="{% url 'people:person_list' %}"><strong>{{ numbers.people }}</strong> {% translate "people" %}</a></li>
+          <li><a href="{% url 'content:list' %}"><strong>{{ numbers.content }}</strong> {% translate "items" %}</a></li>
+          <li><a href="{% url 'events:list' %}?kind=all"><strong>{{ numbers.events }}</strong> {% translate "events" %}</a></li>
+          <li><a href="{% url 'places:list' %}"><strong>{{ numbers.places }}</strong> {% translate "places" %}</a></li>
+          <li><a href="{% url 'core:comment_list' %}"><strong>{{ numbers.comments }}</strong> {% translate "comments" %}</a></li>
+          <li><a href="{% url 'notes:list' %}"><strong>{{ numbers.notes }}</strong> {% translate "notes" %}</a></li>
+          <li><a href="{% url 'core:tag_list' %}"><strong>{{ numbers.tags }}</strong> {% translate "tags" %}</a></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

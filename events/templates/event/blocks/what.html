@@ -1,0 +1,7 @@
+{% comment %}
+  What the event is - its title, own label or kind (Event.label) with its
+  symbol, and the kind when a title names it. An editable block (form:
+  EventWhatForm).
+{% endcomment %}
+<h1 class="tag-page__name event-page__what"><span class="event__symbol" aria-hidden="true">{% include 'event/_symbol.html' %}</span>{{ event.label }}</h1>
+{% if event.title or event.kind_freetext %}<p class="event-page__kind">{{ event.get_kind_display|capfirst }}</p>{% endif %}

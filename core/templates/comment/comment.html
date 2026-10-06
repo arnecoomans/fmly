@@ -1,0 +1,52 @@
+{% load markdown %}
+{% comment %}
+  One comment (core.Comment) as a .comment-row. Rendered in the thread
+  (comment/comments.html) and returned by the API after an action
+  (add/edit/hide), so the JS can put it in place - one template for both.
+
+  Controls, signed-in only: the author edits (inline form) and deletes;
+  staff hide/unhide. The actions check this again server-side
+  (core.models.Comment) - these buttons are only the UI.
+  Context: `comment`, `request`.
+{% endcomment %}
+{% with author=comment.user.person %}
+<article class="comment-row{% if comment.status == 'r' %} comment-row--hidden{% endif %}" id="comment-{{ comment.token }}">
+  {% if author %}
+    {% include 'person/avatar.html' with person=author size='sm' %}
+  {% else %}
+    <span class="avatar avatar--sm avatar--tone-stone">{{ comment.user.username|first|upper }}</span>
+  {% endif %}
+  <div class="comment-row__body">
+    <div class="comment-row__meta">
+      <span class="comment-row__author">{% if author %}{% include 'person/functions/get_short_name.html' with person=author %}{% else %}{{ comment.user.username }}{% endif %}</span>
+      <time class="comment-row__timestamp" datetime="{{ comment.date_created|date:'c' }}">{{ comment.date_created|date:"j M Y, H:i" }}{% if comment.is_edited %} · {% translate "edited" %}{% endif %}</time>
+      {% if comment.status == 'r' %}<span class="badge-status badge-status--draft">{% translate "hidden" %}</span>{% endif %}
+    </div>
+    <div class="comment-row__text">{{ comment.content|markdown }}</div>
+
+    {% if request.user.is_authenticated %}
+      {% if request.user.pk == comment.user_id or request.user.is_staff %}
+        <div class="comment-row__controls">
+          {% if request.user.pk == comment.user_id %}
+            <details class="comment-row__edit">
+              <summary>{% translate "edit" %}</summary>
+              <form class="comment-form" data-cmnsd-action="edit_comment" data-model="comment" data-object-token="{{ comment.token }}"
+                    data-cmnsd-target="closest:.comment-row" data-cmnsd-insert="replace">
+                <textarea name="content" rows="3" required maxlength="5000">{{ comment.content }}</textarea>
+                <p class="comment-form__error" data-cmnsd-error hidden></p>
+                <button class="btn" type="submit">{% translate "save"|capfirst %}</button>
+              </form>
+            </details>
+            <button type="button" class="comment-row__control" data-cmnsd-action="delete_comment" data-model="comment" data-object-token="{{ comment.token }}"
+                    data-cmnsd-target="closest:.comment-row" data-cmnsd-insert="remove" data-cmnsd-confirm="{% translate 'Delete this comment?' %}">{% translate "delete" %}</button>
+          {% endif %}
+          {% if request.user.is_staff %}
+            <button type="button" class="comment-row__control" data-cmnsd-action="toggle_hidden" data-model="comment" data-object-token="{{ comment.token }}"
+                    data-cmnsd-target="closest:.comment-row" data-cmnsd-insert="replace">{% if comment.status == 'r' %}{% translate "unhide" %}{% else %}{% translate "hide" %}{% endif %}</button>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</article>
+{% endwith %}

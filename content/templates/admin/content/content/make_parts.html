@@ -1,0 +1,30 @@
+{% extends "admin/base_site.html" %}
+{% load content_tags %}
+{% comment %}
+  Confirmation page of the "Make parts of…" admin action (ContentAdmin):
+  choose which selected item is the whole; the others become its parts,
+  numbered 1, 2, ... in this order.
+{% endcomment %}
+{% block content %}
+<form method="post">{% csrf_token %}
+  <p>Which of these is the whole? The others become its parts, numbered in this order. Afterwards you can change the numbers on the whole's page: <strong>0</strong> makes a part a variant of the whole (e.g. a colorized version), the same number twice makes two parts variants of each other.</p>
+  <table>
+    <thead><tr><th>Whole</th><th></th><th>Item</th><th>Kind</th><th>Part of now</th></tr></thead>
+    <tbody>
+      {% for item in items %}
+        <tr>
+          <td><input type="radio" name="lead" value="{{ item.pk }}" id="lead-{{ item.pk }}"{% if forloop.first %} checked{% endif %}></td>
+          <td>{% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'avatar' }}" alt="" width="48" height="48" style="object-fit:cover;border-radius:4px">{% endif %}</td>
+          <td><label for="lead-{{ item.pk }}">{{ item }}</label></td>
+          <td>{{ item.get_kind_display }}</td>
+          <td>{{ item.parent|default:"—" }}</td>
+        </tr>
+        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ item.pk }}">
+      {% endfor %}
+    </tbody>
+  </table>
+  <input type="hidden" name="action" value="make_parts">
+  <input type="hidden" name="apply" value="1">
+  <p><input type="submit" value="Make parts"> <a href="">Cancel</a></p>
+</form>
+{% endblock %}

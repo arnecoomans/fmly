@@ -1,0 +1,20 @@
+{% load text_filters %}
+{% comment %}
+  Tag picker results (GET api/tag/?q=...&format=picker - cmnsd.js
+  picker.js): the first 20 tags this viewer may see, with their parent.
+  data-picker-name lets the picker tell an exact match from a partial one
+  (no "create" offer when the tag exists). Context: tag_list.
+{% endcomment %}
+{% with shown=tag_list|slice:":20" %}
+  {% if shown %}
+    <ul class="picker-results">
+      {% for tag in shown %}
+        <li data-picker-row>
+          <button type="button" class="picker-result picker-result--plain" data-picker-choose="{{ tag.token }}" data-picker-name="{{ tag.name }}">
+            <span class="picker-result__name"><i class="bi bi-tag"></i> {% highlight_search search_query %}{% if tag.parent %}{{ tag.parent.name }}: {% endif %}{{ tag.name }}{% endhighlight_search %}</span>
+          </button>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}

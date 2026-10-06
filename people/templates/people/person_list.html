@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}{% translate "people"|capfirst %}{% endblock %}
+
+{% block template_css %}
+<link rel="stylesheet" href="{% static 'css/fmly/person.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="person-list">
+  {% comment %}
+    A plain GET form, so search works without JS (reloads /people/?q=...).
+    With load_on_ready on, cmnsd.js (list.js) takes over: it calls
+    api/person/ with the same query string while typing, swaps the
+    #person-list-results content and updates the URL.
+  {% endcomment %}
+  <header class="person-list__header">
+    <h1 class="person-list__title">{% translate "people"|capfirst %}</h1>
+    {% if perms.people.add_person %}<a class="btn btn--secondary btn--sm person-list__add" href="{% url 'people:person_create' %}"><i class="bi bi-person-plus"></i> {% translate "add person"|capfirst %}</a>{% endif %}
+    <form class="person-list-search" method="get" action="{% url 'people:person_list' %}" role="search"
+          {% if load_on_ready %}data-cmnsd-list="person" data-cmnsd-target="#person-list-results"{% endif %}>
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <input type="search" name="{{ search_character }}" value="{{ search_query }}"
+             placeholder="{% translate 'search by name'|capfirst %}"
+             aria-label="{% translate 'search by name'|capfirst %}" autocomplete="off">
+      {# Live search sends this too, so it searches within the active filter. #}
+      <input type="hidden" name="family_connection" value="{{ active_connection }}">
+    </form>
+  </header>
+
+  {# Who's listed: family by default; outsiders are people relevant to the archive but not related. #}
+  <nav class="person-list-connections" aria-label="{% translate 'show'|capfirst %}">
+    {% for value, label in connection_filters %}
+      <a class="person-list-connection{% if value == active_connection %} is-active{% endif %}"
+         href="?family_connection={{ value }}{% if search_query %}&amp;{{ search_character }}={{ search_query|urlencode }}{% endif %}"
+         {% if value == active_connection %}aria-current="page"{% endif %}>{{ label|capfirst }}</a>
+    {% endfor %}
+  </nav>
+
+  <div id="person-list-results">
+    {% include 'person/person_list.html' %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% load content_tags %}
+{% load text_filters %}
+{% comment %}
+  The whole group an item belongs to (ContentDetailView's `group`): the
+  whole (0), its variants (0) and its parts (1, 2, ...), as small
+  numbered thumbnails - the number is the order; the name is in the
+  tooltip/alt. The item whose page this is is marked. On the whole's page
+  an image shows in the main image when clicked (cmnsd.js gallery.js,
+  data-gallery-show); otherwise - and without JS - it links to its page.
+  In edit mode the parts editor follows (content/_parts_edit.html).
+  Context: `group`, `gallery_index`, `content`, `edit_parts`.
+{% endcomment %}
+<div class="content-detail__parts-grid">
+  {% for part in group %}
+    <a class="content-part{% if part.pk == content.pk %} is-current{% endif %}" href="{{ part.get_absolute_url }}" title="{{ part }}"{% if part.pk == content.pk %} aria-current="page"{% endif %}{% if part.token in gallery_index %} data-gallery-show="{{ gallery_index|get_item:part.token }}"{% endif %}>
+      <span class="content-part__position">{{ part.position }}</span>
+      {% if part.file and part.media_type == 'image' %}
+        <img src="{{ part|thumb_url:'avatar' }}" alt="{{ part }}" loading="lazy">
+      {% else %}
+        <span class="content-part__icon" aria-label="{{ part }}"><i class="bi bi-file-earmark"></i></span>
+      {% endif %}
+    </a>
+  {% endfor %}
+</div>
+{% if edit_parts %}{% include 'content/_parts_edit.html' %}{% endif %}

@@ -1,0 +1,10 @@
+{% comment %}
+  "+ New note" (notes.views.note_create): a private draft, opened in edit
+  mode to write. `on` (optional, "person:<token>"): what the note starts
+  linked to - the page it's started from.
+{% endcomment %}
+<form class="note-new" method="post" action="{% url 'notes:create' %}">
+  {% csrf_token %}
+  {% if on %}<input type="hidden" name="on" value="{{ on }}">{% endif %}
+  <button type="submit" class="btn btn--secondary btn--sm"><i class="bi bi-plus-lg"></i> {% translate "new note"|capfirst %}</button>
+</form>

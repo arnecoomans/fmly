@@ -1,0 +1,11 @@
+{% load edit_mode %}
+{% comment %}
+  A person in an event, on its page (people/_person_row.html - obfuscated
+  for a viewer who may not see them); in edit mode with its "×". Also what
+  the link action returns (event/actions/link.html). Context: person, event, request.
+{% endcomment %}
+{% if edit_mode and event|can_edit:request %}
+  <div class="chip-edit chip-edit--row">{% include 'people/_person_row.html' with related=person %}{% include 'cmnsd/edit/unlink.html' with model='event' owner=event relation='people' object=person %}</div>
+{% else %}
+  {% include 'people/_person_row.html' with related=person %}
+{% endif %}

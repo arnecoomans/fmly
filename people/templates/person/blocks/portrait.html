@@ -1,0 +1,6 @@
+{% comment %}
+  The person's avatar - an editable block when they have a portrait this
+  viewer may see (person_detail.html): the pencil opens the crop in a
+  dialog (form: PersonPortraitForm, person/forms/portrait.html).
+{% endcomment %}
+{% include 'person/avatar.html' with person=person size='xl' %}

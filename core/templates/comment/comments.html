@@ -1,0 +1,15 @@
+{% load comments %}
+{% comment %}
+  A comment section with its heading, for pages without collapsible
+  sections (the content page): comment/thread.html under "Comments".
+  Hidden entirely for a signed-out visitor when there's nothing (public)
+  to read. Context: `target`, `model`, `request`.
+{% endcomment %}
+{% with comments=target|visible_comments:request %}
+{% if comments or request.user.is_authenticated %}
+  <section class="comments" id="comments">
+    <h2 class="section-title">{% translate "comments"|capfirst %}</h2>
+    {% include 'comment/thread.html' %}
+  </section>
+{% endif %}
+{% endwith %}

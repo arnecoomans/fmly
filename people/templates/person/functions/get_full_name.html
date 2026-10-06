@@ -1,0 +1,82 @@
+{% load tags %}{% load text_filters %}
+{% load visibility %}
+{% comment %}
+  Rendered form of Person.get_full_name() - the function-template
+  convention: an app-level template at function/<app>/<method_name>.html,
+  used both directly ({% include %} with person=person) and, once the
+  cmnsd API exists, served by it for the same field, so there is exactly
+  one place this rendering logic lives.
+
+  Mirrors get_full_name()'s own branches exactly (see Person.py), except
+  called_name is highlighted within given_name instead of shown as a
+  separate token, and the whole thing links to the person's page when this
+  viewer may open it (person_url: a private person only for themself and
+  their parents - people/privacy.py).
+
+  Gated on visible_to(request.user) first - a person can be linkable
+  yet still not visible to THIS viewer (e.g.
+  Eric is public and links to his own page, but his community-visibility
+  relatives shouldn't show their real name or a link to an anonymous
+  visitor just because they appear in a row on Eric's page). When hidden,
+  render an obfuscated name instead, and never a link.
+
+  Context: `person` (Person instance). Optional `lifespan` (bool, default
+  falsy) - when true, appends "(birth_year-death_year)" after the name,
+  e.g. {% include '...get_full_name.html' with person=parent lifespan=True %}.
+  Only shown in the visible branch, never alongside the obfuscated
+  fallback - an exact birth year is itself an identifying detail, not
+  something to leak just because the name next to it was hidden.
+
+  The API is expected to also supply
+  `object`/`field` when invoking this generically - not used here since
+  this template is dedicated to one specific field already. `request` is
+  expected too (already in scope via the request context processor for a
+  normal page render; a future API render with no full request needs to
+  supply at least `request.user`, or None - visible_to()/is_visible_to()
+  both tolerate that).
+{% endcomment %}
+{% if person|visible_to:request.user %}
+  {# The link per viewer (person_url): a private person's page only for themself, their parents and staff. #}
+  {% with url=person|person_url:request %}
+  {% if url and not person.is_private and not suppress_link %}<a href="{{ url }}">{% endif %}
+    {% if person.given_name or person.last_name or person.married_name or person.called_name or person.nickname %}
+      {% if person.given_name %}{{ person.given_name|highlight:person.called_name }}{% endif %}
+      {% if person.called_name not in person.given_name %}
+        (<mark>{{ person.called_name }}</mark>)
+      {% endif %}
+      {% if person.nickname %}({{ person.nickname }}){% endif %}
+      {% if person.married_name %}
+        <span class="person-name__married">{{ person.married_name }}</span>
+        {% if person.last_name %}({% translate "née" %} <span class="person-name__last">{{ person.last_name }}</span>){% endif %}
+      {% elif person.last_name %}
+        <span class="person-name__last">{{ person.last_name }}</span>
+      {% endif %}
+      {% if not person.given_name and not person.nickname and not person.married_name and not person.last_name %}
+        {{ person.called_name }}
+      {% endif %}
+    {% else %}
+      {% translate "person" %} {{ person.pk }} ({{ person.get_gender_display|lower }})
+    {% endif %}
+  {# Same condition as the opening <a> above - otherwise a stray </a> closes whatever link surrounds this name. #}
+  {% if url and not person.is_private and not suppress_link %}</a>{% endif %}
+  {% endwith %}
+  {% if lifespan %}
+    {# year_display: the year with its date qualifier - "(ca. 1880–after 1918)". #}
+    {% with birth=person.birth death=person.death %}
+    {% with birth_year=birth.year_display death_year=death.year_display %}
+      {% if birth_year or death %}
+        <span class="person-lifespan">
+          {% if birth_year and death_year %}({{ birth_year }}–{{ death_year }})
+          {% elif birth_year and death %}({{ birth_year }}–&dagger;)
+          {% elif birth_year %}({{ birth_year }})
+          {% elif death_year %}(*-{{ death_year }})
+          {% elif death %}(*-&dagger;)
+          {% endif %}
+        </span>
+      {% endif %}
+    {% endwith %}
+    {% endwith %}
+  {% endif %}
+{% else %}
+  {{ person.get_full_name|obfuscate_name }}
+{% endif %}

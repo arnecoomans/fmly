@@ -1,0 +1,29 @@
+{% load visibility %}{% load edit_mode %}
+{% comment %}
+  The person's children, grouped by the other parent. In edit mode, for
+  someone who may change the person: each row with its "×", and a picker
+  to add a child - the group shows even without children then.
+{% endcomment %}
+{% with children_groups=person.get_children editing=edit_mode %}
+  {% if children_groups or editing and person|can_edit:request %}
+    <h3 class="section-title">{% translate "children"|capfirst %}</h3>
+    <div class="person-children">
+      {% for group in children_groups %}
+        <div>
+          {% if group.parent and group.parent|status_visible_to:request.user %}
+            <span class="person-children__group-label">{% translate "with"|capfirst %} {% include 'person/functions/get_short_name.html' with person=group.parent %}</span>
+          {% else %}
+            <span class="person-children__group-label person-children__group-label--unknown">{% translate "other parent not recorded"|capfirst %}</span>
+          {% endif %}
+          <div class="person-children__group-list">
+            {% for child in group.children %}
+              {% include 'people/_person_row.html' with related=child role="Child" unlink_owner=person unlink_relation='child' %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% translate "add a child" as add_label %}
+    {% include 'person/_relative_picker.html' with kind='child' %}
+  {% endif %}
+{% endwith %}

@@ -1,0 +1,23 @@
+{% load text_filters %}
+{% comment %}
+  Place picker results (GET api/place/?q=...&format=picker - cmnsd.js
+  picker.js): the first 20 places, each with its parents ("New York (state)
+  · U.S.A.") and alias, so two places with the same name can be told
+  apart. The search term marked (mark.search-hit). data-picker-name: the
+  place's own name, for the exact-match check. Context: place_list,
+  search_query.
+{% endcomment %}
+{% with shown=place_list|slice:":20" %}
+  {% if shown %}
+    <ul class="picker-results">
+      {% for place in shown %}
+        <li data-picker-row>
+          <button type="button" class="picker-result picker-result--plain" data-picker-choose="{{ place.token }}" data-picker-name="{{ place.name }}">
+            <span class="picker-result__name"><i class="bi bi-geo-alt"></i> {% highlight_search search_query %}{{ place.name }}{% if place.alias %} ({{ place.alias }}){% endif %}{% endhighlight_search %}</span>
+            {% if place.parent %}<span class="picker-result__meta">{% for ancestor in place.ancestors|slice:":-1" reversed %}{% if not forloop.first %} · {% endif %}{{ ancestor.name }}{% endfor %}</span>{% endif %}
+          </button>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
