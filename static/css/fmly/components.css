@@ -1064,6 +1064,11 @@ button.user-menu__item:hover { background: var(--color-surface-alt); }
 .tag-page__description p { margin: 0 0 var(--space-2); }
 .tag-page__counts { margin: 0; font-size: var(--text-sm); color: var(--color-ink-3); }
 .tag-page__section { margin-bottom: var(--space-8); }
+/* The shared sections on a tag-page (event, place): Notes (cmnsd/section.html)
+   and Comments - spaced like a .tag-page__section, as the person and content
+   pages' columns space them with their gap. */
+.tag-page > .page-section,
+.tag-page > .comments { margin-bottom: var(--space-8); }
 .tag-overview__group { margin-bottom: var(--space-6); }
 .tag-overview__heading { display: flex; align-items: baseline; gap: var(--space-2); }
 .tag-overview__heading a { color: inherit; text-decoration: none; }
