@@ -221,7 +221,7 @@ CMNSD_DEBUG_PRETTIFY = env.bool('CMNSD_DEBUG_PRETTIFY', default=False)
 # cmnsd.js deferred loading: placeholders marked data-load-on-ready are
 # filled by the API after page load. Set to False to render those fields
 # server-side in the page request instead - a kill switch for when
-# cmnsd.js is broken. See cmnsd/docs/js.md.
+# cmnsd.js is broken. See cmnsd/documentation/javascript/loading.md.
 CMNSD_LOAD_ON_READY = env.bool('CMNSD_LOAD_ON_READY', default=True)
 # cmnsd.api has a search character to enable freetext search in all
 # text fields. Set to None to disable freetext search entirely, or to a
@@ -234,6 +234,21 @@ CMNSD_SEARCH_CHARACTER = env('CMNSD_SEARCH_CHARACTER', default='q')
 # message never gets seen (it'd only show on the next page load, and
 # without a redirect this render IS the response).
 LOGOUT_REDIRECT_URL = '/'
+
+# Logging
+# Without this, a 500 with DEBUG=False is only mailed to ADMINS (none set) -
+# it leaves no trace. Warnings and errors, with their traceback, go to
+# stderr: supervisord writes them to the gunicorn log, runserver to the
+# terminal. cmnsd logs sign-ins and failed sign-ins at INFO.
+LOGGING = {
+  'version': 1,
+  'disable_existing_loggers': False,
+  'handlers': {'console': {'class': 'logging.StreamHandler'}},
+  'loggers': {
+    'django': {'handlers': ['console'], 'level': 'WARNING'},
+    'cmnsd': {'handlers': ['console'], 'level': 'INFO'},
+  },
+}
 
 # Debug toolbar
 # Only add the debug toolbar if DEBUG is True, 

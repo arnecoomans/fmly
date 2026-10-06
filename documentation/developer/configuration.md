@@ -37,10 +37,30 @@ A copy of this file is in `.env.example`.
 | `SECRET_KEY` | - (required) | Django's signing key |
 | `DEBUG` | - (required) | `False` in production: hashed static file names, no debug toolbar |
 | `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` | empty | The site's host name, and its `https://` origin |
-| `DATABASE_URL` | `db.sqlite3` in the project | Any database django-environ understands |
+| `DATABASE_URL` | `db.sqlite3` in the project | Any database django-environ understands; PostgreSQL: `postgres://fmly:<password>@localhost:5432/fmly` (a password of letters, digits, `-` and `_` only - see below) |
 | `SENDFILE_BACKEND` | `simple` (Django sends files itself) | `nginx` in production |
 | `CMNSD_REGISTRATION_REQUIRES_APPROVAL` | `False` | `True`: registered accounts stay inactive until approved |
 | `REGISTER_DEFAULT_GROUPS` | `Visitors` | The groups a new account joins (Visitors may comment) |
 | `SITE_NAME`, `META_DESCRIPTION` | "A Family Archive" | Shown in titles and pages |
 | `DEFAULT_FROM_EMAIL`, `REGISTRATION_NOTIFY_EMAIL` | - | Sender address; who hears of a new registration |
 | `CMNSD_LOAD_ON_READY` | `True` | `False` switches off the JavaScript enhancements (a kill switch) |
+
+## PostgreSQL
+
+The driver (`psycopg`) is in `requirements.txt`. A user and a database it owns - owner, so `migrate` may create tables:
+
+```sh
+sudo -u postgres createuser --pwprompt fmly
+sudo -u postgres createdb --owner=fmly fmly
+```
+
+The password goes into `DATABASE_URL`, where `@ : / # %` would break the address. Generate one without them:
+
+```sh
+python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+## Errors and logs
+
+`LOGGING` in `fmly/settings.py` sends Django's warnings and errors - a 500 with its traceback - to stderr: under supervisord into the gunicorn log, with `runserver` into the terminal. cmnsd adds sign-ins and failed sign-ins. With `DEBUG=False` there's nowhere else a 500 shows up: no error emails are set up.
+
