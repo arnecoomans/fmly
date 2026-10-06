@@ -8,6 +8,7 @@ pip >= 26.1
 Pillow >= 12.1.1
 gunicorn >= 25.1.0
 django-environ >= 0.13.0
+psycopg[binary] >= 3.2
 
 # Dateutil
 python-dateutil >= 2.9.0
