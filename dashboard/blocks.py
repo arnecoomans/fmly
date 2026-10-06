@@ -99,6 +99,7 @@ LOOSE_ENDS = {
   'open-transcripts': _("transcripts to finish or check"),
   'no-transcript': _("documents without a transcript"),
   'low-resolution': _("images in low resolution"),
+  'books-without-author': _("books without a linked author"),
 }
 
 # Below this many pixels an image is a loose end: a better scan or original
@@ -163,6 +164,16 @@ def _loose_end_queryset(name, request):
     return events.filter(year__isnull=True)
   if name == 'other-events':
     return events.filter(kind='other', title='')
+  if name == 'books-without-author':
+    # No author linked as a person (BookContent.authors) - those with the
+    # author as written on the book first: one search away from linking.
+    has_text = models.Q(book_detail__author='')
+    return (
+      Content.objects.visible_to(request).listable().filter(kind=Content.Kind.BOOK, book_detail__authors__isnull=True)
+      .select_related('book_detail')
+      .annotate(author_unknown=models.ExpressionWrapper(has_text | models.Q(book_detail__isnull=True), output_field=models.BooleanField()))
+      .order_by('author_unknown', 'name')
+    )
   if name == 'low-resolution':
     # Smallest first (Content.width/height, as shown).
     return (

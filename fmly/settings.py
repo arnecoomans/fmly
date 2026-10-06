@@ -246,6 +246,8 @@ LOGGING = {
   'handlers': {'console': {'class': 'logging.StreamHandler'}},
   'loggers': {
     'django': {'handlers': ['console'], 'level': 'WARNING'},
+    # 500s only: a 403 or 404 (bots, stale links) is in nginx's access log.
+    'django.request': {'handlers': ['console'], 'level': 'ERROR', 'propagate': False},
     'cmnsd': {'handlers': ['console'], 'level': 'INFO'},
   },
 }

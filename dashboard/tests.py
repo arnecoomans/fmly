@@ -360,6 +360,35 @@ class NoTranscriptTests(DashboardTestCase):
     self.assertEqual(list(blocks.loose_end_items('no-transcript', self.request(self.editor))), [scan])
 
 
+class BooksWithoutAuthorTests(DashboardTestCase):
+  """Books without an author linked as a person - the author as written on
+  the book first, the actionable ones."""
+
+  def test_which_and_order(self):
+    from content.models import Content
+    make = lambda name, author: Content.objects.create(name=name, kind='book', user=self.editor, status='p', visibility='c') if author is None else self.book(name, author)
+    unknown, written, linked = make('Atlas', ''), make('Zuid', 'Jeroen Brouwers'), make('Bezonken rood', 'Jeroen Brouwers')
+    linked.book_detail.authors.add(self.person('Jeroen'))
+    no_detail = make('Album', None)                                             # no BookContent row at all
+    Content.objects.create(name='Hoofdstuk 1', kind='book', user=self.editor, status='p', visibility='c', parent=written)   # a part: under its book
+    self.assertEqual(list(blocks.loose_end_items('books-without-author', self.request(self.editor))), [written, no_detail, unknown])
+
+  def test_row_shows_the_written_author(self):
+    self.book('Zuid', 'Jeroen Brouwers')
+    client = Client()
+    client.force_login(self.editor)
+    html = client.get('/dashboard/loose-ends/books-without-author/').content.decode()
+    self.assertIn('Jeroen Brouwers', html)
+
+  def book(self, name, author):
+    from content.models import Content
+    item = Content.objects.create(name=name, kind='book', user=self.editor, status='p', visibility='c')
+    item.ensure_detail()
+    type(item.book_detail).objects.filter(pk=item.book_detail.pk).update(author=author)
+    item.refresh_from_db()
+    return item
+
+
 class AccountsTests(DashboardTestCase):
   """dashboard/accounts/: waiting accounts approved or declined, activity -
   for staff who may change users."""
