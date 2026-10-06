@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% comment %}
+  The events overview (events.views.EventListView): by decade, oldest
+  first - historical events by default, a pill per kind (links, ?kind=),
+  'all' for the family's chronicle. Undated events last. Each event as
+  event/_event.html, with everyone in it.
+{% endcomment %}
+
+{% block title %}{% translate "events"|capfirst %}{% endblock %}
+
+{% block content %}
+<div class="tag-page events-page">
+  <header class="tag-page__header note-overview__header">
+    <div class="tag-page__intro">
+      <h1 class="tag-page__name">{% translate "events"|capfirst %}</h1>
+      <p class="tag-page__counts">{% if kind == 'historical' %}{% translate "The history the family's lives took place in. Each also shows in the timeline of the people alive at the time." %}{% elif kind == 'all' %}{% translate "Everything that happened, across all branches of the family." %}{% endif %}</p>
+    </div>
+    <a class="btn btn--secondary btn--sm events-page__new" href="{% url 'events:calendar' %}"><i class="bi bi-calendar3"></i> {% translate "calendar"|capfirst %}</a>
+    {% if perms.events.add_event %}
+      {# A new event of the kind shown (historical by default), in a dialog - then its page. #}
+      <button type="button" class="btn btn--secondary btn--sm events-page__new" data-cmnsd-create="{% url 'cmnsd_api:object_create' 'event' %}{% if kind != 'all' %}?kind={{ kind }}{% endif %}" data-cmnsd-create-title="{% translate 'new event'|capfirst %}" data-cmnsd-create-then="open"><i class="bi bi-plus-lg"></i> {% translate "new event"|capfirst %}</button>
+    {% endif %}
+  </header>
+
+  <nav class="content-grid-pills events-page__kinds" aria-label="{% translate 'kind'|capfirst %}">
+    {% for value, label, count in kinds %}
+      {% if count or value == kind %}
+        <a class="content-grid-pill{% if value == kind %} is-active{% endif %}" href="?kind={{ value }}"{% if value == kind %} aria-current="page"{% endif %}>{{ label|capfirst }} {{ count }}</a>
+      {% endif %}
+    {% endfor %}
+  </nav>
+
+  {% for decade, events in decades %}
+    <section class="events-page__decade">
+      <h2 class="section-title">{{ decade }}s</h2>
+      <ol class="events-page__list">
+        {% for event in events %}<li class="event-row">{% include 'event/_event.html' with others=event.people.all %}</li>{% endfor %}
+      </ol>
+    </section>
+  {% endfor %}
+
+  {% if undated %}
+    <section class="events-page__decade">
+      <h2 class="section-title">{% translate "date unknown"|capfirst %}</h2>
+      <ol class="events-page__list">
+        {% for event in undated %}<li class="event-row">{% include 'event/_event.html' with others=event.people.all %}</li>{% endfor %}
+      </ol>
+    </section>
+  {% endif %}
+
+  {% if not total %}
+    <div class="list-empty-state">
+      <i class="bi bi-calendar-event list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "no events here"|capfirst %}</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% load text_filters %}
+{% load tags %}{% with url=hit|person_url:request %}
+{# A private person: listed (the name shows anyway), a link only for themself, their parents and staff. #}
+<{% if url %}a href="{{ url }}"{% else %}div{% endif %} class="search-hit-row">
+  <span class="search-hit-row__thumb">{% include 'person/avatar.html' with person=hit size='sm' %}</span>
+  <span class="search-hit-row__name">{% highlight_search search_query %}{% include 'person/functions/get_full_name.html' with person=hit lifespan=True suppress_link=True %}{% endhighlight_search %}</span>
+  {% include 'search/hits/_snippet.html' %}
+</{% if url %}a{% else %}div{% endif %}>{% endwith %}

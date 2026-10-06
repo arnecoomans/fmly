@@ -1,0 +1,35 @@
+{% comment %}
+  The item's thumbnail (ContentThumbnailForm), in a dialog: the image in a
+  4:3 frame - what's in the frame is the card in a grid of cards. Two
+  guides show what the other places take from it, so one crop serves all:
+  "phone" - the band a card shows across a phone (148px high, about 2.4:1),
+  "square" - the small square thumbnails. Drag to move, scroll / pinch / the buttons to zoom, the
+  rotate button to turn a sideways scan (cmnsd.js viewer.js, crop mode).
+  "Automatic" clears the crop. Same contract as cmnsd/edit/form.html.
+  Context: form, form_action, modified, modified_field, content.
+{% endcomment %}
+<form class="edit-form thumb-crop" data-cmnsd-edit-form action="{{ form_action }}" method="post" novalidate>
+  <input type="hidden" name="{{ modified_field }}" value="{{ modified }}">
+  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+  <div class="portrait-crop__frame thumb-crop__frame" data-cmnsd-viewer data-viewer-crop>
+    <img data-viewer-image src="{% url 'content:thumbnail' form.instance.token 'large' %}" alt="{{ form.instance }}">
+    <div class="thumb-crop__guides" aria-hidden="true">
+      <span class="thumb-crop__guide thumb-crop__guide--wide"><em>{% translate "phone" %}</em></span>
+      <span class="thumb-crop__guide thumb-crop__guide--square"><em>{% translate "square" %}</em></span>
+    </div>
+    <div class="portrait-crop__tools">
+      <button type="button" data-viewer-zoom-in title="{% translate 'zoom in'|capfirst %}"><i class="bi bi-zoom-in"></i></button>
+      <button type="button" data-viewer-zoom-out title="{% translate 'zoom out'|capfirst %}"><i class="bi bi-zoom-out"></i></button>
+      <button type="button" data-viewer-fit title="{% translate 'whole image'|capfirst %}"><i class="bi bi-arrows-angle-contract"></i></button>
+      <button type="button" data-viewer-rotate title="{% translate 'turn a quarter'|capfirst %}"><i class="bi bi-arrow-clockwise"></i></button>
+    </div>
+  </div>
+  {% if form.non_field_errors %}<p class="edit-form__error">{{ form.non_field_errors|join:' ' }}</p>{% endif %}
+  <p class="edit-form__error" data-cmnsd-error hidden></p>
+  <div class="edit-form__actions">
+    <button type="submit" class="btn btn--primary btn--sm">{% translate "save"|capfirst %}</button>
+    <button type="submit" class="btn btn--secondary btn--sm" name="{% if form.prefix %}{{ form.prefix }}-{% endif %}reset" value="1">{% translate "automatic"|capfirst %}</button>
+    <button type="button" class="btn btn--secondary btn--sm" data-cmnsd-dialog-close>{% translate "cancel"|capfirst %}</button>
+    <span class="edit-form__hint">{% translate "Drag or scroll to move, pinch or Ctrl + scroll to zoom. The frame is the card on a computer; keep what matters inside the phone band and the square too." %}</span>
+  </div>
+</form>

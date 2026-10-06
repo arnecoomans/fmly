@@ -1,0 +1,21 @@
+{% load content_tags %}
+{% comment %}
+  When and where the person was born - their birth Event, as a field row
+  (the block wrapper is the row). An editable block (form: PersonBirthForm -
+  date and place, creating the event when there's none). Shown outside edit
+  mode only when a birth is recorded. In edit mode, without one: "Birth -
+  add birth record"; a birth without a date: "add date" (outside edit mode
+  "date unknown") - as the death row.
+{% endcomment %}
+{% with event=person.birth %}
+  {% if event %}
+    <dt class="person-field__label">{% translate "born"|capfirst %}</dt>
+    <dd class="person-field__value">
+      {% if event.year %}{% if event.calendar_date %}{{ event.calendar_date|date:"l"|capfirst }} {% endif %}{{ event|partial_date }}{% elif edit_mode %}<span class="edit-block__empty">{% translate "add date" %}</span>{% else %}<span class="edit-block__empty">{% translate "date unknown" %}</span>{% endif %}
+      {% for place in event.places.all %}{% if forloop.first %}{% if event.year %} {% else %} · {% endif %}{% else %}, {% endif %}{% include 'field/places/name.html' with place=place %}{% endfor %}
+    </dd>
+  {% else %}
+    <dt class="person-field__label">{% translate "birth"|capfirst %}</dt>
+    <dd class="person-field__value"><span class="edit-block__empty">{% translate "add birth record" %}</span></dd>
+  {% endif %}
+{% endwith %}

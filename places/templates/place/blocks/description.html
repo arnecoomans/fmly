@@ -1,0 +1,10 @@
+{% load markdown %}
+{% comment %}
+  The place's description, as Markdown - an editable block (form:
+  PlaceDescriptionForm), shown even when empty in edit mode.
+{% endcomment %}
+{% if place.description %}
+  <div class="tag-page__description reading-copy">{{ place.description|markdown }}</div>
+{% elif edit_mode %}
+  <p class="edit-block__empty">{% translate "No description yet." %}</p>
+{% endif %}

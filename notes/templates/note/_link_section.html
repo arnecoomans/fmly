@@ -1,0 +1,18 @@
+{% comment %}
+  One kind of link on a note's page: the linked objects as chips
+  (note/_link.html), and in edit mode a picker that links another one
+  (cmnsd/edit/link_picker.html - EditableRelationsMixin link). Context:
+  note, relation, title, picker_model, objects, add_label, exclude, editing,
+  optional can_create / new_url or new_dialog + new_param + new_label + can_new.
+{% endcomment %}
+{% if objects or editing %}
+  <section class="tag-page__section note-links">
+    <h2 class="section-title">{{ title|capfirst }}</h2>
+    <div class="tag-list" id="note-{{ relation }}">{% for object in objects %}{% include 'note/_link.html' %}{% endfor %}</div>
+    {% if editing %}
+      {% with target='#note-'|add:relation %}
+        {% include 'cmnsd/edit/link_picker.html' with model='note' owner=note label=add_label|capfirst placeholder=add_label|capfirst %}
+      {% endwith %}
+    {% endif %}
+  </section>
+{% endif %}

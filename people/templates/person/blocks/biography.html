@@ -1,0 +1,12 @@
+{% comment %}
+  The biography (Markdown, folded when long) - an editable block (form:
+  PersonBiographyForm), shown even when empty in edit mode.
+{% endcomment %}
+{% if person.biography %}
+  {% include 'person/fields/biography.html' with person=person %}
+{% elif edit_mode %}
+  <section class="person-biography">
+    <h2 class="section-title">{% translate "biography"|capfirst %}</h2>
+    <p class="edit-block__empty">{% translate "No biography yet." %}</p>
+  </section>
+{% endif %}

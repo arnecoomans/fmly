@@ -1,0 +1,8 @@
+{% comment %}
+  The chip for what the link action just linked (EditableRelationsMixin) -
+  appended to the alternatives by cmnsd.js. Context: place, result
+  ({relation, object}), request.
+{% endcomment %}
+{% if result.relation == 'alternatives' %}
+  {% with alternative=result.object %}{% include 'place/_alternative.html' %}{% endwith %}
+{% endif %}

@@ -1,0 +1,36 @@
+{% load content_tags %}
+{% load tags %}
+{% comment %}
+  A grid of content cards with filter pills by kind (cmnsd.js filter.js;
+  the chosen kind goes into the address as ?kind= - kept on reload)
+  and a remembered sort switch - recently added / chronologically
+  (sort.js, saved under `save_key`). Both hidden without JS. Shared by the
+  person page's Content section and tag pages.
+
+  Context: `items` (Content, already in the `sort` order - the server
+  renders the remembered order), `sort` ('added' or 'date'), `save_key`
+  (e.g. 'person.content'), `grid_id` (unique on the page).
+{% endcomment %}
+{% with kinds=items|kind_counts %}
+  <div class="content-grid-toolbar">
+    {% if kinds|length > 1 %}
+      <div class="content-grid-pills" data-cmnsd-filter="#{{ grid_id }}" data-cmnsd-filter-param="kind" hidden>
+        <button type="button" class="content-grid-pill is-active" data-filter="" aria-pressed="true">{% translate "all"|capfirst %} {{ items|length }}</button>
+        {% for kind, label, count in kinds %}
+          <button type="button" class="content-grid-pill" data-filter="{{ kind }}" aria-pressed="false">{{ label|capfirst }} {{ count }}</button>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% if items|length > 1 %}
+      <div class="content-grid-sort" data-cmnsd-sort="#{{ grid_id }}" data-cmnsd-sort-save="{{ save_key }}" hidden>
+        <button type="button" class="content-grid-pill{% if sort == 'added' %} is-active{% endif %}" data-sort-key="added" data-sort-direction="desc" aria-pressed="{% if sort == 'added' %}true{% else %}false{% endif %}">{% translate "recently added"|capfirst %}</button>
+        <button type="button" class="content-grid-pill{% if sort == 'date' %} is-active{% endif %}" data-sort-key="date" data-sort-direction="asc" aria-pressed="{% if sort == 'date' %}true{% else %}false{% endif %}">{% translate "chronologically"|capfirst %}</button>
+      </div>
+    {% endif %}
+  </div>
+  <div class="content-grid" id="{{ grid_id }}">
+    {% for item in items|mark_wholes:request %}
+      {% include 'content/_content_card.html' with item=item %}
+    {% endfor %}
+  </div>
+{% endwith %}

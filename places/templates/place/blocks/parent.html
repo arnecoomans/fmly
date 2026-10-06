@@ -1,0 +1,13 @@
+{% comment %}
+  Where the place lies - the places list, then its parents as a path
+  ("Places › Nederlandsch-Indië › Java"), each a link, so there's always a
+  way back up. An editable block (cmnsd/edit/block.html, form:
+  PlaceParentForm - a picker); in edit mode a top-level place says so, so
+  it can be given one.
+{% endcomment %}
+{% with path=place.ancestors|slice:":-1" %}
+  <p class="tag-page__parent place-page__path"><a href="{% url 'places:list' %}">{% translate "places"|capfirst %}</a> <i class="bi bi-chevron-right"></i>
+    {% for ancestor in path %}<a href="{{ ancestor.get_absolute_url }}">{{ ancestor.name }}</a> <i class="bi bi-chevron-right"></i> {% endfor %}
+    {% if not path and edit_mode %}<span class="edit-block__empty">{% translate "lies nowhere - a country or region of its own" %}</span>{% endif %}
+  </p>
+{% endwith %}

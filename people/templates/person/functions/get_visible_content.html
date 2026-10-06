@@ -1,0 +1,10 @@
+{% load tags %}
+{% comment %}
+  Function template for Person.get_visible_content() - the Content
+  section body: the shared content grid (content/_content_grid.html) with
+  this viewer's remembered order for person pages. Rendered in the page
+  when the section is open, or through the API when it's opened
+  (cmnsd/section.html). By kind for now; grouping by Mention role comes
+  with Mention. Context: `person`, `request`.
+{% endcomment %}
+{% include 'content/_content_grid.html' with items=person|visible_content:request sort=person|content_sort:request save_key='person.content' grid_id='person-content-grid' %}

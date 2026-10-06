@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% comment %}
+  The places overview (places.views.PlaceListView): first the top-level
+  places that hold no others - mostly towns still waiting for a parent, so
+  on top where they get attention - then the places that hold others
+  (countries, regions) as headings, each with its places as a tree. Every place shows
+  how many items and events this viewer may see there; empty places are
+  left out - in edit mode all of them show (places/places.py).
+{% endcomment %}
+
+{% block title %}{% translate "places"|capfirst %}{% endblock %}
+
+{% block content %}
+<div class="tag-page place-page">
+  <header class="tag-page__header">
+    <div class="tag-page__intro">
+      <h1 class="tag-page__name">{% translate "places"|capfirst %}</h1>
+      {% if show_all %}<p class="tag-page__counts">{% translate "Edit mode: every place is listed, also those with nothing there yet." %}</p>{% endif %}
+    </div>
+  </header>
+
+  {% if loose %}
+    <section class="tag-overview__group">
+      {% if groups %}<h2 class="section-title">{% translate "other places"|capfirst %}</h2>{% endif %}
+      <ul class="place-tree place-tree--flat">{% for place in loose %}{% include 'place/_tree_node.html' %}{% endfor %}</ul>
+    </section>
+  {% endif %}
+
+  {% for place in groups %}
+    <section class="tag-overview__group">
+      <h2 class="section-title tag-overview__heading">
+        <a href="{{ place.get_absolute_url }}">{{ place.name }}</a>{% if place.count %} {% include 'place/_count.html' %}{% endif %}
+      </h2>
+      <ul class="place-tree">{% for place in place.listed_children %}{% include 'place/_tree_node.html' %}{% endfor %}</ul>
+    </section>
+  {% endfor %}
+
+  {% if not groups and not loose %}
+    <div class="list-empty-state">
+      <i class="bi bi-geo-alt list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "no places yet"|capfirst %}</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

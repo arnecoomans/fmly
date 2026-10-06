@@ -1,0 +1,6 @@
+{% comment %}
+  A book's ISBN (BookContent) - a field row; an editable block (form:
+  BookIsbnForm), shown even when empty in edit mode.
+{% endcomment %}
+<dt>ISBN</dt>
+<dd>{% if content.book_detail.isbn %}{{ content.book_detail.isbn }}{% else %}<span class="edit-block__empty">{% translate "unknown" %}</span>{% endif %}</dd>

@@ -1,0 +1,5 @@
+{% comment %}
+  How many files an item with parts holds - the whole plus its parts
+  (item.group_size, the grid's mark_wholes) - on its content card.
+{% endcomment %}
+<span class="content-card__parts-badge" title="{% blocktranslate count counter=item.group_size %}{{ counter }} file: the item and its parts{% plural %}{{ counter }} files: the item and its parts{% endblocktranslate %}"><i class="bi bi-stack"></i>{{ item.group_size }}</span>

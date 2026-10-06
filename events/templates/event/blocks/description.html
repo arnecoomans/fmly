@@ -1,0 +1,10 @@
+{% load markdown %}
+{% comment %}
+  What happened, and the sources - Markdown; an editable block (form:
+  EventDescriptionForm), shown even when empty in edit mode.
+{% endcomment %}
+{% if event.description %}
+  <div class="event-page__description reading-copy">{{ event.description|markdown }}</div>
+{% elif edit_mode %}
+  <p class="event-page__description edit-block__empty">{% translate "No description yet." %}</p>
+{% endif %}

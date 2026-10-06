@@ -1,0 +1,54 @@
+{% load content_tags %}
+{% load text_filters %}
+{% comment %}
+  The person's portrait (PersonPortraitForm), in a dialog: a strip of the
+  images they're tagged in - the current portrait first - to choose the
+  photo, then that photo in a square frame: drag to move, scroll / pinch /
+  the buttons to zoom, the rotate button to turn a photo pasted sideways
+  (cmnsd.js viewer.js, crop mode: what's in the frame is the crop, written
+  into the hidden crop fields; choosing another photo puts it in the frame,
+  whole and unturned). Save stores it (and makes a newly chosen photo the
+  portrait); "Whole photo" saves the whole photo as the crop. Same
+  contract as cmnsd/edit/form.html. Context: form, form_action, modified,
+  modified_field.
+{% endcomment %}
+{% with photo=form.chosen_photo %}
+<form class="edit-form portrait-crop" data-cmnsd-edit-form action="{{ form_action }}" method="post" novalidate>
+  <input type="hidden" name="{{ modified_field }}" value="{{ modified }}">
+  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+  {% if form.candidates|length > 1 %}
+    <div class="portrait-crop__photos" role="radiogroup" aria-label="{% translate 'photo'|capfirst %}">
+      {% for option in form.photo %}
+        {% with image=form.candidates|get_item:option.data.value %}
+          <label class="portrait-crop__photo" title="{{ image }}">
+            <input type="radio" name="{{ option.data.name }}" value="{{ option.data.value }}"{% if option.data.selected %} checked{% endif %}
+                   data-crop-source="{% url 'content:thumbnail' image.token 'large' %}" data-crop-caption-text="{{ image }}" data-crop-caption-url="{{ image.get_absolute_url }}">
+            <img src="{{ image|thumb_url:'avatar' }}" alt="{{ image }}" loading="lazy">
+          </label>
+        {% endwith %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <input type="hidden" name="{{ form.photo.html_name }}" value="{{ photo.token }}">
+  {% endif %}
+  <div class="portrait-crop__frame" data-cmnsd-viewer data-viewer-crop>
+    <img data-viewer-image src="{% url 'content:thumbnail' photo.token 'large' %}" alt="{{ photo }}">
+    <div class="portrait-crop__tools">
+      <button type="button" data-viewer-zoom-in title="{% translate 'zoom in'|capfirst %}"><i class="bi bi-zoom-in"></i></button>
+      <button type="button" data-viewer-zoom-out title="{% translate 'zoom out'|capfirst %}"><i class="bi bi-zoom-out"></i></button>
+      <button type="button" data-viewer-fit title="{% translate 'whole photo'|capfirst %}"><i class="bi bi-arrows-angle-contract"></i></button>
+      <button type="button" data-viewer-rotate title="{% translate 'turn a quarter'|capfirst %}"><i class="bi bi-arrow-clockwise"></i></button>
+    </div>
+  </div>
+  <p class="portrait-crop__source">{% translate "from" %} <a href="{{ photo.get_absolute_url }}" target="_blank" rel="noopener" data-crop-caption>{{ photo }}</a></p>
+  {% if form.non_field_errors %}<p class="edit-form__error">{{ form.non_field_errors|join:' ' }}</p>{% endif %}
+  {% for error in form.photo.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
+  <p class="edit-form__error" data-cmnsd-error hidden></p>
+  <div class="edit-form__actions">
+    <button type="submit" class="btn btn--primary btn--sm">{% translate "save"|capfirst %}</button>
+    <button type="submit" class="btn btn--secondary btn--sm" name="{{ form.prefix }}-reset" value="1">{% translate "whole photo"|capfirst %}</button>
+    <button type="button" class="btn btn--secondary btn--sm" data-cmnsd-dialog-close>{% translate "cancel"|capfirst %}</button>
+    <span class="edit-form__hint">{% translate "Drag or scroll to move, pinch or Ctrl + scroll to zoom. The square is the portrait; the circle shows the avatar." %}</span>
+  </div>
+</form>
+{% endwith %}

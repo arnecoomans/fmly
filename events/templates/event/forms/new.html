@@ -1,0 +1,41 @@
+{% comment %}
+  A new event in a dialog (cmnsd object_create, EventCreateForm): what it
+  is, when (one line, like an item's date), where, and the description;
+  who and the documenting items follow on its page. Same contract as
+  cmnsd/edit/create_form.html. Context: form, form_action.
+{% endcomment %}
+<form class="edit-form edit-form--create" data-cmnsd-create-form action="{{ form_action }}" method="post" novalidate>
+  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+  {% if form.non_field_errors %}<p class="edit-form__error">{{ form.non_field_errors|join:' ' }}</p>{% endif %}
+  {% for field in form.visible_fields %}{% if field.name in form.what_fields %}
+    <div class="edit-form__field">
+      <label for="{{ field.id_for_label }}">{{ field.label|capfirst }}</label>
+      {{ field }}
+      {% if field.help_text %}<small class="edit-form__help">{{ field.help_text }}</small>{% endif %}
+      {% for error in field.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
+    </div>
+  {% endif %}{% endfor %}
+  <div class="edit-form__row edit-form__row--date">
+    {% for field in form.visible_fields %}{% if field.name in form.date_fields %}
+      <div class="edit-form__field edit-form__field--{{ field.name }}">
+        <label for="{{ field.id_for_label }}">{{ field.label|capfirst }}</label>
+        {{ field }}
+      </div>
+    {% endif %}{% endfor %}
+  </div>
+  {% for field in form.visible_fields %}{% if field.name in form.date_fields %}{% for error in field.errors %}<p class="edit-form__error">{{ field.label|capfirst }}: {{ error }}</p>{% endfor %}{% endif %}{% endfor %}
+  <div class="edit-form__field">
+    <label for="{{ form.place.id_for_label }}">{{ form.place.label|capfirst }}</label>
+    {{ form.place }}
+  </div>
+  <div class="edit-form__field">
+    <label for="{{ form.description.id_for_label }}">{{ form.description.label|capfirst }}</label>
+    {{ form.description }}
+  </div>
+  {% if form.linked_person %}<p class="edit-form__help">{% blocktranslate with name=form.linked_person %}{{ name }} is added to it.{% endblocktranslate %}</p>{% endif %}
+  <p class="edit-form__error" data-cmnsd-error hidden></p>
+  <div class="edit-form__actions">
+    <button type="submit" class="btn btn--primary btn--sm">{% translate "add"|capfirst %}</button>
+    <button type="button" class="btn btn--secondary btn--sm" data-cmnsd-dialog-close>{% translate "cancel"|capfirst %}</button>
+  </div>
+</form>

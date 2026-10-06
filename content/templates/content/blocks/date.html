@@ -1,0 +1,9 @@
+{% load content_tags %}
+{% comment %}
+  The item's date as a field row (inside the <dl> of fields - the block
+  wrapper is the row's <div>). "ca. 1950", "5-7-1968", ... In edit mode
+  shown even when unknown, so it can be filled in.
+  An editable block (cmnsd/edit/block.html, form: content/forms/date.html).
+{% endcomment %}
+<dt>{% translate "date"|capfirst %}</dt>
+<dd>{% with date=content|partial_date %}{% if date %}{{ date }}{% else %}<span class="edit-block__empty">{% translate "unknown" %}</span>{% endif %}{% endwith %}</dd>

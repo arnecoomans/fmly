@@ -1,0 +1,7 @@
+{% load text_filters %}{% load events %}{% load content_tags %}
+<a class="search-hit-row" href="{{ hit.get_absolute_url }}">
+  <span class="search-hit-row__thumb search-hit-row__thumb--icon"><i class="bi bi-calendar-event"></i></span>
+  <span class="search-hit-row__name">{% highlight_search search_query %}{{ hit|event_display:request|capfirst }}{% endhighlight_search %}</span>
+  <span class="search-hit-row__meta">{{ hit.get_kind_display|capfirst }}{% if hit.year %} · {{ hit|partial_date }}{% endif %}</span>
+  {% include 'search/hits/_snippet.html' %}
+</a>

@@ -1,0 +1,525 @@
+/*
+ * person.css — layout specific to the person app's OWN pages only.
+ *
+ * Nothing here renders a person for another app's benefit — that's
+ * components.css's job (.avatar, .person-row, .badge-visibility). This
+ * file only arranges person/'s own templates: the detail page's
+ * sidebar-card layout, the relationships grid, the quick-add panel.
+ *
+ * If you find yourself wanting to reuse a class from this file inside
+ * content/, event/ or storyline/'s templates, that's a signal the class
+ * belongs in components.css instead — move it, don't import person.css
+ * from another app.
+ *
+ * Load order: specs.css -> base.css -> components.css -> person.css
+ * Requires: specs.css, components.css (builds on .avatar, .person-row,
+ * .visibility-pill, .badge-status, .section-title, .btn, .content-card)
+ */
+
+/* ===== Person detail ===== */
+
+.person-detail {
+  display: flex;
+  gap: var(--space-8);
+  align-items: flex-start;
+  padding: 36px 40px;
+}
+
+.person-profile-card {
+  width: 300px;
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-1);
+}
+
+.person-profile-card .avatar { margin-bottom: var(--space-3); }
+
+.person-profile-card__name {
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+.person-profile-card__fields {
+  width: 100%;
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  text-align: left;
+}
+
+.person-field__label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+.person-field__value { font-size: var(--text-base); margin-top: 2px; }
+
+.person-detail__main {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* Biography: boxed, unlike Relationships/Events/Content below it, which
+   are bare sections with just a .section-title. Reading copy earns the
+   card treatment that a list of rows doesn't — it's the one place on
+   this page someone actually reads prose, so it gets a contained,
+   readable block instead of running edge-to-edge under the page's own
+   background. .reading-copy (components.css) supplies the typography;
+   this class supplies only the box. Put it first in .person-detail__main,
+   above Relationships — a person's own words before the record-keeping. */
+.person-biography {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-6);
+}
+.person-biography .section-title { margin-bottom: var(--space-3); }
+
+/* Read-more clamp moved to components.css (.clamp-*) - Content's
+   description needs this exact mechanism too, and this briefing's own
+   rule is that anything more than one app renders belongs in
+   components.css, not duplicated per app.css. */
+
+/* Tags: sits between Biography and Relationships. No person.css class of
+   its own — .tag-list / .tag (components.css) do the whole job, and
+   there's no person-specific chrome to add on top of them the way
+   Content needed a role-filter row. Cross-app from day one (Event and
+   Content will carry Tags too), which is exactly why it has no
+   .person-tags wrapper: nothing here is Person-specific.
+
+     {% if person.tags.all %}
+     <section>
+       <h2 class="section-title">{% translate "tags"|capfirst %}</h2>
+       <div class="tag-list">
+         {% for tag in person.tags.all %}
+         <span class="tag"><i class="bi bi-tag"></i>{{ tag.name }}</span>
+         {% endfor %}
+       </div>
+     </section>
+     {% endif %}
+
+   Placed right after Biography, before the record-keeping sections
+   below it: a person's own words, then how they'd be found/filed, then
+   how they connect to everyone else. */
+
+/* Relationships: grouped into labeled subsections, generational order
+   top to bottom — Parents, Siblings, Partners, Children — not one flat
+   grid. A flat 2-column grid was tried first and rejected: it interleaved
+   relationship types within the same visual row (a parent next to a
+   partner, a child next to a sibling), which is exactly what made the
+   section unreadable — you had to read every row's role label to know
+   what you were looking at. Grouping under a heading does that work
+   visually instead.
+   Computed siblings render as the SAME .person-row as a stored
+   relationship (see .person-row--derived in components.css for the one
+   intentional difference: a dashed border) — the grouping-by-heading
+   fix does not touch that rule. */
+.person-relationships {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+/* 2 columns WITHIN a section, not across sections — this is safe now
+   in a way the original flat grid wasn't, because the heading above
+   each list already tells you what you're looking at before your eye
+   ever reaches the grid. A short list (one sibling, one child) just
+   leaves the second cell empty; that's fine. */
+.person-relationship-group__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+/* Children are grouped under a sub-heading naming the OTHER parent —
+   "with Johan S." above that pairing's children — rather than repeating
+   "with X" on every child row. This is the same shape the old FMLY site
+   used ("met <partner>:" before each batch of children) and it holds up
+   for the reason it holds up there: it scales. A person with five kids
+   by one partner gets one heading, not five repeated captions. Group
+   order follows the Partners list above it. A child whose other parent
+   isn't recorded falls into its own trailing group, styled quieter
+   (italic, --color-ink-3) rather than dropped or merged into the wrong
+   group: */
+.person-children {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.person-children__group-label {
+  display: inline-block;
+  font-size: var(--text-xs);
+  color: var(--color-ink-2);
+  margin-bottom: var(--space-2);
+}
+.person-children__group-label--unknown {
+  font-style: italic;
+  color: var(--color-ink-3);
+}
+.person-children__group-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+/* Grouping key is computed the same way a per-row caption would have
+   been — child.other_parent(person) (see the briefing) — just grouped
+   before rendering instead of repeated per row. Reuses .person-row from
+   components.css for each child; no new row component needed. */
+
+/* The Content section's grid, filters and sort switch are shared with tag
+   pages: components.css, "Content grid". */
+
+/* PHASE-GATED — do not build against this yet.
+   Comment model does not exist yet. No person.css class of its own —
+   .comment-list / .comment-row (components.css) are generic and cross-
+   app (Event and Content will get comment threads too, once Comment
+   exists), same relationship .tag-list has to Tags above.
+   Placed below Content, above Events: comments are discussion ABOUT
+   this page's record, so they read naturally after the record itself
+   (Relationships, Content) and before the closing, dated Events list —
+   a comment thread that trailed the whole page, after even the
+   timeline, would read like an afterthought instead of a running
+   conversation about the person. */
+
+/* Events ("Timeline" in casual conversation — the heading below still
+   reads "Events" for now since that's the model name and every other
+   reference to this section uses it; say the word if you want the
+   on-page heading itself changed to "Timeline", that's a one-line copy
+   change independent of anything else here).
+   A simple vertical list of .person-row-like entries; reuse
+   .person-row's padding/border rhythm but the icon slot is the event's
+   kind glyph rather than an avatar.
+   Event has no detail view / get_absolute_url() yet (expected — it
+   hasn't been built). Render these as plain rows (no <a>, no href)
+   until that view exists; don't fake a link. */
+.person-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* OFF ROADMAP for now — Storyline isn't started and isn't planned soon
+   (confirmed build order: People -> Events -> Content). Kept here only
+   so the class exists if/when it's prioritized; don't build the
+   "storylines mentioning this person" section ahead of that. */
+.person-storylines-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+
+/* ===== Person quick-add / quick-edit ===== */
+/* A panel over a dimmed backdrop, not a full page — mounted wherever a
+   "new person" or inline edit is triggered from (a storyline's insert-
+   reference picker, a relationship field, or the People list itself). */
+
+.person-quickadd-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 38, 34, 0.28);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 60px;
+  z-index: 50;
+}
+
+.person-quickadd-panel {
+  width: 480px;
+  max-width: calc(100vw - 32px);
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+}
+
+.person-quickadd-panel__header {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+.person-quickadd-panel__title {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  flex-grow: 1;
+}
+
+.person-quickadd-panel__body {
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.person-quickadd-field-row { display: flex; gap: var(--space-3); }
+.person-quickadd-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.person-quickadd-field label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-2);
+}
+.person-quickadd-field input,
+.person-quickadd-field select,
+.person-quickadd-field textarea {
+  height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 12px;
+  font-size: var(--text-base);
+  background: var(--color-paper);
+}
+.person-quickadd-field textarea {
+  height: auto;
+  padding: 10px 12px;
+  resize: none;
+}
+/* Marks a genuinely required field (first name only) — do not extend
+   this to every field; the whole point of quick-add is that most fields
+   are optional until "Add more now" is opened. */
+.person-quickadd-field--required label::after {
+  content: " *";
+  color: var(--color-accent);
+}
+
+.person-quickadd-expand-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+}
+.person-quickadd-expand-toggle i {
+  font-size: 13px;
+  transition: transform 0.15s ease;
+}
+.person-quickadd-expand-toggle[aria-expanded="true"] i { transform: rotate(180deg); }
+/* Icon: bi-chevron-down (bi-* size + rotation both live on the <i>, same
+   as the old <svg> — see components.css's "Icon system" note). */
+
+.person-quickadd-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--color-border);
+}
+
+.person-quickadd-panel__footer {
+  display: flex;
+  gap: var(--space-3);
+  padding: 18px 24px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+}
+.person-quickadd-panel__footer .btn { flex: 1; }
+
+
+/* ===== Person list (people/person_list.html + person/person_list.html) ===== */
+/* Page-specific chrome wrapped around .person-row (components.css) - the
+   rows themselves need nothing new, only the container, header, A-Z bar
+   and letter groups around them. .list-empty-state (anonymous visitor /
+   no results) lives in components.css - other lists will need it too.
+
+   Layout, top to bottom:
+     .person-list__header  title left, search right (wraps on narrow)
+     .person-list-bar      A-Z index + count, sticky while scrolling
+     .person-list-group    letter in a left column, rows in a grid
+   The bar and groups live in person/person_list.html, the fragment the
+   API re-renders on live search - so the index always matches the
+   filtered result, not the full list. */
+
+.person-list {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 36px 40px;
+}
+
+.person-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+.person-list__title { margin: 0; }
+
+.person-list-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 1 360px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 14px;
+  height: 40px;
+}
+.person-list-search:focus-within { border-color: var(--color-accent); }
+
+/* Family / possibly family / outsiders / all - under the header. */
+.person-list-connections { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-4); }
+.person-list-connection {
+  font-size: var(--text-xs); font-weight: 600; padding: 4px 10px;
+  border-radius: var(--radius-pill); color: var(--color-ink-3); text-decoration: none;
+}
+.person-list-connection:hover { color: var(--color-ink); }
+.person-list-connection.is-active { color: var(--color-accent-hover); background: var(--color-accent-soft); }
+/* On the person page: "possibly family" / "outsider". */
+.person-connection-pill {
+  display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px;
+  border-radius: var(--radius-pill); font-size: var(--text-xs); font-weight: 600;
+  color: var(--color-ink-2); background: var(--color-surface-alt);
+}
+.person-list-search i { color: var(--color-ink-3); font-size: 14px; }
+.person-list-search input {
+  border: none;
+  background: transparent;
+  flex-grow: 1;
+  min-width: 0;
+  font-size: var(--text-base);
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+}
+.person-list-search input:focus { outline: none; }
+
+/* Sticky on the page background (not a card) so it reads as part of the
+   page chrome; the border only separates it from rows scrolling under. */
+.person-list-bar {
+  position: sticky;
+  top: var(--topbar-height);   /* under the sticky header */
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  margin-bottom: var(--space-5);
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--color-border);
+}
+.person-list-count {
+  margin: 0 0 0 auto;
+  font-size: var(--text-xs);
+  color: var(--color-ink-3);
+  white-space: nowrap;
+}
+
+/* A letter with no results still renders, muted and unclickable, rather
+   than being removed - removing it would shift every letter after it and
+   make the index unreliable to scan at a glance. */
+.person-list-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.person-list-index__letter {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-2);
+  text-decoration: none;
+}
+.person-list-index__letter:hover { background: var(--color-surface-alt); color: var(--color-ink); }
+.person-list-index__letter.is-empty { color: var(--color-ink-3); opacity: 0.4; pointer-events: none; }
+
+.person-list-group {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  /* Jumping to #people-X lands the heading below the sticky bar, not
+     under it. Generous, since the bar wraps to two lines when narrow. */
+  scroll-margin-top: calc(var(--topbar-height) + 96px);
+}
+.person-list-group__label {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-ink-3);
+  padding-top: 8px;
+}
+/* As many ~280px columns as fit - the list is unpaginated, so using the
+   width is what keeps ~200 people scannable without endless scrolling. */
+.person-list-group__rows {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-2);
+}
+
+/* The first breakpoint in the project (CSS_BRIEFING.md section 10 lists
+   responsive layout as open) - kept to this page: tighter padding, and
+   the letter moves above its rows instead of beside them. */
+@media (max-width: 640px) {
+  .person-list { padding: 24px 16px; }
+  .person-list-search { flex-basis: 100%; }
+  .person-list-group { grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
+  .person-list-group__label { font-size: var(--text-lg); padding-top: 0; }
+}
+
+/* Content documenting an event (Content.events) - one icon link per item,
+   at the end of the event row, e.g. the birth announcement next to a
+   birth. Only content the viewer may see (PersonDetailView prefetch). */
+.event-content { display: inline-flex; gap: var(--space-1); flex-shrink: 0; }
+.event-content__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  text-decoration: none;
+}
+.event-content__link:hover { color: var(--color-accent-hover); }
+
+/* ===== Person detail on a narrow screen ===== */
+/* Below 900px the profile card goes on top and the page is one column -
+   beside a 300px card the rest got too narrow to read. A long name in a
+   family row wraps instead of running under its role label. */
+.person-row__name { overflow-wrap: anywhere; }
+@media (max-width: 900px) {
+  .person-detail { flex-direction: column; align-items: stretch; padding: 24px 16px; gap: var(--space-6); }
+  .person-profile-card { width: auto; }
+}
+/* A phone held upright: one family member per row. */
+@media (max-width: 560px) {
+  .person-relationship-group__list,
+  .person-children__group-list { grid-template-columns: minmax(0, 1fr); }
+}

@@ -1,6 +1,37 @@
 # Changelog
 
-## [Unreleased]
+## [26.10] - FMLY 3.0 (unreleased)
+
+A ground-up rebuild: a new content design, centred on content and people instead of on separate records. FMLY 3.0 shares no code with FMLY 2 and starts from a new database, filled from the old one by the legacy import. What it does: [README.md](README.md); how to use it: [documentation/usage/](documentation/usage/readme.md).
+
+### New
+- **Dashboard** - on this day and the calendar, recently added, from the archive, the latest comments, an inbox for uploads, loose ends to complete, and your own place in the archive
+- **People** - names, birth and death with partial dates (ca., before, after), parents, partners and children edited on the person's page, a life timeline with ages
+- **Photos & documents** - one kind of content for photos, documents, books, objects and recordings, with their parts; who is on a photo, dates and places, transcripts with OCR
+- **Events and places** as pages of their own, linking people and content
+- **Research** - notes with questions, leads and conclusions; one search across everything, including transcripts and biographies; comments
+- **Edit mode** - change things on the page itself; every change in the admin history
+- **Privacy** - community-visible by default, family-visible and private where needed, drafts until published; no external services, everything loaded from the site itself
+
+### Under the hood
+- Built on **cmnsd 3** (git submodule, branch `fmly`): models with status and visibility, an API, edit mode and cmnsd.js - see `cmnsd/documentation/`
+- Django 6, Python 3.14; files served through Django's access checks (sendfile with nginx); static files with hashed names
+- Settings from `.env` - template: `.env.example`
+- Apps: core, people, content, events, places, notes, dashboard, legacy_import - replacing the single `archive` app; the project package is now `fmly` (was `family`)
+
+### Moving from FMLY 2
+- New database: `manage.py import_all` reads the FMLY 2 export (fixtures and files in `import/`) - see `documentation/developer/legacy-import.md`
+- Old person addresses (`/person/<slug>/`) redirect to the person's new page
+- The last FMLY 2 version stays available as release 26.04.3
+
+## [26.04.3] - final FMLY 2 release
+
+- Birthday calendar: birthdays by month, with years of birth and death
+- Books and collections: books with author, year, publisher, ISBN, cover, people and tags; collections ("Grandpa's shelf") with read status and notes per book
+- Admin: "soft delete" and "restore" set the status (deleted / published) instead of the old `is_deleted` flag
+- [Bugfix] Partners are now also found through a shared child, when no partner relation was recorded
+- [Bugfix] Book pages redirected to a non-existing URL name after saving
+- Update cmnsd and requirements
 
 ## [26.04.2]
 

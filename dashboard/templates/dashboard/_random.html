@@ -1,0 +1,19 @@
+{% load content_tags %}
+{% comment %}
+  One item from the archive (dashboard/blocks.py from_the_archive), inside
+  #from-the-archive. "Another" asks the dashboard for this part again
+  (cmnsd.js list.js, data-cmnsd-list-url; DashboardView answers its JSON
+  request) and swaps it in place - the page stays where it is. Without
+  JavaScript the form reloads the page, back at this block.
+{% endcomment %}
+<h2 class="section-title">{% translate "from the archive"|capfirst %}
+  <form class="dashboard__more" action="{% url 'dashboard:home' %}#from-the-archive" method="get" data-cmnsd-list-url="{% url 'dashboard:home' %}" data-cmnsd-target="#from-the-archive">
+    <button type="submit" class="dashboard__more-button">{% translate "another" %} ↻</button>
+  </form>
+</h2>
+{% if random_item %}
+<a href="{{ random_item.get_absolute_url }}" class="dashboard__random-link">
+  <img src="{{ random_item|thumb_url:'card' }}" alt="{{ random_item }}" loading="lazy">
+  <span>{{ random_item }}{% if random_item.year %} · {{ random_item|partial_date }}{% endif %}</span>
+</a>
+{% endif %}

@@ -1,0 +1,28 @@
+{% load events %}
+{% load content_tags %}
+{% load text_filters %}
+{% comment %}
+  Event picker results (GET api/event/?q=...&format=picker - cmnsd.js
+  picker.js): the first 20 events this viewer may see (at least one of
+  their people visible - Event.filter_visibility), found by title or by
+  the names of people the viewer may see, a place or the year
+  (Event.api_search_q). Each shows its kind and its name as this viewer
+  may see it (others obfuscated), the search term marked.
+  Context: event_list, search_query, request.
+{% endcomment %}
+{% with shown=event_list|slice:":20" %}
+  {% if shown %}
+    <ul class="picker-results">
+      {% for event in shown %}
+        {% with name=event|event_display:request %}
+          <li data-picker-row>
+            <button type="button" class="picker-result picker-result--plain" data-picker-choose="{{ event.token }}" data-picker-name="{{ name }}">
+              <span class="picker-result__name picker-result__name--wrap"><i class="bi bi-calendar-event"></i> {% highlight_search search_query %}{{ name|capfirst }}{% endhighlight_search %}</span>
+              <span class="picker-result__meta">{{ event.get_kind_display|capfirst }}{% if event.year %} · {{ event|partial_date }}{% endif %}</span>
+            </button>
+          </li>
+        {% endwith %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}

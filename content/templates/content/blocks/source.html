@@ -1,0 +1,7 @@
+{% comment %}
+  Where the item came from (Content.source) - a link when it's a URL. A
+  wide field row; an editable block (form: ContentSourceForm), shown even
+  when empty in edit mode.
+{% endcomment %}
+<dt>{% translate "source"|capfirst %}</dt>
+<dd class="content-detail__source">{% if content.source %}{% if content.source|slice:":4" == "http" %}<a href="{{ content.source }}" rel="noopener noreferrer" target="_blank">{{ content.source|truncatechars:80 }}</a>{% else %}{{ content.source }}{% endif %}{% else %}<span class="edit-block__empty">{% translate "unknown" %}</span>{% endif %}</dd>

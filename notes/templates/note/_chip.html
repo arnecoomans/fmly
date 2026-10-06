@@ -1,0 +1,20 @@
+{% load viewer_name %}{% load events %}{% load content_tags %}{% load tags %}
+{% comment %}
+  A linked object as a chip, by kind of link. Names as this viewer may see
+  them (viewer_name; an event's hidden people stay obfuscated). Events have
+  no page of their own yet - no link. Context: relation, object, request.
+{% endcomment %}
+{% if relation == 'people' %}
+  {# A private person: a link only for themself, their parents and staff (person_url). #}
+  {% with url=object|person_url:request %}<{% if url %}a href="{{ url }}"{% else %}span{% endif %} class="tag tag--person"><i class="bi bi-person"></i>{{ object|viewer_name:request }}</{% if url %}a{% else %}span{% endif %}>{% endwith %}
+{% elif relation == 'content' %}
+  <a class="tag" href="{{ object.get_absolute_url }}"><i class="bi bi-{% if object.kind == 'photo' %}image{% elif object.kind == 'book' %}book{% else %}file-earmark-text{% endif %}"></i>{{ object }}</a>
+{% elif relation == 'places' %}
+  {% with path=object.ancestors|slice:":-1" %}<a class="tag tag--place" href="{{ object.get_absolute_url }}"><i class="bi bi-geo-alt"></i>{{ object.name }}{% if path %} <span class="tag__meta">{{ path|last }}</span>{% endif %}</a>{% endwith %}
+{% elif relation == 'events' %}
+  <span class="tag"><i class="bi bi-calendar-event"></i>{{ object|event_display:request|capfirst }}{% if object.year %} <span class="tag__meta">{{ object|partial_date }}</span>{% endif %}</span>
+{% elif relation == 'tags' %}
+  {% include 'tag/tag.html' with tag=object %}
+{% elif relation == 'related_notes' %}
+  <a class="tag" href="{{ object.get_absolute_url }}"><i class="bi bi-journal-text"></i><span class="tag__meta">{{ object.get_kind_display }}</span> {{ object }}</a>
+{% endif %}

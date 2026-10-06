@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load design_tokens %}
+{% load markdown %}
+{% load tags %}
+{% load content_tags %}
+
+{% block title %}{{ person.get_full_name }}{% endblock %}
+
+{% block template_css %}
+<link rel="stylesheet" href="{% static 'css/fmly/person.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="person-detail">
+
+  <aside class="person-profile-card">
+    {# The avatar: in edit mode a pencil opens the portrait dialog - choose the photo, crop it - when there's a portrait or a tagged image this viewer may see. #}
+    {% if editing and person|portrait_choosable:request %}
+      {% translate "portrait" as portrait_title %}
+      {% include 'cmnsd/edit/block.html' with model='person' obj=person block='portrait' dialog=portrait_title|capfirst block_class='person-profile-card__portrait' %}
+    {% else %}
+      {% include 'person/avatar.html' with person=person size='xl' %}
+    {% endif %}
+    {% include 'cmnsd/edit/block.html' with model='person' obj=person block='names' %}
+
+    {% if not editing %}
+      {# In edit mode the choices panel (right) shows and sets visibility, family and status. #}
+      <span class="visibility-pill visibility-pill--{{ person.get_visibility_display|lower }}">
+        {% if person.is_private %}
+          <i class="bi bi-lock-fill"></i>
+        {% elif person.is_family %}
+          <i class="bi bi-people-fill"></i>
+        {% elif person.is_community %}
+          <i class="bi bi-diagram-3-fill"></i>
+        {% else %}
+          <i class="bi bi-globe"></i>
+        {% endif %}
+        {{ person.get_visibility_display }}
+      </span>
+      {% if person.family_connection != 'family' %}
+        <span class="person-connection-pill" title="{% if person.family_connection == 'outsider' %}{% translate 'Relevant to the archive, but not related to the family' %}{% else %}{% translate 'A relation is suspected but not yet known' %}{% endif %}">
+          <i class="bi bi-{% if person.family_connection == 'outsider' %}person{% else %}question-circle{% endif %}"></i>
+          {{ person.get_family_connection_display|capfirst }}
+        </span>
+      {% endif %}
+      {% if person.needs_attention %}
+        {# Only its creator and staff reach this page for a concept/revoked person. #}
+        <span class="badge-status badge-status--draft">{{ person.get_status_display }} · {% translate "not published" %}</span>
+      {% endif %}
+    {% endif %}
+    <span class="cmnsd_js" {% if load_on_ready %}data-model="person" data-object-token="{{ person.token }}" data-field="get_relation_to_user" id="person-{{ person.slug }}-get_relation_to_user" data-load-on-ready="true"{% endif %}>
+      {% if not load_on_ready %}
+        {% include 'person/functions/get_relation_to_user.html' with person=person suppress_link=True %}
+      {% endif %}
+    </span>
+
+    <dl class="person-profile-card__fields">
+      {# Born / died: the person's birth and death events - editable blocks (date + place). #}
+      {% if person.birth or editing %}{% include 'cmnsd/edit/block.html' with model='person' obj=person block='birth' %}{% endif %}
+      {% if person.death or editing %}{% include 'cmnsd/edit/block.html' with model='person' obj=person block='death' %}{% endif %}
+
+      {% if person.nickname %}
+        <div>
+          <dt class="person-field__label">{% translate "also known as"|capfirst %}</dt>
+          <dd class="person-field__value">{{ person.nickname }}</dd>
+        </div>
+      {% endif %}
+    </dl>
+  </aside>
+
+  <!--- --- --- --- --- --- --- --- --- --- -->
+  <div class="person-detail__main">
+
+    {% if editing %}
+      {# Edit mode: the person's choices - each saved on click (cmnsd/edit/choices.html). #}
+      <div class="content-detail__choices person-detail__choices">
+        {% include 'cmnsd/edit/block.html' with model='person' obj=person block='gender' choice=True %}
+        {% include 'cmnsd/edit/block.html' with model='person' obj=person block='family_connection' choice=True %}
+        {% include 'cmnsd/edit/block.html' with model='person' obj=person block='visibility' choice=True %}
+        {% include 'cmnsd/edit/block.html' with model='person' obj=person block='status' choice=True %}
+      </div>
+    {% endif %}
+
+    <!-- Biography -->
+    {% include 'cmnsd/edit/block.html' with model='person' obj=person block='biography' %}
+    
+    <!-- Tags-->
+    {% include 'person/functions/get_tags.html' with person=person %}
+    
+
+    {% comment %}
+      Collapsible sections (cmnsd/section.html): open/closed remembered per
+      section for all person pages; a closed section only costs its count
+      and loads through the API when opened (field = the Person method
+      whose function template renders the body).
+    {% endcomment %}
+    {% if person.family_connection != 'outsider' %}{# an outsider has no place in the tree #}
+    {% translate "relationships" as title %}
+    {% include 'cmnsd/section.html' with key='person.relationships' title=title|capfirst count=person|relationship_count:request body='person/functions/get_relationships.html' model='person' token=person.token field='get_relationships' empty_body=editing %}
+    {% endif %}
+
+    {% translate "content" as title %}
+    {% include 'cmnsd/section.html' with key='person.content' title=title|capfirst count=person|content_count:request body='person/functions/get_visible_content.html' model='person' token=person.token field='get_visible_content' %}
+
+    {% translate "comments" as title %}
+    {% include 'cmnsd/section.html' with key='person.comments' title=title|capfirst count=person|comment_count:request body='person/functions/get_comments.html' model='person' token=person.token field='get_comments' empty_body=request.user.is_authenticated count_list='#comments-'|add:person.token count_items='.comment-row' %}
+
+    {% translate "events" as title %}
+    {% include 'cmnsd/section.html' with key='person.events' title=title|capfirst count=person|event_count:request body='person/functions/get_visible_events.html' model='person' token=person.token field='get_visible_events' empty_body=editing %}
+
+    {% include 'note/_notes_section.html' with obj=person key='person.notes' %}
+
+  </div>
+</div>
+{% endblock %}

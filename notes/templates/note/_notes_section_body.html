@@ -1,0 +1,6 @@
+{% comment %}
+  The body of a page's "Notes" section (note/_notes_section.html): the
+  notes as rows, then "+ New note". Context: notes, on, perms.
+{% endcomment %}
+{% if notes %}<ul class="note-list note-list--compact">{% for note in notes %}{% include 'note/_note_row.html' %}{% endfor %}</ul>{% endif %}
+{% if perms.notes.add_note %}{% include 'note/_new_note.html' %}{% endif %}

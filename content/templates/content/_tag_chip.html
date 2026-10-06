@@ -1,0 +1,12 @@
+{% load edit_mode %}
+{% comment %}
+  One tag on an item's page - in edit mode (for someone who may change the
+  item) with its "×" (cmnsd/edit/unlink.html). Also what the link action
+  returns for a new tag (content/actions/link.html).
+  Context: tag (with content_count), content, request.
+{% endcomment %}
+{% if edit_mode and content|can_edit:request %}
+  <span class="chip-edit">{% include 'tag/tag.html' %}{% include 'cmnsd/edit/unlink.html' with model='content' owner=content relation='tags' object=tag %}</span>
+{% else %}
+  {% include 'tag/tag.html' %}
+{% endif %}

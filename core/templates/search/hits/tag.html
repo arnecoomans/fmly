@@ -1,0 +1,5 @@
+{% load text_filters %}
+<a class="search-hit-row" href="{{ hit.get_absolute_url }}">
+  <span class="search-hit-row__thumb search-hit-row__thumb--icon"><i class="bi bi-tag"></i></span>
+  <span class="search-hit-row__name">{% highlight_search search_query %}{% if hit.parent %}{{ hit.parent.name }}: {% endif %}{{ hit.name }}{% endhighlight_search %}</span>
+</a>

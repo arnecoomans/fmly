@@ -1,0 +1,14 @@
+{% load edit_mode %}
+{% comment %}
+  One place on an item's page: its name with the parents (field/places/
+  name.html, "New York - New York (state) - U.S.A."). In edit mode, for
+  someone who may change the item, as a chip with its "×"
+  (cmnsd/edit/unlink.html) - also what the link action returns for a
+  newly added place (content/actions/link.html).
+  Context: place, content, request.
+{% endcomment %}
+{% if edit_mode and content|can_edit:request %}
+  <span class="chip-edit"><span class="tag tag--place"><i class="bi bi-geo-alt"></i><span class="tag__text">{% include 'field/places/name.html' %}</span></span>{% include 'cmnsd/edit/unlink.html' with model='content' owner=content relation='places' object=place %}</span>
+{% else %}
+  {% include 'field/places/name.html' %}
+{% endif %}

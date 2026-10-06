@@ -1,0 +1,8 @@
+{% load content_tags %}
+{% comment %}
+  The item's own thumbnail (edit mode, images only): the card as lists show
+  it. The pencil opens the cropper in a dialog (ContentThumbnailForm,
+  content/forms/thumbnail.html).
+{% endcomment %}
+<dt>{% translate "thumbnail"|capfirst %}</dt>
+<dd><img class="content-detail__thumb" src="{{ content|thumb_url:'card' }}" alt="" loading="lazy">{% if not content.thumb_crop_box %} <span class="content-detail__hint">{% translate "automatic" %}</span>{% endif %}</dd>

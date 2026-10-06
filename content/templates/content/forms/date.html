@@ -1,0 +1,26 @@
+{% comment %}
+  The date block's form on one line: how sure · day · month · year - the
+  order the date is shown in ("ca. 5-7-1968"). Fields left empty are
+  unknown. Same contract as cmnsd/edit/form.html (the _modified field,
+  data-cmnsd-edit-form, Save/Cancel). Context: form, obj, model, block,
+  modified, modified_field.
+{% endcomment %}
+<form class="edit-form" data-cmnsd-edit-form action="{{ form_action }}" method="post" novalidate>
+  <input type="hidden" name="{{ modified_field }}" value="{{ modified }}">
+  <div class="edit-form__row edit-form__row--date">
+    {% for field in form %}
+      <div class="edit-form__field edit-form__field--{{ field.name }}">
+        <label for="{{ field.id_for_label }}">{{ field.label|capfirst }}</label>
+        {{ field }}
+      </div>
+    {% endfor %}
+  </div>
+  {% for field in form %}{% for error in field.errors %}<p class="edit-form__error">{{ field.label|capfirst }}: {{ error }}</p>{% endfor %}{% endfor %}
+  {% if form.non_field_errors %}<p class="edit-form__error">{{ form.non_field_errors|join:' ' }}</p>{% endif %}
+  <p class="edit-form__error" data-cmnsd-error hidden></p>
+  <div class="edit-form__actions">
+    <button type="submit" class="btn btn--primary btn--sm">{% translate "save"|capfirst %}</button>
+    <button type="button" class="btn btn--secondary btn--sm" data-cmnsd-edit-cancel>{% translate "cancel"|capfirst %}</button>
+    <span class="edit-form__hint">{% translate "Leave unknown parts empty" %}</span>
+  </div>
+</form>

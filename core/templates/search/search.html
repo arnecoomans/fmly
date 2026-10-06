@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if search_query %}{{ search_query }} - {% endif %}{% translate "search"|capfirst %}{% endblock %}
+
+{% block content %}
+<div class="search-page">
+  {% comment %}
+    A plain GET form, so search works without JS (reloads /search/?q=...).
+    With load_on_ready on, cmnsd.js (list.js, data-cmnsd-list-url) asks
+    this address for JSON while typing and swaps #search-results.
+  {% endcomment %}
+  <header class="search-page__header">
+    <h1 class="search-page__title">{% translate "search"|capfirst %}</h1>
+    <form class="search-page__form" method="get" action="{% url 'core:search' %}" role="search"
+          {% if load_on_ready %}data-cmnsd-list-url="{% url 'core:search' %}" data-cmnsd-target="#search-results"{% endif %}>
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <input type="search" name="{{ search_character }}" value="{{ search_query }}"
+             placeholder="{% translate 'people, content, events, notes, places, tags'|capfirst %}"
+             aria-label="{% translate 'search'|capfirst %}" autocomplete="off" autofocus>
+      {% if kind %}<input type="hidden" name="kind" value="{{ kind }}">{% endif %}
+    </form>
+    {% if kind %}
+      <p class="search-page__kind">{% blocktranslate with label=kind_label %}Only {{ label }}{% endblocktranslate %} · <a href="?{{ search_character }}={{ search_query|urlencode }}">{% translate "search everything" %}</a></p>
+    {% endif %}
+  </header>
+
+  <div id="search-results">
+    {% include 'search/_results.html' %}
+  </div>
+</div>
+{% endblock %}

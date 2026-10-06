@@ -1,0 +1,173 @@
+/*
+ * base.css — the layer every page needs, regardless of which app rendered it.
+ *
+ * Reset, document defaults, typography defaults, focus handling. No
+ * component classes here (badges, chips, cards, buttons live in
+ * components.css) — this file only sets up the raw material those
+ * components are built from.
+ *
+ * Load order: specs.css -> base.css -> components.css -> <app>.css
+ * Requires: specs.css (reads its custom properties; does not redefine them)
+ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body, h1, h2, h3, h4, p, figure, blockquote, dl, dd {
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  line-height: var(--leading-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1 { font-size: var(--text-2xl); }
+h2 { font-size: var(--text-xl); }
+h3 { font-size: var(--text-lg); }
+
+p {
+  line-height: 1.6;
+}
+
+/* Reading copy (storyline body / biography) lives in components.css, not
+   here — it's a component-level typography treatment (this file's own
+   rule at the top: no component classes in base.css), and the real
+   version needs to handle markdown output (links, lists, blockquotes),
+   not just plain text. This file used to also define .reading-copy
+   (font-size: 1.125rem, hardcoded) — components.css loads after base.css,
+   so its version (font-size: var(--text-lg) = 19px) always won the
+   cascade regardless, making the copy here dead weight and a source of
+   confusion about which one was "real." Removed. See components.css's
+   "Reading copy" section for the actual definition. */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Only utility links (breadcrumbs, "view all", inline actions) get the
+   accent color + underline-on-hover treatment; navigation and card links
+   stay inherited so the whole card is clickable without looking like a
+   link soup. */
+.link-accent {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+.link-accent:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Bootstrap's own reset gives <mark> padding: .1875em on all sides - fine
+   for a mark standing alone, wrong for the |highlight filter's actual use
+   (a substring highlighted mid-word, e.g. Al<mark>bert</mark> for a called
+   name inside a given name): the HORIZONTAL padding visually pushes the
+   highlighted part away from the rest of the word - "Al bert" instead of
+   "Albert" with "bert" picked out - even though there's no whitespace in
+   the actual text. Confirmed via bootstrap.min.css: mark{padding:.1875em;...}.
+   Zeroing horizontal padding only (keeping vertical) fixes this cleanly -
+   vertical padding doesn't affect inline flow position, so it's free to
+   keep for the slightly taller highlight band. A tried-and-rejected
+   alternative: negative margin-left/right to compensate for padding:0 -
+   that shifts the mark's whole border box (background included) sideways
+   in the inline flow instead of shrinking it, so the background paints
+   over the preceding character. z-index can't rescue that either - mark
+   is position: static by default, and z-index only applies to positioned
+   elements. */
+mark {
+  padding: .1875em 0;
+}
+
+/* Search match ({% highlight_search %}, e.g. Di<mark class="search-hit">
+   eric</mark>xdr in the People list): must read as different from a plain
+   <mark>, which already means "the name this person is called by" - so an
+   accent underline on a soft accent tint instead of the yellow fill. Both
+   can apply to the same letters (a match inside the called name). */
+mark.search-hit {
+  background: var(--color-accent-soft);
+  color: inherit;
+  text-decoration: underline 2px var(--color-accent);
+  text-underline-offset: 2px;
+}
+
+/* Visible keyboard focus everywhere — required per the design system's
+   accessibility rule: every interactive element (real <button>, <a href>,
+   <input>) needs a real focus state, not just a hover state. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Screen-reader-only text, for icon-only controls that carry an
+   aria-label but also want visible-on-focus or redundant text content. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Shared page-chrome shells. Every screen uses ONE of these two — see
+   BRIEFING.md's "Header & global navigation" section for .app-topbar's
+   content (logo, nav, search, account menu — in components.css as
+   .app-topbar__* and .user-menu, not redefined here). Keep the shell
+   here (base.css) because both modes and every app share it; only the
+   content inside <main> is app-specific. */
+
+.app-topbar {
+  height: var(--topbar-height);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.app-sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  padding: 22px 14px;
+}

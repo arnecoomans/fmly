@@ -15,11 +15,16 @@ __pycache__
 
 # Keep statics and uploads outside repo
 /public/static
-/public/documents/*
-/public/documents/files/*
+/private
+
+# Keep the legacy import data outside repo: family documents and scans,
+# personal details and password hashes (import/fixtures/auth_user.json)
+/import
 
 # Keep scripts outside repo
 /*.sh
+# ...except the site's own steps after an update (run by update.sh)
+!/.post_update.sh
 
 # allow for custom css's
 custom_*.css
@@ -42,3 +47,8 @@ old_*
 dev_*
 *.old
 *.dev
+docs/
+
+# Claude: local skills and generated briefings
+/.claude
+/Claude outputs

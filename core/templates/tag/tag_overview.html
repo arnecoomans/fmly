@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% comment %}
+  The tags overview (core.views.TagListView): the tags that group others
+  (e.g. "Collection"), each heading linking to its page with its
+  collections as chips under it, then all other tags. Every chip shows
+  its content count for this viewer; empty tags are left out
+  (core/tags.py).
+{% endcomment %}
+
+{% block title %}{% translate "tags"|capfirst %}{% endblock %}
+
+{% block content %}
+<div class="tag-page">
+  <header class="tag-page__header">
+    <div class="tag-page__intro">
+      <h1 class="tag-page__name">{% translate "tags"|capfirst %}</h1>
+    </div>
+  </header>
+
+  {% for group in groups %}
+    <section class="tag-overview__group">
+      <h2 class="section-title tag-overview__heading">
+        <a href="{{ group.get_absolute_url }}">{{ group.name }}</a>{% if group.content_count %} <span class="tag__count">{{ group.content_count }}</span>{% endif %}{% if group.needs_attention %} <span class="badge-status badge-status--draft">{{ group.get_status_display }} · {% translate "not published" %}</span>{% endif %}
+      </h2>
+      <div class="tag-list">{% for child in group.listed_children %}{% include 'tag/tag.html' with tag=child hide_parent=True %}{% endfor %}</div>
+    </section>
+  {% endfor %}
+
+  {% if loose %}
+    <section class="tag-overview__group">
+      {% if groups %}<h2 class="section-title">{% translate "other tags"|capfirst %}</h2>{% endif %}
+      <div class="tag-list">{% for tag in loose %}{% include 'tag/tag.html' with tag=tag %}{% endfor %}</div>
+    </section>
+  {% endif %}
+
+  {% if not groups and not loose %}
+    <div class="list-empty-state">
+      <i class="bi bi-tags list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "no tags yet"|capfirst %}</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

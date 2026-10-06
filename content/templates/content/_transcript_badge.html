@@ -1,0 +1,11 @@
+{% comment %}
+  A content card's sign that the item has a transcript (item.transcript,
+  the grid's mark_wholes): its own languages ("Transcript: Dutch,
+  English"), and/or how many of its pages (parts) have one ("Transcribed
+  on 3 pages"). Lines of text - not a page, which is the kind icon's
+  symbol for a document; a dashed edge when any is marked incomplete.
+{% endcomment %}
+{% with t=item.transcript %}
+{% blocktranslate count counter=t.pages asvar pages_text %}transcribed on {{ counter }} page{% plural %}transcribed on {{ counter }} pages{% endblocktranslate %}
+<span class="content-card__transcript{% if t.incomplete %} is-incomplete{% endif %}" title="{% if t.languages %}{% translate 'transcript'|capfirst %}: {{ t.languages|join:', ' }}{% if t.pages %} · {{ pages_text }}{% endif %}{% elif t.pages %}{{ pages_text|capfirst }}{% endif %}{% if t.incomplete %} ({% translate 'incomplete' %}){% endif %}" aria-label="{% translate 'has a transcript' %}"><i class="bi bi-text-paragraph"></i></span>
+{% endwith %}

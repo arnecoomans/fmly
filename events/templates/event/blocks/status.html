@@ -1,0 +1,6 @@
+{% load edit_mode %}
+{% comment %}
+  The event's status - a choice block, edit mode only: publish, delete
+  (hidden from everyone, recoverable in the admin) - saved on click.
+{% endcomment %}
+{% edit_choices event 'status' %}

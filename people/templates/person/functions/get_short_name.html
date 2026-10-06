@@ -1,0 +1,8 @@
+{% load tags %}{% load text_filters %}{% load visibility %}
+{% if person|visible_to:request.user %}
+  {% with url=person|person_url:request %}{% if url %}<a href="{{ url }}">{% endif %}
+  {{ person.called_name|default:person.given_name|default:person.nickname|highlight:person.called_name }} {{ person.last_name }}{% if person.married_name %} ({{ person.married_name }}){% endif %}
+  {% if url %}</a>{% endif %}{% endwith %}
+{% else %}
+  {{ person.get_short_name|obfuscate_name }}
+{% endif %}

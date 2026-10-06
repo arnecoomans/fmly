@@ -1,0 +1,8 @@
+{% load content_tags %}
+{% comment %}
+  When the note is about, as a field row ("ca. 1950", "5-7-1968") - an
+  editable block (form: note/forms/date.html), shown even when unknown in
+  edit mode.
+{% endcomment %}
+<dt>{% translate "date"|capfirst %}</dt>
+<dd>{% with date=note|partial_date %}{% if date %}{{ date }}{% else %}<span class="edit-block__empty">{% translate "unknown" %}</span>{% endif %}{% endwith %}</dd>

@@ -1,146 +1,48 @@
-{% load i18n %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand bi bi-images{% if active_page == 'images' %} active{% endif %}" href="/"  accesskey="a"> {% translate 'archive'|title %}</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        {% if not user.is_authenticated %}
-          {% if public %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'login' %}"> {% translate 'log-in'|title %}</a>
-            </li>
-            {% endif %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'archive:signup' %}"> {% translate 'register'|title %}</a>
-          </li>
-        {% endif %}
-        {% if perms.archive.view_person %}
-          <li class="nav-item">
-            <a class="nav-link bi bi-people-fill{% if active_page == 'people' %} active{% endif %}" href="{% url 'archive:people' %}"  accesskey="p"> {% translate 'people'|title %}</a>
-          </li>
-        {% endif %}
-        {% if perms.archive.view_tag %}
-          <li class="nav-item">
-            <a class="nav-link bi bi-tags-fill{% if active_page == 'tags' %} active{% endif %}" href="{% url 'archive:tags' %}" accesskey="t"> {% translate 'tags'|title %}</a>
-          </li>
-        {% endif %}
-        {% if perms.archive.view_comment %}
-          <li class="nav-item">
-            <a class="nav-link bi bi-chat-text-fill{% if active_page == 'comments' %} active{% endif %}" href="{% url 'archive:comments' %}"  accesskey="r"> {% translate 'comments'|title %}</a>
-          </li>
-        {% endif %}
-        {% if perms.archive.view_collection %}
-          <li class="nav-item">
-            <a class="nav-link bi bi-book-fill{% if active_page == 'collections' %} active{% endif %}" href="{% url 'archive:book-collections' %}"  accesskey="c"> {% translate 'books'|title %}</a>
-          </li>
-        {% endif %}
-        {% if user.is_authenticated %}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle bi bi-gear-fill" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {% translate 'profile'|title %}
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <!-- Personal Profile-->
-              <li><a class="dropdown-item bi bi-person" href="{% url 'archive:settings' %}"> {{ user.first_name }} {{ user.last_name }} ({{ user }})</a></li>
-              <li><a class="dropdown-item bi bi-images" href="{% url 'archive:image-by-uploader' user %}"> {% translate 'my uploads'|title %}</a></li>
-              {% if user.preference.favorites.all.count > 0 %}<li><a class="dropdown-item bi bi-heart-fill" href="{% url 'archive:images' %}?loved"> {% translate 'images i love'|capfirst %}</a>{% endif %}
-              <li><div class="dropdown-divider"></div></li>
-              <!-- Notes -->
-              {% if perms.archive.view_note %}
-                <li><a class="dropdown-item bi bi-stickies-fill{% if active_page == 'notes' %} active{% endif %}" href="{% url 'archive:notes' %}"  accesskey="n"> {% translate 'notes'|title %}</a></li>
-              {% endif %}
-              <!-- Attachments -->
-              {% if perms.archive.view_attachment %}
-                <li><a class="dropdown-item bi bi-paperclip" href="{% url 'archive:attachments' %}"> {% translate 'attachments'|title %}</a></li>
-              {% endif %}
-              <!-- Calendar -->
-              <li><a class="dropdown-item bi bi-calendar-heart{% if active_page == 'calendar' %} active{% endif %}" href="{% url 'archive:birthday-calendar' %}"> {% translate 'birthday calendar'|title %}</a></li>
-              <li><div class="dropdown-divider"></div></li>
-            <!-- Objects -->
-              <!-- Images -->
-              {% if perms.archive.add_document or perms.archive.add_image %}
-                <li><a class="dropdown-item bi bi-cloud-arrow-up" href="{% url 'archive:add-image' %}"> {% translate 'add'|title %} {% translate 'image'|title %}</a></li>
-              {% endif %}
-              {% if object and perms.archive.change_image %}
-                <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:image-edit' object.id %}"> {% translate 'edit this'|capfirst %} {% translate 'image'|title %}</a></li>
-              {% endif %}
-              <!-- People -->
-              {% if perms.archive.add_person %}
-                <li><a class="dropdown-item bi bi-person-fill-add" href="{% url 'archive:add-person' %}"> {% translate 'add'|title %} {% translate 'person'|title %}</a></li>
-              {% endif %}
-              {% if person and perms.archive.change_person %}
-                <li><a class="dropdown-item bi bi-person-fill" href="{% url 'archive:person-edit' person.id %}"> {% translate 'edit this'|capfirst %} {% translate 'person'|title %}</a></li>
-              {% endif %}
-              <!-- Tags -->
-              {% if perms.archive.add_tag %}
-                <li><a class="dropdown-item bi bi-tag-fill" href="{% url 'archive:add-tag' %}"> {% translate 'add'|title %} {% translate 'tag'|title %}</a></li>
-              {% endif %}
-              {% if tag and perms.archive.change_tag %}
-                <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:edit-tag' tag.slug %}"> {% translate 'edit this'|capfirst %} {% translate 'tag'|title %}</a></li>
-              {% endif %}
-              <!-- Notes -->
-              {% if perms.archive.add_note %}
-                <li><a class="dropdown-item bi bi-file-earmark-arrow-up-fill" href="{% url 'archive:add-note' %}"> {% translate 'add'|title %} {% translate 'note'|title %}</a></li>
-              {% endif %}
-              {% if note and perms.archive.change_note %}
-                <li><a class="dropdown-item bi bi-pencil-fill {% if user != note.user and not user.is_superuser %}disabled{% endif %}" href="{% url 'archive:note-edit' note.id %}"> {% translate 'edit this'|capfirst %} {% translate 'note'|title %}</a></li>
-              {% endif %}
-              <!-- Attachment -->
-              {% if perms.archive.create_attachment %}
-                <li><a class="dropdown-item bi bi-paperclip " href="{% url 'archive:add-attachment' %}"> {% translate 'add'|title %} {% translate 'attachment'|title %}</a></li>
-              {% endif %}
-              <!-- Books -->
-              {% if perms.archive.add_book %}
-                <li><a class="dropdown-item bi bi-book-fill" href="{% url 'archive:add-book' %}"> {% translate 'add'|title %} {% translate 'book'|title %}</a></li>
-              {% endif %}
-              {% if book and perms.archive.change_book %}
-                <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:edit-book' book.id %}"> {% translate 'edit this'|capfirst %} {% translate 'book'|title %}</a></li>
-              {% endif %}
-              <!-- Book Collections -->
-              {% if perms.archive.add_collection %}
-                <li><a class="dropdown-item bi bi-book-half" href="{% url 'archive:add-book-collection' %}"> {% translate 'add'|title %} {% translate 'book collection'|title %}</a></li>
-              {% endif %}
-              {% if collection and perms.archive.change_collection %}
-                <li><a class="dropdown-item bi bi-pencil-fill" href="{% url 'archive:edit-book-collection' collection.slug %}"> {% translate 'edit this'|capfirst %} {% translate 'book collection'|title %}</a></li>
-              {% endif %}
-              <li><div class="dropdown-divider"></div></li>
-              <!-- Admin -->
-              {% if user.is_staff %}
-                <li><div class="dropdown-divider"></div></li>
-                <li><a class="dropdown-item bi bi-wrench-adjustable-circle-fill" href="/admin"> {% translate 'admin'|title %}</a></li>
-                {% if image %}
-                  <li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/image/{{ image.id }}/change/"> {% translate 'edit this'|capfirst %} {% translate 'image'|title %} {% translate 'in admin' %}</a></li>
-                  {% if image.comments.all.count > 0 %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/comment/?image__id__exact={{ image.id }}"> {% translate 'edit this'|capfirst %} {% translate 'image'|capfirst %} {% translate 'comments'|capfirst %} {% translate 'in admin' %}</a></li>{% endif %}
-                {% endif %}
-                {% if person %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/person/{{ person.id }}/change/"> {% translate 'edit this'|capfirst %} {% translate 'person'|title %} {% translate 'in admin' %}</a></li>{% endif %}
-                {% if note %}<li><a class="dropdown-item bi bi-pencil-fill" href="/admin/archive/note/{{ note.id }}/change/"> {% translate 'Edit note in admin'|title %}</a></li>{% endif %}
-              {% endif %}
-              <li><div class="dropdown-divider"></div></li>
-              <li><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="dropdown-item" title="{% translate 'you are logged in as'|capfirst %} {{ user.first_name }} {{ user.last_name }} ({{ user }})"><i class="bi bi-box-arrow-left"></i> {% translate 'log out'|title %}</button></form></li>
-            </ul>
-          </li>
-        {% endif %}
-      </ul>
-      {% if user.is_authenticated %}
-        <form class="d-flex" method="get"
-              action="{% if active_page == 'images' %}{% url 'archive:images' %}{% elif active_page == 'people' %}{% url 'archive:people' %}{% elif active_page == 'tags' %}{% url 'archive:tags' %}{% elif active_page == 'comments' %}{% url 'archive:comments' %}{% elif active_page == 'notes' %}{% url 'archive:notes' %}{% endif %}">>
-        {% with current='search' %}
-          {% for key, value in filters.items %}
-            {% if value and key != current %}
-              <input type="hidden" name="{{ key }}" value="{{ value }}">
-            {% endif %}
-          {% endfor %}
-        {% endwith %}
-          <input class="form-control me-2" 
-                 type="search" placeholder="{% translate 'Search' %}"
-                 aria-label="Search" name="{{ search_query_character|default:'search'}}" 
-                 {% if request.GET.search %}value="{{ request.GET.search }}"{% endif %}>
-          <button class="btn btn-outline-success {% if not active_page %}disabled{% endif %}" type="submit" {% if not active_page %}disabled{% endif %}>{% translate 'Search' %}</button>
-        </form>
+{% load content_tags %}
+{% comment %}
+  Primary site nav (CSS_BRIEFING.md section 6). Included from header.html,
+  not base.html directly - kept as its own file per that split so a page
+  that ever needs a different nav (unlikely, but matches "header" and
+  "navigation" being asked for as separate files) can swap just this
+  include.
+
+  Every item links to a real page - a destination that doesn't exist yet
+  isn't shown at all.
+
+  Icons per section 8's mapping table, added here for the first time -
+  the table already specified bi-house/bi-people/bi-calendar-event/
+  bi-images/bi-question-circle for these five, but no template actually
+  carried them yet (the same "documented in CSS, not in the template"
+  gap section 8 already had to fix once for the visibility/relation
+  pills - grep the actual template, don't assume the table alone means
+  it's done).
+
+  Main content (dashboard, people, content) is always visible; secondary
+  content (events, comments, tags, places) and notes sit in the "more"
+  menu to save space. On a narrow screen the labels hide (.nav-link__label,
+  still read out, and a tooltip): icons only.
+{% endcomment %}
+<nav class="app-topbar__nav">
+  <a class="nav-link" href="{% url 'dashboard:home' %}" title="{% translate 'dashboard'|capfirst %}"><i class="bi bi-house"></i><span class="nav-link__label">{% translate "dashboard"|capfirst %}</span></a>
+  <a class="nav-link" href="{% url 'people:person_list' %}" title="{% translate 'people'|capfirst %}"><i class="bi bi-people"></i><span class="nav-link__label">{% translate "people"|capfirst %}</span></a>
+  <a class="nav-link" href="{% url 'content:list' %}" title="{% translate 'photos & documents'|capfirst %}"><i class="bi bi-images"></i><span class="nav-link__label">{% translate "photos & documents"|capfirst %}</span></a>
+  {% if user.is_authenticated %}{# Signed out: events, places, tags ... aren't advertised. #}
+  <details class="nav-menu" data-cmnsd-menu>
+    <summary class="nav-link nav-menu__trigger" title="{% translate 'more'|capfirst %}"><i class="bi bi-three-dots nav-menu__dots"></i><span class="nav-link__label">{% translate "more"|capfirst %}</span><i class="bi bi-chevron-down nav-menu__chevron"></i></summary>
+    <div class="nav-menu__panel">
+      <a class="nav-menu__item" href="{% url 'events:list' %}"><i class="bi bi-calendar-event"></i>{% translate "events"|capfirst %}</a>
+      {% if user.is_authenticated %}<a class="nav-menu__item" href="{% url 'core:comment_list' %}"><i class="bi bi-chat-left-text"></i>{% translate "comments"|capfirst %}</a>{% endif %}
+      <a class="nav-menu__item" href="{% url 'core:tag_list' %}"><i class="bi bi-tags"></i>{% translate "tags"|capfirst %}</a>
+      <a class="nav-menu__item" href="{% url 'places:list' %}"><i class="bi bi-geo-alt"></i>{% translate "places"|capfirst %}</a>
+      {% if user.is_authenticated %}<a class="nav-menu__item" href="{% url 'notes:list' %}"><i class="bi bi-journal-text"></i>{% translate "notes"|capfirst %}</a>{% endif %}
+      {% if perms.content.add_content or perms.people.add_person %}
+        {# Adding to the archive, and the drafts it leaves in your inbox. #}
+        <hr class="nav-menu__divider">
+        {% if perms.content.add_content %}<a class="nav-menu__item" href="{% url 'content:upload' %}"><i class="bi bi-cloud-arrow-up"></i>{% translate "add content"|capfirst %}</a>{% endif %}
+        {% if perms.people.add_person %}<a class="nav-menu__item" href="{% url 'people:person_create' %}"><i class="bi bi-person-plus"></i>{% translate "add person"|capfirst %}</a>{% endif %}
+        {% with drafts=request.user|inbox_count %}<a class="nav-menu__item" href="{% url 'content:inbox' %}"><i class="bi bi-inbox"></i>{% translate "inbox"|capfirst %}{% if drafts %} <span class="tag__count">{{ drafts }}</span>{% endif %}</a>{% endwith %}
       {% endif %}
     </div>
-  </div>
+  </details>
+  {% endif %}
 </nav>

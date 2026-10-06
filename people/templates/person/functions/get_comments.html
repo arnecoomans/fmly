@@ -1,0 +1,7 @@
+{% comment %}
+  Function template for Person.get_comments() - the Comments section body
+  on the person page: the shared thread (core comment/thread.html) with
+  its form. Rendered in the page when the section is open, or through the
+  API when it's opened (cmnsd/section.html). Context: `person`, `request`.
+{% endcomment %}
+{% include 'comment/thread.html' with target=person model='person' %}

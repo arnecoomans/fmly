@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load content_tags %}
+{% comment %}
+  Your inbox (content.views.InboxView): your drafts - content, oldest first,
+  then people and events you added that aren't published yet. Open
+  one to describe it (its page, in edit mode; "next in inbox" goes on) and
+  publish it to take it out. Select several and "make these one item": the
+  first becomes the whole, the others its parts in this order. The date in
+  a file is shown as a hint only - for a scan it's when the copy was made.
+{% endcomment %}
+
+{% block title %}{% translate "inbox"|capfirst %}{% endblock %}
+
+{% block content %}
+<div class="tag-page inbox-page">
+  <header class="tag-page__header note-overview__header">
+    <div class="tag-page__intro">
+      <a class="tag-page__parent" href="{% url 'content:list' %}">{% translate "content"|capfirst %} <i class="bi bi-chevron-right"></i></a>
+      <h1 class="tag-page__name">{% translate "inbox"|capfirst %}</h1>
+      <p class="tag-page__counts">{% blocktranslate count counter=total %}{{ counter }} draft, visible only to you until published.{% plural %}{{ counter }} drafts, visible only to you until published.{% endblocktranslate %}</p>
+    </div>
+    {% if perms.content.add_content %}<a class="btn btn--primary btn--sm" href="{% url 'content:upload' %}"><i class="bi bi-plus-lg"></i> {% translate "add content"|capfirst %}</a>{% endif %}
+  </header>
+
+  {% if items %}
+    <form method="post" action="{% url 'content:inbox_group' %}" class="inbox">
+      {% csrf_token %}
+      <ol class="inbox__list">
+        {% for item in items %}
+          <li class="inbox__row">
+            <label class="inbox__select" title="{% translate 'select' %}"><input type="checkbox" name="tokens" value="{{ item.token }}"></label>
+            <a class="inbox__thumb" href="{{ item.get_absolute_url }}">
+              {% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'avatar' }}" alt="" loading="lazy">{% else %}<i class="bi bi-{{ item|kind_icon }}"></i>{% endif %}
+            </a>
+            <span class="inbox__body">
+              <a class="inbox__name" href="{{ item.get_absolute_url }}">{{ item }}</a>
+              <span class="inbox__meta">
+                {{ item.get_kind_display|capfirst }}{% if item.parent %} · {% translate "part of" %} {{ item.parent }}{% endif %}
+                · {% translate "added" %} {{ item.date_created|date:"j M Y" }}
+                {% if item.file_date %} · <span title="{% translate 'The date stored in the file - for a scan, when the copy was made.' %}">{% translate "file date" %} {{ item.file_date }}</span>{% endif %}
+              </span>
+            </span>
+          </li>
+        {% endfor %}
+      </ol>
+      <div class="inbox__actions">
+        <button type="submit" class="btn btn--secondary btn--sm"><i class="bi bi-collection"></i> {% translate "make these one item"|capfirst %}</button>
+        <span class="edit-form__hint">{% translate "The first selected becomes the whole, the others its pages, in this order." %}</span>
+      </div>
+    </form>
+  {% endif %}
+
+  {% if people %}
+    <section class="tag-page__section inbox__section">
+      <h2 class="section-title">{% translate "people"|capfirst %}</h2>
+      <div class="tag-page__people">{% for person in people %}{% include 'people/_person_row.html' with related=person %}{% endfor %}</div>
+    </section>
+  {% endif %}
+
+  {% if events %}
+    <section class="tag-page__section inbox__section">
+      <h2 class="section-title">{% translate "events"|capfirst %}</h2>
+      <ol class="events-page__list">{% for event in events %}<li class="event-row">{% include 'event/_event.html' with others=event.people.all %}</li>{% endfor %}</ol>
+    </section>
+  {% endif %}
+
+  {% if not total %}
+    <div class="list-empty-state">
+      <i class="bi bi-inbox list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "your inbox is empty"|capfirst %}</p>
+    </div>
+  {% endif %}
+  {% if others_drafts %}
+    {# Staff: other people's drafts, in case they forget them (content.views.upload.others_drafts) - per person, the longest-waiting first. #}
+    <section class="tag-page__section inbox__others" id="others-drafts">
+      <h2 class="section-title">{% translate "other people's drafts"|capfirst %}</h2>
+      {% for group in others_drafts %}
+        <div class="inbox__owner">
+          <p class="inbox__owner-name">{% if group.owner.person %}{% include 'person/functions/get_full_name.html' with person=group.owner.person %}{% else %}{{ group.owner.get_full_name|default:group.owner.username }}{% endif %}
+            <span class="inbox__meta">{% blocktranslate count counter=group.count %}{{ counter }} draft{% plural %}{{ counter }} drafts{% endblocktranslate %} · {% blocktranslate with when=group.oldest|timesince %}the oldest {{ when }} ago{% endblocktranslate %}</span></p>
+          {% if group.content %}<div class="dashboard__drafts">{% for item in group.content %}<a href="{{ item.get_absolute_url }}" title="{{ item }}">{% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'avatar' }}" alt="{{ item }}" loading="lazy">{% else %}<i class="bi bi-{{ item|kind_icon }}"></i>{% endif %}</a>{% endfor %}</div>{% endif %}
+          {% if group.people %}<div class="tag-page__people">{% for person in group.people %}{% include 'people/_person_row.html' with related=person %}{% endfor %}</div>{% endif %}
+          {% if group.events %}<ol class="events-page__list">{% for event in group.events %}<li class="event-row">{% include 'event/_event.html' with others=event.people.all %}</li>{% endfor %}</ol>{% endif %}
+        </div>
+      {% endfor %}
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

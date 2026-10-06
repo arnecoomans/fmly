@@ -1,0 +1,12 @@
+{% load edit_mode %}
+{% comment %}
+  One linked object on a note's page (note/_chip.html), in edit mode - for
+  someone who may change the note - with its "×" (cmnsd/edit/unlink.html).
+  Also what the link action returns for a newly linked one
+  (note/actions/link.html). Context: note, relation, object, request.
+{% endcomment %}
+{% if edit_mode and note|can_edit:request %}
+  <span class="chip-edit">{% include 'note/_chip.html' %}{% include 'cmnsd/edit/unlink.html' with model='note' owner=note object=object %}</span>
+{% else %}
+  {% include 'note/_chip.html' %}
+{% endif %}

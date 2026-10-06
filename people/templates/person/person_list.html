@@ -1,0 +1,65 @@
+{% load list_filters %}
+{% comment %}
+  List template for Person (<model>/<model>_list.html, see
+  cmnsd/docs/api.md #Listing) - rendered server-side by
+  PersonListView inside people/person_list.html, and by the API
+  (GET api/person/?...) for cmnsd.js's live search to swap in. One
+  template, so both paths produce identical markup.
+
+  Context (cmnsd.api.filtering.list_context()): `person_list` (visible,
+  filtered people, lifespan already batch-attached), `search_query`
+  (the active free-text query, '' if none), `request`.
+
+  Rows reuse people/_person_row.html with show_visibility (section 9.2).
+  Private people (private=True) are listed too - the row renders them
+  without a link, same as in the relationships grid.
+{% endcomment %}
+{% with index=person_list|group_by_initial:'last_name' %}
+  {% if index.groups %}
+    <div class="person-list-bar">
+      <nav class="person-list-index" aria-label="{% translate 'jump to letter'|capfirst %}">
+        {% for entry in index.letters %}
+          {% if entry.count %}
+            <a class="person-list-index__letter" href="#people-{{ entry.anchor }}">{{ entry.letter }}</a>
+          {% else %}
+            <span class="person-list-index__letter is-empty" aria-hidden="true">{{ entry.letter }}</span>
+          {% endif %}
+        {% endfor %}
+      </nav>
+      <p class="person-list-count">
+        {% blocktranslate count counter=person_list|length %}{{ counter }} person{% plural %}{{ counter }} people{% endblocktranslate %}
+      </p>
+    </div>
+
+    {% for group in index.groups %}
+      <section class="person-list-group" id="people-{{ group.anchor }}" aria-labelledby="people-{{ group.anchor }}-label">
+        <h2 class="person-list-group__label" id="people-{{ group.anchor }}-label">{{ group.letter }}</h2>
+        <div class="person-list-group__rows">
+          {% for person in group.items %}
+            {% include 'people/_person_row.html' with related=person show_visibility=True %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+
+  {% elif search_query %}
+    <div class="list-empty-state">
+      <i class="bi bi-search list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "no one matches"|capfirst %} &ldquo;{{ search_query }}&rdquo;</p>
+    </div>
+
+  {% elif not request.user.is_authenticated %}
+    <div class="list-empty-state">
+      <i class="bi bi-people list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "no one to show yet"|capfirst %}</p>
+      <p class="list-empty-state__body">{% translate "Most of this archive is visible to signed-in family and community members. Sign in to see the full list." %}</p>
+      <a class="btn" href="{% url 'login' %}?next={% url 'people:person_list' %}">{% translate "sign in"|capfirst %}</a>
+    </div>
+
+  {% else %}
+    <div class="list-empty-state">
+      <i class="bi bi-people list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "no people in the archive yet"|capfirst %}</p>
+    </div>
+  {% endif %}
+{% endwith %}

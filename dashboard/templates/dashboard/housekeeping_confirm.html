@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% comment %}
+  What exactly a housekeeping delete removes (dashboard.views.HousekeepingView,
+  a POST without confirm): the selection again, with what goes along. Only
+  "delete for good" (confirm=1) deletes. Context: action (purge|files),
+  items or files.
+{% endcomment %}
+
+{% block title %}{% translate "housekeeping"|capfirst %}{% endblock %}
+
+{% block content %}
+<div class="tag-page housekeeping">
+  <header class="tag-page__header">
+    <div class="tag-page__intro">
+      <a class="tag-page__parent" href="{% url 'dashboard:housekeeping' %}">{% translate "housekeeping"|capfirst %} <i class="bi bi-chevron-right"></i></a>
+      <h1 class="tag-page__name">{% if action == 'purge' %}{% translate "purge these items?"|capfirst %}{% else %}{% translate "delete these files?"|capfirst %}{% endif %}</h1>
+      <p class="tag-page__counts">{% translate "This can't be undone - only a backup brings it back." %}</p>
+    </div>
+  </header>
+  <form method="post">
+    {% csrf_token %}<input type="hidden" name="action" value="{{ action }}"><input type="hidden" name="confirm" value="1">
+    <div class="housekeeping__list">
+      {% if action == 'purge' %}
+        {% for item in items %}
+          {% if not item.blocked %}<input type="hidden" name="item" value="{{ item.token }}">{% endif %}
+          {% include 'dashboard/_housekeeping_item.html' %}
+          {% for part in item.purge_parts %}<p class="housekeeping__meta housekeeping__part">↳ {% translate "part" %}: {{ part }}{% if part.file %} · {{ part.file.name }}{% endif %}</p>{% endfor %}
+        {% empty %}<p>{% translate "Nothing to purge." %}</p>{% endfor %}
+      {% else %}
+        {% for file in files %}
+          <input type="hidden" name="file" value="{{ file.name }}">
+          <div class="housekeeping__item">
+            {% if file.image %}<img class="housekeeping__thumb" src="{% url 'dashboard:housekeeping_preview' %}?name={{ file.name|urlencode }}" alt="" loading="lazy">{% else %}<span class="housekeeping__thumb housekeeping__thumb--icon"><i class="bi bi-file-earmark"></i></span>{% endif %}
+            <span class="housekeeping__text"><span class="housekeeping__name">{{ file.name }}</span></span>
+          </div>
+        {% empty %}<p>{% translate "No files to delete." %}</p>{% endfor %}
+      {% endif %}
+    </div>
+    <div class="edit-form__actions">
+      <button type="submit" class="btn btn--primary btn--sm">{% translate "delete for good"|capfirst %}</button>
+      <a class="btn btn--secondary btn--sm" href="{% url 'dashboard:housekeeping' %}">{% translate "cancel"|capfirst %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

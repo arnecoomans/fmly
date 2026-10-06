@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load dashboard %}
+{% comment %}
+  A month of anniversaries (events.views.EventCalendarView): every event
+  with a known day, by day, across the years - today marked. A month's
+  pills to jump, previous / next. Each event as event/_event.html, with how
+  long ago.
+{% endcomment %}
+
+{% block title %}{% translate "calendar"|capfirst %} · {{ month_name }}{% endblock %}
+
+{% block content %}
+<div class="tag-page calendar-page">
+  <header class="tag-page__header">
+    <div class="tag-page__intro">
+      <a class="tag-page__parent" href="{% url 'events:list' %}">{% translate "events"|capfirst %} <i class="bi bi-chevron-right"></i></a>
+      <h1 class="tag-page__name calendar-page__title">
+        <a href="?month={{ previous }}" class="calendar-page__step" title="{% translate 'previous month'|capfirst %}"><i class="bi bi-chevron-left"></i></a>
+        {{ month_name|capfirst }}
+        <a href="?month={{ next }}" class="calendar-page__step" title="{% translate 'next month'|capfirst %}"><i class="bi bi-chevron-right"></i></a>
+      </h1>
+      <p class="tag-page__counts">{% translate "What happened, by day - across the years: the family's events and the history around them." %}</p>
+    </div>
+  </header>
+
+  <nav class="content-grid-pills events-page__kinds" aria-label="{% translate 'month'|capfirst %}">
+    {% for value, label in months %}<a class="content-grid-pill{% if value == month %} is-active{% endif %}" href="?month={{ value }}"{% if value == month %} aria-current="page"{% endif %}>{{ label|capfirst }}</a>{% endfor %}
+  </nav>
+
+  {% for day, events in days %}
+    <section class="calendar-page__day{% if day == today %} is-today{% endif %}" id="day-{{ day }}">
+      <h2 class="calendar-page__date"><span class="calendar-page__number">{{ day }}</span>{% if day == today %} <span class="calendar-page__today">{% translate "today" %}</span>{% endif %}</h2>
+      <ol class="events-page__list">
+        {% for event in events %}<li class="event-row">{% include 'event/_event.html' with others=event.people.all %}<span class="dashboard__years-ago">{{ event|years_ago }}</span></li>{% endfor %}
+      </ol>
+    </section>
+  {% empty %}
+    <div class="list-empty-state">
+      <i class="bi bi-calendar3 list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "nothing in this month yet"|capfirst %}</p>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

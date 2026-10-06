@@ -1,0 +1,1838 @@
+/*
+ * components.css — the shared cross-app component layer.
+ *
+ * THIS is the "generic location" for anything more than one app's
+ * templates render: the visibility badge, the draft/status badge, a
+ * person's avatar, a row that references a person (used by content,
+ * event and storyline templates, not just person's own), the content
+ * card (all kinds), tags, buttons, nav links, section titles.
+ *
+ * Rule of thumb: if a class here renders a Person, Content, Event or
+ * Storyline the way MORE THAN ONE app needs to render it, it lives here,
+ * not in that model's own app.css. person.css (or content.css, event.css,
+ * storyline.css) only holds layout that is specific to that app's own
+ * pages — see the briefing's "Where does this class go?" section.
+ *
+ * Load order: specs.css -> base.css -> components.css -> <app>.css
+ * Requires: specs.css. Icons: Bootstrap Icons (`<i class="bi bi-*">`),
+ * not hand-drawn inline SVG — see "Icon system" in BRIEFING.md for the
+ * full rationale and the old-SVG -> bi-* mapping for every icon in this
+ * file. Icon color always comes from the surrounding class's `color`
+ * (bi-* icons are font glyphs, so `color` on the parent is enough —
+ * never set color on the `<i>` itself); size is the parent's own
+ * `<selector> i { font-size: Npx; }` rule, never a width/height pair.
+ */
+
+/* ===== Visibility badge — Private / Family / Community / Public ===== */
+/* Appears wherever a Person, Content item or Storyline is listed or
+   shown in detail: icon-only in lists/cards, paired with a text label in
+   detail headers (see .visibility-pill below).
+   Community is VisibilityMixin's default — it is the level most rows
+   will actually carry, not a rare fourth option, so give it a real
+   icon/tone rather than falling back onto .badge-visibility--family. */
+
+.badge-visibility {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-surface-alt);
+  flex-shrink: 0;
+}
+.badge-visibility i { font-size: 12px; line-height: 1; }
+.badge-visibility--private   { color: var(--color-vis-private); }
+.badge-visibility--family    { color: var(--color-vis-family); }
+.badge-visibility--community { color: var(--color-vis-community); }
+.badge-visibility--public    { color: var(--color-vis-public); }
+/* Icon per level (the modifier class above colors it via `color`, same
+   as before — only the icon SOURCE changed, not how it's colored):
+   private   -> bi-lock-fill
+   family    -> bi-people-fill
+   community -> bi-diagram-3-fill
+   public    -> bi-globe */
+
+/* Modifier for a badge sitting on a photo/thumbnail rather than a plain
+   surface — used inside .content-card__thumb. */
+.badge-visibility--on-image {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* Detail-view version: icon + text label, not icon-only. */
+.visibility-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+.visibility-pill i { font-size: 11px; line-height: 1; }
+.visibility-pill--private   { background: var(--color-vis-private-soft);   color: var(--color-vis-private); }
+.visibility-pill--family    { background: var(--color-vis-family-soft);    color: var(--color-vis-family); }
+.visibility-pill--community { background: var(--color-vis-community-soft); color: var(--color-vis-community); }
+.visibility-pill--public    { background: var(--color-vis-public-soft);    color: var(--color-vis-public); }
+
+
+/* ===== Relation-to-viewer pill ===== */
+/* How the PERSON BEING VIEWED relates to the logged-in user — "Grandmother",
+   "Cousin", "Partner's sibling" — computed per viewer, not a stored field.
+   Sits directly below .visibility-pill on the profile card, same size, but
+   deliberately neutral (surface-alt/ink-2): it's informational, not a
+   status, and there's no fixed set of values to color-code the way the
+   four visibility levels are. One generic icon covers every value — don't
+   add a per-relation icon set the way visibility has one per level. */
+
+.person-relation-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  background: var(--color-surface-alt);
+  color: var(--color-ink-2);
+}
+.person-relation-pill i { font-size: 11px; line-height: 1; }
+/* Icon: bi-link-45deg — a generic link/connection glyph, distinct from
+   any visibility icon. Same one regardless of what {{ relation }} says. */
+
+
+/* ===== Status badge — Draft / Complete ===== */
+/* Content only (per the architecture brief). Draft items must look
+   visibly unfinished in any list view. */
+
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+.badge-status--draft    { background: var(--color-draft-soft);    color: var(--color-draft-text); }
+.badge-status--complete { background: var(--color-complete-soft); color: var(--color-complete-text); }
+/* On a thumbnail: position it as the top-left counterpart to
+   .badge-visibility--on-image (top-right). */
+.badge-status--on-image { position: absolute; top: 10px; left: 10px; }
+
+
+/* ===== Avatar ===== */
+/* The generic Person representation — this is the piece content/,
+   event/ and storyline/ templates import, not person/'s own CSS. */
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--color-surface-alt);
+  font-family: var(--font-serif);
+  font-weight: 600;
+  color: var(--color-ink-2);
+  overflow: hidden;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar--sm { width: 28px; height: 28px; font-size: var(--text-xs); }
+.avatar--md { width: 34px; height: 34px; font-size: var(--text-sm); }
+.avatar--lg { width: 64px; height: 64px; font-size: var(--text-xl); }
+.avatar--xl { width: 84px; height: 84px; font-size: 2rem; }
+/* Person avatar tone is gender-derived, not id-hash: Person.gender
+   MALE -> dusk (reused as-is), FEMALE -> blossom, OTHER/UNKNOWN ->
+   stone. warm/sage are reserved for content-card thumbnail tone
+   rotation (.content-card__thumb--*, still id-hash-based and purely
+   decorative) — never apply warm/sage to a Person avatar, so the two
+   tone systems can't be visually confused with each other. */
+.avatar--tone-warm { background: var(--tone-warm-bg); color: var(--tone-warm-fg); }
+.avatar--tone-sage { background: var(--tone-sage-bg); color: var(--tone-sage-fg); }
+.avatar--tone-dusk { background: var(--tone-dusk-bg); color: var(--tone-dusk-fg); }
+.avatar--tone-blossom { background: var(--tone-blossom-bg); color: var(--tone-blossom-fg); }
+.avatar--tone-stone { background: var(--tone-stone-bg); color: var(--tone-stone-fg); }
+
+
+/* ===== Person row ===== */
+/* A clickable row referencing a person: avatar + name + optional role
+   tag. Used by person/'s own relationship list AND by content/, event/
+   and storyline/ wherever they list the people linked to a record. */
+
+.person-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+.person-row__body { min-width: 0; flex-grow: 1; }
+.person-row__name { font-size: var(--text-base); font-weight: 500; }
+.person-row__meta { font-size: var(--text-xs); color: var(--color-ink-3); margin-top: 1px; }
+/* Lifespan after a name (person/functions/get_full_name.html, lifespan=True):
+   one unbreakable unit - short enough (at most "(1913–1994)") to always fit
+   a line, and a break inside it reads badly: "(*" / "2021)" or "(1913–" /
+   "1994)". It still wraps as a whole after the name. */
+.person-lifespan { white-space: nowrap; }
+/* Surnames within a rendered name (get_full_name.html) - bold, so a list
+   of people scans by family name. Two classes with one style for now:
+   last name (at birth) and married name are different facts, and may
+   want different treatment later (e.g. only the birth name emphasised).
+   Classes instead of <b>, so a context can override - e.g. inside an
+   already-bold heading. */
+.person-name__last,
+.person-name__married { font-weight: 700; }
+/* Concept or revoked person, shown only to its creator/staff: needs
+   publishing (or resolving). A draft-colored edge plus a status badge in
+   the meta line - distinct from --derived's dashed border, which is
+   informational, not a to-do. */
+.person-row--needs-attention { border-left: 3px solid var(--color-draft-text); }
+.person-row__role {
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-3);
+  background: var(--color-surface-alt);
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+}
+/* The primary/subject role in a Mention (e.g. "Subject" vs "Mentioned",
+   "Parent" vs computed "Sibling") gets the accent treatment. */
+.person-row__role--primary { color: var(--color-accent-hover); background: var(--color-accent-soft); }
+/* A computed relationship (derived sibling) renders identically to a
+   stored one — this dashed border is the ONLY difference, and it is
+   informational, not a lesser visual class. */
+.person-row--derived { border-style: dashed; }
+
+
+/* ===== Clamp / read-more ===== */
+/* Height-clamped preview + fade + "Read more" toggle for a potentially-
+   long block of prose - person's biography and content's description
+   both need this, so it lives here rather than duplicated per app.css.
+   The expand/collapse itself is a checkbox + sibling selectors, no JS
+   (same "native control over custom script" idea as the user-menu's
+   <details>, but <details> only does all-or-nothing reveal, not a
+   clamped preview with a fade). Pure CSS can't measure whether the
+   content actually overflows the clamp though, so base.html carries a
+   small always-loaded script that adds .clamp-content--fits and removes
+   the toggle+label when scrollHeight doesn't exceed clientHeight - see
+   that script's comment. Markup shape (siblings, in this order):
+     <input type="checkbox" id="clamp-X" class="clamp-toggle">
+     <div class="clamp-content">...</div>
+     <label for="clamp-X" class="clamp-toggle-label">
+       <span class="is-more">Read more</span><span class="is-less">Read less</span>
+     </label>
+   The fade's end color (--color-surface) assumes a white-card container
+   like .person-biography - if a future usage sits on a different
+   background, override .clamp-content::after's background for that
+   container rather than changing the shared default. */
+.clamp-toggle { position: absolute; opacity: 0; pointer-events: none; }
+.clamp-content {
+  position: relative;
+  max-height: 260px;
+  overflow: hidden;
+}
+.clamp-content::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 56px;
+  background: linear-gradient(to bottom, transparent, var(--color-surface));
+  pointer-events: none;
+}
+.clamp-toggle:checked ~ .clamp-content { max-height: none; }
+.clamp-toggle:checked ~ .clamp-content::after { display: none; }
+/* Set by the base.html script when the content doesn't actually overflow
+   the clamp - the gradient is otherwise unconditional (only ever hidden
+   via the :checked rule above), so short content would fade over text
+   that was never clipped once the toggle+label themselves are removed. */
+.clamp-content--fits::after { display: none; }
+.clamp-toggle-label {
+  display: inline-block;
+  margin-top: var(--space-3);
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.clamp-toggle-label:hover { color: var(--color-accent-hover); }
+.clamp-toggle-label .is-less { display: none; }
+.clamp-toggle:checked ~ .clamp-toggle-label .is-more { display: none; }
+.clamp-toggle:checked ~ .clamp-toggle-label .is-less { display: inline; }
+
+
+/* ===== Reading copy ===== */
+/* Long-form prose typography — serif, generous line-height, matches the
+   values specs.css set aside for it (--text-lg / --leading-reading).
+   Cross-app on purpose: a Person's biography and a Storyline's body
+   copy are both long-form reading text and should look like the same
+   voice. Wraps markdown-rendered output, so it covers the tags a
+   biography/body field commonly produces, not just <p>. The box around
+   it (background, border, padding) is NOT part of this class — that's
+   page-specific chrome (see .person-biography in person.css); a
+   Storyline body reads unboxed, full-width, so the two never mix. */
+
+.reading-copy {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  line-height: var(--leading-reading);
+  color: var(--color-ink);
+}
+.reading-copy p { margin: 0 0 var(--space-4); }
+.reading-copy p:last-child { margin-bottom: 0; }
+.reading-copy a { color: var(--color-accent); text-decoration: underline; text-decoration-color: var(--color-accent-soft); }
+.reading-copy ul, .reading-copy ol { margin: 0 0 var(--space-4); padding-left: 1.3em; }
+.reading-copy li + li { margin-top: var(--space-1); }
+.reading-copy blockquote {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-4);
+  border-left: 3px solid var(--color-border);
+  color: var(--color-ink-2);
+  font-style: italic;
+}
+
+
+/* ===== Inline reference chip ===== */
+/* [[person:42]] / [[event:7]] rendered inline inside storyline body
+   copy — keeps the reading flow unbroken. Font-size is intentionally
+   unset here so it inherits the surrounding .reading-copy size. */
+
+.chip-reference {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  padding: 1px 9px 2px;
+  border-radius: var(--radius-pill);
+}
+
+
+/* ===== Kind tag ===== */
+/* Category label used in search results, the "insert reference" picker,
+   and anywhere a Person/Event/Content/Storyline/Location needs a
+   one-glance kind indicator distinct from its own content.
+   Named .kind-tag, not .tag — this is a fixed, built-in, five-value
+   indicator of an object's MODEL (Person vs Event vs ...), not a value
+   of the real Tag model below. The two used to share the .tag name;
+   renamed when Tag was introduced on the Person page to remove the
+   collision. Rendering an object's model type -> this one. Rendering a
+   Tag instance a user attached to something -> .tag / .tag-list below. */
+
+.kind-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+}
+.kind-tag--person    { background: var(--kind-person-bg);    color: var(--kind-person-fg); }
+.kind-tag--event     { background: var(--kind-event-bg);     color: var(--kind-event-fg); }
+.kind-tag--content   { background: var(--kind-content-bg);   color: var(--kind-content-fg); }
+.kind-tag--storyline { background: var(--kind-storyline-bg); color: var(--kind-storyline-fg); }
+.kind-tag--location  { background: var(--kind-location-bg); color: var(--kind-location-fg); }
+
+
+/* ===== Tag chip (Tag model) ===== */
+/* A real Tag instance attached to a Person/Event/Content/etc. — user-
+   authored, open vocabulary, unlike the fixed .kind-tag family above.
+   VisibilityMixin applies to Tag itself (a tag can be private to the
+   archivist even when the object it's on is more open), but that's the
+   TAG'S OWN visibility as an object, not something this chip renders —
+   a tag chip only appears on a page whose visibility check the viewer
+   has already passed, and the tag list the server sends already
+   excludes anything the viewer can't see.
+   Lives here, not in person.css: Tag isn't Person-specific, and once
+   Event/Content pages exist they render this identical chip.
+   Deliberately quiet (outlined, not filled) — a tag list can run to a
+   dozen items and shouldn't visually compete with the one or two
+   badges (.badge-visibility, .badge-status) that actually gate access
+   or track progress. Icon is optional per chip (bi-tag as the default
+   if you want one); the class works with or without the leading <i>. */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  color: var(--color-ink-2);
+}
+.tag i { font-size: 11px; color: var(--color-ink-3); }
+/* The content count in a list context (tags overview, child tags). */
+.tag__count { font-weight: 500; color: var(--color-ink-3); font-variant-numeric: tabular-nums; }
+/* A concept/revoked tag - seen only by its creator and staff - must look
+   unfinished wherever it shows: draft colours, dashed edge, its status. */
+.tag--draft { background: var(--color-draft-soft); border-style: dashed; border-color: var(--color-draft-text); color: var(--color-draft-text); }
+.tag--draft i, .tag--draft .tag__count { color: var(--color-draft-text); }
+.tag__status { font-size: var(--text-2xs); font-weight: 600; text-transform: lowercase; opacity: 0.85; }
+
+
+/* ===== Content card ===== */
+/* One shape, three internal compositions by kind — see the design
+   briefing's "Content card" section for the full rationale. Width is
+   flexible (set it from the grid/flex context that places the card);
+   only internal proportions are fixed. */
+
+.content-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  max-width: 320px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* -- thumbnail-forward: photo, scan -- */
+.content-card__thumb {
+  position: relative;
+  /* A fixed height: about 4:3 in a grid of cards, a wide strip across a
+     phone - the thumbnail cropper (content/forms/thumbnail.html) marks
+     both, so one crop serves them. */
+  height: 148px;
+  flex-shrink: 0;
+  background: var(--tone-warm-bg);
+}
+.content-card__thumb--sage { background: var(--tone-sage-bg); }
+.content-card__thumb--dusk { background: var(--tone-dusk-bg); }
+.content-card__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.content-card__kind-icon {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.content-card__kind-icon i { font-size: 16px; color: var(--color-ink-2); }
+/* Icon per kind: photo -> bi-image, scan -> bi-file-earmark-image. */
+
+/* -- player-forward: podcast, film -- */
+.content-card__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+}
+.content-card__play i { font-size: 18px; color: var(--color-ink); }
+/* Icon: bi-play-fill, centered in the circle above. */
+.content-card__duration {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+}
+
+.content-card__body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.content-card__title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.content-card__subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* -- icon-forward: document, book -- */
+/* -- an item with parts: carries the count badge below. -- */
+.content-card--has-parts { position: relative; }
+
+/* The count badge of an item with parts: bottom-right on the thumbnail
+   (the kind icon is bottom-left), top-right on an icon card. */
+.content-card__parts-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: var(--radius-pill);
+  background: rgba(30, 24, 18, 0.72);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.content-card__parts-badge i { font-size: 12px; }
+.content-card--icon > .content-card__parts-badge { top: 10px; bottom: auto; }
+/* Has a transcript: lines of text, top right on the thumbnail; on an icon
+   card bottom right (the parts badge has the top). Dashed = incomplete. */
+.content-card__transcript {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--color-accent-hover);
+  font-size: 14px;
+}
+.content-card__transcript.is-incomplete { color: var(--color-draft-text); border: 1.5px dashed var(--color-draft-text); }
+.content-card--icon > .content-card__transcript { top: auto; bottom: 10px; }
+.content-card--icon { position: relative; }
+
+.content-card--icon .content-card__body {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+}
+.content-card__icon-chip {
+  width: 52px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--tone-warm-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.content-card__icon-chip i { font-size: 22px; color: var(--color-ink-2); }
+/* Icon per kind: document -> bi-file-earmark-text, book -> bi-book. */
+/* A card is usually a link to the content's page. */
+a.content-card { color: inherit; text-decoration: none; }
+.content-card__role { color: var(--color-accent-hover); font-weight: 600; }
+a.content-card:hover { border-color: var(--color-accent); }
+.content-card__text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.content-card__kind-label {
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+
+
+/* ===== Comment list ===== */
+/* Not gated on anything Person-specific — built now, generic, the same
+   way .content-card was built ahead of Content actually landing. The
+   Comment MODEL itself doesn't exist yet (see person.css's Comments
+   note for that gate); this is just the rendering shape ready for when
+   it does, and it'll be identical on Event/Content pages once Comment
+   is generic across apps, not Person-only.
+   Reuses .avatar (sm) rather than inventing a second avatar shape — a
+   comment author is rendered exactly like a .person-row's subject. */
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.comment-row {
+  display: flex;
+  gap: var(--space-3);
+}
+.comment-row__body { flex: 1; min-width: 0; }
+.comment-row__meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: 2px;
+}
+.comment-row__author { font-weight: 700; font-size: var(--text-sm); }
+.comment-row__timestamp { font-size: var(--text-xs); color: var(--color-ink-3); }
+.comment-row__text { font-size: var(--text-sm); color: var(--color-ink-2); line-height: 1.5; }
+/* Markdown inside a comment: no stray paragraph gaps. */
+.comment-row__text p { margin: 0 0 var(--space-1); }
+.comment-row__text p:last-child { margin-bottom: 0; }
+/* Links in a comment (markdown) must read as links, not grey text. */
+.comment-row__text a { color: var(--color-accent); text-decoration: underline; text-underline-offset: 2px; }
+.comment-row__text a:hover { color: var(--color-accent-hover); }
+/* Hidden by staff (revoked) - only staff still see it, dimmed. */
+.comment-row--hidden { opacity: 0.55; }
+.comment-row__controls { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-3); margin-top: var(--space-1); font-size: var(--text-xs); }
+.comment-row__control,
+.comment-row__edit > summary {
+  background: none; border: none; padding: 0; cursor: pointer;
+  color: var(--color-ink-3); font-size: var(--text-xs); list-style: none;
+}
+.comment-row__control:hover,
+.comment-row__edit > summary:hover { color: var(--color-accent); }
+.comment-row__edit > summary::-webkit-details-marker { display: none; }
+.comment-row__edit[open] { flex-basis: 100%; }
+.comment-row__edit .comment-form { margin-top: var(--space-2); }
+
+/* "No comments yet" - shown only while it's the list's only child, so it
+   disappears by itself when cmnsd.js appends the first comment. */
+.comments__empty { margin: 0; font-size: var(--text-sm); color: var(--color-ink-3); }
+
+/* The comment list page (comment/comment_list.html). */
+/* Grouped by what the comments are on: a header per item/person, its
+   comments indented beneath. A group left empty by deleting its last
+   comment hides itself. */
+.comment-feed { display: flex; flex-direction: column; gap: var(--space-6); }
+.comment-feed__group {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+.comment-feed__group:not(:has(.comment-row)) { display: none; }
+.comment-feed__group > .comment-list { margin-top: var(--space-4); padding-left: var(--space-4); border-left: 2px solid var(--color-border); }
+.comment-target { display: flex; align-items: center; gap: var(--space-3); color: inherit; text-decoration: none; }
+.comment-target:hover .comment-target__name { color: var(--color-accent); }
+.comment-target__thumb { width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--radius-md); object-fit: cover; background: var(--color-surface-alt); }
+.comment-target__thumb--icon { display: inline-flex; align-items: center; justify-content: center; font-size: 20px; color: var(--color-ink-3); }
+.comment-target__text { display: flex; flex-direction: column; min-width: 0; }
+.comment-target__name { font-weight: 600; color: var(--color-ink); overflow: hidden; text-overflow: ellipsis; }
+.comment-target__kind { font-size: var(--text-xs); color: var(--color-ink-3); }
+.comment-page { max-width: 760px; margin: 0 auto; padding: 36px 40px; }
+.comment-page__header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-4); margin-bottom: var(--space-6); }
+.comment-page__header h1 { margin: 0; }
+.comment-page__filters { display: flex; gap: var(--space-2); }
+.comment-page__filter {
+  font-size: var(--text-xs); font-weight: 600; padding: 4px 10px;
+  border-radius: var(--radius-pill); color: var(--color-ink-3); text-decoration: none;
+}
+.comment-page__filter:hover { color: var(--color-ink); }
+.comment-page__filter.is-active { color: var(--color-accent-hover); background: var(--color-accent-soft); }
+.comment-page__pagination { display: flex; align-items: center; justify-content: center; gap: var(--space-4); margin-top: var(--space-8); font-size: var(--text-sm); color: var(--color-ink-3); }
+@media (max-width: 640px) { .comment-page { padding: 24px 16px; } }
+.comment-list > .comments__empty:not(:only-child) { display: none; }
+
+.comment-form { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); margin-top: var(--space-4); }
+.comment-form textarea {
+  width: 100%;
+  min-height: 72px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  resize: vertical;
+}
+.comment-form textarea:focus { outline: none; border-color: var(--color-accent); }
+.comment-form__error { margin: 0; font-size: var(--text-xs); color: var(--color-accent-hover); }  /* no error token in specs.css yet */
+
+
+/* ===== Buttons ===== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+.btn--primary { background: var(--color-accent); color: #fff; }
+.btn--primary:hover { background: var(--color-accent-hover); }
+.btn--secondary { background: var(--color-surface); color: var(--color-accent); border: 1.5px solid var(--color-accent); }
+.btn--secondary:hover { background: var(--color-accent-soft); }
+.btn--sm { height: 34px; padding: 0 14px; font-size: var(--text-xs); }
+
+
+/* ===== Nav link (topbar + sidebar) ===== */
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-ink-2);
+  white-space: nowrap;   /* "Photos & documents" on one line */
+}
+.nav-link i { font-size: 16px; line-height: 1; }
+/* Icons: Dashboard -> bi-house, People -> bi-people, Events ->
+   bi-calendar-event, Content -> bi-images, Research -> bi-question-circle,
+   Search (sidebar variant, if it ever needs one) -> bi-search. */
+.nav-link.is-active {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+  font-weight: 600;
+}
+
+
+/* ===== Section title ===== */
+/* The uppercase eyebrow label above every grouped section (Relationships,
+   Events, Content, Storylines, ...). */
+
+.section-title {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+  margin-bottom: var(--space-3);
+}
+
+
+/* ===== Topbar content — logo, primary nav, search, account menu ===== */
+/* The SHELL is .app-topbar, in base.css (height, flex, border,
+   background — every screen uses either .app-topbar or .app-sidebar).
+   An earlier draft of this file redefined that same shell here as
+   .site-header, written before .app-topbar existed on the codebase
+   side — the two were doing the exact same job under different names.
+   Consolidated onto .app-topbar; .site-header is gone. These classes
+   are only the CONTENT that goes inside .app-topbar: wordmark, nav
+   links (reuses .nav-link, not a new class), search field, account
+   menu. Replaces the old per-page pattern of a hand-rolled contextual
+   bar (back arrow + page title + inline "Edit") — a page's own name
+   lives in its own h1, and per-object actions (Edit, Favorite, ...)
+   belong in that page's own content, not in global chrome. See
+   BRIEFING.md section 6. */
+
+.app-topbar__logo {
+  font-family: var(--font-serif);
+  font-size: 21px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.app-topbar__nav {
+  display: flex;
+  gap: 22px;
+  flex-grow: 1;
+  font-size: var(--text-base);
+  font-weight: 500;
+}
+/* Nav items reuse .nav-link / .nav-link.is-active as-is — no new
+   nav-item class. */
+
+.app-topbar__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-pill);
+  padding: 0 14px;
+  height: 36px;
+  width: 200px;
+  flex-shrink: 0;
+}
+.app-topbar__search input {
+  border: none;
+  background: transparent;
+  font-size: var(--text-sm);
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  width: 100%;
+}
+.app-topbar__search i { flex-shrink: 0; color: var(--color-ink-3); font-size: 14px; }
+.app-topbar__search { margin: 0; }
+.app-topbar__search-link { display: none; }
+/* Icon: bi-search. */
+/* .app-topbar itself needs no position/z-index for the dropdown below —
+   .user-menu already establishes its own positioning context and
+   .user-menu__panel carries its own z-index. */
+
+
+/* ===== Nav "more" menu ===== */
+/* Secondary content (events, comments, tags, research) in a dropdown
+   next to the main nav links - navigation.html. Native <details>;
+   cmnsd.js menus.js closes it on outside click / Escape. */
+
+.nav-menu { position: relative; }
+.nav-menu__trigger { cursor: pointer; list-style: none; gap: 6px; }
+.nav-menu__trigger::-webkit-details-marker { display: none; }
+.nav-menu__trigger .nav-menu__chevron { font-size: 11px; transition: transform 0.15s; }
+.nav-menu__dots { display: none; }   /* icons-only header (narrow): ⋯ instead of the word */
+.nav-menu[open] > .nav-menu__trigger { color: var(--color-ink); }
+.nav-menu[open] > .nav-menu__trigger .nav-menu__chevron { transform: rotate(180deg); }
+.nav-menu__panel {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  min-width: 190px;
+  padding: 6px 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  z-index: 30;
+}
+.nav-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.nav-menu__item i { font-size: 15px; color: var(--color-ink-3); }
+a.nav-menu__item:hover { background: var(--color-surface-alt); }
+.nav-menu__item--inert { color: var(--color-ink-3); }
+
+
+/* ===== Edit-mode switch ===== */
+/* header.html - for users with a change permission (cmnsd/edit/mode.py).
+   Off: a quiet outline button. On: filled accent, and body.is-edit-mode
+   draws an accent line under the top bar, so the mode is always clear. */
+
+.edit-toggle { flex-shrink: 0; margin: 0; }
+.edit-toggle__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.edit-toggle__button i { font-size: 13px; }
+.edit-toggle__button:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.edit-toggle__button.is-active { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+.edit-toggle__button.is-active:hover { background: var(--color-accent-hover); color: #fff; }
+body.is-edit-mode .app-topbar { box-shadow: inset 0 -3px 0 var(--color-accent); }
+/* The header stays in view - search, the menu and the edit switch need no
+   scrolling back up. Jumps to an anchor (#comments) land below it. */
+.app-topbar { position: sticky; top: 0; z-index: 50; }
+html { scroll-padding-top: var(--topbar-height); }
+
+
+/* ===== User menu ===== */
+/* The account entry point: profile, and — only for
+   request.user.is_superuser — the Django admin link. This is where
+   that admin link lives now; don't also build a separate staff-only
+   utility strip for it (see BRIEFING.md section 6). */
+
+.user-menu { position: relative; flex-shrink: 0; }
+.user-menu__trigger {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.user-menu__panel {
+  position: absolute;
+  top: 44px;
+  right: 0;
+  width: 220px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+  z-index: 30;
+}
+.user-menu__name {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.user-menu__item {
+  display: block;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  color: var(--color-ink);
+}
+.user-menu__item:hover { background: var(--color-surface-alt); }
+.user-menu__item--muted { color: var(--color-ink-2); border-top: 1px solid var(--color-border); }
+/* Log out is a button (a POST): looks like the other items. */
+.user-menu__panel form { margin: 0; }
+button.user-menu__item {
+  width: 100%; margin: 0; border: 0; border-top: 1px solid var(--color-border); border-radius: 0;
+  background: transparent; text-align: left; font: inherit; font-size: 13.5px; cursor: pointer; box-shadow: none; appearance: none;
+}
+button.user-menu__item:hover { background: var(--color-surface-alt); }
+/* Groups: you, then staff (a heading, set apart). */
+.user-menu__item i { width: 18px; margin-right: 6px; color: var(--color-ink-3); }
+.user-menu__group--staff { border-top: 1px solid var(--color-border); background: var(--color-surface-alt); }
+.user-menu__group--staff .user-menu__item:hover { background: var(--color-surface); }
+.user-menu__heading { padding: 10px 16px 2px; font-size: var(--text-2xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-ink-3); }
+
+
+/* ===== Entity action bar ===== */
+/* A thin strip of icon actions for the object the current page is
+   about — Favorite and Bookmark now; Edit / Select portrait / Add
+   content join later (see BRIEFING.md section 7). Sits between
+   .app-topbar and the page's own content (.person-detail today; later
+   .event-detail / .content-detail) — full page width, not scoped to
+   any one detail page's internal layout, which is exactly why this
+   lives here and not in person.css: Event and Content detail pages
+   will want the identical strip in the identical spot.
+   Icons here are Bootstrap Icons (bi-heart/bi-heart-fill,
+   bi-bookmark/bi-bookmark-fill), not this system's usual hand-drawn
+   <svg stroke="currentColor"> — a deliberate one-off for this bar, not
+   a change to the design system's default icon approach. */
+
+.entity-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: 10px 40px;
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--color-border);
+}
+.entity-action-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-ink-2);
+  cursor: pointer;
+}
+.entity-action-bar__btn:hover { background: var(--color-surface-alt); color: var(--color-ink); }
+.entity-action-bar__btn i { font-size: 15px; line-height: 1; }
+/* Toggled state (favorited / bookmarked) - filled icon swapped in via
+   the template's own if/else (bi-heart -> bi-heart-fill), this class
+   only carries the color. Both use --color-accent, not a dedicated
+   "heart red" - this app's palette is muted throughout; a saturated red
+   would be the one loud color on the page. Swap to a chosen red for
+   --favorite specifically if that reads as too subtle in practice. */
+.entity-action-bar__btn.is-active {
+  background: var(--color-surface);
+  border-color: currentColor;
+  color: var(--color-accent);
+}
+
+
+/* ===== List empty state ===== */
+/* Shown by any list view (People today, CSS_BRIEFING.md section 9.5;
+   Search/Content/Event lists once they exist) when the queryset visible
+   to THIS viewer comes back empty - overwhelmingly an anonymous-visitor
+   situation (most rows default to Community, invisible when signed out),
+   not a genuine "there's nothing here." Cross-app on purpose - every list
+   view built on VisibilityMixin will hit the identical case, People is
+   just first. */
+.list-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--color-ink-2);
+}
+.list-empty-state__icon { font-size: 32px; color: var(--color-ink-3); }
+.list-empty-state__title {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.list-empty-state__body { font-size: var(--text-sm); max-width: 420px; }
+.list-empty-state .btn { margin-top: var(--space-2); }
+
+
+/* ===== Collapsible page section ===== */
+/* cmnsd/section.html - a <details> per section (Relationships, Content,
+   Events on the person page), each opened/closed on its own and
+   remembered per section (cmnsd.js sections.js). The header keeps
+   .section-title's look; a chevron shows the state. An empty section
+   (count 0) is a plain, muted header: nothing to open, no toggle. */
+.page-section__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: var(--space-3);
+}
+.page-section__header::-webkit-details-marker { display: none; }
+.page-section__header::after {
+  content: "\F282";                     /* bi-chevron-down */
+  font-family: bootstrap-icons;
+  font-size: 12px;
+  color: var(--color-ink-3);
+  transition: transform 0.15s ease;
+}
+.page-section:not([open]) > .page-section__header::after { transform: rotate(-90deg); }
+.page-section:not([open]) > .page-section__header { margin-bottom: 0; }
+.page-section__header .section-title { margin: 0; }
+.page-section__header:hover .section-title { color: var(--color-ink-2); }
+.page-section__count { font-weight: 600; color: var(--color-ink-3); margin-left: var(--space-1); }
+.page-section--empty .section-title { margin: 0; opacity: 0.55; }
+/* Filled through the API when a closed section is opened. */
+.page-section__body[data-load-on-open="loading"] { min-height: 48px; opacity: 0.5; }
+
+
+/* ===== Content grid ===== */
+/* content/_content_grid.html - content cards with filter pills by kind and
+   a sort switch (cmnsd.js filter.js / sort.js). Person page's Content
+   section, tag pages; the pill style is also used for the content page's
+   transcript languages. */
+.content-grid-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
+.content-grid-pills { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.content-grid-sort { display: flex; gap: var(--space-1); margin-left: auto; }
+.content-grid-pill {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  color: var(--color-ink-3);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.content-grid-pill:hover { color: var(--color-ink); }
+.content-grid-pill.is-active { color: var(--color-accent-hover); background: var(--color-accent-soft); }
+/* Cards fill the width in equal columns; .content-card's own max-width is
+   lifted so a column never leaves a ragged gap. */
+.content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--space-4); }
+.content-grid .content-card { max-width: none; min-width: 0; }
+
+
+/* ===== Tag page ===== */
+/* core/templates/tag/tag_detail.html - what a tag groups, with context:
+   a cover and the description, then child tags, content and people. */
+.tag-page { max-width: 1120px; margin: 0 auto; padding: 36px 40px; }
+.tag-page__header { display: flex; gap: var(--space-6); align-items: flex-start; margin-bottom: var(--space-8); }
+.tag-page__cover { flex-shrink: 0; width: 240px; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--color-border); }
+.tag-page__cover img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.tag-page__intro { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+.tag-page__parent { font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-ink-3); text-decoration: none; }
+.tag-page__parent:hover { color: var(--color-accent); }
+.tag-page__name { margin: 0; }
+.tag-page__status { align-self: flex-start; }
+.tag-page__description p { margin: 0 0 var(--space-2); }
+.tag-page__counts { margin: 0; font-size: var(--text-sm); color: var(--color-ink-3); }
+.tag-page__section { margin-bottom: var(--space-8); }
+.tag-overview__group { margin-bottom: var(--space-6); }
+.tag-overview__heading { display: flex; align-items: baseline; gap: var(--space-2); }
+.tag-overview__heading a { color: inherit; text-decoration: none; }
+.tag-overview__heading a:hover { color: var(--color-accent); }
+.tag-page__people { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-2); }
+/* Tag chips are links to their tag's page. */
+a.tag { color: inherit; text-decoration: none; }
+a.tag:hover { border-color: var(--color-accent); color: var(--color-accent-hover); }
+@media (max-width: 640px) {
+  .tag-page { padding: 24px 16px; }
+  .tag-page__header { flex-direction: column; }
+  .tag-page__cover { width: 100%; }
+}
+
+
+/* ===== Icon button ===== */
+/* A small square button with one icon - edit-mode controls (the parts
+   editor). .is-active: a pressed toggle. --danger: a removing action
+   (no error colour token yet - see issues.md; the draft colour stands in). */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-ink-2);
+  cursor: pointer;
+  font-size: 13px;
+}
+.icon-btn:hover:not(:disabled) { border-color: var(--color-accent); color: var(--color-accent); }
+.icon-btn:disabled { opacity: 0.35; cursor: default; }
+.icon-btn.is-active { background: var(--color-accent-soft); border-color: var(--color-accent); color: var(--color-accent-hover); }
+.icon-btn--danger:hover:not(:disabled) { border-color: var(--color-draft-text); color: var(--color-draft-text); background: var(--color-draft-soft); }
+
+
+/* ===== Picker ===== */
+/* Search and choose an object (cmnsd.js picker.js) - e.g. "add a part". */
+.picker { margin-top: var(--space-3); }
+.picker__label { display: flex; flex-direction: column; gap: 6px; font-size: var(--text-sm); font-weight: 600; color: var(--color-ink-2); }
+.picker__label > i { display: none; }
+.picker__label input {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font: inherit;
+  font-weight: 400;
+  color: var(--color-ink);
+}
+.picker__label input:focus { outline: 2px solid var(--color-accent-soft); border-color: var(--color-accent); }
+.picker-results { list-style: none; margin: 6px 0 0; padding: 4px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); max-height: 320px; overflow-y: auto; }
+.picker-result {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: var(--color-ink);
+}
+.picker-result:hover, .picker-result:focus { background: var(--color-surface-alt); outline: none; }
+.picker-result__thumb { grid-row: 1 / 3; width: 36px; height: 36px; border-radius: var(--radius-sm); object-fit: cover; }
+.picker-result__thumb--icon { display: flex; align-items: center; justify-content: center; background: var(--color-surface-alt); color: var(--color-ink-3); }
+/* Normal weight, so the search term ({% highlight_search %}, mark.search-hit)
+   stands out - a person's last name stays bold, as in the People list. */
+.picker-result__name { font-size: var(--text-sm); font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.picker-result__meta { font-size: var(--text-xs); color: var(--color-ink-3); }
+.picker-more { margin: 6px 0 0; font-size: var(--text-xs); color: var(--color-ink-3); }
+.picker__error { margin: 6px 0 0; font-size: var(--text-sm); color: var(--color-draft-text); }
+
+
+/* ===== Edit mode: chips with a remove button, inline pickers ===== */
+/* cmnsd/edit/unlink.html next to a chip, inside .chip-edit (removed as a
+   whole on success); cmnsd/edit/link_picker.html under the chip list. */
+.chip-edit { display: inline-flex; align-items: center; }
+.chip-edit > .tag { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: 0; }
+.chip-edit__remove { margin: 0; display: inline-flex; }
+.chip-edit__remove button {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 7px;
+  border: 1px solid var(--color-border);
+  border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+  background: var(--color-surface-alt);
+  color: var(--color-ink-3);
+  cursor: pointer;
+  align-self: stretch;
+}
+.chip-edit__remove button:hover { color: var(--color-draft-text); background: var(--color-draft-soft); }
+.picker--inline { margin-top: var(--space-2); max-width: 360px; }
+.picker--inline .picker__label input { height: 32px; font-size: var(--text-sm); }
+/* A field picker (cmnsd.forms.widgets.PickerInput) inside a block form:
+   the current choice, then the search box. */
+.picker--field { margin-top: 0; max-width: 420px; }
+.picker__chosen { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 32px; margin-bottom: 6px; font-size: var(--text-sm); color: var(--color-ink); }
+.picker__chosen-name:empty { display: none; }
+.picker__chosen-empty { color: var(--color-ink-3); }
+.picker__chosen-name:not(:empty) + .picker__chosen-empty { display: none; }   /* chosen in the browser */
+.picker__input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+}
+.picker__input:focus { outline: 2px solid var(--color-accent-soft); border-color: var(--color-accent); }
+.picker-result--plain { grid-template-columns: 1fr; }
+.picker-result--create { grid-template-columns: 1fr; font-size: var(--text-sm); font-weight: 600; color: var(--color-accent); }
+/* A person row (or any full-width row) with its "×" on the right. */
+.chip-edit--row { display: flex; align-items: stretch; gap: 6px; }
+.chip-edit--row > :first-child { flex: 1; min-width: 0; }
+.chip-edit--row .chip-edit__remove button { border-radius: var(--radius-md); padding: 0 10px; }
+.picker-result__thumb--avatar { display: flex; align-items: center; justify-content: center; background: transparent; }
+.picker-result__name--single { grid-row: 1 / 3; white-space: normal; }
+.picker-result__name--single .person-lifespan { font-weight: 400; color: var(--color-ink-3); }
+/* A place chip: the name with its parents wraps as one text, not as
+   separate flex columns; in edit mode the places stack as chips. */
+.tag--place { align-items: flex-start; }
+.tag--place > i { margin-top: 2px; }
+.tag__text { min-width: 0; }
+.content-detail__places--edit { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+/* A long name (an event with several people) wraps instead of being cut off. */
+.picker-result__name--wrap { white-space: normal; }
+
+
+/* ===== Editable blocks (edit mode) ===== */
+/* cmnsd/edit/block.html: the block as shown, with a pencil top-right that
+   swaps it for its form (cmnsd/edit/form.html, cmnsd.js edit.js). */
+.edit-block { position: relative; }
+.edit-block--editable { padding-right: 40px; border-radius: var(--radius-md); }
+.edit-block--editable:hover { background: var(--color-accent-soft); box-shadow: 0 0 0 6px var(--color-accent-soft); }
+.edit-block--editable.is-editing { padding-right: 0; background: transparent; box-shadow: none; }
+.edit-block__open {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink-2);
+  cursor: pointer;
+}
+.edit-block__open:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.edit-block__empty { margin: 0; font-style: italic; color: var(--color-ink-3); }
+.edit-form { display: flex; flex-direction: column; gap: var(--space-3); }
+.edit-form__field { display: flex; flex-direction: column; gap: 6px; }
+.edit-form__field label { font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-ink-3); }
+.edit-form__field input:not([type=checkbox]):not([type=radio]),
+.edit-form__field textarea,
+.edit-form__field select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font: inherit;
+  color: var(--color-ink);
+}
+.edit-form__field input:focus, .edit-form__field textarea:focus, .edit-form__field select:focus {
+  outline: 2px solid var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+.edit-form__help { font-size: var(--text-xs); color: var(--color-ink-3); }
+.edit-form__error { margin: 0; font-size: var(--text-sm); color: var(--color-draft-text); }
+.edit-form__actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.edit-form__hint { font-size: var(--text-xs); color: var(--color-ink-3); margin-left: auto; }
+/* A form whose fields sit on one line (the date: how sure · day · month · year). */
+.edit-form__row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: flex-end; }
+.edit-form__row--date .edit-form__field--date_qualifier { flex: 1 1 110px; }
+.edit-form__row--date .edit-form__field--day { flex: 0 0 64px; }
+.edit-form__row--date .edit-form__field--month { flex: 1 1 130px; }
+.edit-form__row--date .edit-form__field--year { flex: 0 0 88px; }
+/* A block that is a row of a <dl> of fields: the pencil sits smaller. */
+dl .edit-block--editable { padding-right: 34px; }
+dl .edit-block__open { width: 26px; height: 26px; top: 0; }
+dl .edit-block.is-editing { grid-column: 1 / -1; }
+
+
+/* ===== Choice blocks (edit mode) ===== */
+/* cmnsd/edit/choices.html: a label and a row of buttons (the current one
+   pressed) or a dropdown - each saves on click / change. */
+.edit-choices { display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--space-3); margin: 0; }
+.edit-choices__label { flex: 0 0 120px; font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-ink-3); }
+.edit-choices__options { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.choice-btn {
+  padding: 4px 11px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-ink-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+.choice-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.choice-btn.is-active { background: var(--color-accent-soft); border-color: var(--color-accent); color: var(--color-accent-hover); }
+.edit-choices select { padding: 4px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); font: inherit; font-size: var(--text-sm); }
+.edit-choices .edit-form__error { flex-basis: 100%; }
+/* An action block reads as a flow: (Back to draft) Published (Delete) -
+   the current value in the middle, steps back before, steps on after. */
+.edit-choices__flow { align-items: center; }
+/* The current value: looks like the pressed pill of a choice row, but it's
+   not a button - nothing happens on click. */
+.edit-choices__current { cursor: default; }
+.edit-choices__current:hover { border-color: var(--color-accent); color: var(--color-accent-hover); }
+.edit-choices__flow { gap: 4px; }
+.choice-btn i { font-size: 11px; }
+.choice-btn--careful:hover { border-color: var(--color-draft-text); color: var(--color-draft-text); background: var(--color-draft-soft); }
+
+
+/* ===== Child records (edit mode) ===== */
+/* cmnsd/edit/child.html: a pencil and, beside it, a remove button;
+   cmnsd/edit/child_add.html: "+ add" under the list. */
+.edit-child { margin-bottom: var(--space-3); }
+.edit-child.edit-block--editable { padding-right: 76px; }
+.edit-child__delete { margin: 0; }
+.edit-child__delete-button { right: 38px; }
+.edit-child__delete-button:hover { border-color: var(--color-draft-text); color: var(--color-draft-text); background: var(--color-draft-soft); }
+.edit-child-add__open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.edit-child-add__open:hover { border-color: var(--color-accent); background: var(--color-accent-soft); }
+
+/* ===== Places (places/templates/place/) - the tag page's layout, plus a
+   tree of places: the overview and a place's own page. ===== */
+.place-tree { list-style: none; margin: 0; padding: 0 0 0 var(--space-4); border-left: 1px solid var(--color-border); }
+.tag-overview__group > .place-tree, .tag-page__section > .place-tree { padding-left: 0; border-left: 0; }
+.place-tree__item { padding: 3px 0; }
+.place-tree__item > .place-tree { margin-top: 3px; }
+.place-tree--flat { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.place-tree__name { color: var(--color-ink); text-decoration: none; font-weight: 500; }
+.place-tree__name:hover { color: var(--color-accent); }
+.place-tree__name--empty { color: var(--color-ink-3); font-weight: 400; }
+.place-tree__alias { font-size: var(--text-xs); color: var(--color-ink-3); }
+.place-page__path a { color: inherit; text-decoration: none; }
+.place-page__path a:hover { color: var(--color-accent); }
+.place-page__path i { font-size: 0.8em; }
+.place-page__alias { margin: 0; font-size: var(--text-sm); color: var(--color-ink-2); }
+.place-page__events { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.tag__meta { font-size: var(--text-xs); color: var(--color-ink-3); }
+.place-link { color: inherit; }
+
+/* ===== Notes (notes/templates/note/) - the tag page's layout; a note's
+   kind as a small badge: open work (to do, question) in the accent,
+   tentative (hypothesis) in the draft colours, settled (conclusion) in
+   the complete colours, background and scratch quiet. ===== */
+.note-kind {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  background: var(--color-surface-alt);
+  color: var(--color-ink-2);
+}
+.note-kind--todo, .note-kind--question { background: var(--color-accent-soft); color: var(--color-accent); }
+.note-kind--hypothesis { background: var(--color-draft-soft); color: var(--color-draft-text); }
+.note-kind--conclusion { background: var(--color-complete-soft); color: var(--color-complete-text); }
+.note-kind--scratch { background: transparent; border: 1px dashed var(--color-border); color: var(--color-ink-3); }
+
+.note-overview__header { justify-content: space-between; align-items: flex-end; }
+.note-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.note-row { padding: var(--space-3) 0; border-bottom: 1px solid var(--color-border); }
+.note-row:first-child { border-top: 1px solid var(--color-border); }
+.note-row__link { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; color: var(--color-ink); text-decoration: none; }
+.note-row__link:hover .note-row__title { color: var(--color-accent); }
+.note-row__title { font-weight: 600; }
+.note-row__private { font-size: var(--text-xs); color: var(--color-ink-3); }
+.note-row__excerpt { margin: 4px 0 0; font-size: var(--text-sm); color: var(--color-ink-2); }
+.note-row__meta { margin: 2px 0 0; font-size: var(--text-xs); color: var(--color-ink-3); }
+.note-list--compact .note-row { padding: var(--space-2) 0; }
+.note-list--compact .note-row__excerpt { display: none; }
+.note-new { margin-top: var(--space-3); }
+.note-overview__header .note-new { margin-top: 0; flex-shrink: 0; }
+.note-new .btn { white-space: nowrap; }
+
+.note-page { max-width: 860px; }
+.note-page__header { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-6); }
+.note-page__meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0; }
+.note-page__title { margin: 0; }
+.note-page__title--untitled { color: var(--color-ink-3); }
+/* Date and author as label rows, the labels lined up with the choices
+   panel's (edit-choices__label). The date block's wrapper is its row. */
+.note-page__fields { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.note-page__fields > div, .note-page__fields > .edit-block { display: flex; align-items: baseline; gap: var(--space-3); }
+.note-page__fields dt { flex: 0 0 120px; font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-ink-3); }
+.note-page__fields dd { margin: 0; font-size: var(--text-sm); }
+.note-page__body { margin-bottom: var(--space-8); }
+.note-page__body h1, .note-page__body h2, .note-page__body h3 { margin: var(--space-6) 0 var(--space-2); }
+/* Headings inside a note's text stay below the note's own title. */
+.note-page__body h1 { font-size: 1.35rem; }
+.note-page__body h2 { font-size: 1.2rem; }
+.note-page__body h3 { font-size: 1.05rem; }
+.note-links .tag-list { margin-bottom: var(--space-2); }
+.tag--person i { color: var(--color-ink-3); }
+
+/* ===== People: adding a person, the family editor ===== */
+.person-create__form { max-width: 640px; }
+.person-create__names { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--space-2) var(--space-4); }
+/* "Already in the archive?" under the names (people/_similar.html). */
+.person-similar { margin: var(--space-2) 0 var(--space-3); padding: 8px 12px; border-radius: var(--radius-md); background: var(--color-accent-soft); }
+.person-similar__title { margin: 0 0 4px; font-size: var(--text-sm); font-weight: 600; }
+.person-similar__list { list-style: none; margin: 0; padding: 0; }
+.person-similar__row { display: flex; align-items: center; gap: 8px; padding: 3px 0; min-width: 0; }
+.person-similar__name { flex: 1; min-width: 0; font-size: var(--text-sm); color: var(--color-ink); overflow-wrap: anywhere; }
+.person-similar__name .bi { font-size: 11px; color: var(--color-ink-3); }
+.person-similar__use { flex-shrink: 0; }
+.person-similar__more { margin: 4px 0 0; font-size: var(--text-xs); color: var(--color-ink-2); }
+/* The family view in edit mode: an "×" at the end of a relative's row
+   (people/_person_row.html), a picker under each group. */
+.person-row .chip-edit__remove { margin-left: 2px; flex-shrink: 0; }
+.person-row .chip-edit__remove button { width: 28px; height: 28px; padding: 0; justify-content: center; border-radius: var(--radius-md); }
+.person-relationships .picker--inline { margin: var(--space-2) 0 var(--space-4); }
+.person-detail__choices { margin-bottom: var(--space-5); }
+
+/* ===== Dialog (cmnsd.js dialog.js): a form over the page, e.g. "+ new
+   person" from a picker. Full screen on a phone. ===== */
+.cmnsd-dialog {
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100vh - 64px);
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+}
+.cmnsd-dialog::backdrop { background: rgba(30, 24, 18, 0.45); }
+.cmnsd-dialog__header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-4) var(--space-5) 0; }
+.cmnsd-dialog__title { margin: 0; font-size: var(--text-lg); }
+.cmnsd-dialog__close { width: 34px; height: 34px; border: 0; border-radius: var(--radius-md); background: transparent; color: var(--color-ink-2); cursor: pointer; }
+.cmnsd-dialog__close:hover { background: var(--color-surface-alt); }
+.cmnsd-dialog__body { padding: var(--space-4) var(--space-5) var(--space-5); overflow-y: auto; }
+@media (max-width: 640px) {
+  .cmnsd-dialog { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border: 0; border-radius: 0; }
+}
+
+/* Toggle buttons (cmnsd.js toggles.js): checkboxes shown as choice buttons
+   - pressed when checked, the box itself hidden but still focusable. */
+.toggle-choices { display: flex; flex-wrap: wrap; gap: 4px; }
+.toggle-choice, .edit-form__field label.toggle-choice { position: relative; display: inline-flex; align-items: center; text-transform: none; letter-spacing: 0; color: var(--color-ink-2); }
+.toggle-choice input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.toggle-choice:has(input:checked), .edit-form__field label.toggle-choice:has(input:checked) { background: var(--color-accent-soft); border-color: var(--color-accent); color: var(--color-accent-hover); }
+.toggle-choice:has(input:focus-visible) { outline: 2px solid var(--color-accent-soft); outline-offset: 1px; }
+.edit-form__label { display: block; font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-ink-3); margin-bottom: 4px; }   /* a field label that isn't a <label> (a group of toggles) */
+/* With one parent known: the likely other parent, one click to link
+   (person/_relative_picker.html). */
+.relative-suggestions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: var(--space-2); }
+.relative-suggestions__label { font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-ink-3); margin-right: 4px; }
+.relative-suggestions__item { margin: 0; }
+
+/* ===== Portrait crop (person/forms/portrait.html): the photo under a
+   square frame, moved and zoomed by cmnsd.js viewer.js (crop mode). ===== */
+.portrait-crop__frame {
+  position: relative;
+  width: min(440px, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: #2b2723;
+  cursor: grab;
+  touch-action: none;
+  /* The round avatar inside the square, as a guide. */
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+.portrait-crop__frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+.portrait-crop__frame.is-dragging { cursor: grabbing; }
+/* An item's thumbnail (content/forms/thumbnail.html): the card's 4:3, with
+   the middle square - the small thumbnails - outlined. */
+.thumb-crop__frame { width: min(560px, 100%); aspect-ratio: 4 / 3; }
+.thumb-crop__frame::after { content: none; }
+/* The guides: what a phone's card (a band, ~2.4:1 - 148px high across a
+   phone) and the square thumbnails take from the 4:3 crop. White dashes
+   with a dark edge, so they show on light and dark photos alike. */
+.thumb-crop__guides { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.thumb-crop__guide { position: absolute; border: 2px dashed rgba(255, 255, 255, 0.95); filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.6)); }
+.thumb-crop__guide--wide { left: 0; right: 0; top: 22.2%; bottom: 22.2%; border-left: 0; border-right: 0; }
+.thumb-crop__guide--square { top: 0; bottom: 0; left: 12.5%; right: 12.5%; border-top: 0; border-bottom: 0; }
+.thumb-crop__guide em { position: absolute; top: 4px; left: 6px; padding: 1px 6px; border-radius: var(--radius-sm); background: rgba(0, 0, 0, 0.55); color: #fff; font-size: var(--text-2xs); font-style: normal; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; filter: none; }
+.thumb-crop__guide--square em { top: auto; bottom: 6px; }
+.content-detail__thumb { display: block; width: 120px; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-sm); }
+.portrait-crop__tools { position: absolute; right: 10px; bottom: 10px; display: flex; gap: 4px; z-index: 2; }
+.portrait-crop__tools button { width: 32px; height: 32px; border: 0; border-radius: var(--radius-md); background: rgba(255, 255, 255, 0.88); color: var(--color-ink); cursor: pointer; }
+.portrait-crop__source { margin: var(--space-2) 0 0; text-align: center; font-size: var(--text-xs); color: var(--color-ink-3); }
+.person-profile-card__portrait.edit-block--editable { padding-right: 0; }
+.person-profile-card__portrait .edit-block__open { top: auto; bottom: 6px; right: 6px; }
+/* On a photo's page: this photo is the person's portrait (people/_person_row.html). */
+.person-row__portrait { margin-left: 4px; font-size: 0.85em; color: var(--color-accent); }
+/* The photos a portrait can be chosen from: a strip of small squares,
+   the chosen one outlined (person/forms/portrait.html). */
+.portrait-crop__photos { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px var(--space-2); margin-bottom: var(--space-2); }
+.portrait-crop__photo { position: relative; flex: 0 0 auto; cursor: pointer; }
+.portrait-crop__photo input { position: absolute; opacity: 0; pointer-events: none; }
+.portrait-crop__photo img { display: block; width: 56px; height: 56px; object-fit: cover; border-radius: var(--radius-md); border: 2px solid transparent; opacity: 0.75; }
+.portrait-crop__photo:hover img { opacity: 1; }
+.portrait-crop__photo:has(input:checked) img { border-color: var(--color-accent); opacity: 1; }
+.portrait-crop__photo:has(input:focus-visible) img { outline: 2px solid var(--color-accent-soft); outline-offset: 1px; }
+
+/* ===== An event (event/_event.html): what, when, who, where - on a
+   person's timeline, an item's page, a place's page. ===== */
+.event { display: flex; gap: 12px; align-items: flex-start; }
+.event__symbol {
+  flex: 0 0 28px; height: 28px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--color-surface); border: 1px solid var(--color-border);
+  font-family: var(--font-serif); font-size: 15px; color: var(--color-accent);
+}
+.event__body { flex: 1; min-width: 0; }
+.event__header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; }
+.event__what { font-weight: 600; color: var(--color-ink); }
+.event__relation { font-weight: 400; color: var(--color-ink-2); }
+.event__when { font-size: var(--text-sm); color: var(--color-ink-2); font-variant-numeric: tabular-nums; }
+.event__age, .event__undated { color: var(--color-ink-3); }
+.event__people, .event__places, .event__content { margin: 2px 0 0; font-size: var(--text-sm); color: var(--color-ink-2); }
+.event__places i { color: var(--color-ink-3); }
+.event__description { margin-top: 4px; font-size: var(--text-sm); }
+.event__description p { margin: 0 0 4px; }
+.event__content a { margin-right: 6px; color: var(--color-ink-3); }
+.event__content a:hover { color: var(--color-accent); }
+/* A family member's event on a person's timeline: quieter. */
+.event--family .event__what { font-weight: 500; color: var(--color-ink-2); }
+.event--family .event__symbol { color: var(--color-ink-3); background: transparent; }
+
+/* A person's life, in order: the events on a line. */
+.timeline { list-style: none; margin: 0; padding: 0; position: relative; }
+.timeline::before { content: ''; position: absolute; left: 13px; top: 14px; bottom: 14px; width: 1px; background: var(--color-border); }
+.timeline__entry { position: relative; padding: var(--space-2) 0; }
+.timeline__empty { color: var(--color-ink-3); font-size: var(--text-sm); }
+.event-row { list-style: none; }
+.event-row.chip-edit--row > .event { flex: 1; }
+/* History around a person's life (a general event, no people): quieter still. */
+.event--history .event__what { font-weight: 500; color: var(--color-ink-2); font-style: italic; }
+.event--history .event__symbol { color: var(--color-ink-3); background: transparent; border-style: dashed; }
+
+/* ===== The events overview (event/event_overview.html): by decade. ===== */
+.events-page__kinds { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--space-6); }
+.events-page__kinds a { text-decoration: none; }
+.events-page__decade { margin-bottom: var(--space-6); }
+.events-page__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+
+/* ===== An event's page (event/event_detail.html) ===== */
+.event-page { max-width: 860px; }
+.event-page__header { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-6); }
+.event-page__what { display: flex; align-items: center; gap: 12px; margin: 0; }
+.event-page__what .event__symbol { flex-basis: 36px; height: 36px; font-size: 18px; }
+.event-page__kind { margin: 0 0 0 48px; font-size: var(--text-sm); color: var(--color-ink-3); }
+.event-page__description { margin-bottom: var(--space-6); }
+.event__link { color: inherit; text-decoration: none; }
+.event__link:hover { color: var(--color-accent); }
+.events-page__new { flex-shrink: 0; white-space: nowrap; }
+.timeline__new { margin-top: var(--space-3); }
+
+/* ===== The header on a narrower screen ===== */
+/* Tighter first; then the (not yet working) search and "manage archive"
+   go; on a phone the navigation and Edit show icons only - the labels stay
+   for screen readers (.nav-link__label) and as tooltips. */
+@media (max-width: 1100px) {
+  .app-topbar { gap: 12px; padding: 0 24px; }
+  .app-topbar__nav { gap: 6px; }
+  .app-topbar__search { width: 150px; }
+}
+@media (max-width: 900px) {
+  .app-topbar__search { display: none; }
+  .app-topbar__search-link { display: inline-flex; }
+}
+/* Icons only from here: with "Photos & documents" the labels no longer fit
+   beside search, Edit and the account menu. */
+@media (max-width: 800px) {
+  .app-topbar .nav-link { padding: 9px 10px; gap: 4px; }
+  .nav-link__label {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .nav-menu__dots { display: inline; }
+  .nav-menu__chevron { display: none; }
+}
+@media (max-width: 720px) {
+  .app-topbar { gap: 6px; padding: 0 12px; }
+  .app-topbar__logo { font-size: 18px; margin-right: 4px; }
+  .app-topbar__nav { gap: 0; min-width: 0; }
+  .app-topbar .nav-link { padding: 9px 10px; gap: 4px; }
+  .nav-link__label {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .edit-toggle__button { padding-left: 10px; padding-right: 10px; }
+  .nav-menu__dots { display: inline; }
+  .nav-menu__chevron { display: none; }
+  /* The menus open towards the middle, so they stay on the screen. */
+  .nav-menu__panel { left: auto; right: -40px; }
+}
+
+/* ===== Adding content: the dropzone (cmnsd.js upload.js) and the inbox ===== */
+.dropzone {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-2);
+  padding: var(--space-8) var(--space-4);
+  border: 2px dashed var(--color-border); border-radius: var(--radius-lg);
+  background: var(--color-surface); text-align: center;
+}
+.dropzone.is-over { border-color: var(--color-accent); background: var(--color-accent-soft); }
+.dropzone__icon { font-size: 40px; color: var(--color-ink-3); }
+.dropzone__text { margin: 0; color: var(--color-ink-2); }
+.dropzone__choose { position: relative; cursor: pointer; }
+.dropzone__choose input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.upload-list { list-style: none; margin: var(--space-4) 0 0; padding: 0; width: 100%; max-width: 640px; text-align: left; }
+.upload-row { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 4px 10px; padding: 6px 0; border-bottom: 1px solid var(--color-border); font-size: var(--text-sm); }
+.upload-row__thumb { grid-row: 1 / 3; width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--color-surface-alt); overflow: hidden; }
+.upload-row__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.upload-row__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.upload-row__status { color: var(--color-ink-3); }
+.upload-row__progress { grid-column: 2 / 4; width: 100%; height: 4px; }
+.upload-row.is-done .upload-row__status a { font-weight: 600; }
+.upload-row.is-duplicate .upload-row__status { color: var(--color-draft-text); }
+.upload-row.is-error .upload-row__status { color: var(--color-draft-text); font-weight: 600; }
+.upload-page__done { margin-top: var(--space-4); text-align: center; }
+
+.inbox__list { list-style: none; margin: 0; padding: 0; }
+.inbox__row { display: flex; align-items: center; gap: 12px; padding: var(--space-2) 0; border-bottom: 1px solid var(--color-border); }
+.inbox__select input { width: 18px; height: 18px; }
+.inbox__thumb { flex: 0 0 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md); overflow: hidden; background: var(--color-surface-alt); color: var(--color-ink-3); font-size: 22px; }
+.inbox__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.inbox__body { display: flex; flex-direction: column; min-width: 0; }
+.inbox__name { font-weight: 600; color: var(--color-ink); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.inbox__name:hover { color: var(--color-accent); }
+.inbox__meta { font-size: var(--text-xs); color: var(--color-ink-3); }
+.inbox__actions { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-4); }
+.content-detail__inbox { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; padding: 8px 12px; margin-bottom: var(--space-3); border-radius: var(--radius-md); background: var(--color-draft-soft); color: var(--color-draft-text); font-size: var(--text-sm); }
+.content-detail__inbox a { color: inherit; font-weight: 600; }
+
+/* ===== The dashboard (dashboard/dashboard.html): two columns, one on a
+   narrow screen; blocks are the sections of the other pages. ===== */
+.app-topbar__logo { color: var(--color-ink); text-decoration: none; }
+.dashboard { max-width: 1200px; margin: 0 auto; padding: 36px 40px; }
+.dashboard__title { margin: 0 0 var(--space-6); }
+.dashboard__columns { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--space-8); }
+.dashboard__block { margin-bottom: var(--space-8); }
+.dashboard__block .section-title { display: flex; align-items: baseline; gap: 8px; }
+.dashboard__more { margin-left: auto; font-size: var(--text-xs); font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--color-accent); text-decoration: none; }
+/* "Another" from the archive: a form (swapped in place by list.js), its button looks like the links. */
+.dashboard__more-button { padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+.dashboard__more-button:hover { text-decoration: underline; }
+.dashboard__anniversary { position: relative; }
+.dashboard__years-ago { display: block; margin: 2px 0 0 40px; font-size: var(--text-xs); color: var(--color-ink-3); }
+.dashboard__thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--space-3); }
+/* Recently added: whole rows, never a short last one - five columns (ten
+   items), four (the last two hidden: two rows of four), or two on a phone
+   (four rows of two). By the block's own width (a container query), so it
+   follows the dashboard's layout, not just the screen. */
+.dashboard__block:has(> .dashboard__thumbs--recent) { container-type: inline-size; }
+.dashboard__thumbs--recent { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@container (max-width: 620px) {
+  .dashboard__thumbs--recent { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .dashboard__thumbs--recent > :nth-child(n+9) { display: none; }
+}
+@container (max-width: 380px) {
+  .dashboard__thumbs--recent { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.dashboard__thumb { display: flex; flex-direction: column; gap: 4px; color: var(--color-ink-2); text-decoration: none; font-size: var(--text-xs); }
+.dashboard__thumb img, .dashboard__thumb-icon { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-md); background: var(--color-surface-alt); }
+.dashboard__thumb-icon { display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--color-ink-3); }
+.dashboard__thumb-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dashboard__thumb:hover { color: var(--color-accent); }
+.dashboard__comments { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.dashboard__comment { display: flex; flex-direction: column; gap: 2px; }
+.dashboard__comment-meta { font-size: var(--text-xs); color: var(--color-ink-3); }
+.dashboard__comment-text { font-size: var(--text-sm); color: var(--color-ink); }
+.dashboard__random-link { display: block; color: var(--color-ink-2); text-decoration: none; font-size: var(--text-sm); }
+.dashboard__random-link img { display: block; width: 100%; max-height: 420px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 6px; }
+.dashboard__drafts { display: flex; gap: 6px; margin-bottom: var(--space-2); }
+.dashboard__drafts a { width: 44px; height: 44px; border-radius: var(--radius-sm); overflow: hidden; background: var(--color-surface-alt); display: flex; align-items: center; justify-content: center; color: var(--color-ink-3); }
+.dashboard__drafts img { width: 100%; height: 100%; object-fit: cover; }
+.dropzone--compact { padding: var(--space-3); gap: 0; }
+.dropzone--compact .dropzone__text { font-size: var(--text-sm); }
+.dropzone--compact .dropzone__choose { color: var(--color-accent); font-weight: 600; text-decoration: underline; }
+.upload-list--compact { margin-top: var(--space-2); }
+.upload-list--compact .upload-row { grid-template-columns: 1fr auto; padding: 3px 0; font-size: var(--text-xs); }
+.upload-list--compact .upload-row__thumb { display: none; }
+.dashboard__loose-ends { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.dashboard__loose-ends a { color: var(--color-ink-2); text-decoration: none; font-size: var(--text-sm); }
+.dashboard__loose-ends a:hover { color: var(--color-accent); }
+.dashboard__you { display: flex; align-items: center; gap: 12px; margin: 0; font-size: var(--text-sm); }
+.dashboard__numbers { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.dashboard__numbers a { color: var(--color-ink-2); text-decoration: none; font-size: var(--text-sm); }
+.dashboard__numbers strong { color: var(--color-ink); font-size: var(--text-lg); }
+@media (max-width: 900px) {
+  .dashboard { padding: 24px 16px; }
+  .dashboard__columns { grid-template-columns: 1fr; gap: 0; }
+}
+.dashboard__welcome { margin: calc(-1 * var(--space-4)) 0 var(--space-6); color: var(--color-ink-2); }
+
+/* ===== The calendar (event/event_calendar.html): anniversaries by day ===== */
+.calendar-page__title { display: flex; align-items: center; gap: var(--space-3); }
+.calendar-page__step { font-size: 0.6em; color: var(--color-ink-3); text-decoration: none; }
+.calendar-page__step:hover { color: var(--color-accent); }
+.calendar-page__day { display: grid; grid-template-columns: 56px 1fr; gap: var(--space-3); padding: var(--space-3) 0; border-top: 1px solid var(--color-border); }
+.calendar-page__date { margin: 0; display: flex; flex-direction: column; align-items: flex-start; }
+.calendar-page__number { font-family: var(--font-serif); font-size: 28px; line-height: 1; color: var(--color-ink); }
+.calendar-page__today { margin-top: 4px; padding: 1px 6px; border-radius: 999px; background: var(--color-accent); color: #fff; font-size: var(--text-2xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.calendar-page__day.is-today { background: var(--color-accent-soft); border-radius: var(--radius-md); padding-left: var(--space-2); }
+.dashboard__guest { max-width: 560px; padding: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
+.dashboard__guest p { margin: 0 0 var(--space-3); color: var(--color-ink-2); }
+.dashboard__guest-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.dashboard__guest-note { font-size: var(--text-xs); color: var(--color-ink-3) !important; margin: 0 !important; }
+/* A draft (or revoked) item in a grid: only its creator and staff see it -
+   a dashed frame, a little faded, its status as a badge. */
+.content-card--draft { outline: 2px dashed var(--color-draft-text); outline-offset: -2px; opacity: 0.85; }
+.content-card--draft:hover { opacity: 1; }
+.content-card__status { margin-right: 4px; vertical-align: 1px; }
+.nav-menu__divider { margin: 6px 0; border: 0; border-top: 1px solid var(--color-border); }
+
+/* Search (/search/, core/templates/search/): one field, a section per
+   kind, compact rows - a hit found in its text shows the words around it. */
+.search-page { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; min-width: 0; }
+.search-page__title { font-size: var(--text-2xl); margin: 0 0 12px; }
+.search-page__form {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--color-surface-alt); border-radius: var(--radius-pill); padding: 0 16px;
+}
+.search-page__form i { color: var(--color-ink-3); }
+.search-page__form input {
+  border: 0; background: transparent; width: 100%; padding: 10px 0;
+  font-size: var(--text-base); font-family: var(--font-sans); color: var(--color-ink);
+}
+.search-page__form input:focus { outline: none; }
+.search-page__kind, .search-page__hint { margin: 10px 0 0; font-size: var(--text-sm); color: var(--color-ink-3); }
+.search-section { margin-top: 24px; }
+.search-section__title { display: flex; align-items: center; gap: 8px; font-size: var(--text-base); margin: 0 0 6px; }
+.search-hits { list-style: none; margin: 0; padding: 0; }
+.search-hit-row {
+  display: grid; grid-template-columns: 36px minmax(0, 1fr); column-gap: 10px; align-items: center;
+  padding: 6px 8px; overflow-wrap: anywhere; border-radius: var(--radius-sm); color: var(--color-ink); text-decoration: none;
+}
+.search-hit-row:hover, .search-hit-row:focus { background: var(--color-surface-alt); }
+.search-hit-row__thumb { grid-row: 1 / span 3; align-self: start; width: 36px; height: 36px; border-radius: var(--radius-sm); object-fit: cover; }
+.search-hit-row__thumb--icon { display: flex; align-items: center; justify-content: center; background: var(--color-surface-alt); color: var(--color-ink-3); }
+.search-hit-row__name { font-size: var(--text-sm); }
+.search-hit-row__name .person-lifespan { color: var(--color-ink-3); }
+.search-hit-row__meta { font-size: var(--text-xs); color: var(--color-ink-3); }
+.search-hit-row__snippet { grid-column: 2; font-size: var(--text-xs); color: var(--color-ink-2); }
+.search-section__more { display: inline-block; margin: 4px 8px 0; font-size: var(--text-sm); }
+
+
+/* Housekeeping (dashboard/housekeeping.html). */
+.housekeeping__intro { margin: 0 0 var(--space-2); font-size: var(--text-sm); color: var(--color-ink-2); }
+.housekeeping__list, .housekeeping__group { display: grid; gap: 4px; }
+.housekeeping__group { padding: 8px; margin-bottom: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+.housekeeping__item { display: flex; align-items: center; gap: 10px; padding: 4px 6px; border-radius: var(--radius-sm); min-width: 0; }
+.housekeeping__item:hover { background: var(--color-surface-alt); }
+.housekeeping__item.is-blocked { opacity: 0.6; }
+.housekeeping__thumb { flex-shrink: 0; width: 56px; height: 56px; object-fit: cover; border-radius: var(--radius-sm); }
+.housekeeping__thumb--icon { display: flex; align-items: center; justify-content: center; background: var(--color-surface-alt); color: var(--color-ink-3); }
+.housekeeping__text { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
+.housekeeping__name { font-size: var(--text-sm); }
+.housekeeping__meta { font-size: var(--text-xs); color: var(--color-ink-3); }
+.housekeeping__part { margin: 0 0 0 72px; }
+.housekeeping__all { display: inline-flex; gap: 6px; align-items: center; margin: 0 0 6px 6px; font-size: var(--text-sm); }
+.housekeeping__nocheck { flex-shrink: 0; width: 13px; }
+.content-detail__deleted { margin: 0 0 var(--space-3); padding: 8px 12px; border-radius: var(--radius-md); background: #6b1d1d; color: #fff; font-size: var(--text-sm); }
+.content-detail__deleted strong { text-transform: uppercase; letter-spacing: 0.06em; }
+.dashboard__thumb-meta { display: block; font-size: var(--text-xs); color: var(--color-ink-3); }
+
+/* "Fine as it is" on a loose end (dashboard/_dismiss.html). */
+.loose-end__row, .loose-end__cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.loose-end__dismiss { font-size: var(--text-xs); color: var(--color-ink-3); }
+.loose-end__dismiss summary { cursor: pointer; list-style: none; }
+.loose-end__dismiss summary::-webkit-details-marker { display: none; }
+.loose-end__dismiss summary:hover { color: var(--color-accent); }
+.loose-end__dismiss form, form.loose-end__dismiss { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; }
+.loose-end__dismiss input[type=text] { flex: 1; min-width: 120px; padding: 4px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: var(--text-xs); }
+.loose-end__dismissed { flex-basis: 100%; }
+.loose-end__event { flex-wrap: wrap; }
+.loose-end__event .loose-end__dismiss { flex-basis: 100%; padding-left: 40px; }
+
+/* The lightbox (cmnsd.js lightbox.js): the image full-screen in a zoomable
+   viewer (viewer.js), a bar along the bottom. */
+.cmnsd-lightbox { width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: #14110e; color: #f3eee8; }
+.cmnsd-lightbox::backdrop { background: #14110e; }
+.cmnsd-lightbox__viewer { position: relative; width: 100%; height: 100%; overflow: hidden; cursor: grab; touch-action: none; }
+.cmnsd-lightbox__viewer.is-dragging { cursor: grabbing; }
+.cmnsd-lightbox__viewer.is-loading::after { content: ''; position: absolute; top: 14px; right: 14px; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: cmnsd-spin .8s linear infinite; }
+@keyframes cmnsd-spin { to { transform: rotate(360deg); } }
+.cmnsd-lightbox__bar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: linear-gradient(transparent, rgba(0,0,0,.7)); cursor: default; }
+.cmnsd-lightbox__bar button, .cmnsd-lightbox__original { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 0; border-radius: var(--radius-md); background: rgba(255,255,255,.14); color: #fff; cursor: pointer; text-decoration: none; }
+.cmnsd-lightbox__bar button:hover, .cmnsd-lightbox__original:hover { background: rgba(255,255,255,.28); color: #fff; }
+.cmnsd-lightbox__counter { font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+.cmnsd-lightbox__caption { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #f3eee8; font-size: var(--text-sm); }
+.cmnsd-lightbox__caption[href]:hover { color: #fff; text-decoration: underline; }
+.cmnsd-lightbox__tools { display: flex; gap: 6px; }
+@media (max-width: 600px) {
+  .cmnsd-lightbox__bar { flex-wrap: wrap; }
+  .cmnsd-lightbox__caption { flex-basis: 100%; order: -1; }
+}
+.loose-end__action { margin: 2px 0 0; }
+/* Preferences (core/templates/preferences/preferences.html). */
+.preferences__form { max-width: 720px; }
+.preferences__family { border: 0; padding: 0; margin: 0; }
+.preferences__group { margin: var(--space-3) 0 4px; font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-ink-3); }
+.preferences__choices { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 4px 16px; }
+.preferences__form .preferences__choice { display: flex; align-items: center; gap: 8px; font-size: var(--text-sm); font-weight: 400; text-transform: none; letter-spacing: normal; color: var(--color-ink); }
+
+/* A cmnsd page (cmnsd/templates/pages/page_detail.html: the cookie
+   statement, ...): a reading column, headings in the notes' sizes. */
+.page { max-width: 720px; margin: 0 auto; padding: 36px 40px 64px; line-height: 1.65; }
+.page > h1 { margin: 0 0 var(--space-6); }
+.page h2, .page h3 { margin: var(--space-6) 0 var(--space-2); }
+.page h2 { font-size: 1.2rem; }
+.page h3 { font-size: 1.05rem; }
+.page p, .page ul, .page ol { margin: 0 0 var(--space-3); }
+.page ul, .page ol { padding-left: 1.4em; }
+.page li { margin-bottom: 4px; }
+@media (max-width: 720px) {
+  .page { padding: 24px 16px 48px; }
+}
+
+/* Accounts (dashboard/accounts.html and the staff block on the dashboard). */
+.account-list { list-style: none; margin: 0; padding: 0; }
+.account-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: 8px 0; border-bottom: 1px solid var(--color-border); }
+.account-row__name { display: flex; flex-direction: column; min-width: 0; font-size: var(--text-sm); }
+.account-row__meta { font-size: var(--text-xs); color: var(--color-ink-3); }
+.account-row__when { flex-shrink: 0; text-align: right; font-size: var(--text-xs); color: var(--color-ink-3); }
+.account-row__actions { display: flex; gap: 6px; flex-shrink: 0; }
+.account-row__actions form { margin: 0; }
+.account-list--compact .account-row { padding: 5px 0; }
+.dashboard__accounts-waiting { margin: 0 0 var(--space-2); font-size: var(--text-sm); }
+
+/* Staff: other people's drafts on the inbox page. */
+.inbox__others { margin-top: var(--space-8); }
+.inbox__owner { padding: var(--space-3) 0; border-top: 1px solid var(--color-border); }
+.inbox__owner-name { margin: 0 0 var(--space-2); font-size: var(--text-sm); display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.dashboard__others-drafts { margin: 0 0 var(--space-2); font-size: var(--text-sm); }

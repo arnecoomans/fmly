@@ -1,0 +1,46 @@
+{% load edit_mode %}{% load text_filters %}{% load relationship %}
+{% comment %}
+  Edit mode, under a group in the family view (parents, partners,
+  children): a picker that links someone as that relative
+  (Person.add_relative - people/relatives.py); without an exact match,
+  "+ new person" opens the add form in a dialog (cmnsd object_create) and
+  links the new person. For a new child the dialog offers the other parent
+  (this person's partners, PersonCreateForm) and prefills the last name:
+  the married name when there is one (the name the family carries), else
+  the last name. The page reloads after a change - siblings and the grouping follow
+  from it. Only for someone who may change the person.
+  With exactly one parent known, the parent picker gets suggestions above
+  it: that parent's partners, then the other parents of a sibling - one
+  click links them (people/relatives.py suggested_parents).
+  Context: person, kind ('parent' | 'partner' | 'child'), add_label, request, perms.
+{% endcomment %}
+{% if edit_mode and person|can_edit:request %}
+  {% if kind == 'parent' %}{% with suggestions=person|suggested_parents:request %}{% if suggestions %}
+    {# One parent known: their partners and co-parents, one click to link (Person.add_relative). #}
+    <div class="relative-suggestions">
+      <span class="relative-suggestions__label">{% translate "suggested"|capfirst %}</span>
+      {% for suggestion, reason in suggestions %}
+        <form class="relative-suggestions__item" data-cmnsd-action="add_relative" data-model="person" data-object-token="{{ person.token }}" data-cmnsd-insert="reload">
+          <input type="hidden" name="relation" value="parent">
+          <input type="hidden" name="token" value="{{ suggestion.token }}">
+          <button type="submit" class="choice-btn" title="{% if reason == 'partner' %}{% translate 'partner of the known parent' %}{% else %}{% translate 'other parent of a sibling' %}{% endif %}"><i class="bi bi-plus-lg"></i> {{ suggestion.get_full_name }}</button>
+        </form>
+      {% endfor %}
+    </div>
+  {% endif %}{% endwith %}{% endif %}
+  {% url 'cmnsd_api:object_create' 'person' as create_url %}
+  {% translate "new person" as new_label %}
+  {% with family_name=person.married_name|default:person.last_name tokens=person.relative_tokens %}
+    {% if kind == 'child' %}
+      {# The dialog offers the other parent (child_of), and carries the family name. #}
+      {% with child_url=create_url|add:'?child_of='|add:person.token encoded_name=family_name|urlencode %}{% with new_dialog=child_url|add:'&last_name='|add:encoded_name %}
+        {% include 'cmnsd/edit/link_picker.html' with model='person' owner=person relation=kind picker_model='person' target='' label=add_label|capfirst placeholder=add_label|capfirst exclude=tokens.child action='add_relative' insert='reload' new_dialog=new_dialog new_param='given_name' new_label=new_label|capfirst can_new=perms.people.add_person %}
+      {% endwith %}{% endwith %}
+    {% else %}
+      {# The dialog: family as this person is (relative_of). #}
+      {% with new_dialog=create_url|add:'?relative_of='|add:person.token %}
+      {% include 'cmnsd/edit/link_picker.html' with model='person' owner=person relation=kind picker_model='person' target='' label=add_label|capfirst placeholder=add_label|capfirst exclude=tokens|get_item:kind action='add_relative' insert='reload' new_dialog=new_dialog new_param='given_name' new_label=new_label|capfirst can_new=perms.people.add_person %}
+      {% endwith %}
+    {% endif %}
+  {% endwith %}
+{% endif %}

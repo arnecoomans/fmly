@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load content_tags %}{% load edit_mode %}{% load events %}
+{% comment %}
+  An event's page (events.views.EventDetailView): what it is, when, who,
+  where, what happened, the items documenting it, the notes about it and
+  the comments.
+  In edit mode (`editing`): blocks for what, when and the description
+  (Event.api_edit_forms) and pickers for people, places and items
+  (EditableRelationsMixin) - a new person in a dialog.
+{% endcomment %}
+
+{% block title %}{{ event.label }}{% endblock %}
+
+{% block content %}
+<div class="tag-page event-page">
+  <header class="event-page__header">
+    <a class="tag-page__parent" href="{% url 'events:list' %}?kind={{ event.kind }}">{% translate "events"|capfirst %} <i class="bi bi-chevron-right"></i></a>
+    {% include 'cmnsd/edit/block.html' with model='event' obj=event block='what' %}
+    {% if event.needs_attention and not editing %}<span class="badge-status badge-status--draft">{{ event.get_status_display }}</span>{% endif %}
+    <dl class="content-detail__fields note-page__fields">
+      {% include 'cmnsd/edit/block.html' with model='event' obj=event block='date' %}
+    </dl>
+    {% if editing %}
+      <div class="content-detail__choices">{% include 'cmnsd/edit/block.html' with model='event' obj=event block='status' choice=True %}</div>
+    {% endif %}
+  </header>
+
+  {% include 'cmnsd/edit/block.html' with model='event' obj=event block='description' %}
+
+  {% if people or editing %}
+    <section class="tag-page__section">
+      <h2 class="section-title">{% translate "people"|capfirst %}</h2>
+      <div class="person-relationship-group__list" id="event-people">
+        {% for person in people %}{% include 'event/_person.html' %}{% endfor %}
+      </div>
+      {% if editing %}
+        {% translate "add a person" as add_label %}{% translate "new person" as new_label %}
+        {% url 'cmnsd_api:object_create' 'person' as new_dialog %}
+        {% include 'cmnsd/edit/link_picker.html' with model='event' owner=event relation='people' picker_model='person' target='#event-people' label=add_label|capfirst placeholder=add_label|capfirst exclude=tokens.people new_dialog=new_dialog new_param='given_name' new_label=new_label|capfirst can_new=perms.people.add_person %}
+      {% endif %}
+    </section>
+  {% endif %}
+
+  {% if places or editing %}
+    <section class="tag-page__section">
+      <h2 class="section-title">{% translate "places"|capfirst %}</h2>
+      <div class="tag-list" id="event-places">{% for place in places %}{% include 'event/_place.html' %}{% endfor %}</div>
+      {% if editing %}
+        {% translate "add a place" as add_label %}
+        {% include 'cmnsd/edit/link_picker.html' with model='event' owner=event relation='places' picker_model='place' target='#event-places' label=add_label|capfirst placeholder=add_label|capfirst exclude=tokens.places can_create=perms.places.add_place new_dialog='' %}
+      {% endif %}
+    </section>
+  {% endif %}
+
+  {% if event.visible_content or editing %}
+    <section class="tag-page__section">
+      <h2 class="section-title">{% translate "documented by"|capfirst %}</h2>
+      <div class="tag-list" id="event-content">{% for item in event.visible_content %}{% include 'event/_item.html' %}{% endfor %}</div>
+      {% if editing %}
+        {% translate "add content" as add_label %}
+        {% include 'cmnsd/edit/link_picker.html' with model='event' owner=event relation='content' picker_model='content' target='#event-content' label=add_label|capfirst placeholder=add_label|capfirst exclude=tokens.content new_dialog='' %}
+      {% endif %}
+    </section>
+  {% endif %}
+
+  {% include 'note/_notes_section.html' with obj=event key='event.notes' %}
+
+  {% include 'comment/comments.html' with target=event model='event' %}
+</div>
+{% endblock %}

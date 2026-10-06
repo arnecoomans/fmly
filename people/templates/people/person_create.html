@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% comment %}
+  Add a person (people.views.PersonCreateView): the names and the basics;
+  the rest - birth, death, family, biography - on their page, which opens
+  in edit mode. From a family picker: who they'll be linked to, shown on top.
+{% endcomment %}
+
+{% block title %}{% translate "new person"|capfirst %}{% endblock %}
+
+{% block content %}
+<div class="tag-page person-create">
+  <header class="tag-page__header">
+    <div class="tag-page__intro">
+      <a class="tag-page__parent" href="{% url 'people:person_list' %}">{% translate "people"|capfirst %} <i class="bi bi-chevron-right"></i></a>
+      <h1 class="tag-page__name">{% translate "new person"|capfirst %}</h1>
+      {% if relative_of %}
+        <p class="tag-page__counts">
+          {% if relation == 'parent' %}{% blocktranslate with name=relative_of %}Will be added as a parent of {{ name }}.{% endblocktranslate %}
+          {% elif relation == 'partner' %}{% blocktranslate with name=relative_of %}Will be added as a partner of {{ name }}.{% endblocktranslate %}
+          {% else %}{% blocktranslate with name=relative_of %}Will be added as a child of {{ name }}.{% endblocktranslate %}{% endif %}
+        </p>
+      {% endif %}
+    </div>
+  </header>
+
+  <form class="edit-form person-create__form" method="post" novalidate>
+    {% csrf_token %}
+    {% if relative_of %}<input type="hidden" name="relation" value="{{ relation }}"><input type="hidden" name="of" value="{{ relative_of.token }}">{% endif %}
+    {% if form.non_field_errors %}<p class="edit-form__error">{{ form.non_field_errors|join:' ' }}</p>{% endif %}
+    {% include 'people/_person_create_fields.html' %}
+    <div class="edit-form__actions">
+      <button type="submit" class="btn btn--primary btn--sm">{% translate "add"|capfirst %}</button>
+      <span class="edit-form__hint">{% translate "Birth, death, family and the biography come next, on their page." %}</span>
+    </div>
+  </form>
+</div>
+{% endblock %}

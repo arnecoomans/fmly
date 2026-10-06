@@ -1,0 +1,10 @@
+{% comment %}
+  One place in a tree of places (the overview, a place's own page): its
+  name, other spelling and count, then the places within it - this same
+  template, any depth. Context: place (with .count and .listed_children,
+  places/places.py).
+{% endcomment %}
+<li class="place-tree__item">
+  <a class="place-tree__name{% if not place.count %} place-tree__name--empty{% endif %}" href="{{ place.get_absolute_url }}">{{ place.name }}</a>{% if place.alias %} <span class="place-tree__alias">{{ place.alias }}</span>{% endif %}{% if place.count %} {% include 'place/_count.html' %}{% endif %}
+  {% if place.listed_children %}<ul class="place-tree">{% for place in place.listed_children %}{% include 'place/_tree_node.html' %}{% endfor %}</ul>{% endif %}
+</li>

@@ -1,0 +1,6 @@
+{% load text_filters %}
+<a class="search-hit-row" href="{{ hit.get_absolute_url }}">
+  <span class="search-hit-row__thumb search-hit-row__thumb--icon"><i class="bi bi-geo-alt"></i></span>
+  <span class="search-hit-row__name">{% highlight_search search_query %}{{ hit.name }}{% if hit.alias %} ({{ hit.alias }}){% endif %}{% endhighlight_search %}</span>
+  {% if hit.parent %}<span class="search-hit-row__meta">{% for ancestor in hit.ancestors|slice:':-1' %}{{ ancestor.name }}{% if not forloop.last %} › {% endif %}{% endfor %}</span>{% endif %}
+</a>

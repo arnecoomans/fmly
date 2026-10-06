@@ -1,0 +1,19 @@
+{% load design_tokens %}
+{% load content_tags %}
+{% comment %}
+  A person's avatar: their primary portrait (content.Portrait, is_primary)
+  as a thumbnail when this viewer may see both the person and the photo,
+  otherwise their initials on the gender tone. Served by content:portrait
+  (per person - a group photo is cropped differently for each person in
+  it), which checks access again; ?v= changes with the crop, so a new
+  crop isn't hidden by the browser cache.
+
+  Context: `person` (Person), `size` (sm / md / lg / xl), `request`.
+  Crop: the stored Portrait crop if set (content/crop.py), otherwise the
+  'avatar' preset's center crop.
+{% endcomment %}
+{% with portrait=person|visible_portrait:request.user %}
+  <span class="avatar avatar--{{ size|default:'md' }} avatar--tone-{{ person|avatar_tone }}">
+    {% if portrait %}<img src="{% url 'content:portrait' portrait.content.token person.token %}?v={{ portrait.version }}" alt="" loading="lazy">{% else %}{{ person.initials }}{% endif %}
+  </span>
+{% endwith %}

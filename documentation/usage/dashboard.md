@@ -1,0 +1,44 @@
+# The dashboard
+
+The dashboard is where you land after signing in, and where you come back to: the logo in the top left always leads here. It shows what's going on in the archive, and - for editors - what's waiting for you.
+
+## On this day
+
+Births, marriages, deaths and historical events that happened on today's date, with how long ago. On a quiet day it shows the coming week instead.
+
+For the whole year at a glance: **calendar →** next to the heading opens the calendar, at today.
+
+## Recently added and from the archive
+
+- **Recently added** - the newest photos and documents.
+- **From the archive** - one item picked at random, to rediscover something. *Another* picks a new one.
+
+## The conversation
+
+The latest comments, wherever they were made - on a photo, a person or an event. Click one to go to the conversation.
+
+## Your inbox
+
+For editors. New uploads arrive here as drafts, visible only to you until you publish them.
+
+- **Drop files** straight onto the dashboard, or *choose files*. They appear in the inbox as soon as they're uploaded.
+- **Open** takes you to the full inbox, where you describe each item and publish it.
+
+See [Photos & documents](content.md) for the inbox in detail.
+
+## Loose ends
+
+For editors: what's still missing in the archive, each as a list with a count, for example:
+
+- people without a birth, without parents, or without a portrait while there are photos of them
+- photos without people
+- documents without a transcript, and transcripts to finish or check
+- events without a date
+- images in low resolution
+- anything marked with the tag **Loose end** - your own reminders
+
+Each list takes you straight to where it's fixed. Something that's as good as it gets - a clipping that won't get sharper, a date that will never be known - can be marked **fine as it is**: it leaves that list (and only that one). *Fine as it is* at the top of a list shows those again, with who decided and why, and puts them back if needed.
+
+## You in the archive
+
+Your own record in the family, and what you've added.

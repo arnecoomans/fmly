@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load edit_mode %}
+{% comment %}
+  A note (notes.views.NoteDetailView): kind, title, date and confidence,
+  its text, then what it links to and what links to it - only what this
+  viewer may see. In edit mode (`editing`), every field is a block
+  (cmnsd/edit/block.html, Note.api_edit_forms) and each kind of link gets
+  its "×" and a picker (note/_links.html).
+{% endcomment %}
+
+{% block title %}{{ note }}{% endblock %}
+
+{% block content %}
+<div class="tag-page note-page">
+  <header class="note-page__header">
+    <p class="note-page__meta">
+      <a class="tag-page__parent" href="{% url 'notes:list' %}">{% translate "notes"|capfirst %} <i class="bi bi-chevron-right"></i></a>
+      {% if not editing %}
+        <span class="note-kind note-kind--{{ note.kind }}">{{ note.get_kind_display }}</span>
+        <span class="visibility-pill visibility-pill--{{ note.get_visibility_display|lower }}">{% if note.is_private %}<i class="bi bi-lock-fill"></i>{% elif note.is_family %}<i class="bi bi-people-fill"></i>{% elif note.is_community %}<i class="bi bi-diagram-3-fill"></i>{% else %}<i class="bi bi-globe"></i>{% endif %} {{ note.get_visibility_display }}</span>
+        {% if note.needs_attention %}<span class="badge-status badge-status--draft">{{ note.get_status_display }} · {% translate "not published" %}</span>{% endif %}
+      {% endif %}
+    </p>
+    {% include 'cmnsd/edit/block.html' with model='note' obj=note block='title' %}
+    {% if editing %}
+      <div class="content-detail__choices">
+        {% include 'cmnsd/edit/block.html' with model='note' obj=note block='kind' choice=True %}
+        {% include 'cmnsd/edit/block.html' with model='note' obj=note block='confidence' choice=True %}
+        {% include 'cmnsd/edit/block.html' with model='note' obj=note block='visibility' choice=True %}
+        {% include 'cmnsd/edit/block.html' with model='note' obj=note block='status' choice=True %}
+      </div>
+    {% endif %}
+    <dl class="content-detail__fields note-page__fields">
+      {% if note.year or editing %}{% include 'cmnsd/edit/block.html' with model='note' obj=note block='date' %}{% endif %}
+      {% if note.confidence and not editing %}<div><dt>{% translate "confidence"|capfirst %}</dt><dd>{{ note.get_confidence_display|capfirst }}</dd></div>{% endif %}
+      <div>
+        <dt>{% translate "by"|capfirst %}</dt>
+        <dd>{% with author=note.user %}{% if author.person %}{% include 'person/functions/get_full_name.html' with person=author.person %}{% else %}{{ author.get_full_name|default:author.username }}{% endif %}{% endwith %} · {{ note.date_created|date:"j M Y" }}{% if note.date_modified|date:"Ymd" != note.date_created|date:"Ymd" %}, {% translate "changed" %} {{ note.date_modified|date:"j M Y" }}{% endif %}</dd>
+      </div>
+    </dl>
+  </header>
+
+  {% include 'cmnsd/edit/block.html' with model='note' obj=note block='body' %}
+
+  {% include 'note/_links.html' %}
+
+  {% if linked_from %}
+    <section class="tag-page__section">
+      <h2 class="section-title">{% translate "linked from"|capfirst %}</h2>
+      <ul class="note-list">{% for note in linked_from %}{% include 'note/_note_row.html' %}{% endfor %}</ul>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

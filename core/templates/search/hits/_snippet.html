@@ -1,0 +1,1 @@
+{% load text_filters %}{% if hit.search_snippet %}<span class="search-hit-row__snippet">{% highlight_search search_query %}{{ hit.search_snippet }}{% endhighlight_search %}</span>{% endif %}

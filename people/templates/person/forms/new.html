@@ -1,0 +1,14 @@
+{% comment %}
+  A new person in a dialog (cmnsd object_create, Person.api_create_form):
+  the same form and layout as /people/new/ - the names in a grid, then the
+  basics. Same contract as cmnsd/edit/create_form.html.
+{% endcomment %}
+<form class="edit-form edit-form--create" data-cmnsd-create-form action="{{ form_action }}" method="post" novalidate>
+  {% if form.non_field_errors %}<p class="edit-form__error">{{ form.non_field_errors|join:' ' }}</p>{% endif %}
+  {% include 'people/_person_create_fields.html' with in_dialog=True %}
+  <p class="edit-form__error" data-cmnsd-error hidden></p>
+  <div class="edit-form__actions">
+    <button type="submit" class="btn btn--primary btn--sm">{% translate "add"|capfirst %}</button>
+    <button type="button" class="btn btn--secondary btn--sm" data-cmnsd-dialog-close>{% translate "cancel"|capfirst %}</button>
+  </div>
+</form>

@@ -1,0 +1,5 @@
+{% comment %}
+  One event at a place, as event/_event.html - without the place line: it's
+  this place's page. Context: event, request.
+{% endcomment %}
+<li class="event-row">{% include 'event/_event.html' with others=event.people.all hide_places=True %}</li>

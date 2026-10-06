@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% comment %}
+  Your preferences (core.views.PreferencesView, core.forms.PreferencesForm):
+  the interface language, and who you count as family - accounts linked to
+  your relatives in the tree first. A plain form.
+{% endcomment %}
+
+{% block title %}{% translate "preferences"|capfirst %}{% endblock %}
+
+{% block content %}
+<div class="tag-page preferences">
+  <header class="tag-page__header">
+    <div class="tag-page__intro">
+      <h1 class="tag-page__name">{% translate "preferences"|capfirst %}</h1>
+    </div>
+  </header>
+
+  <form class="edit-form preferences__form" method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<p class="edit-form__error">{{ form.non_field_errors|join:' ' }}</p>{% endif %}
+
+    <div class="edit-form__field">
+      <label for="{{ form.language.id_for_label }}">{{ form.language.label|capfirst }}</label>
+      {{ form.language }}
+      <small class="edit-form__help">{{ form.language.help_text }}</small>
+    </div>
+
+    <fieldset class="edit-form__field preferences__family">
+      <legend class="edit-form__label">{{ form.family.label|capfirst }}</legend>
+      <small class="edit-form__help">{{ form.family.help_text }}</small>
+      {% if form.in_tree %}
+        <p class="preferences__group">{% translate "in your family tree"|capfirst %}</p>
+        <div class="preferences__choices">
+          {% for option in form.family %}{% if option.data.value in form.in_tree %}<label class="preferences__choice">{{ option.tag }} {{ option.choice_label }}</label>{% endif %}{% endfor %}
+        </div>
+        <p class="preferences__group">{% translate "other accounts"|capfirst %}</p>
+      {% endif %}
+      <div class="preferences__choices">
+        {% for option in form.family %}{% if option.data.value not in form.in_tree %}<label class="preferences__choice">{{ option.tag }} {{ option.choice_label }}</label>{% endif %}{% endfor %}
+      </div>
+      {% for error in form.family.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
+    </fieldset>
+
+    <div class="edit-form__actions">
+      <button type="submit" class="btn btn--primary btn--sm">{% translate "save"|capfirst %}</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

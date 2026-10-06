@@ -1,0 +1,34 @@
+{% load content_tags %}
+{% comment %}
+  The content list itself (<model>/<model>_list.html, see
+  cmnsd/docs/api.md #Listing) - rendered by ContentListView inside
+  content/content_list_page.html, and by the list API (GET api/content/?q=)
+  for the live search to swap in. One template, so both agree.
+
+  Context (cmnsd.api.filtering.list_context()): `content_list` (visible
+  wholes, detail rows included), `search_query`, `request`. Ordered here
+  by the viewer's remembered sort (in_list_order, key 'content.list').
+{% endcomment %}
+{% with items=content_list|in_list_order:request %}
+  {% if items %}
+    <p class="content-list__count">{% blocktranslate count counter=items|length %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktranslate %}</p>
+    {% include 'content/_content_grid.html' with items=items sort=request|list_sort save_key='content.list' grid_id='content-list-grid' %}
+  {% elif search_query %}
+    <div class="list-empty-state">
+      <i class="bi bi-search list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "nothing matches"|capfirst %} &ldquo;{{ search_query }}&rdquo;</p>
+    </div>
+  {% elif not request.user.is_authenticated %}
+    <div class="list-empty-state">
+      <i class="bi bi-images list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "nothing to show yet"|capfirst %}</p>
+      <p class="list-empty-state__body">{% translate "Most of this archive is visible to signed-in family and community members. Sign in to see it." %}</p>
+      <a class="btn" href="{% url 'login' %}?next={% url 'content:list' %}">{% translate "sign in"|capfirst %}</a>
+    </div>
+  {% else %}
+    <div class="list-empty-state">
+      <i class="bi bi-images list-empty-state__icon"></i>
+      <p class="list-empty-state__title">{% translate "no content yet"|capfirst %}</p>
+    </div>
+  {% endif %}
+{% endwith %}

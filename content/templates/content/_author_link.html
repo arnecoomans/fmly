@@ -1,0 +1,14 @@
+{% load edit_mode %}
+{% comment %}
+  One linked author on a book's page (BookContent.authors): the name as
+  this viewer may see it (person/functions/get_full_name.html - hidden
+  people obfuscated). In edit mode, for someone who may change the item,
+  as a chip with its "×" (cmnsd/edit/unlink.html) - also what the link
+  action returns for a newly linked author (content/actions/link.html).
+  Context: author, content, request.
+{% endcomment %}
+{% if edit_mode and content|can_edit:request %}
+  <span class="chip-edit"><span class="tag tag--place"><i class="bi bi-person"></i><span class="tag__text">{% include 'person/functions/get_full_name.html' with person=author %}</span></span>{% include 'cmnsd/edit/unlink.html' with model='content' owner=content relation='authors' object=author %}</span>
+{% else %}
+  {% include 'person/functions/get_full_name.html' with person=author %}
+{% endif %}

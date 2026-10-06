@@ -1,0 +1,28 @@
+{% load tags %}{% load edit_mode %}
+{% comment %}
+  The person's tags (Person.get_tags) - only those the viewer may see. In
+  edit mode, for someone who may change the person: chips with their "×"
+  and a picker that links (or creates) a tag (EditableRelationsMixin);
+  the section shows even without tags then.
+{% endcomment %}
+{% with tags=person|visible_tags:request editing=edit_mode %}
+  {% if editing and person|can_edit:request %}
+    <section>
+      <h2 class="section-title">{% translate "tags"|capfirst %}</h2>
+      <div class="tag-list" id="person-tags">
+        {% for tag in tags %}<span class="chip-edit">{% include 'tag/tag.html' with tag=tag %}{% include 'cmnsd/edit/unlink.html' with model='person' owner=person relation='tags' object=tag %}</span>{% endfor %}
+      </div>
+      {% translate "add a tag" as add_label %}
+      {% include 'cmnsd/edit/link_picker.html' with model='person' owner=person relation='tags' picker_model='tag' target='#person-tags' label=add_label|capfirst placeholder=add_label|capfirst can_create=perms.core.add_tag exclude=tags|tokens %}
+    </section>
+  {% elif tags %}
+    <section>
+      <h2 class="section-title">{% translate "tags"|capfirst %}</h2>
+      <div class="tag-list">
+        {% for tag in tags %}
+          {% include 'tag/tag.html' with tag=tag %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+{% endwith %}

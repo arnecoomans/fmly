@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% load markdown %}
+{% load content_tags %}
+{% load text_filters %}
+
+{% block title %}{{ content }}{% endblock %}
+
+{% block template_css %}
+<link rel="stylesheet" href="{% static 'css/fmly/content.css' %}">
+{% endblock %}
+
+{% block content %}
+{% comment %}
+  Content detail (content.views.ContentDetailView) - Person detail's
+  layout applied to content: a fixed column for the item itself and its
+  description (which describes what you see), and a flexible column for
+  everything about it: title + metadata -> parts (a book) -> people &
+  events -> comments.
+
+  The viewer follows the media type (derived from the file), not the
+  kind: a document can be a scan (image) or a PDF. Every file URL goes
+  through content:file / content:thumbnail, which check access again -
+  never file.url (the files live in private/, which isn't served).
+{% endcomment %}
+<div class="content-detail">
+
+  <div class="content-detail__media">
+    {% if not content.file %}
+      <div class="content-detail__missing">
+        <i class="bi bi-file-earmark-x"></i>
+        <p>{% translate "the file for this item is not available yet"|capfirst %}</p>
+        {% if content.original_filename %}<p class="content-detail__filename">{{ content.original_filename }}</p>{% endif %}
+      </div>
+    {% elif content.media_type == 'image' %}
+      {# With image parts: browsable (cmnsd.js gallery.js) - the whole, then its parts in order. #}
+      <div class="content-gallery"{% if gallery %} data-cmnsd-gallery{% endif %}>
+        {# The lightbox (cmnsd.js lightbox.js): full-screen, zoomable, through the parts; without JS the original file. #}
+        <a href="{% url 'content:file' content.token %}" title="{% translate 'view larger'|capfirst %}" data-gallery-link
+           data-cmnsd-lightbox data-lightbox-src="{% url 'content:thumbnail' content.token 'large' %}" data-lightbox-zoom="{{ content.zoom_url }}"
+           data-lightbox-title="{{ content }}" data-lightbox-page="{{ content.get_absolute_url }}"{% if gallery %} data-lightbox-items="#content-gallery-items"{% endif %}
+           data-lightbox-text-close="{% translate 'close'|capfirst %}" data-lightbox-text-original="{% translate 'open original'|capfirst %}"
+           data-lightbox-text-previous="{% translate 'previous'|capfirst %}" data-lightbox-text-next="{% translate 'next'|capfirst %}"
+           data-lightbox-text-zoom-in="{% translate 'zoom in'|capfirst %}" data-lightbox-text-zoom-out="{% translate 'zoom out'|capfirst %}"
+           data-lightbox-text-fit="{% translate 'whole image'|capfirst %}" data-lightbox-text-rotate="{% translate 'turn a quarter'|capfirst %}">
+          <img class="content-detail__image" src="{% url 'content:thumbnail' content.token 'large' %}" alt="{{ content.name }}" data-gallery-image>
+        </a>
+        {% if gallery %}
+          <div class="content-gallery__nav" hidden>
+            <button type="button" class="content-gallery__step" data-gallery-previous aria-label="{% translate 'previous'|capfirst %}"><i class="bi bi-chevron-left"></i></button>
+            <span class="content-gallery__where">
+              <span data-gallery-counter>1 / {{ gallery|length }}</span> · <a href="{{ content.get_absolute_url }}" data-gallery-caption>{{ content }}</a>
+              {# Shown while a part is in the main image: its own page (description, people, transcript, comments). #}
+              <a class="content-gallery__open" href="{{ content.get_absolute_url }}" data-gallery-open hidden>{% translate "open page"|capfirst %} <i class="bi bi-arrow-right"></i></a>
+            </span>
+            <button type="button" class="content-gallery__step" data-gallery-next aria-label="{% translate 'next'|capfirst %}"><i class="bi bi-chevron-right"></i></button>
+          </div>
+          {{ gallery|json_script:"content-gallery-items" }}
+        {% endif %}
+      </div>
+    {% elif content.media_type == 'pdf' %}
+      <iframe class="content-detail__pdf" src="{% url 'content:file' content.token %}" title="{{ content.name }}"></iframe>
+    {% elif content.media_type == 'audio' %}
+      <audio class="content-detail__player" controls preload="metadata" src="{% url 'content:file' content.token %}"></audio>
+    {% elif content.media_type == 'video' %}
+      <video class="content-detail__player" controls preload="metadata" src="{% url 'content:file' content.token %}"></video>
+    {% else %}
+      <div class="content-detail__missing">
+        <i class="bi bi-file-earmark"></i>
+        <a class="btn" href="{% url 'content:file' content.token %}">{% translate "download"|capfirst %}</a>
+      </div>
+    {% endif %}
+
+    {# Variants of this item (parts at position 0), e.g. a colorized version - shown with it. #}
+    {% for variant in variants %}
+      <a class="content-detail__variant" href="{{ variant.get_absolute_url }}">
+        {% if variant.file and variant.media_type == 'image' %}
+          <img class="content-detail__image" src="{% url 'content:thumbnail' variant.token 'large' %}" alt="{{ variant }}" loading="lazy">
+        {% endif %}
+        <span class="content-detail__variant-name">{{ variant }}</span>
+      </a>
+    {% endfor %}
+
+    {# The description describes what you see, so it stays with the item. #}
+    {% include 'cmnsd/edit/block.html' with model='content' obj=content block='description' %}
+
+    {# What's written on it, and translations: one pill per language, original first. #}
+    {% if edit_mode and perms.content.change_transcript or edit_mode and perms.content.add_transcript %}
+      {# Edit mode: every transcript in full, each editable / removable, and "+ add" (cmnsd object_children). #}
+      <section class="content-detail__transcripts">
+        <div class="content-detail__transcripts-header">
+          <h2 class="section-title">{% translate "transcript"|capfirst %}</h2>
+          {# The full-height page: the image, zoomable, beside the text. #}
+          <a class="btn btn--secondary btn--sm" href="{% url 'content:transcribe' content.token %}"><i class="bi bi-layout-split"></i> {% translate "transcribe"|capfirst %}</a>
+        </div>
+        {% include 'cmnsd/edit/children.html' with model='content' obj=content relation='transcripts' children=transcripts %}
+      </section>
+    {% elif transcripts or perms.content.change_transcript or perms.content.add_transcript %}
+      {# The transcripts as read - and for whoever may transcribe, while there's transcribing to do, the transcribe page (its own full-height page, so not tied to edit mode). #}
+      <section class="content-detail__transcripts">
+        <div class="content-detail__transcripts-header">
+          <h2 class="section-title">{% translate "transcript"|capfirst %}</h2>
+          {% if transcription_open and perms.content.change_transcript or transcription_open and perms.content.add_transcript %}
+            {# Only while there's transcribing to do; done, it's in edit mode. #}
+            <a class="btn btn--secondary btn--sm" href="{% url 'content:transcribe' content.token %}"><i class="bi bi-layout-split"></i> {% translate "transcribe"|capfirst %}</a>
+          {% endif %}
+          {% if transcripts|length > 1 %}
+            <div class="content-grid-pills" data-cmnsd-filter="#transcripts-{{ content.token }}" hidden>
+              {% for transcript in transcripts %}
+                <button type="button" class="content-grid-pill{% if forloop.first %} is-active{% endif %}" data-filter="{{ transcript.language }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">{{ transcript.get_language_display }}{% if transcript.kind == 'translation' %} · {% translate "translation" %}{% endif %}</button>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        <div id="transcripts-{{ content.token }}">
+          {% for transcript in transcripts %}
+            <div class="content-transcript" data-filter-value="{{ transcript.language }}">
+              <p class="content-transcript__meta">
+                {{ transcript.get_language_display }} · {{ transcript.get_kind_display }}
+                {% if transcript.is_unchecked %}<span class="badge-status badge-status--draft">{{ transcript.get_method_display }}</span>{% endif %}
+                {% if transcript.incomplete %}<span class="badge-status badge-status--draft">{% translate "incomplete" %}</span>{% endif %}
+              </p>
+              <input type="checkbox" id="clamp-transcript-{{ transcript.pk }}" class="clamp-toggle">
+              <div class="clamp-content content-transcript__text">{{ transcript.text|linebreaksbr }}</div>
+              <label for="clamp-transcript-{{ transcript.pk }}" class="clamp-toggle-label"><span class="is-more">{% translate "read more"|capfirst %}</span><span class="is-less">{% translate "read less"|capfirst %}</span></label>
+            </div>
+          {% empty %}
+            <p class="content-detail__hint">{% translate "No transcript yet." %}</p>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  </div>
+
+  <div class="content-detail__main">
+
+    <header class="content-detail__header">
+      <div class="content-detail__badges">
+        <span class="content-kind-pill">{{ content.get_kind_display|capfirst }}{% if content.sub_kind_display %} · {{ content.sub_kind_display }}{% endif %}</span>
+        {% if not edit_relations %}
+          {# In edit mode the choices panel below shows (and sets) visibility and status. #}
+          <span class="visibility-pill visibility-pill--{{ content.get_visibility_display|lower }}">
+            {% if content.is_private %}<i class="bi bi-lock-fill"></i>{% elif content.is_family %}<i class="bi bi-people-fill"></i>{% elif content.is_community %}<i class="bi bi-diagram-3-fill"></i>{% else %}<i class="bi bi-globe"></i>{% endif %}
+            {{ content.get_visibility_display }}
+          </span>
+          {% if content.needs_attention %}
+            {# Only its creator and staff reach this page for a concept/revoked item. #}
+            <span class="badge-status badge-status--draft">{{ content.get_status_display }} · {% translate "not published" %}</span>
+          {% endif %}
+        {% endif %}
+      </div>
+      {% if content.status == 'x' %}
+        {# Only staff reach a deleted item (Content.objects.viewable_by) - say so plainly. #}
+        <p class="content-detail__deleted"><i class="bi bi-trash3"></i> <strong>{% translate "deleted" %}</strong> · {% translate "Hidden from everyone; staff can see it. Purge it in housekeeping, or restore its status." %}</p>
+      {% endif %}
+      {% if inbox_count %}
+        {# Your draft: in your inbox until published - and on to the next one there. #}
+        <p class="content-detail__inbox"><i class="bi bi-inbox"></i> {% translate "A draft in your inbox - publish it when it's described." %}
+          <a href="{% url 'content:inbox' %}">{% translate "inbox"|capfirst %} ({{ inbox_count }})</a>
+          {% if inbox_next %}<a href="{{ inbox_next.get_absolute_url }}">{% translate "next in inbox"|capfirst %} <i class="bi bi-arrow-right"></i></a>{% endif %}
+        </p>
+      {% endif %}
+      {% include 'cmnsd/edit/block.html' with model='content' obj=content block='name' %}
+      {% if edit_relations %}
+        {# Edit mode: the item's choices - each saved on click (cmnsd/edit/choices.html). #}
+        <div class="content-detail__choices">
+          {# What it is first (kind, then the kind's own details), then who sees it and its status. #}
+          {% include 'cmnsd/edit/block.html' with model='content' obj=content block='kind' choice=True %}
+          {% if content.kind == 'photo' %}{% include 'cmnsd/edit/block.html' with model='content' obj=content block='photo_kind' choice=True %}{% endif %}
+          {% if content.kind == 'document' %}
+            {% include 'cmnsd/edit/block.html' with model='content' obj=content block='document_kind' choice=True %}
+            {% include 'cmnsd/edit/block.html' with model='content' obj=content block='language' choice=True %}
+          {% endif %}
+          {% include 'cmnsd/edit/block.html' with model='content' obj=content block='visibility' choice=True %}
+          {% include 'cmnsd/edit/block.html' with model='content' obj=content block='status' choice=True %}
+        </div>
+      {% endif %}
+      {% if parent %}
+        <p class="content-detail__parent">
+          {% if sibling_count %}{% blocktranslate with index=sibling_index count=sibling_count %}Part {{ index }} of {{ count }}{% endblocktranslate %} · {% endif %}{% translate "part of"|capfirst %} <a href="{{ parent.get_absolute_url }}">{{ parent }}</a>
+          {% if previous_part or next_part %}
+            <span class="content-detail__siblings">
+              {% if previous_part %}<a href="{{ previous_part.get_absolute_url }}" rel="prev"><i class="bi bi-chevron-left"></i> {% translate "previous" %}</a>{% endif %}
+              {% if next_part %}<a href="{{ next_part.get_absolute_url }}" rel="next">{% translate "next" %} <i class="bi bi-chevron-right"></i></a>{% endif %}
+            </span>
+          {% endif %}
+        </p>
+      {% endif %}
+
+      <dl class="content-detail__fields">
+        {% if content.year or edit_relations %}
+          {% include 'cmnsd/edit/block.html' with model='content' obj=content block='date' %}
+        {% endif %}
+        {% with document=content.document_detail %}
+          {% if content.kind == 'document' and document.language %}
+            <div><dt>{% translate "language"|capfirst %}</dt><dd>{{ document.get_language_display }}</dd></div>
+          {% endif %}
+        {% endwith %}
+        {% with book=content.book_detail %}
+          {% if content.kind == 'book' and book %}
+            {% with linked_authors=book.authors.all %}
+              {% if edit_relations %}
+                {# Edit mode: linked authors as chips + the people picker; the free-text author as a hint while none is linked. #}
+                <div><dt>{% translate "author"|capfirst %}</dt><dd>
+                  <span class="content-detail__places content-detail__places--edit" id="content-authors">{% for author in linked_authors %}{% include 'content/_author_link.html' %}{% endfor %}</span>
+                  {% if not linked_authors and book.author %}<span class="content-detail__hint">{% translate "as text" %}: {{ book.author }}</span>{% endif %}
+                  {% translate "link an author" as add_label %}
+                  {% translate "new person" as new_label %}
+                  {% url 'cmnsd_api:object_create' 'person' as new_dialog %}
+                  {% include 'cmnsd/edit/link_picker.html' with model='content' owner=content relation='authors' picker_model='person' target='#content-authors' label=add_label|capfirst placeholder=add_label|capfirst exclude=author_tokens new_dialog=new_dialog|add:'?family_connection=outsider' new_param='given_name' new_label=new_label|capfirst can_new=perms.people.add_person %}
+                </dd></div>
+              {% elif linked_authors %}
+                <div><dt>{% translate "author"|capfirst %}</dt><dd>{% for author in linked_authors %}{% if not forloop.first %}, {% endif %}{% include 'content/_author_link.html' %}{% endfor %}</dd></div>
+              {% elif book.author %}
+                <div><dt>{% translate "author"|capfirst %}</dt><dd>{{ book.author }}</dd></div>
+              {% endif %}
+            {% endwith %}
+            {% if book.publisher or book.publication_year or edit_relations %}{% include 'cmnsd/edit/block.html' with model='content' obj=content block='publication' %}{% endif %}
+            {% if book.isbn or edit_relations %}{% include 'cmnsd/edit/block.html' with model='content' obj=content block='isbn' %}{% endif %}
+          {% endif %}
+        {% endwith %}
+        {% if places or edit_relations %}
+          <div>
+            <dt>{% translate "places"|capfirst %}</dt>
+            <dd>
+              <span class="content-detail__places{% if edit_relations %} content-detail__places--edit{% endif %}" id="content-places">{% for place in places %}{% if not edit_relations and not forloop.first %}, {% endif %}{% include 'content/_place_link.html' %}{% endfor %}</span>
+              {% if edit_relations %}
+                {% translate "add a place" as add_label %}
+                {% include 'cmnsd/edit/link_picker.html' with model='content' owner=content relation='places' picker_model='place' target='#content-places' label=add_label|capfirst placeholder=add_label|capfirst can_create=perms.places.add_place exclude=place_tokens %}
+              {% endif %}
+            </dd>
+          </div>
+        {% endif %}
+        {% if content.source or edit_relations %}
+          {% include 'cmnsd/edit/block.html' with model='content' obj=content block='source' block_class='content-detail__field--wide' %}
+        {% endif %}
+        {% if edit_relations and content.file and content.media_type == 'image' %}
+          {# Its own thumbnail - the card in lists: the pencil opens the cropper (ContentThumbnailForm). #}
+          {% translate "thumbnail" as thumb_title %}
+          {% include 'cmnsd/edit/block.html' with model='content' obj=content block='thumbnail' dialog=thumb_title|capfirst %}
+        {% endif %}
+        {% if request.user.is_authenticated %}
+          {# Who added it and when (Content.user, date_created - for imported items the upload date on the old site). Members only: who uploads what is family business. The person through the name template - obfuscated if hidden from this viewer; the username if no person is linked. #}
+          <div>
+            <dt>{% translate "added"|capfirst %}</dt>
+            <dd>{% with uploader=content.user %}{% if uploader.person %}{% include 'person/functions/get_full_name.html' with person=uploader.person %}{% else %}{{ uploader.get_full_name|default:uploader.username }}{% endif %}{% endwith %}<br><span class="content-detail__added-date">{{ content.date_created|date:"j M Y" }}</span></dd>
+          </div>
+        {% endif %}
+      </dl>
+
+      {% if visible_tags or content.file or edit_relations %}
+        <div class="content-detail__header-footer">
+          {% if visible_tags or edit_relations %}
+            <div class="content-detail__tags">
+              <div class="tag-list" id="content-tags">{% for tag in visible_tags %}{% include 'content/_tag_chip.html' %}{% endfor %}</div>
+              {% if edit_relations %}
+                {% translate "add a tag" as add_label %}
+                {% include 'cmnsd/edit/link_picker.html' with model='content' owner=content relation='tags' picker_model='tag' target='#content-tags' label=add_label|capfirst placeholder=add_label|capfirst can_create=perms.core.add_tag exclude=tag_tokens %}
+              {% endif %}
+            </div>
+          {% endif %}
+          {% if content.file %}
+            <a class="content-detail__original" href="{% url 'content:file' content.token %}"><i class="bi bi-box-arrow-up-right"></i> {% translate "open original"|capfirst %}</a>
+            {# Format, size in pixels (an image) and on disk (content_tags.file_info). #}
+            <span class="content-detail__file-info">{{ content|file_info }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    </header>
+
+    {% translate "parts" as title %}
+    {# No parts - the normal case for an item - shows nothing; in edit mode the section is there anyway, with the parts editor (empty_body). #}
+    {% if group or edit_parts %}
+      {% include 'cmnsd/section.html' with key='content.parts' title=title|capfirst count=group|length body='content/_parts.html' eager=True empty_body=edit_parts %}
+    {% endif %}
+
+    {% if visible_people or edit_relations %}
+      <section>
+        <h2 class="section-title">{% translate "people"|capfirst %}</h2>
+        <div class="content-detail__people" id="content-people">
+          {% for person in visible_people %}{% include 'content/_person_link.html' %}{% endfor %}
+        </div>
+        {% if edit_relations %}
+          {% translate "add a person" as add_label %}
+          {% translate "new person" as new_label %}
+          {% url 'cmnsd_api:object_create' 'person' as new_dialog %}
+          {% include 'cmnsd/edit/link_picker.html' with model='content' owner=content relation='people' picker_model='person' target='#content-people' label=add_label|capfirst placeholder=add_label|capfirst exclude=person_tokens new_dialog=new_dialog new_param='given_name' new_label=new_label|capfirst can_new=perms.people.add_person %}
+          {% if content.file and content.media_type == 'image' %}
+            {# This photo as someone's portrait (Content.set_portrait) - any person; cropping is on their page. #}
+            {% translate "use as portrait of" as portrait_label %}
+            {% include 'cmnsd/edit/link_picker.html' with model='content' owner=content relation='portrait' picker_model='person' target='' label=portrait_label|capfirst placeholder=portrait_label|capfirst|add:' …' exclude='' action='set_portrait' insert='reload' new_dialog='' can_new=False %}
+          {% endif %}
+        {% endif %}
+      </section>
+    {% endif %}
+
+    {% if events or edit_relations %}
+      <section>
+        <h2 class="section-title">{% translate "events"|capfirst %}</h2>
+        <ul class="content-detail__events" id="content-events">
+          {% for event in events %}{% include 'content/_event_link.html' %}{% endfor %}
+        </ul>
+        {% if edit_relations %}
+          {% translate "add an event" as add_label %}
+          {% translate "new event" as new_label %}
+          {% url 'cmnsd_api:object_create' 'event' as new_event_dialog %}
+          {# The new event starts on this item's date (new_event_query; changeable in the dialog). #}
+          {% include 'cmnsd/edit/link_picker.html' with model='content' owner=content relation='events' picker_model='event' target='#content-events' label=add_label|capfirst placeholder=add_label|capfirst exclude=event_tokens new_dialog=new_event_dialog|add:new_event_query new_param='title' new_label=new_label|capfirst can_new=perms.events.add_event %}
+        {% endif %}
+      </section>
+    {% endif %}
+
+    {% include 'note/_notes_section.html' with obj=content key='content.notes' %}
+
+    {% include 'comment/comments.html' with target=content model='content' %}
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% comment %}
+  Add content (content.views.UploadView): a dropzone - drop files or choose
+  them (on a phone: the camera or the photo library) - sending each file on
+  its own (cmnsd.js upload.js) to content/new/upload/. Each becomes a draft
+  in your inbox; a file that's in the archive already is pointed out.
+{% endcomment %}
+
+{% block title %}{% translate "add content"|capfirst %}{% endblock %}
+
+{% block content %}
+<div class="tag-page upload-page">
+  <header class="tag-page__header note-overview__header">
+    <div class="tag-page__intro">
+      <a class="tag-page__parent" href="{% url 'content:list' %}">{% translate "content"|capfirst %} <i class="bi bi-chevron-right"></i></a>
+      <h1 class="tag-page__name">{% translate "add content"|capfirst %}</h1>
+      <p class="tag-page__counts">{% translate "Each file becomes a draft in your inbox, visible only to you until you publish it. Describe it there - pages of one letter or album can be made one item." %}</p>
+    </div>
+    <a class="btn btn--secondary btn--sm" href="{% url 'content:inbox' %}"><i class="bi bi-inbox"></i> {% translate "inbox"|capfirst %}</a>
+  </header>
+
+  <div class="dropzone" data-cmnsd-upload="{% url 'content:upload_file' %}"
+       data-text-sending="{% translate 'Sending…' %}" data-text-added="{% translate 'Added - open' %}"
+       data-text-duplicate="{% translate 'Already in the archive:' %}"
+       data-text-duplicate-deleted="{% translate 'Already in the archive (deleted - it can be restored in the admin).' %}"
+       data-text-too-large="{% translate 'Too large for the server.' %}" data-text-failed="{% translate 'Not added' %}">
+    <i class="bi bi-cloud-arrow-up dropzone__icon"></i>
+    <p class="dropzone__text">{% translate "Drop files here, or" %}</p>
+    <label class="btn btn--primary btn--sm dropzone__choose">
+      {% translate "choose files"|capfirst %}
+      <input type="file" multiple data-upload-input accept="image/*,application/pdf,audio/*,video/*">
+    </label>
+    <ul class="upload-list" data-upload-list></ul>
+  </div>
+  <p class="upload-page__done" data-upload-done hidden><a class="btn btn--secondary btn--sm" href="{% url 'content:inbox' %}"><i class="bi bi-inbox"></i> {% translate "to your inbox"|capfirst %}</a></p>
+</div>
+{% endblock %}

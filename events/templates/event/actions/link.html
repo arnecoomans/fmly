@@ -1,0 +1,8 @@
+{% comment %}
+  What the link action just linked to an event (EditableRelationsMixin),
+  appended to its list by cmnsd.js. Context: event, result ({relation, object}), request.
+{% endcomment %}
+{% if result.relation == 'people' %}{% with person=result.object %}{% include 'event/_person.html' %}{% endwith %}
+{% elif result.relation == 'places' %}{% with place=result.object %}{% include 'event/_place.html' %}{% endwith %}
+{% elif result.relation == 'content' %}{% with item=result.object %}{% include 'event/_item.html' %}{% endwith %}
+{% endif %}

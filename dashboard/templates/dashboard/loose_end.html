@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load content_tags %}{% load events %}{% load tags %}
+{% comment %}
+  One loose end (dashboard.views.LooseEndView): the people, items or events
+  it's about, each linking to its page - where it's fixed.
+{% endcomment %}
+
+{% block title %}{{ label|capfirst }}{% endblock %}
+
+{% block content %}
+<div class="tag-page">
+  <header class="tag-page__header">
+    <div class="tag-page__intro">
+      <a class="tag-page__parent" href="{% url 'dashboard:home' %}">{% translate "dashboard"|capfirst %} <i class="bi bi-chevron-right"></i></a>
+      <h1 class="tag-page__name">{{ label|capfirst }}</h1>
+      <p class="tag-page__counts">{{ items|length }}{% if name != 'marked' %}
+        {% if show_dismissed %} {% translate "fine as it is" %} · <a href="{% url 'dashboard:loose_end' name %}">{% translate "back to the list" %}</a>
+        {% elif dismissed_count %} · <a href="?dismissed=1">{% blocktranslate count n=dismissed_count %}{{ n }} fine as it is{% plural %}{{ n }} fine as it is{% endblocktranslate %}</a>{% endif %}
+      {% endif %}</p>
+    </div>
+  </header>
+  {% if name == 'marked' %}
+    <p class="tag-page__counts">{% translate "Tagged “Loose end” - remove the tag when it's done." %}</p>
+    {% if marked.people %}<section class="tag-page__section"><h2 class="section-title">{% translate "people"|capfirst %}</h2><div class="tag-page__people">{% for person in marked.people %}{% include 'people/_person_row.html' with related=person show_visibility=True %}{% endfor %}</div></section>{% endif %}
+    {% if marked.content %}<section class="tag-page__section"><h2 class="section-title">{% translate "content"|capfirst %}</h2><div class="dashboard__thumbs">{% for item in marked.content %}<a class="dashboard__thumb" href="{{ item.get_absolute_url }}" title="{{ item }}">{% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}<span class="dashboard__thumb-name">{{ item }}</span></a>{% endfor %}</div></section>{% endif %}
+    {% if marked.notes %}<section class="tag-page__section"><h2 class="section-title">{% translate "notes"|capfirst %}</h2><ul class="note-list">{% for note in marked.notes %}{% include 'note/_note_row.html' %}{% endfor %}</ul></section>{% endif %}
+  {% elif name == 'no-birth' or name == 'no-parents' or name == 'no-portrait' %}
+    <div class="tag-page__people">{% for person in items %}<div class="loose-end__row">{% include 'people/_person_row.html' with related=person show_visibility=True %}{% if name == 'no-portrait' and not show_dismissed %}{% with url=person|person_url:request %}{% if url %}
+      {# Straight to the portrait dialog: edit mode on (the edit switch, a POST), then their page with it open (?open=portrait). #}
+      <form class="loose-end__action" method="post" action="{% url 'cmnsd_ui:edit_mode' %}">{% csrf_token %}<input type="hidden" name="on" value="1"><input type="hidden" name="next" value="{{ url }}?open=portrait"><button type="submit" class="btn btn--secondary btn--sm"><i class="bi bi-person-bounding-box"></i> {% translate "choose portrait"|capfirst %}</button></form>
+    {% endif %}{% endwith %}{% endif %}{% include 'dashboard/_dismiss.html' with item=person %}</div>{% endfor %}</div>
+  {% elif name == 'photos-without-people' or name == 'open-transcripts' or name == 'no-transcript' or name == 'low-resolution' %}
+    <div class="dashboard__thumbs">
+      {% for item in items %}
+        <div class="loose-end__cell"><a class="dashboard__thumb" href="{% if name == 'open-transcripts' or name == 'no-transcript' %}{% url 'content:transcribe' item.token %}{% else %}{{ item.get_absolute_url }}{% endif %}" title="{{ item }}">{% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}<span class="dashboard__thumb-name">{{ item }}{% if name == 'low-resolution' %} <span class="dashboard__thumb-meta">{{ item.width }} × {{ item.height }}</span>{% elif name == 'open-transcripts' %} <span class="dashboard__thumb-meta">{% if item.open_incomplete %}{% translate "incomplete" %}{% endif %}{% if item.open_incomplete and item.open_unchecked %} · {% endif %}{% if item.open_unchecked %}{% translate "not checked" %}{% endif %}</span>{% endif %}</span></a>{% include 'dashboard/_dismiss.html' with item=item %}</div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <ol class="events-page__list">{% for event in items %}<li class="event-row loose-end__event">{% include 'event/_event.html' with others=event.people.all %}{% include 'dashboard/_dismiss.html' with item=event %}</li>{% endfor %}</ol>
+  {% endif %}
+</div>
+{% endblock %}
