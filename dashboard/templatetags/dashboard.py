@@ -23,3 +23,12 @@ def years_ago(event):
   if qualifier == 'after':
     return ngettext("at most %(n)s year ago", "at most %(n)s years ago", years) % {'n': years}
   return ngettext("%(n)s year ago", "%(n)s years ago", years) % {'n': years}
+
+
+@register.filter
+def unlinked_coparents(person, request):
+  """{% with others=person|unlinked_coparents:request %} - the other parents
+  of this person's children who aren't their partner (dashboard/blocks.py) -
+  the "parents not linked to a partner" loose end."""
+  from dashboard.blocks import unlinked_coparents as coparents
+  return coparents(person, request)

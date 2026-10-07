@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load content_tags %}{% load events %}{% load tags %}
+{% load content_tags %}{% load events %}{% load tags %}{% load edit_mode %}{% load dashboard %}
 {% comment %}
   One loose end (dashboard.views.LooseEndView): the people, items or events
   it's about, each linking to its page - where it's fixed.
@@ -24,11 +24,21 @@
     {% if marked.people %}<section class="tag-page__section"><h2 class="section-title">{% translate "people"|capfirst %}</h2><div class="tag-page__people">{% for person in marked.people %}{% include 'people/_person_row.html' with related=person show_visibility=True %}{% endfor %}</div></section>{% endif %}
     {% if marked.content %}<section class="tag-page__section"><h2 class="section-title">{% translate "content"|capfirst %}</h2><div class="dashboard__thumbs">{% for item in marked.content %}<a class="dashboard__thumb" href="{{ item.get_absolute_url }}" title="{{ item }}">{% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}<span class="dashboard__thumb-name">{{ item }}</span></a>{% endfor %}</div></section>{% endif %}
     {% if marked.notes %}<section class="tag-page__section"><h2 class="section-title">{% translate "notes"|capfirst %}</h2><ul class="note-list">{% for note in marked.notes %}{% include 'note/_note_row.html' %}{% endfor %}</ul></section>{% endif %}
-  {% elif name == 'no-birth' or name == 'no-parents' or name == 'no-portrait' %}
+  {% elif name == 'no-birth' or name == 'no-parents' or name == 'no-portrait' or name == 'parents-without-partner' %}
     <div class="tag-page__people">{% for person in items %}<div class="loose-end__row">{% include 'people/_person_row.html' with related=person show_visibility=True %}{% if name == 'no-portrait' and not show_dismissed %}{% with url=person|person_url:request %}{% if url %}
       {# Straight to the portrait dialog: edit mode on (the edit switch, a POST), then their page with it open (?open=portrait). #}
       <form class="loose-end__action" method="post" action="{% url 'cmnsd_ui:edit_mode' %}">{% csrf_token %}<input type="hidden" name="on" value="1"><input type="hidden" name="next" value="{{ url }}?open=portrait"><button type="submit" class="btn btn--secondary btn--sm"><i class="bi bi-person-bounding-box"></i> {% translate "choose portrait"|capfirst %}</button></form>
-    {% endif %}{% endwith %}{% endif %}{% include 'dashboard/_dismiss.html' with item=person %}</div>{% endfor %}</div>
+    {% endif %}{% endwith %}{% endif %}{% if name == 'parents-without-partner' and not show_dismissed %}
+      {# The other parent of their children, one click from being linked as their partner (Person.add_relative - its own permission check); the list reloads: both rows go. Without one known: "other parent unknown" - add them on the person's page, or "fine as it is". #}
+      {% with others=person|unlinked_coparents:request %}{% for other in others %}
+        <form class="loose-end__action" data-cmnsd-action="add_relative" data-model="person" data-object-token="{{ person.token }}" data-cmnsd-insert="reload">
+          <input type="hidden" name="relation" value="partner"><input type="hidden" name="token" value="{{ other.token }}">
+          <span class="dashboard__thumb-meta">{% translate "other parent" %}: {{ other.get_full_name }}</span>
+          {% if person|can_edit:request %}<button type="submit" class="btn btn--secondary btn--sm"><i class="bi bi-link-45deg"></i> {% translate "link as partners"|capfirst %}</button>{% endif %}
+          <p class="edit-form__error" data-cmnsd-error hidden></p>
+        </form>
+      {% empty %}<span class="dashboard__thumb-meta">{% translate "other parent unknown" %}</span>{% endfor %}{% endwith %}
+    {% endif %}{% include 'dashboard/_dismiss.html' with item=person %}</div>{% endfor %}</div>
   {% elif name == 'photos-without-people' or name == 'open-transcripts' or name == 'no-transcript' or name == 'low-resolution' or name == 'books-without-author' %}
     <div class="dashboard__thumbs">
       {% for item in items %}

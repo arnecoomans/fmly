@@ -139,6 +139,37 @@ class LooseEndRulesTests(DashboardTestCase):
     self.event('birth', [born], date(1910, 9, 23), 1910)
     self.assertEqual(set(self.items('no-birth')), {family, possibly})
 
+  def test_parents_without_partner(self):
+    from people.models import PersonRelation
+    link = lambda a, b, kind: PersonRelation.objects.create(person_from=a, person_to=b, relation_type=kind)
+    willem, jacoba, bob = self.person('Willem'), self.person('Jacoba'), self.person('Bob')
+    link(willem, bob, 'parent'), link(jacoba, bob, 'parent')                    # FMLY2: partners only implied by Bob
+    alone, child = self.person('Alleen'), self.person('Kind')
+    link(alone, child, 'parent')                                                  # the other parent unknown
+    eddie, hilda, emma, ex = self.person('Eddie'), self.person('Hilda'), self.person('Emma'), self.person('Ex')
+    link(eddie, hilda, 'partner'), link(eddie, emma, 'parent'), link(ex, emma, 'parent')   # Emma's mother isn't Eddie's partner
+    couple, kid = self.person('Getrouwd'), self.person('Kleinkind')
+    link(couple, kid, 'parent'), link(couple, bob, 'partner')                     # has a partner, no other parent known: fine
+    self.assertEqual(set(self.items('parents-without-partner')), {willem, jacoba, alone, eddie, ex})
+    self.assertEqual(list(blocks.unlinked_coparents(eddie, self.request(self.editor))), [ex])
+
+  def test_parents_without_partner_link_in_one_click(self):
+    import json
+    from django.contrib.auth.models import Permission
+    from people.models import PersonRelation
+    self.editor.user_permissions.add(Permission.objects.get(codename='change_person'))
+    willem, jacoba, bob = self.person('Willem'), self.person('Jacoba'), self.person('Bob')
+    PersonRelation.objects.create(person_from=willem, person_to=bob, relation_type='parent')
+    PersonRelation.objects.create(person_from=jacoba, person_to=bob, relation_type='parent')
+    client = Client()
+    client.force_login(self.editor)
+    html = client.get('/dashboard/loose-ends/parents-without-partner/').content.decode().replace('"', '')
+    self.assertIn('data-cmnsd-action=add_relative', html)
+    self.assertIn(f'value={jacoba.token}', html)
+    response = client.post(f'/api/person/{willem.token}/add_relative/', json.dumps({'relation': 'partner', 'token': jacoba.token}), content_type='application/json')
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(self.items('parents-without-partner'), [])                  # both rows gone
+
   def test_other_events_with_a_title_are_fine(self):
     untitled = Event.objects.create(kind='other', kind_freetext='Verhuizing', user=self.editor)
     Event.objects.create(kind='other', kind_freetext='Benoeming', title='Benoeming tot ambtenaar', user=self.editor)
