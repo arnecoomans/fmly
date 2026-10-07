@@ -52,6 +52,15 @@ def _prepared(content):
   try:
     with content.file.open('rb') as handle:
       image = Image.open(handle)
+      # A large JPEG scan decoded in full takes hundreds of MB - enough for
+      # the server to kill the worker (a 502, nothing logged). Draft mode
+      # decodes it at 1/2, 1/4 or 1/8 straight from the file: the smallest
+      # that keeps the longest side at LARGE or more, as the thumbnails do
+      # (content/thumbnail_engine.py). A no-op for other formats.
+      width, height = image.size
+      if max(width, height) > LARGE:
+        scale = LARGE / max(width, height)
+        image.draft('L', (round(width * scale), round(height * scale)))
       image.load()
   except (OSError, ValueError) as error:
     raise TranscriptionError(_("The image couldn't be opened.")) from error
