@@ -33,7 +33,7 @@ While you type the names, FMLY3 shows people **already in the archive** with tho
 
 ## The timeline
 
-The timeline puts a life in order: their own events (birth, marriage, migrations, death), the births and deaths of their close family, and the historical events of their lifetime - each with their age at the time, when both dates are known and certain enough.
+The timeline puts a life in order: their own events (birth, marriage, divorce, migrations, death), the births and deaths of their close family, and the historical events of their lifetime - each with their age at the time, when both dates are known and certain enough.
 
 An event without a date has no place in time, so it's left out - except the person's own birth (first) and death (last).
 

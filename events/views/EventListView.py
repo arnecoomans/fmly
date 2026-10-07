@@ -15,6 +15,7 @@ KINDS = (
   ('all', _("all")),
   ('birth', _("births")),
   ('marriage', _("marriages")),
+  ('divorce', _("divorces")),
   ('migration', _("migrations")),
   ('death', _("deaths")),
   ('other', _("other")),

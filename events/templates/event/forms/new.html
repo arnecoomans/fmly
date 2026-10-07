@@ -1,7 +1,11 @@
 {% comment %}
   A new event in a dialog (cmnsd object_create, EventCreateForm): what it
-  is, when (one line, like an item's date), where, and the description;
-  who and the documenting items follow on its page. Same contract as
+  is, when (one line, like an item's date), where, who, and the
+  description; the documenting items follow on its page. Who: the person
+  it was started from (named below), their close family to tick, and
+  someone else through the picker. For a marriage or a divorce a hint says
+  the others are partners (shown by the kind chosen - components.css
+  .event-form__partner-hint). Same contract as
   cmnsd/edit/create_form.html. Context: form, form_action.
 {% endcomment %}
 <form class="edit-form edit-form--create" data-cmnsd-create-form action="{{ form_action }}" method="post" novalidate>
@@ -27,6 +31,21 @@
   <div class="edit-form__field">
     <label for="{{ form.place.id_for_label }}">{{ form.place.label|capfirst }}</label>
     {{ form.place }}
+  </div>
+  {# Who: close family as toggle buttons (as a new child's other parent - people/_person_create_fields.html, but several may be pressed), then anyone else through the picker. #}
+  {% if 'with_people' in form.fields %}
+    <div class="edit-form__field">
+      <span class="edit-form__label" id="event-with-label">{{ form.with_people.label|capfirst }}</span>
+      <div class="toggle-choices" role="group" aria-labelledby="event-with-label">
+        {% for option in form.with_people %}<label class="choice-btn toggle-choice">{{ option.tag }}{{ option.choice_label }}</label>{% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  <div class="edit-form__field">
+    <label for="{{ form.other_person.id_for_label }}">{% if 'with_people' in form.fields %}{{ form.other_person.label|capfirst }}{% else %}{% translate "with"|capfirst %}{% endif %}</label>
+    {{ form.other_person }}
+    {% for error in form.other_person.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
+    <small class="edit-form__help event-form__partner-hint">{% if form.linked_person %}{% blocktranslate with name=form.linked_person %}A marriage or divorce is between partners: choose {{ name }}'s partner. Someone who isn't linked as a partner yet becomes one.{% endblocktranslate %}{% else %}{% translate "A marriage or divorce is between partners: choose one here, the other on the event's page." %}{% endif %}</small>
   </div>
   <div class="edit-form__field">
     <label for="{{ form.description.id_for_label }}">{{ form.description.label|capfirst }}</label>

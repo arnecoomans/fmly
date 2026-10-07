@@ -1258,6 +1258,10 @@ a.tag:hover { border-color: var(--color-accent); color: var(--color-accent-hover
 /* A form whose fields sit on one line (the date: how sure · day · month · year). */
 .edit-form__row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: flex-end; }
 .edit-form__row--date .edit-form__field--date_qualifier { flex: 1 1 110px; }
+/* A new event (event/forms/new.html): the hint that a marriage or divorce
+   is between partners - only while one of those kinds is chosen. */
+.event-form__partner-hint { display: none; }
+form:has(select[name="kind"] :is(option[value="marriage"], option[value="divorce"]):checked) .event-form__partner-hint { display: block; }
 .edit-form__row--date .edit-form__field--day { flex: 0 0 64px; }
 .edit-form__row--date .edit-form__field--month { flex: 1 1 130px; }
 .edit-form__row--date .edit-form__field--year { flex: 0 0 88px; }

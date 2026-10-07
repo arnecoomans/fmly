@@ -4,12 +4,14 @@ Events and places link people and content together and put them in order: who wa
 
 ## Events
 
-An event is something that happened: a **birth**, **marriage**, **death** or **migration**, an **other** event with its own label - or a **historical** event like an invasion or a transfer of sovereignty, which happened to everyone at once.
+An event is something that happened: a **birth**, **marriage**, **divorce**, **death** or **migration**, an **other** event with its own label - or a **historical** event like an invasion or a transfer of sovereignty, which happened to everyone at once.
 
 An event has a date (exact, *ca.*, *before* or *after*, or just a year), places, the people involved, and the photos and documents that record it - a birth announcement for a birth, a passenger list for a migration.
 
 - Births and deaths are added on a person's page (see [People](people.md)).
 - Other events: on a person's page, or from a photo or document in edit mode - **+ new event** starts on the item's date, which you can change: a clipping is usually published just after the event.
+- **Who was there:** started from a person's page, the new event is theirs, and you can press their partners, parents and children to add them too - and pick anyone else. More people are added on the event's own page.
+- **A marriage or divorce** is between partners: someone you add who isn't linked as a partner yet becomes one when you save.
 - Each event has its own page, with its people, places, documents and comments.
 
 ## History and the calendar

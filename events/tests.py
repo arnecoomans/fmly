@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 
 from events.models import Event
 from people.models import Person
@@ -144,6 +144,24 @@ class EventOverviewTests(TestCase):
     self.assertIn('Marriages 1</a>', html)                     # two people, one event
     self.assertIn('Historical 2</a>', html)
 
+  def test_divorce(self):
+    """A divorce is an event of both people: in the list with its own pill
+    and symbol, and in each of their timelines - why a partner is gone
+    while still alive."""
+    from people.models import Person
+    from people.timeline import life_timeline
+    eddie = Person.objects.create(given_name='Eddie', user=self.user, status='p', visibility='c')
+    divorce = Event.objects.create(kind=Event.Kind.DIVORCE, year=1934, month=10, user=self.user)
+    divorce.people.add(self.shown, eddie)
+    html = self.html('?kind=divorce').replace('"', '')
+    self.assertIn('Divorces 1</a>', html)
+    self.assertIn('⚮', html)
+    self.assertIn('Corry', html)
+    request = RequestFactory().get('/')
+    request.user = self.user
+    for person in (self.shown, eddie):
+      self.assertIn(divorce, [entry.event for entry in life_timeline(person, request)])
+
   def test_in_the_menu(self):
     self.assertIn('href="/events/"', self.html().replace('href=/events/', 'href="/events/"'))
 
@@ -198,6 +216,54 @@ class EventEditingTests(TestCase):
     event = Event.objects.get(kind='marriage')
     self.assertEqual((list(event.people.all()), event.status), ([self.person], 'p'))
     self.assertEqual(response.json()['created']['url'], event.get_absolute_url())
+
+  def family(self):
+    """Corry's wife and son, and an outsider - with their relations."""
+    from people.models import Person, PersonRelation
+    make = lambda name, gender: Person.objects.create(given_name=name, gender=gender, user=self.editor, status='p', visibility='c')
+    wife, son, other = make('Jacoba', 'f'), make('Bob', 'm'), make('Willem', 'm')
+    PersonRelation.objects.create(person_from=self.person, person_to=wife, relation_type='partner')
+    PersonRelation.objects.create(person_from=self.person, person_to=son, relation_type='parent')
+    return wife, son, other
+
+  def new(self, **fields):
+    data = {'kind': 'other', 'kind_freetext': 'Feest', 'date_qualifier': 'exact', 'year': '1950', 'person': self.person.token, **fields}
+    return self.client.post('/api/event/new/', data)
+
+  def test_create_offers_the_family_and_anyone(self):
+    wife, son, _other = self.family()
+    html = self.client.get(f'/api/event/new/?person={self.person.token}').json()['html'].replace('"', '')
+    self.assertLess(html.index('Jacoba'), html.index('Bob'))                    # partners first
+    self.assertIn('(wife)', html)
+    self.assertIn('(son)', html)
+    self.assertIn('data-cmnsd-picker=person', html)                            # someone else
+    self.assertIn('event-form__partner-hint', html)
+    html = self.client.get('/api/event/new/').json()['html'].replace('"', '')   # from the events page: the picker only
+    self.assertNotIn('toggle-choices', html)
+    self.assertIn('data-cmnsd-picker=person', html)
+
+  def test_create_with_people(self):
+    wife, son, other = self.family()
+    self.assertEqual(self.new(with_people=[wife.token, son.token], other_person=other.token).status_code, 200)
+    event = Event.objects.get(kind_freetext='Feest')
+    self.assertEqual(set(event.people.all()), {self.person, wife, son, other})
+    self.assertNotIn(other, self.person.get_partners())                         # not a marriage: no partner link
+
+  def test_marriage_links_a_new_partner(self):
+    wife, son, other = self.family()
+    self.new(kind='marriage', kind_freetext='', other_person=other.token)       # a first marriage, not linked yet
+    self.assertEqual(set(Event.objects.get(kind='marriage').people.all()), {self.person, other})
+    self.assertEqual(set(self.person.get_partners()), {wife, other})
+    self.new(kind='divorce', kind_freetext='', with_people=[wife.token])        # already a partner: nothing to link
+    self.assertEqual(len(self.person.get_partners()), 2)
+
+  def test_a_refused_partner_link_keeps_the_event(self):
+    wife, son, other = self.family()
+    response = self.new(kind='marriage', kind_freetext='', with_people=[son.token])   # a child can't be a partner
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(set(Event.objects.get(kind='marriage').people.all()), {self.person, son})
+    self.assertNotIn(son, self.person.get_partners())
+    self.assertIn("wasn't linked as a partner", ' '.join(m['text'] for m in response.json()['messages']))
 
   def test_link_people_places_content(self):
     import json

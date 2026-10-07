@@ -30,6 +30,7 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
     BIRTH = "birth", _("birth")
     DEATH = "death", _("death")
     MARRIAGE = "marriage", _("marriage")
+    DIVORCE = "divorce", _("divorce")       # explains a timeline: why a partner is gone while alive
     MIGRATION = "migration", _("migration")
     HISTORICAL = "historical", _("historical")   # history, often without people (the Japanese invasion)
     OTHER = "other", _("other")
@@ -50,8 +51,8 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
   description = models.TextField(blank=True)
 
   # blank=True: a historical event (opening of the Suez Canal) has
-  # no people at all; birth/death/marriage populate this.
-  # Cardinality (birth/death: exactly 1 person, marriage: 2+) is NOT
+  # no people at all; birth/death/marriage/divorce populate this.
+  # Cardinality (birth/death: exactly 1 person, marriage/divorce: 2+) is NOT
   # enforced here - clean()/save() run via full_clean() before the row has
   # a pk, and M2M fields can't be read until then. Enforce this in the
   # add/edit Event form's clean() once it exists, not on the model.
