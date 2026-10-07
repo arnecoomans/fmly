@@ -199,10 +199,9 @@
           {% if content.kind == 'book' and book %}
             {% with linked_authors=book.authors.all %}
               {% if edit_relations %}
-                {# Edit mode: linked authors as chips + the people picker; the free-text author as a hint while none is linked. #}
+                {# Edit mode: linked authors as chips + the people picker. #}
                 <div><dt>{% translate "author"|capfirst %}</dt><dd>
                   <span class="content-detail__places content-detail__places--edit" id="content-authors">{% for author in linked_authors %}{% include 'content/_author_link.html' %}{% endfor %}</span>
-                  {% if not linked_authors and book.author %}<span class="content-detail__hint">{% translate "as text" %}: {{ book.author }}</span>{% endif %}
                   {% translate "link an author" as add_label %}
                   {% translate "new person" as new_label %}
                   {% url 'cmnsd_api:object_create' 'person' as new_dialog %}
@@ -210,8 +209,6 @@
                 </dd></div>
               {% elif linked_authors %}
                 <div><dt>{% translate "author"|capfirst %}</dt><dd>{% for author in linked_authors %}{% if not forloop.first %}, {% endif %}{% include 'content/_author_link.html' %}{% endfor %}</dd></div>
-              {% elif book.author %}
-                <div><dt>{% translate "author"|capfirst %}</dt><dd>{{ book.author }}</dd></div>
               {% endif %}
             {% endwith %}
             {% if book.publisher or edit_relations %}{% include 'cmnsd/edit/block.html' with model='content' obj=content block='publication' %}{% endif %}

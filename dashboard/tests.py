@@ -139,37 +139,6 @@ class LooseEndRulesTests(DashboardTestCase):
     self.event('birth', [born], date(1910, 9, 23), 1910)
     self.assertEqual(set(self.items('no-birth')), {family, possibly})
 
-  def test_parents_without_partner(self):
-    from people.models import PersonRelation
-    link = lambda a, b, kind: PersonRelation.objects.create(person_from=a, person_to=b, relation_type=kind)
-    willem, jacoba, bob = self.person('Willem'), self.person('Jacoba'), self.person('Bob')
-    link(willem, bob, 'parent'), link(jacoba, bob, 'parent')                    # FMLY2: partners only implied by Bob
-    alone, child = self.person('Alleen'), self.person('Kind')
-    link(alone, child, 'parent')                                                  # the other parent unknown
-    eddie, hilda, emma, ex = self.person('Eddie'), self.person('Hilda'), self.person('Emma'), self.person('Ex')
-    link(eddie, hilda, 'partner'), link(eddie, emma, 'parent'), link(ex, emma, 'parent')   # Emma's mother isn't Eddie's partner
-    couple, kid = self.person('Getrouwd'), self.person('Kleinkind')
-    link(couple, kid, 'parent'), link(couple, bob, 'partner')                     # has a partner, no other parent known: fine
-    self.assertEqual(set(self.items('parents-without-partner')), {willem, jacoba, alone, eddie, ex})
-    self.assertEqual(list(blocks.unlinked_coparents(eddie, self.request(self.editor))), [ex])
-
-  def test_parents_without_partner_link_in_one_click(self):
-    import json
-    from django.contrib.auth.models import Permission
-    from people.models import PersonRelation
-    self.editor.user_permissions.add(Permission.objects.get(codename='change_person'))
-    willem, jacoba, bob = self.person('Willem'), self.person('Jacoba'), self.person('Bob')
-    PersonRelation.objects.create(person_from=willem, person_to=bob, relation_type='parent')
-    PersonRelation.objects.create(person_from=jacoba, person_to=bob, relation_type='parent')
-    client = Client()
-    client.force_login(self.editor)
-    html = client.get('/dashboard/loose-ends/parents-without-partner/').content.decode().replace('"', '')
-    self.assertIn('data-cmnsd-action=add_relative', html)
-    self.assertIn(f'value={jacoba.token}', html)
-    response = client.post(f'/api/person/{willem.token}/add_relative/', json.dumps({'relation': 'partner', 'token': jacoba.token}), content_type='application/json')
-    self.assertEqual(response.status_code, 200)
-    self.assertEqual(self.items('parents-without-partner'), [])                  # both rows gone
-
   def test_other_events_with_a_title_are_fine(self):
     untitled = Event.objects.create(kind='other', kind_freetext='Verhuizing', user=self.editor)
     Event.objects.create(kind='other', kind_freetext='Benoeming', title='Benoeming tot ambtenaar', user=self.editor)
@@ -362,31 +331,6 @@ class DismissalTests(DashboardTestCase):
 
 
 
-class NoPortraitTests(DashboardTestCase):
-  """People without a portrait who are tagged in a photo the viewer may see."""
-
-  def test_who(self):
-    from content.models import Content, Portrait
-    tagged, framed, absent = self.person('Getagd'), self.person('Ingelijst'), self.person('Afwezig')
-    photo = Content.objects.create(name='Feest', kind='photo', user=self.editor, status='p', visibility='c', file='content/2026/feest.jpg')
-    photo.people.set([tagged, framed])
-    Portrait.objects.create(person=framed, content=photo, is_primary=True)
-    letter = Content.objects.create(name='Brief', kind='document', user=self.editor, status='p', visibility='c', file='content/2026/brief.jpg')
-    letter.people.set([absent])                                              # a document, not a photo
-    self.assertEqual(list(blocks.loose_end_items('no-portrait', self.request(self.editor))), [tagged])
-
-  def test_choose_portrait_goes_straight_to_the_dialog(self):
-    from content.models import Content
-    person = self.person('Getagd')
-    Content.objects.create(name='Feest', kind='photo', user=self.editor, status='p', visibility='c', file='content/2026/feest.jpg').people.set([person])
-    client = Client()
-    client.force_login(self.editor)
-    html = client.get('/dashboard/loose-ends/no-portrait/').content.decode().replace('"', '')
-    self.assertIn(f'value={person.page_url()}?open=portrait', html)
-    response = client.post('/ui/edit/', {'on': '1', 'next': f'{person.page_url()}?open=portrait'})
-    self.assertEqual(response.url, f'{person.page_url()}?open=portrait')
-
-
 class NoTranscriptTests(DashboardTestCase):
   """Scanned documents without a transcript - images, not PDFs (yet)."""
 
@@ -396,35 +340,6 @@ class NoTranscriptTests(DashboardTestCase):
     scan, pdf, done = make('Brief', 'content/2026/brief.jpg'), make('Akte', 'content/2026/akte.pdf'), make('Kaart', 'content/2026/kaart.png')
     Transcript.objects.create(content=done, kind='original', language='nl', method='manual', text='Klaar')
     self.assertEqual(list(blocks.loose_end_items('no-transcript', self.request(self.editor))), [scan])
-
-
-class BooksWithoutAuthorTests(DashboardTestCase):
-  """Books without an author linked as a person - the author as written on
-  the book first, the actionable ones."""
-
-  def test_which_and_order(self):
-    from content.models import Content
-    make = lambda name, author: Content.objects.create(name=name, kind='book', user=self.editor, status='p', visibility='c') if author is None else self.book(name, author)
-    unknown, written, linked = make('Atlas', ''), make('Zuid', 'Jeroen Brouwers'), make('Bezonken rood', 'Jeroen Brouwers')
-    linked.book_detail.authors.add(self.person('Jeroen'))
-    no_detail = make('Album', None)                                             # no BookContent row at all
-    Content.objects.create(name='Hoofdstuk 1', kind='book', user=self.editor, status='p', visibility='c', parent=written)   # a part: under its book
-    self.assertEqual(list(blocks.loose_end_items('books-without-author', self.request(self.editor))), [written, no_detail, unknown])
-
-  def test_row_shows_the_written_author(self):
-    self.book('Zuid', 'Jeroen Brouwers')
-    client = Client()
-    client.force_login(self.editor)
-    html = client.get('/dashboard/loose-ends/books-without-author/').content.decode()
-    self.assertIn('Jeroen Brouwers', html)
-
-  def book(self, name, author):
-    from content.models import Content
-    item = Content.objects.create(name=name, kind='book', user=self.editor, status='p', visibility='c')
-    item.ensure_detail()
-    type(item.book_detail).objects.filter(pk=item.book_detail.pk).update(author=author)
-    item.refresh_from_db()
-    return item
 
 
 class AccountsTests(DashboardTestCase):

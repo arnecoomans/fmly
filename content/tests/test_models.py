@@ -168,23 +168,3 @@ class DocumentLanguageTests(ContentTestCase):
     detail.language = 'jv'
     detail.save()
     self.assertContains(self.client.get(document.get_absolute_url()), 'Javanese')
-
-  def test_legacy_import_marks_documents_dutch(self):
-    from legacy_import.management.commands.import_content import Command
-    document = self.make(name='Paspoort', kind=Content.Kind.DOCUMENT)
-    Command().set_detail_kind(document, 'identity')
-    detail = Content.objects.get(pk=document.pk).get_detail()
-    self.assertEqual((detail.document_kind, detail.language), ('identity', 'nl'))
-
-
-class FindDocumentTests(ContentTestCase):
-  def test_legacy_underscores_match_a_file_with_spaces(self):
-    import tempfile
-    from pathlib import Path
-    from legacy_import.management.commands.import_content import Command
-    folder = Path(tempfile.mkdtemp())
-    (folder / 'De Japanse Burgerkampen.JPG').write_bytes(b'x')
-    command = Command()
-    command.documents = folder
-    self.assertEqual(command.find_document('De_Japanse_Burgerkampen.JPG').name, 'De Japanse Burgerkampen.JPG')
-    self.assertIsNone(command.find_document('Onbekend.jpg'))

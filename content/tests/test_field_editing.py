@@ -247,11 +247,11 @@ class FieldBlockTests(TestCase):
 
   def test_book_publication_and_isbn(self):
     self.item = self.make_book()
-    data = self.post('publication', {'publication-publisher': 'De Bezige Bij', 'publication-author': 'Anne-Lot Hoek'}).json()
+    data = self.post('publication', {'publication-publisher': 'De Bezige Bij'}).json()
     self.assertIn('De Bezige Bij', data['html'])
     self.post('isbn', {'isbn-isbn': '9789403152318'})
     detail = Content.objects.get(pk=self.item.pk).book_detail
-    self.assertEqual((detail.publisher, detail.author, detail.isbn), ('De Bezige Bij', 'Anne-Lot Hoek', '9789403152318'))
+    self.assertEqual((detail.publisher, detail.isbn), ('De Bezige Bij', '9789403152318'))
     form = self.open_form('publication').json()['html'].replace('"', '')
     self.assertNotIn('publication_year', form)              # one date per book: the item's own (the date block)
     html = self.date(year='2021').json()['html']

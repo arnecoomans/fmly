@@ -92,15 +92,12 @@ LOOSE_ENDS = {
   'marked': _("marked as a loose end"),
   'no-birth': _("people without a birth"),
   'no-parents': _("people without parents"),
-  'parents-without-partner': _("parents not linked to a partner"),
-  'no-portrait': _("people without a portrait, in photos"),
   'photos-without-people': _("photos without people"),
   'undated-events': _("events without a date"),
   'other-events': _("events of kind 'other' without a title"),
   'open-transcripts': _("transcripts to finish or check"),
   'no-transcript': _("documents without a transcript"),
   'low-resolution': _("images in low resolution"),
-  'books-without-author': _("books without a linked author"),
 }
 
 # Below this many pixels an image is a loose end: a better scan or original
@@ -158,32 +155,12 @@ def _loose_end_queryset(name, request):
     )
   if name == 'no-parents':
     return people.exclude(relations_to__relation_type='parent').filter(family_connection='family')
-  if name == 'parents-without-partner':
-    # FMLY2 left partners implicit (two people sharing a child); FMLY3
-    # stores them. A parent whose child's other parent isn't their partner -
-    # or who has no partner at all - is a link to make (or to dismiss).
-    return people.filter(pk__in=_parents_without_partner()).order_by('last_name', 'given_name')
-  if name == 'no-portrait':
-    # No portrait yet, but tagged in a photo this viewer may see - one
-    # click from one (the pencil on their avatar, in edit mode).
-    photos = Content.objects.visible_to(request).filter(kind=Content.Kind.PHOTO, file__iregex=r'\.(jpe?g|png|gif|webp|tiff?)$')
-    return people.exclude(portrait_links__is_primary=True).filter(pk__in=photos.values('people')).order_by('last_name', 'given_name')
   if name == 'photos-without-people':
     return Content.objects.visible_to(request).listable().filter(kind=Content.Kind.PHOTO, people__isnull=True)
   if name == 'undated-events':
     return events.filter(year__isnull=True)
   if name == 'other-events':
     return events.filter(kind='other', title='')
-  if name == 'books-without-author':
-    # No author linked as a person (BookContent.authors) - those with the
-    # author as written on the book first: one search away from linking.
-    has_text = models.Q(book_detail__author='')
-    return (
-      Content.objects.visible_to(request).listable().filter(kind=Content.Kind.BOOK, book_detail__authors__isnull=True)
-      .select_related('book_detail')
-      .annotate(author_unknown=models.ExpressionWrapper(has_text | models.Q(book_detail__isnull=True), output_field=models.BooleanField()))
-      .order_by('author_unknown', 'name')
-    )
   if name == 'low-resolution':
     # Smallest first (Content.width/height, as shown).
     return (
@@ -213,44 +190,6 @@ def _loose_end_queryset(name, request):
       .order_by('date_created', 'pk')
     )
   return None
-
-
-def _parent_pairs():
-  """({child pk: {parent pks}}, {frozenset(partner pks)}) - every parent and
-  partner link, in two queries."""
-  from collections import defaultdict
-  from people.models import PersonRelation
-  R = PersonRelation.RelationType
-  parents_of = defaultdict(set)
-  for parent, child in PersonRelation.objects.filter(relation_type=R.PARENT).values_list('person_from', 'person_to'):
-    parents_of[child].add(parent)
-  partners = {frozenset(pair) for pair in PersonRelation.objects.filter(relation_type=R.PARTNER).values_list('person_from', 'person_to')}
-  return parents_of, partners
-
-
-def _parents_without_partner():
-  """The pks of parents with no partner at all, or with a child whose
-  other parent isn't their partner."""
-  parents_of, partners = _parent_pairs()
-  partnered = {pk for pair in partners for pk in pair}
-  found = set()
-  for parents in parents_of.values():
-    for parent in parents:
-      if parent not in partnered or any(frozenset((parent, other)) not in partners for other in parents - {parent}):
-        found.add(parent)
-  return found
-
-
-def unlinked_coparents(person, request):
-  """The other parents of `person`'s children who aren't their partner -
-  only those this viewer may see (a hidden one can't be linked here
-  either), by name."""
-  from people.models import Person, PersonRelation
-  R = PersonRelation.RelationType
-  children = PersonRelation.objects.filter(person_from=person, relation_type=R.PARENT).values('person_to')
-  others = PersonRelation.objects.filter(person_to__in=children, relation_type=R.PARENT).exclude(person_from=person).values('person_from')
-  partners = [p.pk for p in person.get_partners()]
-  return filter_accessible(Person.objects.filter(pk__in=others).exclude(pk__in=partners), request).order_by('last_name', 'given_name')
 
 
 def undated_by_person(events, request):

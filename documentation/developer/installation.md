@@ -23,13 +23,7 @@ Already cloned without the submodule: `git submodule update --init`, then the ch
    ```
 
 4. Data - one of:
-   - **The legacy import** (moving from the old site): put the export in `import/` (`import/fixtures/*.json` and `import/documents/`, never committed - it holds family documents and password hashes), then
-
-     ```sh
-     .venv/bin/python manage.py import_all
-     ```
-
-     This imports users, places, people, relations, tags, events, content and notes in order, then runs `content_checksums`, `prepare_release --all-editors` and `create_default_pages`. Safe to run again: it updates instead of duplicating. Files added to `import/documents/` later are picked up without touching anything else: `manage.py import_content --files-only`.
+   - **A copy of the live archive**, for development: `pato.sh` from cmnsd copies its database and files to your machine (`cmnsd/documentation/resources.md`).
    - **An empty archive:**
 
      ```sh

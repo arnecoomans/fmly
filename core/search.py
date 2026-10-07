@@ -92,8 +92,7 @@ def _texts(obj, request):
     from content.models import Transcript
     parts = Content.objects.visible_to(request).filter(parent=obj)
     transcripts = Transcript.objects.filter(content__in=[obj.pk, *parts.values_list('pk', flat=True)])
-    author = getattr(getattr(obj, 'book_detail', None), 'author', '')
-    return [obj.description, author, *transcripts.order_by('content__position', 'pk').values_list('text', flat=True)]
+    return [obj.description, *transcripts.order_by('content__position', 'pk').values_list('text', flat=True)]
   if isinstance(obj, Event):
     return [obj.description]
   if isinstance(obj, Note):

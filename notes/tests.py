@@ -181,33 +181,3 @@ class NoteEditTests(NoteTestCase):
     self.question.status = 'p'
     self.question.save()
     self.assertEqual(reader.post(f'/api/note/{self.question.token}/form/kind/', {}).status_code, 403)
-
-
-class ImportNotesTests(TestCase):
-  """legacy_import import_notes: matched by token, links rewritten, kinds kept."""
-
-  def test_import(self):
-    user = get_user_model().objects.create(username='arne')
-    user.save()
-    person = Person.objects.create(pk=59, given_name='Willem', user=user, status='p', visibility='p')
-    Note.objects.create(pk=1, user=user, title='Al op de site gemaakt')   # takes legacy pk 1
-    rows = [{'model': 'archive.note', 'pk': 1, 'fields': {
-      'token': 'b0d7f5ce96e84621a88b', 'status': 'p', 'user': user.pk, 'title': 'Welkom',
-      'content': 'Zie [Willem](/person/59/willem-bake/).', 'people': [59], 'tags': [],
-      'date_created': '2022-01-07T21:14:39Z', 'date_modified': '2022-01-25T13:38:25Z',
-    }}]
-    with tempfile.TemporaryDirectory() as folder:
-      path = Path(folder) / 'archive_note.json'
-      path.write_text(json.dumps(rows))
-      call_command('import_notes', path=str(path), stdout=open('/dev/null', 'w'))
-      imported = Note.objects.get(token='b0d7f5ce96e84621a88b')
-      imported.kind = 'conclusion'
-      imported.save()
-      call_command('import_notes', path=str(path), stdout=open('/dev/null', 'w'))
-    self.assertEqual(Note.objects.get(pk=1).title, 'Al op de site gemaakt')   # not overwritten
-    imported.refresh_from_db()
-    self.assertEqual(Note.objects.filter(token='b0d7f5ce96e84621a88b').count(), 1)
-    self.assertIn(f']({person.get_absolute_url()})', imported.body)
-    self.assertEqual((imported.status, imported.visibility, imported.kind), ('p', 'c', 'conclusion'))
-    self.assertEqual(list(imported.people.all()), [person])
-    self.assertEqual(imported.date_created.year, 2022)

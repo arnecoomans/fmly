@@ -13,10 +13,9 @@ Read in this order when you're new; each page stands on its own afterwards.
 | [Web hosting](webhosting.md) | gunicorn, supervisord and nginx | written |
 | [Deploying](deploying.md) | `update.sh` and `.post_update.sh` for every update, the checks | written |
 | [cmnsd](cmnsd-dependency.md) | The shared foundation: what it provides, what stays in FMLY3, working on the submodule | written |
-| [Architecture](architecture.md) | The apps (core, people, content, events, places, notes, dashboard, legacy_import), how a request flows, where things live | written |
+| [Architecture](architecture.md) | The apps (core, people, content, events, places, notes, dashboard), how a request flows, where things live | written |
 | [Visibility and access](visibility-and-access.md) | Status and visibility, family, private people, staff, drafts - and `filter_accessible` everywhere | written |
 | [Data model](data-model.md) | People and relations, content and its parts, events, places, notes, tags | written |
-| [The legacy import](legacy-import.md) | `import_all` and its steps, re-running, `import_content --files-only` | written |
 | [Management commands](management-commands.md) | `content_checksums`, `prepare_release`, `create_default_pages`, the importers | written |
 | [Frontend](frontend.md) | Templates, CSS (tokens, components), cmnsd.js on FMLY3's pages | written |
 | [Testing](testing.md) | Running the suite, test data, temporary media - never the real `private/` | written |

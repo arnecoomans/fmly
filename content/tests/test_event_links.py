@@ -1,59 +1,12 @@
-import json
-import tempfile
-from pathlib import Path
-
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.test import override_settings
 
 from content.models import Content
 from events.models import Event
-from legacy_import.links import link_event_images
 from people.models import Person
 
 from .test_models import MEDIA, ContentTestCase
-
-
-def write_fixture(directory, links):
-  """archive_event.json with {event pk: [image pks]}."""
-  rows = [{'pk': event, 'fields': {'images': images}} for event, images in links.items()]
-  (Path(directory) / 'archive_event.json').write_text(json.dumps(rows))
-
-
-@override_settings(MEDIA_ROOT=MEDIA)
-class EventLinkTests(ContentTestCase):
-  def setUp(self):
-    super().setUp()
-    self.fixtures = tempfile.mkdtemp()
-    write_fixture(self.fixtures, {10: [20]})
-
-  def event(self):
-    return Event.objects.create(pk=10, kind=Event.Kind.BIRTH, year=1943, user=self.user)
-
-  def content(self):
-    return Content.objects.create(pk=20, name='Geboorte Eric', user=self.user)
-
-  def test_events_first_then_content(self):
-    self.event()
-    self.assertEqual(link_event_images(self.fixtures), (0, 1))  # waiting for content
-    content = self.content()
-    self.assertEqual(link_event_images(self.fixtures), (1, 0))
-    self.assertEqual(list(content.events.values_list('pk', flat=True)), [10])
-
-  def test_content_first_then_events(self):
-    content = self.content()
-    self.assertEqual(link_event_images(self.fixtures), (0, 1))  # waiting for the event
-    self.event()
-    link_event_images(self.fixtures)
-    self.assertEqual(list(content.events.values_list('pk', flat=True)), [10])
-
-  def test_rerun_keeps_manual_links(self):
-    content = self.content()
-    self.event()
-    manual = Event.objects.create(pk=11, kind=Event.Kind.HISTORICAL, year=1950, user=self.user)
-    content.events.add(manual)
-    link_event_images(self.fixtures)
-    self.assertEqual(set(content.events.values_list('pk', flat=True)), {10, 11})
 
 
 @override_settings(MEDIA_ROOT=MEDIA, SENDFILE_ROOT=MEDIA, SENDFILE_BACKEND='django_sendfile.backends.simple')

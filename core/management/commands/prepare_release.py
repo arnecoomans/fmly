@@ -36,11 +36,11 @@ def permissions(names):
 
 class Command(BaseCommand):
   help = (
-    "Set up what a fresh database needs besides the import: the \"Loose end\" "
+    "Set up what a fresh database needs: the \"Loose end\" "
     "tag (core.tags.LOOSE_END_SLUG), and the groups Visitors (may comment) "
     "and Editors (may add and change the archive). Every active account "
     "without a group joins Visitors; with --all-editors every active account "
-    "joins both (the imported family accounts - import_all). Idempotent: a group's permissions are "
+    "joins both (the family accounts moved from FMLY 2). Idempotent: a group's permissions are "
     "set to the ones listed here, so re-running undoes changes made in the admin."
   )
 

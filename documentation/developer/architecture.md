@@ -13,7 +13,6 @@ How FMLY3 is put together: the apps, what each owns, and how a request flows. Re
 | `places` | Places within places | `/places/` |
 | `notes` | Research notes | `/notes/` |
 | `dashboard` | The start page, loose ends, housekeeping, accounts | `/`, `/dashboard/...` |
-| `legacy_import` | Importing the old site's data | management commands only |
 | `fmly` | Settings and the root URL configuration | |
 
 Apps depend on each other where the domain does - content knows people, events know people and places - but none of them on `dashboard`, which only reads.

@@ -30,7 +30,7 @@ See [Photos & documents](content.md) for the inbox in detail.
 
 For editors: what's still missing in the archive, each as a list with a count, for example:
 
-- people without a birth, without parents, or without a portrait while there are photos of them
+- people without a birth or without parents
 - photos without people
 - documents without a transcript, and transcripts to finish or check
 - events without a date

@@ -41,8 +41,8 @@ class DocumentContent(models.Model):
   Language = Language
 
   # The language the document is written in. Blank = not set: a new
-  # document isn't assumed to be anything; the legacy import sets Dutch
-  # (import_content).
+  # document isn't assumed to be anything (the documents moved from FMLY 2
+  # were set to Dutch).
   language = models.CharField(max_length=10, blank=True, choices=Language.choices)
 
   def __str__(self):
@@ -53,12 +53,9 @@ class BookContent(models.Model):
   """A book's own Content file is its front cover; further parts are
   Content rows with parent=<the book's Content>."""
   content = models.OneToOneField('content.Content', on_delete=models.CASCADE, related_name='book_detail')
-  # Authors as people, linked by hand - an author gets a Person (family,
-  # or an outsider) with their own information, so their books show on
-  # their page. `author` is the plain text (legacy), shown while no one is
-  # linked yet.
+  # Authors as people - an author gets a Person (family, or an outsider)
+  # with their own information, so their books show on their page.
   authors = models.ManyToManyField('people.Person', blank=True, related_name='authored_books')
-  author = models.CharField(max_length=255, blank=True, help_text=_("As written on the book; link the author as a person above"))
   publisher = models.CharField(max_length=255, blank=True)
   # No year of its own: a book's date (Content.year/month/day) is when it was
   # published - one date for sorting, timelines and loose ends.

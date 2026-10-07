@@ -268,11 +268,18 @@ class Content(TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin
     """Extra free-text search (cmnsd.api.filtering - the content list, the
     picker, /search/): the text of its transcripts, and of its parts' -
     only parts this viewer may see, so a hidden page's text can't make its
-    book show up - and a book's author as written on it. A transcript is
-    as visible as its item, so the item's own visibility covers it."""
+    book show up - and a book's authors by name, those this viewer may
+    see. A transcript is as visible as its item, so the item's own
+    visibility covers it."""
+    from cmnsd.models.access import filter_accessible
+    from people.models import Person
     in_text = models.Q(transcripts__text__icontains=term)
     parts = Content.objects.visible_to(request).filter(in_text)
-    return in_text | models.Q(parts__in=parts) | models.Q(book_detail__author__icontains=term)
+    named = models.Q()
+    for field in ('given_name', 'called_name', 'last_name', 'married_name', 'nickname'):
+      named |= models.Q(**{f'{field}__icontains': term})
+    authors = filter_accessible(Person.objects.filter(named), request)
+    return in_text | models.Q(parts__in=parts) | models.Q(book_detail__authors__in=authors)
 
   def get_slug_source(self):
     if self.name:

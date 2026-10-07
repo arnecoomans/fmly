@@ -64,18 +64,16 @@ class ContentSourceForm(forms.ModelForm):
 
 class BookPublicationForm(forms.ModelForm):
   """A book's publisher (with suggestions from other books - a recurring
-  name, not a model of its own) and the author as written on the book
-  (linking the author as a person is separate, in the author row). The
-  year it was published is the item's own date (the date block)."""
+  name, not a model of its own). Its authors are linked people (the
+  author row); the year it was published is the item's own date (the date
+  block)."""
 
   class Meta:
     model = BookContent
-    fields = ['publisher', 'author']
-    labels = {'publisher': _("publisher"), 'author': _("author as written on the book")}
-    help_texts = {'author': _("Plain text - link the author as a person in the author row.")}
+    fields = ['publisher']
+    labels = {'publisher': _("publisher")}
     widgets = {
       'publisher': SuggestInput(url=reverse_lazy('cmnsd_api:object_suggest', args=['content', 'publisher'])),
-      'author': forms.TextInput(attrs={'autocomplete': 'off'}),
     }
 
   @staticmethod

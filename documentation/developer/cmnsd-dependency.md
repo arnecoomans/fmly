@@ -6,7 +6,7 @@ FMLY3 is built on **cmnsd**, a reusable Django app that holds everything that is
 fmly/
 ├── cmnsd/          the submodule - generic, shared
 ├── core/           FMLY3's own apps - tags, comments, preferences, search ...
-├── people/  content/  events/  places/  notes/  dashboard/  legacy_import/
+├── people/  content/  events/  places/  notes/  dashboard/
 └── fmly/           settings and urls
 ```
 

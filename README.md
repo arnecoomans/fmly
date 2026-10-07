@@ -10,7 +10,7 @@ New in FMLY: start from one central place.
 - **Recently added** and **from the archive** - what's new, and a random item to rediscover.
 - **The conversation** - the latest comments, wherever they were made.
 - **Your inbox** - drop files straight onto the dashboard; they wait as drafts until you've described them.
-- **Loose ends** - what's still missing: people without a birth or a portrait, photos without people, documents without a transcript, events without a date. Each list takes you straight to where it's fixed, and anything that's as good as it gets can be marked "fine as it is".
+- **Loose ends** - what's still missing: people without a birth or parents, photos without people, documents without a transcript, events without a date. Each list takes you straight to where it's fixed, and anything that's as good as it gets can be marked "fine as it is".
 - **You in the archive** - your own record, and what you've added.
 
 ## People

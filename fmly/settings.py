@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'notes',
     'dashboard',
     'core',
-    'legacy_import',
     'cmnsd',
     'sorl.thumbnail',
 ]

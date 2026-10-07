@@ -1,7 +1,6 @@
 {% comment %}
   A book's publisher (BookContent) - a field row; an editable block (form:
-  BookPublicationForm - also the author as text), shown even when empty in
-  edit mode. The year it was published is the item's date (blocks/date.html).
+  BookPublicationForm), shown even when empty in edit mode. The year it was published is the item's date (blocks/date.html).
 {% endcomment %}
 {% with book=content.book_detail %}
 <dt>{% translate "publisher"|capfirst %}</dt>

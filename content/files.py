@@ -71,8 +71,8 @@ def target_stem(content):
 
 def target_directory(content):
   """content/<year the item was added> - date_created, so a new upload goes
-  into this year and an imported one into the year it was added to the
-  old site (import_content sets the legacy date_created first)."""
+  into this year; an item moved from FMLY 2 kept the year it was added
+  there."""
   return f"content/{(content.date_created or timezone.now()).year}"
 
 

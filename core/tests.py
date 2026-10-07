@@ -243,11 +243,12 @@ class SearchTests(TestCase):
 
   def test_book_author(self):
     from content.models import Content
+    from people.models import Person
     book = Content.objects.create(name='Gedenkboek', kind='book', user=self.user, status='p', visibility='c')
     book.ensure_detail()
-    book.book_detail.author = 'J. Fabricius'
-    book.book_detail.save()
-    self.assertIn('Gedenkboek', self.get('fabricius'))
+    writer = Person.objects.create(given_name='Johan', last_name='Fabricius', user=self.user, status='p', visibility='c')
+    book.book_detail.authors.add(writer)
+    self.assertIn('Gedenkboek', self.get('fabricius'))                   # found through its linked author
 
   def test_one_kind_too_short_and_live(self):
     from content.models import Content

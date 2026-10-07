@@ -1807,7 +1807,6 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
   .cmnsd-lightbox__bar { flex-wrap: wrap; }
   .cmnsd-lightbox__caption { flex-basis: 100%; order: -1; }
 }
-.loose-end__action { margin: 2px 0 0; }
 /* Preferences (core/templates/preferences/preferences.html). */
 .preferences__form { max-width: 720px; }
 .preferences__family { border: 0; padding: 0; margin: 0; }

@@ -23,7 +23,7 @@ class BookContentInline(admin.StackedInline):
   model = BookContent
   can_delete = False
   autocomplete_fields = ('authors',)
-  fields = ('authors', 'author', 'publisher', 'isbn')
+  fields = ('authors', 'publisher', 'isbn')
 
 
 class TranscriptInline(admin.StackedInline):

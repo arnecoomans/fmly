@@ -17,10 +17,10 @@ A ground-up rebuild: a new content design, centred on content and people instead
 - Built on **cmnsd 3** (git submodule, branch `fmly`): models with status and visibility, an API, edit mode and cmnsd.js - see `cmnsd/documentation/`
 - Django 6, Python 3.14; files served through Django's access checks (sendfile with nginx); static files with hashed names
 - Settings from `.env` - template: `.env.example`
-- Apps: core, people, content, events, places, notes, dashboard, legacy_import - replacing the single `archive` app; the project package is now `fmly` (was `family`)
+- Apps: core, people, content, events, places, notes, dashboard - replacing the single `archive` app; the project package is now `fmly` (was `family`)
 
 ### Moving from FMLY 2
-- New database: `manage.py import_all` reads the FMLY 2 export (fixtures and files in `import/`) - see `documentation/developer/legacy-import.md`
+- New database, filled once from the FMLY 2 export by a legacy import; partners FMLY 2 only implied (two parents of a child) and book authors as text were then made explicit through loose ends. The import and those loose ends are removed again ([#457](https://github.com/arnecoomans/fmly/issues/457))
 - Old person addresses (`/person/<slug>/`) redirect to the person's new page
 - The last FMLY 2 version stays available as release 26.04.3
 

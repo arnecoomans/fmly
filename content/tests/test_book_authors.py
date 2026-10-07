@@ -6,8 +6,7 @@ from people.models import Person
 
 
 class BookAuthorTests(TestCase):
-  """BookContent.authors - authors as linked people (by hand), the text
-  `author` as a fallback."""
+  """BookContent.authors - a book's authors as linked people."""
 
   def setUp(self):
     self.user = get_user_model().objects.create(username='member')
@@ -16,15 +15,12 @@ class BookAuthorTests(TestCase):
                                         status='p', visibility='c', family_connection='outsider')
     self.book = Content.objects.create(name='Bushido', kind=Content.Kind.BOOK, user=self.user, status='p', visibility='c')
     self.detail = self.book.get_detail()
-    self.detail.author = 'J.M. Cannoo'
     self.detail.save()
 
-  def test_text_author_until_linked(self):
-    self.assertContains(self.client.get(self.book.get_absolute_url()), 'J.M. Cannoo')
+  def test_linked_author_on_the_book(self):
+    self.assertNotContains(self.client.get(self.book.get_absolute_url()), self.writer.get_absolute_url())
     self.detail.authors.add(self.writer)
-    html = self.client.get(self.book.get_absolute_url()).content.decode()
-    self.assertIn(self.writer.get_absolute_url(), html)
-    self.assertNotIn('J.M. Cannoo', html)
+    self.assertContains(self.client.get(self.book.get_absolute_url()), self.writer.get_absolute_url())
 
   def test_book_on_the_authors_page_marked_author_once(self):
     self.detail.authors.add(self.writer)
