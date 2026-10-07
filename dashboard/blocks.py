@@ -150,7 +150,11 @@ def _loose_end_queryset(name, request):
   people = filter_accessible(Person.objects.all(), request)
   events = filter_accessible(Event.objects.all(), request)
   if name == 'no-birth':
-    return people.exclude(pk__in=Event.objects.current().filter(kind='birth').values('people'))
+    # Family and possibly family: an outsider (an author, a neighbour) is in
+    # the archive for another reason - their birth isn't missing.
+    return people.exclude(family_connection=Person.FamilyConnection.OUTSIDER).exclude(
+      pk__in=Event.objects.current().filter(kind='birth').values('people'),
+    )
   if name == 'no-parents':
     return people.exclude(relations_to__relation_type='parent').filter(family_connection='family')
   if name == 'no-portrait':

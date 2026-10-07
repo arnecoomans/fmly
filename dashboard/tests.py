@@ -132,6 +132,13 @@ class LooseEndRulesTests(DashboardTestCase):
   def items(self, name):
     return list(blocks.loose_end_items(name, self.request(self.editor)).distinct())
 
+  def test_no_birth_leaves_outsiders_out(self):
+    family, possibly = self.person('Willem'), self.person('Jan', family_connection='possibly_family')
+    self.person('Jeroen', family_connection='outsider')                         # an author: in the archive for his books
+    born = self.person('Bob')
+    self.event('birth', [born], date(1910, 9, 23), 1910)
+    self.assertEqual(set(self.items('no-birth')), {family, possibly})
+
   def test_other_events_with_a_title_are_fine(self):
     untitled = Event.objects.create(kind='other', kind_freetext='Verhuizing', user=self.editor)
     Event.objects.create(kind='other', kind_freetext='Benoeming', title='Benoeming tot ambtenaar', user=self.editor)
