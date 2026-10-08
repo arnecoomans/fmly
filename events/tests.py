@@ -402,3 +402,36 @@ class EventCommentTests(TestCase):
     self.assertIn('Mooie dag', listing)
     self.assertNotIn('Verborgen', listing)                                 # the event named as this viewer may see it
     self.assertNotIn('Verborgen', self.client.get('/').content.decode())  # the dashboard's conversation too
+
+
+class EventDescriptionPrivacyTests(TestCase):
+  """An event is visible through its people, but its description may say
+  more than they do: signed out it's neither shown nor searched."""
+
+  def setUp(self):
+    self.user = get_user_model().objects.create(username='member')
+    self.user.save()
+    self.event = Event.objects.create(kind=Event.Kind.HISTORICAL, title='Inval Japan', year=1942, user=self.user,
+                                      description='Overleden aan dysenterie in kamp Tjideng')
+
+  def test_page_and_lists_hide_it_signed_out(self):
+    from django.test import Client
+    visitor = Client()
+    for url in (self.event.get_absolute_url(), '/events/'):
+      response = visitor.get(url)
+      self.assertEqual(response.status_code, 200)
+      self.assertContains(response, 'Inval Japan')                                   # the event itself: public
+      self.assertNotContains(response, 'dysenterie')
+    member = Client()
+    member.force_login(self.user)
+    self.assertContains(member.get(self.event.get_absolute_url()), 'dysenterie')
+    self.assertContains(member.get('/events/'), 'dysenterie')
+
+  def test_search_skips_it_signed_out(self):
+    from django.test import Client
+    count = lambda client: client.get('/api/event/', {'q': 'dysenterie'}).json().get('count')
+    self.assertEqual(count(Client()), 0)                                             # a match would give the word away
+    member = Client()
+    member.force_login(self.user)
+    self.assertEqual(count(member), 1)
+    self.assertEqual(Client().get('/api/event/', {'q': 'Japan'}).json().get('count'), 1)   # the title still finds it

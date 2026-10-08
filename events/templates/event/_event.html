@@ -32,7 +32,8 @@
     {% if not hide_places %}{% with places=event.places.all %}{% if places %}
       <p class="event__places"><i class="bi bi-geo-alt"></i> {% for place in places %}{% if not forloop.first %}, {% endif %}{% include 'field/places/name.html' with place=place %}{% endfor %}</p>
     {% endif %}{% endwith %}{% endif %}
-    {% if event.description %}<div class="event__description reading-copy">{{ event.description|markdown }}</div>{% endif %}
+    {# Signed in only: the description may say more than the people do (Event.api_search_q). #}
+    {% if event.description and request.user.is_authenticated %}<div class="event__description reading-copy">{{ event.description|markdown }}</div>{% endif %}
     {% if event.visible_content %}
       <p class="event__content">{% for item in event.visible_content %}<a href="{{ item.get_absolute_url }}" title="{{ item }}"><i class="bi bi-{{ item|kind_icon }}"></i></a>{% endfor %}</p>
     {% endif %}

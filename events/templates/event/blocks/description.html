@@ -1,9 +1,12 @@
 {% load markdown %}
 {% comment %}
   What happened, and the sources - Markdown; an editable block (form:
-  EventDescriptionForm), shown even when empty in edit mode.
+  EventDescriptionForm), shown even when empty in edit mode. Signed in
+  only: an event is public through its people, but its description may say
+  more than they do (Event.api_search_q).
 {% endcomment %}
-{% if event.description %}
+{% if not request.user.is_authenticated %}
+{% elif event.description %}
   <div class="event-page__description reading-copy">{{ event.description|markdown }}</div>
 {% elif edit_mode %}
   <p class="event-page__description edit-block__empty">{% translate "No description yet." %}</p>

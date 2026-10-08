@@ -13,7 +13,7 @@ Everything in the archive has a **visibility**:
 | **Family** | The people the owner counts as family |
 | **Private** | Only the person who added it |
 
-Signed out, only what's explicitly public can be seen: an address of anything else simply isn't found.
+Signed out, only what's explicitly public can be seen: an address of anything else simply isn't found. An event of public people can be seen too, but its description only when signed in: it may say more than the names do.
 
 ## Family
 

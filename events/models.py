@@ -22,8 +22,9 @@ class EventQuerySet(models.QuerySet):
 
 
 # In the API for the event picker (edit mode); visibility derived from the
-# people (filter_visibility below), search via api_search_q.
-@api_model(search_fields=['title', 'kind_freetext', 'description'])
+# people (filter_visibility below), search via api_search_q. Not the
+# description here: it's for signed-in viewers only (api_search_q).
+@api_model(search_fields=['title', 'kind_freetext'])
 class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDateMixin, EditableRelationsMixin,
             CommentableMixin, models.Model):
   class Kind(models.TextChoices):
@@ -175,13 +176,19 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
     """Extra free-text search for the API (cmnsd.api.filtering): the names
     of the people the viewer may see - never the hidden ones, so a search
     can't tell whether a hidden person is in an event - plus place names
-    and the year."""
+    and the year; the description only for someone signed in. An event is
+    visible through its people, but its description may say more than
+    they do (a cause of death, a family matter): signed out, it's neither
+    shown (event/_event.html, blocks/description.html) nor searched - a
+    match would give its words away."""
     from people.models import Person
     named = filter_accessible(Person.objects.all(), request).filter(
       Q(given_name__icontains=term) | Q(called_name__icontains=term) | Q(last_name__icontains=term)
       | Q(married_name__icontains=term) | Q(nickname__icontains=term)
     )
     q = Q(people__in=named) | Q(places__name__icontains=term)
+    if request is not None and request.user.is_authenticated:
+      q |= Q(description__icontains=term)
     if term.isdigit():
       q |= Q(year=int(term))
     return q

@@ -28,7 +28,7 @@ Every archive object has a **status** and most a **visibility** (cmnsd's `Status
 
 Models can refine the rule:
 
-- **Events** have no visibility of their own: an event is visible when one of its people is, or when it has no people (history).
+- **Events** have no visibility of their own: an event is visible when one of its people is, or when it has no people (history). Its **description** is for signed-in viewers only - it may say more than its people do - so signed out it's neither shown nor searched (`Event.api_search_q`).
 - **Comments** have their own visibility *and* need a visible target. On a page the target is already checked, so a thread only filters the comments themselves (`Comment.filter_own`).
 - **Private people** (`Person.private`, `people/privacy.py`): their name shows, their page opens only for themselves, their parents and staff. `Person.page_url_for(user)` and the `person_url` filter decide per viewer; `get_absolute_url()` stays empty for them.
 
