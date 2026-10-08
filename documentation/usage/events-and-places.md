@@ -13,6 +13,7 @@ An event has a date (exact, *ca.*, *before* or *after*, or just a year), places,
 - **Who was there:** started from a person's page, the new event is theirs, and you can press their partners, parents and children to add them too - and pick anyone else. More people are added on the event's own page.
 - **A marriage or divorce** is between partners: someone you add who isn't linked as a partner yet becomes one when you save.
 - Each event has its own page, with its people, places, documents and comments.
+- **Proof:** in edit mode, *documented by* shows the photos and documents the event's people are in - closest in date first - to link with one click. Anything else, and for an event without people: search all content below it.
 
 ## History and the calendar
 

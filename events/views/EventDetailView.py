@@ -44,9 +44,39 @@ class EventDetailView(DetailView):
       'people': people,
       'places': list(event.places.select_related('parent')),
     })
+    if context['editing']:
+      context['suggested_content'] = suggested_content(event, request)
     context['tokens'] = {
       'people': ','.join(p.token for p in people),
       'places': ','.join(p.token for p in context['places']),
       'content': ','.join(item.token for item in event.visible_content),
     }
     return context
+
+
+SUGGESTIONS = 40
+
+
+def suggested_content(event, request):
+  """Edit mode: the items its people are in - the likely proof, one click
+  to link (event_detail.html "documented by") instead of searching for a
+  title. Only items and people this viewer may see; not what's linked
+  already; closest in date to the event first, undated last; at most
+  SUGGESTIONS (the search picker stays for the rest, and for an event
+  without people)."""
+  from django.db.models import F, Value
+  from django.db.models.functions import Abs, Coalesce
+  from content.models import Content
+  from people.models import Person
+  people = filter_accessible(Person.objects.filter(events=event), request)
+  if not people.exists():
+    return []
+  items = (
+    Content.objects.visible_to(request).listable().filter(people__in=people)
+    .exclude(pk__in=[item.pk for item in event.visible_content]).distinct()
+  )
+  if event.year:
+    items = items.annotate(distance=Coalesce(Abs(F('year') - Value(event.year)), Value(100_000)))
+    return list(items.order_by('distance', 'year', 'name')[:SUGGESTIONS])
+  return list(items.order_by(F('year').asc(nulls_last=True), 'name')[:SUGGESTIONS])
+

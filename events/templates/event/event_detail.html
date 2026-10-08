@@ -57,6 +57,24 @@
       <h2 class="section-title">{% translate "documented by"|capfirst %}</h2>
       <div class="tag-list" id="event-content">{% for item in event.visible_content %}{% include 'event/_item.html' %}{% endfor %}</div>
       {% if editing %}
+        {% if suggested_content %}
+          {# The items its people are in (EventDetailView.suggested_content): one click links one - the page reloads, the item moves up into the list. #}
+          <p class="edit-form__help event-page__suggest-label">{% translate "With the people of this event - choose one to link it:" %}</p>
+          <div class="dashboard__thumbs event-page__suggestions">
+            {% for item in suggested_content %}
+              <form data-cmnsd-action="link" data-model="event" data-object-token="{{ event.token }}" data-cmnsd-insert="reload">
+                <input type="hidden" name="relation" value="content"><input type="hidden" name="token" value="{{ item.token }}">
+                <button type="submit" class="dashboard__thumb event-page__suggestion" title="{% translate 'link' %}: {{ item }}">
+                  {% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'card' }}" alt="" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}
+                  <span class="dashboard__thumb-name">{{ item }}</span>
+                  {% with date=item|partial_date %}{% if date %}<span class="dashboard__thumb-meta">{{ date }}</span>{% endif %}{% endwith %}
+                </button>
+                <p class="edit-form__error" data-cmnsd-error hidden></p>
+              </form>
+            {% endfor %}
+          </div>
+          <p class="edit-form__help event-page__suggest-label">{% translate "Or search all content:" %}</p>
+        {% endif %}
         {% translate "add content" as add_label %}
         {% include 'cmnsd/edit/link_picker.html' with model='event' owner=event relation='content' picker_model='content' target='#event-content' label=add_label|capfirst placeholder=add_label|capfirst exclude=tokens.content new_dialog='' %}
       {% endif %}

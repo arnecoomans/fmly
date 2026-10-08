@@ -275,6 +275,40 @@ class EventEditingTests(TestCase):
     self.assertNotIn(son, self.person.get_partners())
     self.assertIn("wasn't linked as a partner", ' '.join(m['text'] for m in response.json()['messages']))
 
+  def test_suggested_content_from_its_people(self):
+    import json
+    from content.models import Content
+    from events.views.EventDetailView import suggested_content
+    from django.test import RequestFactory
+    marriage = Event.objects.create(kind=Event.Kind.MARRIAGE, year=1941, user=self.editor)
+    marriage.people.add(self.person)
+    make = lambda name, year=None, **f: Content.objects.create(name=name, year=year, kind='document', user=f.pop('user', self.editor), status='p', visibility=f.pop('visibility', 'c'))
+    near, far, undated, linked = make('Trouwakte', 1941), make('Diploma', 1935), make('Brief'), make('Aankondiging', 1941)
+    hidden = make('Geheim', 1941, visibility='q', user=get_user_model().objects.create(username='other'))
+    elsewhere = make('Krant', 1941)                                                     # not with Corry
+    for item in (near, far, undated, linked, hidden):
+      item.people.add(self.person)
+    linked.events.add(marriage)
+    request = RequestFactory().get('/')
+    request.user = self.editor
+    marriage.visible_content = [linked]
+    self.assertEqual(suggested_content(marriage, request), [near, far, undated])         # closest in date first, undated last
+    html = self.client.get(marriage.get_absolute_url()).content.decode().replace('"', '')
+    self.assertIn('event-page__suggestion', html)
+    self.assertIn(f'value={near.token}', html)
+    self.assertNotIn(f'value={elsewhere.token}', html)
+    self.assertIn('data-cmnsd-picker=content', html)                                    # the search stays below
+    post = self.client.post(f'/api/event/{marriage.token}/link/', json.dumps({'relation': 'content', 'token': near.token}), content_type='application/json')
+    self.assertEqual(post.status_code, 200)
+    self.assertIn(near, marriage.content.all())
+    marriage.visible_content = [linked, near]
+    self.assertEqual(suggested_content(marriage, request), [far, undated])               # linked: no longer suggested
+
+  def test_no_suggestions_without_people(self):
+    html = self.client.get(self.history.get_absolute_url()).content.decode().replace('"', '')
+    self.assertNotIn('event-page__suggestion', html)
+    self.assertIn('data-cmnsd-picker=content', html)
+
   def test_link_people_places_content(self):
     import json
     from content.models import Content
