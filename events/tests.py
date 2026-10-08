@@ -162,6 +162,16 @@ class EventOverviewTests(TestCase):
     for person in (self.shown, eddie):
       self.assertIn(divorce, [entry.event for entry in life_timeline(person, request)])
 
+  def test_revoked_struck_through_for_staff(self):
+    revoked = Event.objects.create(kind=Event.Kind.HISTORICAL, title='Ingetrokken', year=1950, user=self.user, status='r')
+    self.assertNotIn('Ingetrokken', self.html())                                # not staff: not there at all
+    self.user.is_staff = True
+    self.user.save()
+    html = self.html().replace('"', '')
+    self.assertIn('<s title=Revoked>Ingetrokken</s>', html)
+    self.assertIn('event--revoked', html)
+    self.assertNotIn('<s title=Revoked>Inval Japan', html)                     # published: as it is
+
   def test_in_the_menu(self):
     self.assertIn('href="/events/"', self.html().replace('href=/events/', 'href="/events/"'))
 

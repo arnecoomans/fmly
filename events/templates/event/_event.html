@@ -16,12 +16,14 @@
   People are named as this viewer may see them (get_full_name.html obfuscates);
   at a marriage, each spouse with their age then - only a spouse the viewer
   may see (an age gives away a birth date).
+  A revoked event (only staff see it) is struck through, so it stands
+  apart from the rest - with its status for screen readers.
 {% endcomment %}
-<article class="event{% if relative %} event--family{% endif %}{% if history %} event--history{% endif %} event--{{ event.kind }}">
+<article class="event{% if relative %} event--family{% endif %}{% if history %} event--history{% endif %}{% if event.status == 'r' %} event--revoked{% endif %} event--{{ event.kind }}">
   <span class="event__symbol" aria-hidden="true">{% include 'event/_symbol.html' %}</span>
   <div class="event__body">
     <header class="event__header">
-      <span class="event__what"><a class="event__link" href="{{ event.get_absolute_url }}">{{ event.label }}</a>{% if relative %} <span class="event__relation">· {{ relation }} {% include 'person/functions/get_full_name.html' with person=relative %}</span>{% endif %}{% if history %} <span class="event__relation">· {% translate "history" %}</span>{% endif %}</span>
+      <span class="event__what"><a class="event__link" href="{{ event.get_absolute_url }}">{% if event.status == 'r' %}<s title="{{ event.get_status_display }}">{{ event.label }}</s><span class="visually-hidden"> ({{ event.get_status_display|lower }})</span>{% else %}{{ event.label }}{% endif %}</a>{% if relative %} <span class="event__relation">· {{ relation }} {% include 'person/functions/get_full_name.html' with person=relative %}</span>{% endif %}{% if history %} <span class="event__relation">· {% translate "history" %}</span>{% endif %}</span>
       <span class="event__when">{% if event.year %}{{ event|partial_date }}{% else %}<span class="event__undated">{% translate "date unknown" %}</span>{% endif %}{% if age %} <span class="event__age">· {{ age }}</span>{% endif %}</span>
     </header>
     {% with people=others %}{% if people %}

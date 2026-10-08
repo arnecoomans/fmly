@@ -17,7 +17,7 @@
         {% with name=event|event_display:request %}
           <li data-picker-row>
             <button type="button" class="picker-result picker-result--plain" data-picker-choose="{{ event.token }}" data-picker-name="{{ name }}">
-              <span class="picker-result__name picker-result__name--wrap"><i class="bi bi-calendar-event"></i> {% highlight_search search_query %}{{ name|capfirst }}{% endhighlight_search %}</span>
+              <span class="picker-result__name picker-result__name--wrap"><i class="bi bi-calendar-event"></i> {% if event.status == 'r' %}<s title="{{ event.get_status_display }}">{% endif %}{% highlight_search search_query %}{{ name|capfirst }}{% endhighlight_search %}{% if event.status == 'r' %}</s><span class="visually-hidden"> ({{ event.get_status_display|lower }})</span>{% endif %}</span>
               <span class="picker-result__meta">{{ event.get_kind_display|capfirst }}{% if event.year %} · {{ event|partial_date }}{% endif %}</span>
             </button>
           </li>
