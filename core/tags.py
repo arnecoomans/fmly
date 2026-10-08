@@ -76,3 +76,14 @@ LOOSE_END_SLUG = 'loose-end'
 
 def loose_end_tag():
   return Tag.objects.filter(slug=LOOSE_END_SLUG, parent=None).first()
+
+
+def descendant_tokens(tag):
+  """The tokens of every tag below `tag`, any depth - one query per level
+  (a tag's parent picker doesn't offer them: that would make a loop)."""
+  tokens, level = [], [tag.pk]
+  while level:
+    rows = list(Tag.objects.filter(parent__in=level).values_list('pk', 'token'))
+    tokens += [token for _pk, token in rows]
+    level = [pk for pk, _token in rows]
+  return tokens

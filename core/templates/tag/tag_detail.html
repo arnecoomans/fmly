@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% load content_tags %}
 {% comment %}
-  A tag's page (core.views.TagDetailView): the parent as a breadcrumb
-  (e.g. "Collection"), the name and description - the context the tag
+  A tag's page (core.views.TagDetailView): where it sits as a path
+  ("Tags › Collection"), the name and description (editable blocks in edit
+  mode: Tag.api_edit_forms, tag/blocks/) - the context the tag
   gives - a cover (the earliest image), then its child tags, the people
   carrying it (above the content: a short list, the grid can be long) and
   its content (the shared content grid, remembered sort).
@@ -19,15 +20,13 @@
       </a>
     {% endif %}
     <div class="tag-page__intro">
-      {% if tag.parent %}
-        <a class="tag-page__parent" href="{{ tag.parent.get_absolute_url }}">{{ tag.parent.name }} <i class="bi bi-chevron-right"></i></a>
-      {% endif %}
-      <h1 class="tag-page__name">{{ tag.name }}</h1>
+      {% include 'cmnsd/edit/block.html' with model='tag' obj=tag block='parent' %}
+      {% include 'cmnsd/edit/block.html' with model='tag' obj=tag block='name' %}
       {% if tag.needs_attention %}
         {# Only its creator and staff reach this page for a concept/revoked tag. #}
         <span class="badge-status badge-status--draft tag-page__status">{{ tag.get_status_display }} · {% translate "not published" %}</span>
       {% endif %}
-      {% if tag.description %}<div class="tag-page__description reading-copy">{{ tag.description|linebreaks }}</div>{% endif %}
+      {% include 'cmnsd/edit/block.html' with model='tag' obj=tag block='description' %}
       <p class="tag-page__counts">
         {% blocktranslate count counter=items|length %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktranslate %}{% if people %} · {% blocktranslate count counter=people|length %}{{ counter }} person{% plural %}{{ counter }} people{% endblocktranslate %}{% endif %}
       </p>

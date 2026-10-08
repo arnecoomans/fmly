@@ -1,0 +1,9 @@
+{% comment %}
+  The tag's description - the context it gives its content. An editable
+  block (form: TagDescriptionForm), shown even when empty in edit mode.
+{% endcomment %}
+{% if tag.description %}
+  <div class="tag-page__description reading-copy">{{ tag.description|linebreaks }}</div>
+{% elif edit_mode %}
+  <p class="edit-block__empty">{% translate "No description yet." %}</p>
+{% endif %}

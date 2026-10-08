@@ -167,3 +167,122 @@ class TagOrderTests(TestCase):
     html = self.client.get(self.new.get_absolute_url()).content.decode()
     order = [name for name in ('Krangan 81', 'Zzz groot', 'Aaa klein') if name in html]
     self.assertEqual(sorted(order, key=html.index), ['Krangan 81', 'Zzz groot', 'Aaa klein'])   # 2, 2, 1 - ties by name
+
+
+class TagEditingTests(TestCase):
+  """Edit mode on a tag's page (issue #458): name and description as
+  editable blocks (Tag.api_edit_forms); a new name gives a new slug, the
+  old address redirects."""
+
+  def setUp(self):
+    from django.contrib.auth.models import Permission
+    self.editor = get_user_model().objects.create(username='editor')
+    self.editor.user_permissions.add(Permission.objects.get(codename='change_tag'))
+    self.editor.save()
+    self.client.force_login(self.editor)
+    self.client.post('/ui/edit/', {'on': '1', 'next': '/'})
+    self.collection = Tag.objects.create(name='Collection', user=self.editor, status='p', visibility='c')
+    self.tag = Tag.objects.create(name='Krangan 81', parent=self.collection, user=self.editor, status='p', visibility='c')
+
+  def save(self, tag, block, **fields):
+    tag.refresh_from_db()
+    data = {'_modified': tag.date_modified.isoformat(), **{f'{block}-{k}': v for k, v in fields.items()}}
+    return self.client.post(f'/api/tag/{tag.token}/form/{block}/', data)
+
+  def test_blocks_on_the_page_for_an_editor_only(self):
+    html = self.client.get(self.tag.get_absolute_url()).content.decode().replace('"', '')
+    for block in ('name', 'description'):
+      self.assertIn(f'data-cmnsd-edit-name={block} ', html)
+    self.assertIn('/api/tag/', html)                                                # a pencil
+    member = get_user_model().objects.create(username='member')
+    client = Client()
+    client.force_login(member)
+    self.assertNotIn('/api/tag/', client.get(self.tag.get_absolute_url()).content.decode())
+
+  def test_rename_gives_a_new_slug_and_the_old_address_redirects(self):
+    old_url = self.tag.get_absolute_url()
+    response = self.save(self.tag, 'name', name='Krangan 81 Jogja')
+    self.assertEqual(response.status_code, 200)
+    self.tag.refresh_from_db()
+    self.assertEqual((self.tag.name, self.tag.slug), ('Krangan 81 Jogja', 'krangan-81-jogja'))
+    self.assertEqual(response.json()['url'], self.tag.get_absolute_url())         # the page's address follows
+    self.assertRedirects(self.client.get(old_url), self.tag.get_absolute_url(), status_code=301)
+
+  def test_slug_unique_among_siblings_and_name_too(self):
+    other = Tag.objects.create(name='Boot!', parent=self.collection, user=self.editor, status='p', visibility='c')
+    self.save(self.tag, 'name', name='Boot')                                      # slug 'boot' is taken by 'Boot!'
+    self.tag.refresh_from_db()
+    self.assertEqual(self.tag.slug, 'boot-2')
+    response = self.save(other, 'name', name='Boot')                              # the same name twice: refused
+    self.assertEqual(response.status_code, 400)
+    other.refresh_from_db()
+    self.assertEqual(other.name, 'Boot!')
+
+  def test_description_keeps_the_slug(self):
+    Tag.objects.filter(pk=self.tag.pk).update(slug='krangan')                    # a slug from FMLY 2, not the name's
+    self.save(self.tag, 'description', description='Door de jaren heen')
+    self.tag.refresh_from_db()
+    self.assertEqual((self.tag.description, self.tag.slug), ('Door de jaren heen', 'krangan'))
+
+  def test_loose_end_tag_keeps_its_slug(self):
+    from core.tags import LOOSE_END_SLUG, loose_end_tag
+    tag = Tag.objects.create(name='Loose end', slug=LOOSE_END_SLUG, user=self.editor, status='p', visibility='c')
+    self.save(tag, 'name', name='Nog uitzoeken')
+    self.assertEqual(loose_end_tag(), tag)                                        # still found by its slug
+
+  def test_move_to_another_parent_and_back_to_the_top(self):
+    media = Tag.objects.create(name='Media', user=self.editor, status='p', visibility='c')
+    self.assertEqual(self.save(self.tag, 'parent', parent=media.token).status_code, 200)
+    self.tag.refresh_from_db()
+    self.assertEqual((self.tag.parent, self.tag.slug), (media, 'krangan-81'))              # the slug stays
+    html = self.client.get(self.tag.get_absolute_url()).content.decode()
+    self.assertIn(media.get_absolute_url(), html)                                         # the path back up
+    self.save(self.tag, 'parent', parent='')
+    self.tag.refresh_from_db()
+    self.assertIsNone(self.tag.parent)
+
+  def test_move_refuses_a_loop_and_a_taken_name(self):
+    below = Tag.objects.create(name='Jogja', parent=self.tag, user=self.editor, status='p', visibility='c')
+    self.assertEqual(self.save(self.tag, 'parent', parent=below.token).status_code, 400)   # under its own child
+    Tag.objects.create(name='Krangan 81', user=self.editor, status='p', visibility='c')    # the same name on top
+    self.assertEqual(self.save(self.tag, 'parent', parent='').status_code, 400)
+    self.tag.refresh_from_db()
+    self.assertEqual(self.tag.parent, self.collection)
+
+  def test_move_into_a_taken_slug(self):
+    media = Tag.objects.create(name='Media', user=self.editor, status='p', visibility='c')
+    Tag.objects.create(name='Krangan-81', parent=media, user=self.editor, status='p', visibility='c')   # slug krangan-81, another name
+    self.save(self.tag, 'parent', parent=media.token)
+    self.tag.refresh_from_db()
+    self.assertEqual(self.tag.slug, 'krangan-81-2')
+
+  def test_loose_end_tag_stays_on_top(self):
+    from core.tags import LOOSE_END_SLUG
+    tag = Tag.objects.create(name='Loose end', slug=LOOSE_END_SLUG, user=self.editor, status='p', visibility='c')
+    self.assertEqual(self.save(tag, 'parent', parent=self.collection.token).status_code, 400)
+
+  def new_parent(self, tag, name):
+    tag.refresh_from_db()
+    return self.client.post(f'/api/tag/{tag.token}/form/parent/', {
+      '_modified': tag.date_modified.isoformat(), 'parent-parent': '', 'parent-parent__new': name,
+    })
+
+  def test_new_parent_from_the_picker(self):
+    from django.contrib.auth.models import Permission
+    self.editor.user_permissions.add(Permission.objects.get(codename='add_tag'))
+    self.editor = get_user_model().objects.get(pk=self.editor.pk)                  # fresh permission cache
+    Tag.objects.filter(pk=self.tag.pk).update(visibility='f')                       # a family-only tag...
+    self.assertEqual(self.new_parent(self.tag, 'Media: Boeken').status_code, 200)   # two levels at once
+    self.tag.refresh_from_db()
+    self.assertEqual(self.tag.parent.display_name(), 'Media: Boeken')
+    for tag in (self.tag.parent, self.tag.parent.parent):
+      self.assertEqual((tag.status, tag.visibility), ('p', 'f'))                   # ...gets family-only parents, published
+    self.new_parent(self.tag, 'collection')                                       # an existing tag: used, not made again
+    self.tag.refresh_from_db()
+    self.assertEqual(self.tag.parent, self.collection)
+    self.assertEqual(Tag.objects.filter(name__iexact='collection').count(), 1)
+
+  def test_new_parent_needs_add_tag(self):
+    self.assertEqual(self.new_parent(self.tag, 'Iets nieuws').status_code, 400)
+    self.assertFalse(Tag.objects.filter(name='Iets nieuws').exists())
+

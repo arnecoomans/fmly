@@ -24,6 +24,46 @@ class Tag(TimestampMixin, StatusMixin, VisibilityMixin, SearchableMixin, BaseTag
     from django.urls import reverse
     return reverse('core:tag_detail', kwargs={'token': self.token, 'slug': self.slug or 'tag'})
 
+  # Edit mode (cmnsd object_form): the page shows tag/blocks/<name>.html.
+  # Dotted: core/forms.py imports this module.
+  api_edit_forms = {
+    'name': 'core.forms.TagNameForm',
+    'parent': 'core.forms.TagParentForm',
+    'description': 'core.forms.TagDescriptionForm',
+  }
+
+  def save(self, *args, **kwargs):
+    """A renamed tag gets a slug from its new name - the address reads
+    right; the old one redirects (TagDetailView finds a tag by token). A
+    moved tag (another parent) keeps its slug, unless a new sibling has it.
+    An unchanged name keeps its slug, also one that doesn't match it (a tag
+    from FMLY 2), and so does the "Loose end" tag, which is found by its
+    slug (core.tags). Here, not in cmnsd's BaseTag: another project's tag
+    addresses may rest on the slug alone."""
+    if self.pk and self.name:
+      from .tags import LOOSE_END_SLUG
+      before = type(self).objects.filter(pk=self.pk).values_list('name', 'slug', 'parent').first()
+      if before and before[1] != LOOSE_END_SLUG:
+        if before[0] != self.name:
+          self._split_compounded_name()   # "Media: Book" -> Book under Media, before the slug is made
+          self.slug = self._free_slug()
+        elif before[2] != self.parent_id and self._siblings().filter(slug=self.slug).exists():
+          self.slug = self._free_slug()
+    super().save(*args, **kwargs)
+
+  def _free_slug(self):
+    """slugify(name), unique among its siblings: -2, -3, ... when taken."""
+    from django.utils.text import slugify
+    base = slugify(self.name)[:58] or 'tag'
+    siblings = self._siblings()
+    slug, number = base, 2
+    while siblings.filter(slug=slug).exists():
+      slug, number = f'{base}-{number}', number + 1
+    return slug
+
+  def _siblings(self):
+    return type(self).objects.filter(parent=self.parent).exclude(pk=self.pk)
+
   # Django doesn't merge Meta across multiple abstract base classes - without
   # this, Tag silently picks up TimestampMixin's (empty) Meta instead of
   # BaseTag's, losing its ordering AND its parent-scoped UniqueConstraints.

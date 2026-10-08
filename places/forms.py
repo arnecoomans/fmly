@@ -41,12 +41,16 @@ class PlaceDescriptionForm(forms.ModelForm):
 class PlaceParentForm(forms.ModelForm):
   """The place this one lies in - chosen by searching (a picker, saved on
   choice), or none. The place itself and the places within it aren't
-  offered; Place.clean refuses them anyway."""
+  offered; Place.clean refuses them anyway. "+ new place": a name typed
+  without a match makes the parent on save, as in a new event's place
+  picker (places/places.py picked_place - an existing place of that name is
+  used; making one needs places.add_place)."""
   parent = forms.ModelChoiceField(
     Place.objects.select_related('parent'), to_field_name='token', required=False, label=_("lies in"),
     widget=PickerInput(
       'place', label=lambda place: ' › '.join(ancestor.name for ancestor in place.ancestors()),
       placeholder=_("search a place"), empty_label=_("nowhere - a country or region of its own"), clear_label=_("remove"),
+      create_label=_("+ new place"),
     ),
   )
 
@@ -61,4 +65,16 @@ class PlaceParentForm(forms.ModelForm):
       self.initial['parent'] = self.instance.parent.token
     if self.instance.pk:
       self.fields['parent'].widget.exclude = [self.instance.token, *descendant_tokens(self.instance)]
+
+  def clean(self):
+    from .places import picked_place
+    data = super().clean()
+    picked_place(self, 'parent')   # a typed new place: made on save
+    return data
+
+  def save(self, commit=True):
+    from .places import create_picked_place
+    if getattr(self, '_new_place_name', ''):
+      self.instance.parent = create_picked_place(self, 'parent')
+    return super().save(commit=commit)
 

@@ -5,6 +5,136 @@ Edit-mode forms shared by fmly's models (cmnsd object_form blocks).
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
+from cmnsd.forms.widgets import PickerInput
+
+from .models import Tag
+
+
+class TagNameForm(forms.ModelForm):
+  """A tag's name (Tag.api_edit_forms) - the slug follows (Tag.save). The
+  model's own rules: unique among its siblings."""
+
+  class Meta:
+    model = Tag
+    fields = ['name']
+    labels = {'name': _("name")}
+    widgets = {'name': forms.TextInput(attrs={'autocomplete': 'off'})}
+
+  def clean_name(self):
+    """Unique among its siblings - the model's constraint, checked here as a
+    form error: Django leaves out a constraint involving a field the form
+    doesn't have (parent), and the model would refuse at save instead."""
+    name = self.cleaned_data['name']
+    siblings = Tag.objects.filter(parent=self.instance.parent).exclude(pk=self.instance.pk)
+    if siblings.filter(name__iexact=name).exists():
+      raise forms.ValidationError(_("There's already a tag with this name here."))
+    return name
+
+
+class TagParentForm(forms.ModelForm):
+  """The tag this one sits under - chosen by searching (a picker, saved on
+  choice), or none: a tag of its own. Not offered: the tag itself and the
+  tags below it (HierarchyMixin.clean refuses a loop anyway). The name must
+  be free under the new parent; the "Loose end" tag stays on top - it's
+  found there (core.tags.loose_end_tag).
+
+  "+ new tag": a name typed without a match makes a new parent on save -
+  published, with the visibility of the tag it's made for (a family-only
+  tag gets a family-only parent) - for someone with core.add_tag. An existing tag
+  of that name is used instead; "Media: Books" makes Books under Media
+  (HierarchyMixin), reusing what exists of that path."""
+  parent = forms.ModelChoiceField(
+    Tag.objects.none(), to_field_name='token', required=False, label=_("under"),
+    widget=PickerInput(
+      'tag', label=lambda tag: str(tag), placeholder=_("search a tag"),
+      empty_label=_("nothing - a tag of its own"), clear_label=_("remove"), create_label=_("+ new tag"),
+    ),
+  )
+
+  class Meta:
+    model = Tag
+    fields = ['parent']
+
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    # The field holds tokens; a ModelForm's initial value is the parent's pk.
+    if self.instance.parent_id:
+      self.initial['parent'] = self.instance.parent.token
+
+  def prepare(self):
+    """Only tags this user may see; not the tag itself or those below it."""
+    from cmnsd.models.access import filter_accessible
+    from .tags import descendant_tokens
+    self.fields['parent'].queryset = filter_accessible(Tag.objects.select_related('parent'), self.request)
+    if self.instance.pk:
+      self.fields['parent'].widget.exclude = [self.instance.token, *descendant_tokens(self.instance)]
+
+  def clean_parent(self):
+    from .tags import LOOSE_END_SLUG
+    self.new_parent_name = ''
+    parent = self.cleaned_data['parent'] or self._typed_parent()
+    if parent is None and self.new_parent_name:
+      if self.instance.slug == LOOSE_END_SLUG and self.instance.parent_id is None:
+        raise forms.ValidationError(_("The Loose end tag stays a tag of its own."))
+      return None   # made in save(); new, so no name below it is taken yet
+    if parent is not None and self.instance.slug == LOOSE_END_SLUG and self.instance.parent_id is None:
+      raise forms.ValidationError(_("The Loose end tag stays a tag of its own."))
+    others = Tag.objects.filter(parent=parent).exclude(pk=self.instance.pk)
+    if others.filter(name__iexact=self.instance.name).exists():
+      raise forms.ValidationError(_("There's already a tag with this name there."))
+    return parent
+
+  def _typed_parent(self):
+    """A name typed with "+ new tag": the existing tag it names (a path
+    "Media: Books" followed from the top), else remembered for save() - for
+    someone who may add tags."""
+    from django.conf import settings
+    name = PickerInput.new_name(self, 'parent')
+    if not name:
+      return None
+    node = None
+    for part in [p.strip() for p in name.split(getattr(settings, 'CMNSD_PARENT_COMPOUNDER', ': '))]:
+      node = Tag.objects.filter(parent=node, name__iexact=part).first()
+      if node is None:
+        break
+    if node is not None:
+      return node
+    if not self.request.user.has_perm('core.add_tag'):
+      raise forms.ValidationError(_("You may not add tags - choose an existing one."))
+    self.new_parent_name = name
+    return None
+
+  def save(self, commit=True):
+    if getattr(self, 'new_parent_name', ''):
+      self.instance.parent = self._make_path(self.new_parent_name)
+    return super().save(commit=commit)
+
+  def _make_path(self, name):
+    """The tag a typed "Media: Books" names, made where missing - each
+    published, visible as the tag it's made for (not HierarchyMixin's
+    split, which would make "Media" with the site's defaults: a concept,
+    community), each new one in the admin history."""
+    from django.conf import settings
+    from django.contrib.admin.models import ADDITION, LogEntry
+    node = None
+    for part in [p.strip() for p in name.split(getattr(settings, 'CMNSD_PARENT_COMPOUNDER', ': ')) if p.strip()]:
+      node, created = Tag.objects.get_or_create(parent=node, name__iexact=part, defaults={
+        'name': part, 'user': self.request.user, 'status': Tag.Status.PUBLISHED, 'visibility': self.instance.visibility,
+      })
+      if created:
+        LogEntry.objects.log_actions(self.request.user.pk, [node], ADDITION, change_message="Created while editing", single_object=True)
+    return node
+
+
+class TagDescriptionForm(forms.ModelForm):
+  """Why a tag is there - the context it gives its content."""
+
+  class Meta:
+    model = Tag
+    fields = ['description']
+    labels = {'description': _("description")}
+    widgets = {'description': forms.Textarea(attrs={'rows': 5})}
+
 
 class StatusActionsForm(forms.ModelForm):
   """Status as actions - what can be done next, at most two:

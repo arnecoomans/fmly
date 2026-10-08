@@ -152,6 +152,19 @@ class PlaceEditTests(PlaceTestCase):
     self.assertEqual(self.save_parent(self.java, self.java).status_code, 400)
     self.assertIsNone(Place.objects.get(pk=self.indie.pk).parent)
 
+  def test_new_parent_from_the_picker(self):
+    self.djakarta.refresh_from_db()
+    post = lambda name: self.client.post(f'/api/place/{self.djakarta.token}/form/parent/', {
+      '_modified': Place.objects.get(pk=self.djakarta.pk).date_modified.isoformat(), 'parent-parent': '', 'parent-parent__new': name,
+    })
+    self.assertIn('data-picker-create=', self.client.get(f'/api/place/{self.djakarta.token}/form/parent/').json()['html'].replace('"', ''))
+    self.assertEqual(post('Republik Indonesia').status_code, 200)
+    new = Place.objects.get(name='Republik Indonesia')
+    self.assertEqual(Place.objects.get(pk=self.djakarta.pk).parent, new)
+    self.assertEqual(post('java').status_code, 200)                               # an existing name: that place, not a new one
+    self.assertEqual(Place.objects.get(pk=self.djakarta.pk).parent, self.java)
+    self.assertEqual(Place.objects.filter(name__iexact='java').count(), 1)
+
   def test_alternatives_are_both_ways(self):
     import json
     response = self.client.post(f'/api/place/{self.batavia.token}/link/', json.dumps({'relation': 'alternatives', 'token': self.djakarta.token}), content_type='application/json')

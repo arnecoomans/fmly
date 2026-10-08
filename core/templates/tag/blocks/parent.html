@@ -1,0 +1,12 @@
+{% comment %}
+  Where the tag sits - the tags list, then its parents as a path
+  ("Tags › Collection"), each a link, so there's always a way back up. An
+  editable block (cmnsd/edit/block.html, form: TagParentForm - a picker);
+  in edit mode a top-level tag says so, so it can be given a parent.
+{% endcomment %}
+{% with path=tag.ancestors|slice:":-1" %}
+  <p class="tag-page__parent"><a href="{% url 'core:tag_list' %}">{% translate "tags"|capfirst %}</a> <i class="bi bi-chevron-right"></i>
+    {% for ancestor in path %}<a href="{{ ancestor.get_absolute_url }}">{{ ancestor.name }}</a> <i class="bi bi-chevron-right"></i> {% endfor %}
+    {% if not path and edit_mode %}<span class="edit-block__empty">{% translate "a tag of its own" %}</span>{% endif %}
+  </p>
+{% endwith %}
