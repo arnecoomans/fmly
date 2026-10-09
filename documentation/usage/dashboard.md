@@ -43,3 +43,7 @@ Where there's a lot of work, a thin bar shows how far along it is - for people (
 ## You in the archive
 
 Your own record in the family, and what you've added.
+
+## Housekeeping
+
+For staff, under *Housekeeping* in the user menu (top right): the archive's storage, checked by eye - deleted items to purge for good, files without a record, the same file twice, records without a file, and unused tags and places (nothing carries them, nothing lies in them). Old categories and typos can go; keep what's meant for later. Every delete first shows a page with exactly what goes, and is for good - only a backup brings it back.

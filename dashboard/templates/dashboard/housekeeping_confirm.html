@@ -2,8 +2,8 @@
 {% comment %}
   What exactly a housekeeping delete removes (dashboard.views.HousekeepingView,
   a POST without confirm): the selection again, with what goes along. Only
-  "delete for good" (confirm=1) deletes. Context: action (purge|files),
-  items or files.
+  "delete for good" (confirm=1) deletes. Context: action (purge|files|tags|
+  places), items, files or objects.
 {% endcomment %}
 
 {% block title %}{% translate "housekeeping"|capfirst %}{% endblock %}
@@ -13,7 +13,7 @@
   <header class="tag-page__header">
     <div class="tag-page__intro">
       <a class="tag-page__parent" href="{% url 'dashboard:housekeeping' %}">{% translate "housekeeping"|capfirst %} <i class="bi bi-chevron-right"></i></a>
-      <h1 class="tag-page__name">{% if action == 'purge' %}{% translate "purge these items?"|capfirst %}{% else %}{% translate "delete these files?"|capfirst %}{% endif %}</h1>
+      <h1 class="tag-page__name">{% if action == 'purge' %}{% translate "purge these items?"|capfirst %}{% elif action == 'tags' %}{% translate "delete these tags?"|capfirst %}{% elif action == 'places' %}{% translate "delete these places?"|capfirst %}{% else %}{% translate "delete these files?"|capfirst %}{% endif %}</h1>
       <p class="tag-page__counts">{% translate "This can't be undone - only a backup brings it back." %}</p>
     </div>
   </header>
@@ -26,6 +26,14 @@
           {% include 'dashboard/_housekeeping_item.html' %}
           {% for part in item.purge_parts %}<p class="housekeeping__meta housekeeping__part">↳ {% translate "part" %}: {{ part }}{% if part.file %} · {{ part.file.name }}{% endif %}</p>{% endfor %}
         {% empty %}<p>{% translate "Nothing to purge." %}</p>{% endfor %}
+      {% elif action == 'tags' or action == 'places' %}
+        {% for obj in objects %}
+          <input type="hidden" name="object" value="{{ obj.token }}">
+          <div class="housekeeping__item">
+            <span class="housekeeping__thumb housekeeping__thumb--icon"><i class="bi bi-{% if action == 'tags' %}tag{% else %}geo-alt{% endif %}"></i></span>
+            <span class="housekeeping__text"><span class="housekeeping__name">{% for node in obj.ancestors %}{% if not forloop.first %} › {% endif %}{{ node.name }}{% endfor %}</span></span>
+          </div>
+        {% empty %}<p>{% translate "Nothing to delete - used in the meantime, or nothing selected." %}</p>{% endfor %}
       {% else %}
         {% for file in files %}
           <input type="hidden" name="file" value="{{ file.name }}">

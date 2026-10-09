@@ -13,10 +13,16 @@ the archive's storage, checked by eye - for staff who may delete content.
   A file another item uses as well (the same stored name) is kept.
 - records without a file: items whose file is empty or gone - listed, fixed
   on their page.
+- unused tags and places (issue #460): nothing carries or lies in them - a
+  tag without content, people, notes or tags under it; a place without
+  content, events, notes, places in it or a name in another era. FMLY 2's
+  old categories, a typo, something abandoned - or something meant for
+  later (Nieuw Guinea, for the history to come): hence by eye, not in
+  .post_update.sh. The "Loose end" tag is never offered.
 
-The only two hard deletes are purging what's deleted already and removing
-files nothing points to; both go through a confirmation that lists exactly
-what goes. Each purge is logged (LogEntry). There is no undo but a backup.
+The hard deletes are purging what's deleted already, removing files nothing
+points to, and unused tags and places; each goes through a confirmation
+that lists exactly what goes. Each purge is logged (LogEntry). There is no undo but a backup.
 """
 
 import os
@@ -198,3 +204,44 @@ def delete_files(names):
     default_storage.delete(name)
     gone += 1
   return gone
+
+
+def unused_tags():
+  """Tags nothing carries and nothing sits under - not the "Loose end" tag
+  (core.tags: found by its slug, used now and then)."""
+  from core.models import Tag
+  from core.tags import LOOSE_END_SLUG
+  return list(
+    Tag.objects.filter(content__isnull=True, people__isnull=True, notes__isnull=True, children__isnull=True)
+    .exclude(slug=LOOSE_END_SLUG, parent=None).select_related('parent', 'user').distinct().order_by('name')
+  )
+
+
+def unused_places():
+  """Places nothing lies in or happened at - also not another era's name of
+  a place (alternatives): Djakarta matters as Batavia's later name."""
+  from places.models import Place
+  return list(
+    Place.objects.filter(content__isnull=True, events__isnull=True, notes__isnull=True, children__isnull=True, alternatives__isnull=True)
+    .select_related('parent', 'user').distinct().order_by('name')
+  )
+
+
+def may_delete(user, kind):
+  return may_housekeep(user) and user.has_perm({'tags': 'core.delete_tag', 'places': 'places.delete_place'}[kind])
+
+
+def selected_unused(kind, tokens):
+  """The selection, as far as still unused - checked again at the moment
+  of deleting: something linked in between stays."""
+  unused = unused_tags() if kind == 'tags' else unused_places()
+  return [obj for obj in unused if obj.token in set(tokens)]
+
+
+def delete_unused(objects, user):
+  """Delete, each in the admin log. Returns how many."""
+  for obj in objects:
+    LogEntry.objects.log_actions(user.pk, [obj], DELETION, change_message="Deleted in housekeeping (unused)", single_object=True)
+    obj.delete()
+  return len(objects)
+

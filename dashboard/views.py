@@ -140,7 +140,8 @@ class LooseEndView(TemplateView):
 class HousekeepingView(TemplateView):
   """dashboard/housekeeping/ - the archive's storage, checked by eye
   (dashboard/housekeeping.py): deleted items to purge, files without a
-  record, the same file twice, records without a file. Staff who may delete
+  record, the same file twice, records without a file, unused tags and
+  places. Staff who may delete
   content only. A POST of a selection shows what exactly would go
   (housekeeping_confirm.html); only a POST with confirm=1 deletes."""
   template_name = 'dashboard/housekeeping.html'
@@ -157,6 +158,10 @@ class HousekeepingView(TemplateView):
       'orphans': housekeeping.files_without_record(),
       'duplicates': housekeeping.same_file_twice(),
       'missing': housekeeping.records_without_file(),
+      'unused_tags': housekeeping.unused_tags(),
+      'unused_places': housekeeping.unused_places(),
+      'may_delete_tags': housekeeping.may_delete(self.request.user, 'tags'),
+      'may_delete_places': housekeeping.may_delete(self.request.user, 'places'),
     })
     return context
 
@@ -182,6 +187,16 @@ class HousekeepingView(TemplateView):
         return redirect('dashboard:housekeeping')
       files = [{'name': name, 'image': housekeeping.is_image_name(name)} for name in names]
       return self.render_to_response({'action': action, 'files': files}, template_name='dashboard/housekeeping_confirm.html')
+    if action in ('tags', 'places'):
+      if not housekeeping.may_delete(request.user, action):
+        raise Http404
+      objects = housekeeping.selected_unused(action, request.POST.getlist('object'))
+      if request.POST.get('confirm') == '1':
+        gone = housekeeping.delete_unused(objects, request.user)
+        message = ngettext("%(n)s tag deleted.", "%(n)s tags deleted.", gone) if action == 'tags' else ngettext("%(n)s place deleted.", "%(n)s places deleted.", gone)
+        messages.success(request, message % {'n': gone})
+        return redirect('dashboard:housekeeping')
+      return self.render_to_response({'action': action, 'objects': objects}, template_name='dashboard/housekeeping_confirm.html')
     messages.error(request, _("Nothing selected."))
     return redirect('dashboard:housekeeping')
 

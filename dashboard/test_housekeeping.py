@@ -131,3 +131,60 @@ class HousekeepingTests(TestCase):
     html = self.client.get(whole.get_absolute_url()).content.decode().replace('"', '')
     self.assertNotIn('data-cmnsd-section=content.parts', html)               # plain, not a fold
     self.assertIn('pagina', html)
+
+
+class UnusedTagsAndPlacesTests(TestCase):
+  """Housekeeping: unused tags and places (issue #460) - listed by eye,
+  deleted after a confirmation, by staff who may delete them."""
+
+  def setUp(self):
+    from core.models import Tag
+    from places.models import Place
+    User = get_user_model()
+    self.staff = User.objects.create(username='beheer', is_staff=True)
+    for codename in ('delete_content', 'delete_tag', 'delete_place'):
+      self.staff.user_permissions.add(Permission.objects.get(codename=codename))
+    self.staff.save()
+    self.client = Client()
+    self.client.force_login(self.staff)
+    make_tag = lambda name, **f: Tag.objects.create(name=name, user=self.staff, status='p', visibility='c', **f)
+    self.old_category, self.used = make_tag('Advertisement'), make_tag('Krangan 81')
+    self.collection = make_tag('Collection')
+    make_tag('Boeken', parent=self.collection)                                   # Collection has a child: used
+    from core.tags import LOOSE_END_SLUG
+    make_tag('Loose end', slug=LOOSE_END_SLUG)                                    # never offered
+    Content.objects.create(name='Foto', kind='photo', user=self.staff, status='p', visibility='c').tags.add(self.used)
+    make_place = lambda name, **f: Place.objects.create(name=name, user=self.staff, **f)
+    self.lone, self.batavia, self.djakarta = make_place('Nieuw Guinea'), make_place('Batavia'), make_place('Djakarta')
+    self.batavia.alternatives.add(self.djakarta)                                  # another era's name: used
+
+  def test_listed(self):
+    from dashboard import housekeeping
+    self.assertEqual([t.name for t in housekeeping.unused_tags()], ['Advertisement', 'Boeken'])
+    self.assertEqual([p.name for p in housekeeping.unused_places()], ['Nieuw Guinea'])
+    html = self.client.get('/dashboard/housekeeping/').content.decode()
+    self.assertIn('Advertisement', html)
+    self.assertIn('Nieuw Guinea', html)
+
+  def test_delete_after_confirmation_and_recheck(self):
+    from core.models import Tag
+    confirm = self.client.post('/dashboard/housekeeping/', {'action': 'tags', 'object': [self.old_category.token]})
+    self.assertContains(confirm, 'Advertisement')                                  # the confirmation page
+    self.assertTrue(Tag.objects.filter(pk=self.old_category.pk).exists())
+    Content.objects.create(name='Advertentie', kind='document', user=self.staff, status='p', visibility='c').tags.add(self.old_category)
+    self.client.post('/dashboard/housekeeping/', {'action': 'tags', 'object': [self.old_category.token], 'confirm': '1'})
+    self.assertTrue(Tag.objects.filter(pk=self.old_category.pk).exists())         # used in between: kept
+    self.client.post('/dashboard/housekeeping/', {'action': 'places', 'object': [self.lone.token], 'confirm': '1'})
+    from places.models import Place
+    self.assertFalse(Place.objects.filter(pk=self.lone.pk).exists())
+    self.assertTrue(LogEntry.objects.filter(change_message__contains='housekeeping (unused)').exists())
+
+  def test_needs_the_delete_permission(self):
+    self.staff.user_permissions.remove(Permission.objects.get(codename='delete_place'))
+    staff = get_user_model().objects.get(pk=self.staff.pk)
+    client = Client()
+    client.force_login(staff)
+    self.assertEqual(client.post('/dashboard/housekeeping/', {'action': 'places', 'object': [self.lone.token], 'confirm': '1'}).status_code, 404)
+    html = client.get('/dashboard/housekeeping/').content.decode().replace('"', '')
+    self.assertNotIn(f'value={self.lone.token}', html)                            # listed, without a checkbox
+    self.assertIn('Nieuw Guinea', html)
