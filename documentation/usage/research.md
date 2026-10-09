@@ -26,9 +26,11 @@ The search field in the header searches the whole archive at once: people, photo
 
 ## Comments
 
-Below a photo, a person or an event: add a memory, a correction, or ask the family what they know. Everyone who can see the item can read the conversation and join in. *More* → **Comments** shows all recent comments; the latest are also on the dashboard.
+Below a photo, a person or an event: add a memory, a correction, or ask the family what they know. Everyone who can see the item can read the conversation and join in. *More* → **Comments** shows all recent comments on what you may see; the latest are also on the dashboard. Comments on a revoked item stay on its own page, out of the list.
 
 You can change or remove your own comments.
+
+When staff revoke a photo or document, they're asked why: the reason is kept as a comment titled *Revocation reason* on the item - who revoked it and why, also after it's restored.
 
 ## Marking a loose end
 

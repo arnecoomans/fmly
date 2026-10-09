@@ -147,6 +147,12 @@ class StatusActionsForm(forms.ModelForm):
   Delete and Revoke ask first; deleting goes to the model's list (the
   record is gone for everyone). The form refuses anything it didn't offer.
 
+  A form whose `prompt` names revoking ({'r': question} - ContentStatusForm)
+  asks why instead (cmnsd edit_choices, data-cmnsd-prompt): the reason is
+  required, and kept as a comment on the record titled "Revocation reason",
+  visible to the community (issue #459) - who revoked it and why, also
+  once it's republished.
+
   For any model with StatusMixin and OwnershipMixin (Content, Note):
     class NoteStatusForm(StatusActionsForm):
       class Meta(StatusActionsForm.Meta):
@@ -157,6 +163,9 @@ class StatusActionsForm(forms.ModelForm):
     'x': _("Delete this? It will be hidden from everyone - it can be recovered in the admin."),
     'r': _("Revoke this? Only staff will see it until it's restored."),
   }
+  prompt = {}
+  prompt_field = 'reason'
+  reason = forms.CharField(required=False, max_length=5000)
 
   class Meta:
     fields = ['status']
@@ -184,6 +193,25 @@ class StatusActionsForm(forms.ModelForm):
     if value != self.instance.status and value not in allowed:
       raise forms.ValidationError(_("That isn't possible for you from here."))
     return value
+
+  def clean(self):
+    data = super().clean()
+    revoking = data.get('status') == self._meta.model.Status.REVOKED and self.instance.status != data.get('status')
+    if revoking and 'r' in self.prompt and not (data.get('reason') or '').strip():
+      self.add_error('status', _("Say why it's revoked."))
+    return data
+
+  def save(self, commit=True):
+    """The reason for revoking, as a comment on the record (see above)."""
+    obj = super().save(commit=commit)
+    reason = (self.cleaned_data.get('reason') or '').strip()
+    if reason and obj.status == obj.Status.REVOKED and hasattr(obj, 'comments'):
+      from .models import Comment
+      Comment.objects.create(
+        target=obj, user=self.request.user, name=_("Revocation reason"), content=reason,
+        status=Comment.Status.PUBLISHED, visibility=Comment.Visibility.COMMUNITY,
+      )
+    return obj
 
   def success_message(self):
     S = self._meta.model.Status

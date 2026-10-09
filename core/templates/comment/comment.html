@@ -4,6 +4,10 @@
   (comment/comments.html) and returned by the API after an action
   (add/edit/hide), so the JS can put it in place - one template for both.
 
+  A comment's title (`name`) is shown after its author and date when it has one - e.g.
+  "Revocation reason", made when staff revoke an item (core.forms
+  StatusActionsForm); comments written on the page have none.
+
   Controls, signed-in only: the author edits (inline form) and deletes;
   staff hide/unhide. The actions check this again server-side
   (core.models.Comment) - these buttons are only the UI.
@@ -20,6 +24,7 @@
     <div class="comment-row__meta">
       <span class="comment-row__author">{% if author %}{% include 'person/functions/get_short_name.html' with person=author %}{% else %}{{ comment.user.username }}{% endif %}</span>
       <time class="comment-row__timestamp" datetime="{{ comment.date_created|date:'c' }}">{{ comment.date_created|date:"j M Y, H:i" }}{% if comment.is_edited %} · {% translate "edited" %}{% endif %}</time>
+      {% if comment.name %}<span class="comment-row__title">{{ comment.name }}</span>{% endif %}
       {% if comment.status == 'r' %}<span class="badge-status badge-status--draft">{% translate "hidden" %}</span>{% endif %}
     </div>
     <div class="comment-row__text">{{ comment.content|markdown }}</div>

@@ -144,10 +144,13 @@ class ContentVisibilityForm(forms.ModelForm):
 
 class ContentStatusForm(StatusActionsForm):
   """Status as actions (core.forms.StatusActionsForm): publish, back to
-  draft, staff revoke, owners delete their own item."""
+  draft, staff revoke - asked why, the reason kept as a comment - owners
+  delete their own item."""
   confirm = {
     'x': _("Delete this item? It will be hidden from everyone - it can be recovered in the admin."),
-    'r': _("Revoke this item? Only staff will see it until it's restored."),
+  }
+  prompt = {
+    'r': _("Why is this item revoked? Only staff will see it until it's restored; your reason is kept as a comment on it."),
   }
 
   class Meta(StatusActionsForm.Meta):

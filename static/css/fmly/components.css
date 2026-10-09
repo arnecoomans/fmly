@@ -588,6 +588,7 @@ a.content-card:hover { border-color: var(--color-accent); }
 }
 .comment-row__author { font-weight: 700; font-size: var(--text-sm); }
 .comment-row__timestamp { font-size: var(--text-xs); color: var(--color-ink-3); }
+.comment-row__title { font-weight: 600; color: var(--color-ink); }   /* a titled comment ("Revocation reason"), after author and date */
 .comment-row__text { font-size: var(--text-sm); color: var(--color-ink-2); line-height: 1.5; }
 /* Markdown inside a comment: no stray paragraph gaps. */
 .comment-row__text p { margin: 0 0 var(--space-1); }

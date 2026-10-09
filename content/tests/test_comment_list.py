@@ -74,3 +74,19 @@ class CommentListTests(TestCase):
     first = self.page()
     self.assertEqual(len(first.context['comments']), 30)
     self.assertEqual(len(self.page('?page=2').context['comments']), 5)
+
+  def test_only_on_what_the_viewer_may_see_and_never_on_revoked(self):
+    """Issue #459: the target's own status and visibility count too."""
+    private = Content.objects.create(name='Privé', user=self.other, status='p', visibility='q')
+    revoked = Content.objects.create(name='Ingetrokken', user=self.member, status='r', visibility='c')
+    self.comment(self.photo, 'Op de trouwfoto')
+    self.comment(private, 'Op iets privés')
+    self.comment(revoked, 'Op iets ingetrokkens')
+    html = self.page().content.decode()
+    self.assertIn('Op de trouwfoto', html)
+    self.assertNotIn('Op iets privés', html)                       # the item: private to another
+    self.assertNotIn('Op iets ingetrokkens', html)
+    staff = get_user_model().objects.create(username='beheer', is_staff=True)
+    client = Client()
+    client.force_login(staff)
+    self.assertNotIn('Op iets ingetrokkens', self.page(client=client).content.decode())   # staff neither: under review

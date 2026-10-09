@@ -202,6 +202,27 @@ class FieldBlockTests(TestCase):
     Content.objects.filter(pk=self.item.pk).update(status='c')
     self.assertEqual(self.action_values(staff), ['p', 'r'])
 
+  def test_revoking_asks_why_and_keeps_it_as_a_comment(self):
+    from core.models import Comment
+    staff = self.user('staff', 'change_content')
+    staff.is_staff = True
+    staff.save()
+    client = self.client_for(staff)
+    html = client.get(self.item.get_absolute_url()).content.decode().replace('"', '')
+    self.assertRegex(html, r'data-cmnsd-prompt=Why is this item revoked[^>]*data-cmnsd-prompt-name=status-reason[^>]*value=r>')   # (attributes sorted by the minifier)
+    self.assertEqual(self.post('status', {'status-status': 'r'}, client).status_code, 400)     # no reason: refused
+    self.assertEqual(Content.objects.get(pk=self.item.pk).status, 'p')
+    response = self.post('status', {'status-status': 'r', 'status-reason': 'Dubbel: zie de scan van het origineel'}, client)
+    self.assertEqual(response.status_code, 200)
+    item = Content.objects.get(pk=self.item.pk)
+    self.assertEqual(item.status, 'r')
+    comment = Comment.objects.get(target_id=item.pk)
+    self.assertEqual((comment.name, comment.content, comment.user, comment.status, comment.visibility),
+                     ('Revocation reason', 'Dubbel: zie de scan van het origineel', staff, 'p', 'c'))
+    page = client.get(item.get_absolute_url()).content.decode()
+    self.assertIn('comment-row__title', page)                                           # the title, after author and date
+    self.assertIn('Revocation reason', page)
+
   def test_status_refuses_what_it_did_not_offer(self):
     other = self.user('other', 'change_content')
     response = self.post('status', {'status-status': 'x'}, self.client_for(other))   # not the owner
