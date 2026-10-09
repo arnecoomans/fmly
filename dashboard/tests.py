@@ -147,6 +147,20 @@ class LooseEndRulesTests(DashboardTestCase):
     Event.objects.create(kind='death', user=self.editor).people.set([buried])        # a death without a date counts
     self.assertEqual(self.items('no-death'), [old])                                   # unknown: no birth year to go by
 
+  def test_lone_places(self):
+    from places.models import Place
+    nederland = Place.objects.create(name='Nederland', user=self.editor)
+    Place.objects.create(name='Hazerswoude', parent=nederland, user=self.editor)        # in the tree
+    oirschot, oceaan = Place.objects.create(name='Oirschot', user=self.editor), Place.objects.create(name='Indische Oceaan', user=self.editor)
+    self.assertEqual(self.items('lone-places'), [oceaan, oirschot])
+    client = Client()
+    client.force_login(self.editor)
+    html = client.get('/dashboard/loose-ends/lone-places/').content.decode()
+    self.assertIn(oirschot.get_absolute_url(), html)
+    self.assertNotIn('Hazerswoude', html)
+    client.post('/dashboard/loose-ends/lone-places/', {'object_id': oceaan.pk, 'note': 'een oceaan ligt nergens in'})
+    self.assertEqual(self.items('lone-places'), [oirschot])                               # fine as it is
+
   def test_other_events_with_a_title_are_fine(self):
     untitled = Event.objects.create(kind='other', kind_freetext='Verhuizing', user=self.editor)
     Event.objects.create(kind='other', kind_freetext='Benoeming', title='Benoeming tot ambtenaar', user=self.editor)

@@ -35,6 +35,7 @@ For editors: what's still missing in the archive, each as a list with a count, f
 - documents without a transcript, and transcripts to finish or check
 - events without a date
 - images in low resolution
+- places on their own: no parent, and nothing under them - a town that belongs under its country, or a country that's fine as it is
 - anything marked with the tag **Loose end** - your own reminders
 
 Where there's a lot of work, a thin bar shows how far along it is - for people (birth and death), documents (transcribed, to check, none) and parents; point at it for the numbers, and the list's own page names the colours. Each list takes you straight to where it's fixed. Something that's as good as it gets - a clipping that won't get sharper, a date that will never be known - can be marked **fine as it is**: it leaves that list (and only that one). *Fine as it is* at the top of a list shows those again, with who decided and why, and puts them back if needed.

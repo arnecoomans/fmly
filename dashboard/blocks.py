@@ -99,6 +99,7 @@ LOOSE_ENDS = {
   'open-transcripts': _("transcripts to finish or check"),
   'no-transcript': _("documents without a transcript"),
   'low-resolution': _("images in low resolution"),
+  'lone-places': _("places on their own (no parent, nothing under them)"),
 }
 
 # Below this many pixels an image is a loose end: a better scan or original
@@ -169,6 +170,12 @@ def _loose_end_queryset(name, request):
     return events.filter(year__isnull=True)
   if name == 'other-events':
     return events.filter(kind='other', title='')
+  if name == 'lone-places':
+    # Outside the place tree: a town that belongs under its country, or a
+    # country with nothing under it yet ("fine as it is"). Places have no
+    # visibility of their own - every editor sees them all.
+    from places.models import Place
+    return Place.objects.filter(parent__isnull=True, children__isnull=True).order_by('name')
   if name == 'low-resolution':
     # Smallest first (Content.width/height, as shown).
     return (

@@ -27,6 +27,9 @@
     {% if marked.notes %}<section class="tag-page__section"><h2 class="section-title">{% translate "notes"|capfirst %}</h2><ul class="note-list">{% for note in marked.notes %}{% include 'note/_note_row.html' %}{% endfor %}</ul></section>{% endif %}
   {% elif name == 'no-birth' or name == 'no-death' or name == 'no-parents' %}
     <div class="tag-page__people">{% for person in items %}<div class="loose-end__row">{% include 'people/_person_row.html' with related=person show_visibility=True %}{% include 'dashboard/_dismiss.html' with item=person %}</div>{% endfor %}</div>
+  {% elif name == 'lone-places' %}
+    {# Each to its page: there, in edit mode, "lies in" gives it a parent - or a place under it, from that one's page. #}
+    <div class="tag-list">{% for place in items %}<div class="loose-end__row"><a class="tag" href="{{ place.get_absolute_url }}"><i class="bi bi-geo-alt"></i> {{ place.name }}</a>{% include 'dashboard/_dismiss.html' with item=place %}</div>{% endfor %}</div>
   {% elif name == 'photos-without-people' or name == 'open-transcripts' or name == 'no-transcript' or name == 'low-resolution' %}
     <div class="dashboard__thumbs">
       {% for item in items %}
