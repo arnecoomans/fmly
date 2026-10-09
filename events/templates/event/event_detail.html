@@ -28,7 +28,7 @@
   {% include 'cmnsd/edit/block.html' with model='event' obj=event block='description' %}
 
   {% if people or editing %}
-    <section class="tag-page__section">
+    <section class="tag-page__section" data-cmnsd-via-links="event:{{ event.token }}">
       <h2 class="section-title">{% translate "people"|capfirst %}</h2>
       <div class="person-relationship-group__list" id="event-people">
         {% for person in people %}{% include 'event/_person.html' %}{% endfor %}
@@ -42,7 +42,7 @@
   {% endif %}
 
   {% if places or editing %}
-    <section class="tag-page__section">
+    <section class="tag-page__section" data-cmnsd-via-links="event:{{ event.token }}">
       <h2 class="section-title">{% translate "places"|capfirst %}</h2>
       <div class="tag-list" id="event-places">{% for place in places %}{% include 'event/_place.html' %}{% endfor %}</div>
       {% if editing %}
@@ -53,7 +53,7 @@
   {% endif %}
 
   {% if event.visible_content or editing %}
-    <section class="tag-page__section">
+    <section class="tag-page__section" data-cmnsd-via-links="event:{{ event.token }}">
       <h2 class="section-title">{% translate "documented by"|capfirst %}</h2>
       <div class="tag-list" id="event-content">{% for item in event.visible_content %}{% include 'event/_item.html' %}{% endfor %}</div>
       {% if editing %}

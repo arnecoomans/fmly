@@ -56,7 +56,7 @@
   isn't a normal step, so it's something to resolve.
 {% endcomment %}
 {% if related|status_visible_to:request.user %}
-<div class="person-row{% if derived %} person-row--derived{% endif %}{% if related.needs_attention %} person-row--needs-attention{% endif %}">
+<div class="person-row{% if derived %} person-row--derived{% endif %}{% if related.needs_attention %} person-row--needs-attention{% endif %}" data-cmnsd-via="person:{{ related.token }}" data-cmnsd-via-title="{% translate "you came here through this person" %}">
   {% include 'person/avatar.html' with person=related size='md' %}
   <span class="person-row__body">
     <span class="person-row__name">{% highlight_search search_query %}{% include 'person/functions/get_full_name.html' with person=related lifespan=True %}{% endhighlight_search %}{% if portrait_here %} <i class="bi bi-person-bounding-box person-row__portrait" title="{% translate 'Their portrait is from this photo' %}" aria-label="{% translate 'Their portrait is from this photo' %}"></i>{% endif %}</span>

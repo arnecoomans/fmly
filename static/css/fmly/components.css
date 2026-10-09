@@ -1564,6 +1564,18 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .event-page__suggestion { border: 0; padding: 0; background: none; text-align: left; cursor: pointer; font: inherit; font-size: var(--text-xs); width: 100%; }
 .event-page__suggestion:hover img, .event-page__suggestion:hover .dashboard__thumb-icon,
 .event-page__suggestion:focus-visible img { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+/* "Via" (cmnsd.js via.js, issue #455): arriving from a tag, place, event or
+   person page, that tag, place, event or person stands out here - one level
+   deep. .via-region only marks where links carry ?via_*: no box of its own.
+   In edit mode a chip and its "×" are one shape (.chip-edit): the outline
+   goes around the pair, or the "×" would cover its right side. */
+.via-region { display: contents; }
+.tag.is-via { font-weight: 700; color: var(--color-accent); box-shadow: 0 0 0 2px var(--color-accent); }
+.chip-edit:has(> .tag.is-via) { box-shadow: 0 0 0 2px var(--color-accent); border-radius: var(--radius-pill); }
+.chip-edit > .tag.is-via { box-shadow: none; }
+.place-link.is-via, .tag-page__parent a.is-via { font-weight: 700; color: var(--color-accent); }
+.event.is-via, .person-row.is-via { background: var(--color-accent-soft); box-shadow: inset 3px 0 0 var(--color-accent); border-radius: var(--radius-md); }
+
 /* A revoked event (staff only): struck through (event/_event.html) and dimmed. */
 .event--revoked { opacity: 0.6; }
 .event-page { max-width: 860px; }

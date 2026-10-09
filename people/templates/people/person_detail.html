@@ -91,10 +91,13 @@
     {% include 'cmnsd/edit/block.html' with model='person' obj=person block='biography' %}
     
     <!-- Tags-->
-    {% include 'person/functions/get_tags.html' with person=person %}
+    <div class="via-region" data-cmnsd-via-links="person:{{ person.token }}">{% include 'person/functions/get_tags.html' with person=person %}</div>
     
 
     {% comment %}
+      via-region (data-cmnsd-via-links, cmnsd.js via.js): links from the
+      tags, relationships, content and events carry ?via_person=<token>, so
+      the page they lead to highlights this person - not the comments.
       Collapsible sections (cmnsd/section.html): open/closed remembered per
       section for all person pages; a closed section only costs its count
       and loads through the API when opened (field = the Person method
@@ -102,17 +105,17 @@
     {% endcomment %}
     {% if person.family_connection != 'outsider' %}{# an outsider has no place in the tree #}
     {% translate "relationships" as title %}
-    {% include 'cmnsd/section.html' with key='person.relationships' title=title|capfirst count=person|relationship_count:request body='person/functions/get_relationships.html' model='person' token=person.token field='get_relationships' empty_body=editing %}
+    <div class="via-region" data-cmnsd-via-links="person:{{ person.token }}">{% include 'cmnsd/section.html' with key='person.relationships' title=title|capfirst count=person|relationship_count:request body='person/functions/get_relationships.html' model='person' token=person.token field='get_relationships' empty_body=editing %}</div>
     {% endif %}
 
     {% translate "content" as title %}
-    {% include 'cmnsd/section.html' with key='person.content' title=title|capfirst count=person|content_count:request body='person/functions/get_visible_content.html' model='person' token=person.token field='get_visible_content' %}
+    <div class="via-region" data-cmnsd-via-links="person:{{ person.token }}">{% include 'cmnsd/section.html' with key='person.content' title=title|capfirst count=person|content_count:request body='person/functions/get_visible_content.html' model='person' token=person.token field='get_visible_content' %}</div>
 
     {% translate "comments" as title %}
     {% include 'cmnsd/section.html' with key='person.comments' title=title|capfirst count=person|comment_count:request body='person/functions/get_comments.html' model='person' token=person.token field='get_comments' empty_body=request.user.is_authenticated count_list='#comments-'|add:person.token count_items='.comment-row' %}
 
     {% translate "events" as title %}
-    {% include 'cmnsd/section.html' with key='person.events' title=title|capfirst count=person|event_count:request body='person/functions/get_visible_events.html' model='person' token=person.token field='get_visible_events' empty_body=editing %}
+    <div class="via-region" data-cmnsd-via-links="person:{{ person.token }}">{% include 'cmnsd/section.html' with key='person.events' title=title|capfirst count=person|event_count:request body='person/functions/get_visible_events.html' model='person' token=person.token field='get_visible_events' empty_body=editing %}</div>
 
     {% include 'note/_notes_section.html' with obj=person key='person.notes' %}
 

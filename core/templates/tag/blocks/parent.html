@@ -6,7 +6,7 @@
 {% endcomment %}
 {% with path=tag.ancestors|slice:":-1" %}
   <p class="tag-page__parent"><a href="{% url 'core:tag_list' %}">{% translate "tags"|capfirst %}</a> <i class="bi bi-chevron-right"></i>
-    {% for ancestor in path %}<a href="{{ ancestor.get_absolute_url }}">{{ ancestor.name }}</a> <i class="bi bi-chevron-right"></i> {% endfor %}
+    {% for ancestor in path %}<a href="{{ ancestor.get_absolute_url }}" data-cmnsd-via="tag:{{ ancestor.token }}" data-cmnsd-via-title="{% translate "you came here through this tag" %}">{{ ancestor.name }}</a> <i class="bi bi-chevron-right"></i> {% endfor %}
     {% if not path and edit_mode %}<span class="edit-block__empty">{% translate "a tag of its own" %}</span>{% endif %}
   </p>
 {% endwith %}

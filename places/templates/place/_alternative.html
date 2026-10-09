@@ -8,8 +8,8 @@
 {% endcomment %}
 {% with path=alternative.ancestors|slice:":-1" %}
 {% if edit_mode and place|can_edit:request %}
-  <span class="chip-edit"><a class="tag tag--place" href="{{ alternative.get_absolute_url }}"><i class="bi bi-geo-alt"></i>{{ alternative.name }}{% if path %} <span class="tag__meta">{{ path|last }}</span>{% endif %}</a>{% include 'cmnsd/edit/unlink.html' with model='place' owner=place relation='alternatives' object=alternative %}</span>
+  <span class="chip-edit"><a class="tag tag--place" href="{{ alternative.get_absolute_url }}" data-cmnsd-via="place:{{ alternative.token }}" data-cmnsd-via-title="{% translate "you came here through this place" %}"><i class="bi bi-geo-alt"></i>{{ alternative.name }}{% if path %} <span class="tag__meta">{{ path|last }}</span>{% endif %}</a>{% include 'cmnsd/edit/unlink.html' with model='place' owner=place relation='alternatives' object=alternative %}</span>
 {% else %}
-  <a class="tag tag--place" href="{{ alternative.get_absolute_url }}"><i class="bi bi-geo-alt"></i>{{ alternative.name }}{% if path %} <span class="tag__meta">{{ path|last }}</span>{% endif %}</a>
+  <a class="tag tag--place" href="{{ alternative.get_absolute_url }}" data-cmnsd-via="place:{{ alternative.token }}" data-cmnsd-via-title="{% translate "you came here through this place" %}"><i class="bi bi-geo-alt"></i>{{ alternative.name }}{% if path %} <span class="tag__meta">{{ path|last }}</span>{% endif %}</a>
 {% endif %}
 {% endwith %}

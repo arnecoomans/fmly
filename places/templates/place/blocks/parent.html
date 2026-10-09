@@ -7,7 +7,7 @@
 {% endcomment %}
 {% with path=place.ancestors|slice:":-1" %}
   <p class="tag-page__parent place-page__path"><a href="{% url 'places:list' %}">{% translate "places"|capfirst %}</a> <i class="bi bi-chevron-right"></i>
-    {% for ancestor in path %}<a href="{{ ancestor.get_absolute_url }}">{{ ancestor.name }}</a> <i class="bi bi-chevron-right"></i> {% endfor %}
+    {% for ancestor in path %}<a href="{{ ancestor.get_absolute_url }}" data-cmnsd-via="place:{{ ancestor.token }}" data-cmnsd-via-title="{% translate "you came here through this place" %}">{{ ancestor.name }}</a> <i class="bi bi-chevron-right"></i> {% endfor %}
     {% if not path and edit_mode %}<span class="edit-block__empty">{% translate "lies nowhere - a country or region of its own" %}</span>{% endif %}
   </p>
 {% endwith %}

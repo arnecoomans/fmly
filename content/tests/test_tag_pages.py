@@ -55,7 +55,7 @@ class TagPageTests(TestCase):
 
   def test_chips_link_to_the_tag_page(self):
     html = self.client.get(self.new.get_absolute_url()).content.decode().replace('"', '')
-    self.assertIn(f'class=tag href={self.tag.get_absolute_url()}', html)
+    self.assertRegex(html, rf'<a [^>]*class=tag [^>]*href={self.tag.get_absolute_url()}')   # (attribute order: the minifier's)
 
 
 class TagListTests(TestCase):

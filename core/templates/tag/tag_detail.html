@@ -34,14 +34,14 @@
   </header>
 
   {% if children %}
-    <section class="tag-page__section">
+    <section class="tag-page__section" data-cmnsd-via-links="tag:{{ tag.token }}">
       <h2 class="section-title">{{ tag.name }}</h2>
       <div class="tag-list">{% for child in children %}{% include 'tag/tag.html' with tag=child hide_parent=True %}{% endfor %}</div>
     </section>
   {% endif %}
 
   {% if people %}
-    <section class="tag-page__section">
+    <section class="tag-page__section" data-cmnsd-via-links="tag:{{ tag.token }}">
       <h2 class="section-title">{% translate "people"|capfirst %}</h2>
       <div class="tag-page__people">
         {% for person in people %}
@@ -52,7 +52,7 @@
   {% endif %}
 
   {% if items %}
-    <section class="tag-page__section">
+    <section class="tag-page__section" data-cmnsd-via-links="tag:{{ tag.token }}">
       <h2 class="section-title">{% translate "content"|capfirst %}</h2>
       {% include 'content/_content_grid.html' with items=items sort=sort save_key='tag.content' grid_id='tag-content-grid' %}
     </section>

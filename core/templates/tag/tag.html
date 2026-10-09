@@ -5,6 +5,7 @@
   attach_content_counts() wherever tags are listed; how much a tag
   groups shows how important it is. Not attached: no count.
   A concept or revoked tag (only its creator and staff see it) is marked:
-  draft colours and its status in the chip.
+  draft colours and its status in the chip. data-cmnsd-via: highlighted
+  when the page was reached through this tag (cmnsd.js via.js).
 {% endcomment %}
-<a class="tag{% if tag.needs_attention %} tag--draft{% endif %}" href="{{ tag.get_absolute_url }}"{% if tag.needs_attention %} title="{{ tag.get_status_display }} · {% translate 'not published' %}"{% endif %}><i class="bi bi-tag"></i>{% if tag.parent and not hide_parent %}{{ tag.parent.name }}: {% endif %}{{ tag.name }}{% if tag.content_count is not None %} <span class="tag__count">{{ tag.content_count }}</span>{% endif %}{% if tag.needs_attention %} <span class="tag__status">{{ tag.get_status_display|lower }}</span>{% endif %}</a>
+<a class="tag{% if tag.needs_attention %} tag--draft{% endif %}" href="{{ tag.get_absolute_url }}" data-cmnsd-via="tag:{{ tag.token }}" data-cmnsd-via-title="{% translate "you came here through this tag" %}"{% if tag.needs_attention %} title="{{ tag.get_status_display }} · {% translate 'not published' %}"{% endif %}><i class="bi bi-tag"></i>{% if tag.parent and not hide_parent %}{{ tag.parent.name }}: {% endif %}{{ tag.name }}{% if tag.content_count is not None %} <span class="tag__count">{{ tag.content_count }}</span>{% endif %}{% if tag.needs_attention %} <span class="tag__status">{{ tag.get_status_display|lower }}</span>{% endif %}</a>

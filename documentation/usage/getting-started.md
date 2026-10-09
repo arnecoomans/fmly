@@ -36,6 +36,10 @@ Click your initials in the top right:
 
 Staff see a second group, *Staff*, with tools to maintain the archive.
 
+## Following a trail
+
+From a tag, place, event or person, the page you open next highlights it - the tag among a photo's tags, the place in its places, the person among an event's people - outlined. It shows how you got there, and it's the way back. One step only: the page after that is plain again.
+
 ## Edit mode
 
 Editors read the archive like everyone else. To change something, press **Edit** in the header: the button turns orange and pencils appear next to everything you may change.

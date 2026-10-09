@@ -19,7 +19,7 @@
   A revoked event (only staff see it) is struck through, so it stands
   apart from the rest - with its status for screen readers.
 {% endcomment %}
-<article class="event{% if relative %} event--family{% endif %}{% if history %} event--history{% endif %}{% if event.status == 'r' %} event--revoked{% endif %} event--{{ event.kind }}">
+<article class="event{% if relative %} event--family{% endif %}{% if history %} event--history{% endif %}{% if event.status == 'r' %} event--revoked{% endif %} event--{{ event.kind }}" data-cmnsd-via="event:{{ event.token }}" data-cmnsd-via-title="{% translate "you came here through this event" %}">
   <span class="event__symbol" aria-hidden="true">{% include 'event/_symbol.html' %}</span>
   <div class="event__body">
     <header class="event__header">

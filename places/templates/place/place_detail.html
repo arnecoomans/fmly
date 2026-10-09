@@ -35,7 +35,7 @@
   </header>
 
   {% if alternatives or editing %}
-    <section class="tag-page__section">
+    <section class="tag-page__section" data-cmnsd-via-links="place:{{ place.token }}">
       <h2 class="section-title">{% translate "in another era"|capfirst %}</h2>
       <div class="tag-list" id="place-alternatives">{% for alternative in alternatives %}{% include 'place/_alternative.html' %}{% endfor %}</div>
       {% if editing %}
@@ -46,7 +46,7 @@
   {% endif %}
 
   {% if sub_places %}
-    <section class="tag-page__section">
+    <section class="tag-page__section" data-cmnsd-via-links="place:{{ place.token }}">
       {% blocktranslate with name=place.name asvar within %}places in {{ name }}{% endblocktranslate %}
       <h2 class="section-title">{{ within|capfirst }}</h2>
       <ul class="place-tree">{% for place in sub_places %}{% include 'place/_tree_node.html' %}{% endfor %}</ul>
@@ -54,7 +54,7 @@
   {% endif %}
 
   {% if events %}
-    <section class="tag-page__section">
+    <section class="tag-page__section" data-cmnsd-via-links="place:{{ place.token }}">
       <h2 class="section-title">{% translate "events"|capfirst %}</h2>
       <ul class="place-page__events">{% for event in events %}{% include 'place/_event.html' %}{% endfor %}</ul>
     </section>
@@ -63,7 +63,7 @@
   {% include 'note/_notes_section.html' with obj=place key='place.notes' %}
 
   {% if items %}
-    <section class="tag-page__section">
+    <section class="tag-page__section" data-cmnsd-via-links="place:{{ place.token }}">
       <h2 class="section-title">{% translate "content"|capfirst %}</h2>
       {% include 'content/_content_grid.html' with items=items sort=sort save_key='place.content' grid_id='place-content-grid' %}
     </section>
