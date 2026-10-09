@@ -139,31 +139,45 @@ class LooseEndView(TemplateView):
 
 class HousekeepingView(TemplateView):
   """dashboard/housekeeping/ - the archive's storage, checked by eye
-  (dashboard/housekeeping.py): deleted items to purge, files without a
-  record, the same file twice, records without a file, unused tags and
-  places. Staff who may delete
-  content only. A POST of a selection shows what exactly would go
-  (housekeeping_confirm.html); only a POST with confirm=1 deletes."""
+  (dashboard/housekeeping.py): an overview of counts in groups - to review,
+  files, tags and places - and dashboard/housekeeping/<section>/, one
+  section's list (housekeeping/<section>.html). Staff who may delete content
+  only. A POST of a selection shows what exactly would go
+  (housekeeping_confirm.html); only a POST with confirm=1 deletes, and then
+  it's back to the section."""
   template_name = 'dashboard/housekeeping.html'
 
   def dispatch(self, request, *args, **kwargs):
     if not housekeeping.may_housekeep(request.user):
       raise Http404
+    section = kwargs.get('section')
+    if section and section not in housekeeping.SECTION_BY_NAME:
+      raise Http404
     return super().dispatch(request, *args, **kwargs)
+
+  def get_template_names(self):
+    return ['dashboard/housekeeping_section.html' if self.kwargs.get('section') else self.template_name]
 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
+    section = self.kwargs.get('section')
+    if not section:
+      context['groups'] = housekeeping.overview()
+      return context
+    label, name, find = housekeeping.SECTION_BY_NAME[section]
+    items = find()
     context.update({
-      'deleted': housekeeping.deleted_items(),
-      'orphans': housekeeping.files_without_record(),
-      'duplicates': housekeeping.same_file_twice(),
-      'missing': housekeeping.records_without_file(),
-      'unused_tags': housekeeping.unused_tags(),
-      'unused_places': housekeeping.unused_places(),
+      'section': section, 'label': label, 'count': len(items), name: items,
+      'section_template': f'dashboard/housekeeping/{section}.html',
       'may_delete_tags': housekeeping.may_delete(self.request.user, 'tags'),
       'may_delete_places': housekeeping.may_delete(self.request.user, 'places'),
     })
     return context
+
+  def back(self):
+    """After a delete: the section it was done in."""
+    section = self.kwargs.get('section')
+    return redirect('dashboard:housekeeping_section', section) if section else redirect('dashboard:housekeeping')
 
   def post(self, request, *args, **kwargs):
     from content.models import Content
@@ -174,7 +188,7 @@ class HousekeepingView(TemplateView):
       if request.POST.get('confirm') == '1':
         gone = housekeeping.purge(items, request.user)
         messages.success(request, ngettext("%(n)s record purged.", "%(n)s records purged.", gone) % {'n': gone})
-        return redirect('dashboard:housekeeping')
+        return self.back()
       housekeeping.attach_consequences(items)
       return self.render_to_response({'action': action, 'items': items}, template_name='dashboard/housekeeping_confirm.html')
     if action == 'files':
@@ -184,7 +198,7 @@ class HousekeepingView(TemplateView):
       if request.POST.get('confirm') == '1':
         gone = housekeeping.delete_files(names)
         messages.success(request, ngettext("%(n)s file deleted.", "%(n)s files deleted.", gone) % {'n': gone})
-        return redirect('dashboard:housekeeping')
+        return self.back()
       files = [{'name': name, 'image': housekeeping.is_image_name(name)} for name in names]
       return self.render_to_response({'action': action, 'files': files}, template_name='dashboard/housekeeping_confirm.html')
     if action in ('tags', 'places'):
@@ -195,14 +209,15 @@ class HousekeepingView(TemplateView):
         gone = housekeeping.delete_unused(objects, request.user)
         message = ngettext("%(n)s tag deleted.", "%(n)s tags deleted.", gone) if action == 'tags' else ngettext("%(n)s place deleted.", "%(n)s places deleted.", gone)
         messages.success(request, message % {'n': gone})
-        return redirect('dashboard:housekeeping')
+        return self.back()
       return self.render_to_response({'action': action, 'objects': objects}, template_name='dashboard/housekeeping_confirm.html')
     messages.error(request, _("Nothing selected."))
-    return redirect('dashboard:housekeeping')
+    return self.back()
 
   def render_to_response(self, context, template_name=None, **kwargs):
     if template_name:
       from django.template.response import TemplateResponse
+      context.setdefault('section', self.kwargs.get('section'))   # the confirmation's way back
       return TemplateResponse(self.request, template_name, context)
     return super().render_to_response(context, **kwargs)
 

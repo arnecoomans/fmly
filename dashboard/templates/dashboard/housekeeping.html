@@ -1,23 +1,13 @@
 {% extends 'base.html' %}
 {% comment %}
   Housekeeping (dashboard.views.HousekeepingView, dashboard/housekeeping.py):
-  the archive's storage checked by eye. The hard deletes - purging deleted
-  items, removing files without a record, unused tags and places - each a
-  selection, then a page that lists what exactly goes. The rest is listed to fix on the item's page.
+  the archive's storage checked by eye - an overview of counts in groups
+  (to review, files, tags and places), each section a page of its own
+  (housekeeping_section.html). An empty section stays, muted: the overview
+  keeps its shape, and shows what's clear.
 {% endcomment %}
 
 {% block title %}{% translate "housekeeping"|capfirst %}{% endblock %}
-
-{% block template_js %}
-<script>
-  // "Select all": every enabled checkbox in its own form.
-  document.querySelectorAll('[data-housekeeping-all]').forEach(function (all) {
-    all.addEventListener('change', function () {
-      all.form.querySelectorAll('input[type=checkbox]:not([disabled]):not([data-housekeeping-all])').forEach(function (box) { box.checked = all.checked; });
-    });
-  });
-</script>
-{% endblock %}
 
 {% block content %}
 <div class="tag-page housekeeping">
@@ -29,101 +19,17 @@
     </div>
   </header>
 
-  <section class="tag-page__section">
-    <h2 class="section-title">{% translate "same file twice"|capfirst %} <span class="tag__count">{{ duplicates|length }}</span></h2>
-    <p class="housekeeping__intro">{% translate "Items with the same file. Delete the one you don't want on its page; here it can then be purged - the record and its file." %}</p>
-    {% if duplicates %}
-      <form method="post">
-        {% csrf_token %}<input type="hidden" name="action" value="purge">
-        {% for group in duplicates %}
-          <div class="housekeeping__group">{% for item in group %}{% if item.status == 'x' %}{% include 'dashboard/_housekeeping_item.html' with checkbox=True %}{% else %}{% include 'dashboard/_housekeeping_item.html' with placeholder=True %}{% endif %}{% endfor %}</div>
-        {% endfor %}
-        <div class="edit-form__actions"><button type="submit" class="btn btn--secondary btn--sm">{% translate "purge selected…"|capfirst %}</button></div>
-      </form>
-    {% endif %}
-  </section>
-
-  <section class="tag-page__section">
-    <h2 class="section-title">{% translate "deleted items"|capfirst %} <span class="tag__count">{{ deleted|length }}</span></h2>
-    <p class="housekeeping__intro">{% translate "Hidden from everyone, but the record and the file are still there. Purge removes the record, its file and its thumbnails - and its parts." %}</p>
-    {% if deleted %}
-      <form method="post">
-        {% csrf_token %}<input type="hidden" name="action" value="purge">
-        <label class="housekeeping__all"><input type="checkbox" data-housekeeping-all> {% translate "select all" %}</label>
-        <div class="housekeeping__list">{% for item in deleted %}{% include 'dashboard/_housekeeping_item.html' with checkbox=True %}{% endfor %}</div>
-        <div class="edit-form__actions"><button type="submit" class="btn btn--secondary btn--sm">{% translate "purge selected…"|capfirst %}</button></div>
-      </form>
-    {% endif %}
-  </section>
-
-  <section class="tag-page__section">
-    <h2 class="section-title">{% translate "files without a record"|capfirst %} <span class="tag__count">{{ orphans|length }}</span></h2>
-    <p class="housekeeping__intro">{% translate "Files in storage no item points to - an old name, an abandoned upload." %}</p>
-    {% if orphans %}
-      <form method="post">
-        {% csrf_token %}<input type="hidden" name="action" value="files">
-        <label class="housekeeping__all"><input type="checkbox" data-housekeeping-all> {% translate "select all" %}</label>
-        <div class="housekeeping__list">
-          {% for file in orphans %}
-            <label class="housekeeping__item">
-              <input type="checkbox" name="file" value="{{ file.name }}">
-              {% if file.image %}<img class="housekeeping__thumb" src="{% url 'dashboard:housekeeping_preview' %}?name={{ file.name|urlencode }}" alt="" loading="lazy">{% else %}<span class="housekeeping__thumb housekeeping__thumb--icon"><i class="bi bi-file-earmark"></i></span>{% endif %}
-              <span class="housekeeping__text"><span class="housekeeping__name">{{ file.name }}</span><span class="housekeeping__meta">{{ file.size|filesizeformat }}</span></span>
-            </label>
+  <div class="housekeeping__groups">
+    {% for group, sections in groups %}
+      <section class="housekeeping__group-block">
+        <h2 class="section-title">{{ group|capfirst }}</h2>
+        <ul class="housekeeping__sections">
+          {% for name, label, count in sections %}
+            <li{% if not count %} class="is-clear"{% endif %}><a href="{% url 'dashboard:housekeeping_section' name %}"><span class="tag__count">{{ count }}</span> {{ label }}</a></li>
           {% endfor %}
-        </div>
-        <div class="edit-form__actions"><button type="submit" class="btn btn--secondary btn--sm">{% translate "delete selected files…"|capfirst %}</button></div>
-      </form>
-    {% endif %}
-  </section>
-
-
-  <section class="tag-page__section">
-    <h2 class="section-title">{% translate "unused tags"|capfirst %} <span class="tag__count">{{ unused_tags|length }}</span></h2>
-    <p class="housekeeping__intro">{% translate "Tags nothing carries and nothing sits under - an old category, a typo, or something meant for later. The Loose end tag isn't listed." %}</p>
-    {% if unused_tags %}
-      <form method="post">
-        {% csrf_token %}<input type="hidden" name="action" value="tags">
-        {% if may_delete_tags %}<label class="housekeeping__all"><input type="checkbox" data-housekeeping-all> {% translate "select all" %}</label>{% endif %}
-        <div class="housekeeping__list">
-          {% for obj in unused_tags %}
-            <label class="housekeeping__item">
-              {% if may_delete_tags %}<input type="checkbox" name="object" value="{{ obj.token }}">{% endif %}
-              <span class="housekeeping__thumb housekeeping__thumb--icon"><i class="bi bi-tag"></i></span>
-              <span class="housekeeping__text"><a class="housekeeping__name" href="{{ obj.get_absolute_url }}">{% for node in obj.ancestors %}{% if not forloop.first %} › {% endif %}{{ node.name }}{% endfor %}</a><span class="housekeeping__meta">{{ obj.user.get_full_name|default:obj.user.username }} · {{ obj.date_created|date:"j M Y" }}</span></span>
-            </label>
-          {% endfor %}
-        </div>
-        {% if may_delete_tags %}<div class="edit-form__actions"><button type="submit" class="btn btn--secondary btn--sm">{% translate "delete selected…"|capfirst %}</button></div>{% endif %}
-      </form>
-    {% endif %}
-  </section>
-
-  <section class="tag-page__section">
-    <h2 class="section-title">{% translate "unused places"|capfirst %} <span class="tag__count">{{ unused_places|length }}</span></h2>
-    <p class="housekeeping__intro">{% translate "Places nothing lies in or happened at, and not another era's name of a place - keep the ones meant for later." %}</p>
-    {% if unused_places %}
-      <form method="post">
-        {% csrf_token %}<input type="hidden" name="action" value="places">
-        {% if may_delete_places %}<label class="housekeeping__all"><input type="checkbox" data-housekeeping-all> {% translate "select all" %}</label>{% endif %}
-        <div class="housekeeping__list">
-          {% for obj in unused_places %}
-            <label class="housekeeping__item">
-              {% if may_delete_places %}<input type="checkbox" name="object" value="{{ obj.token }}">{% endif %}
-              <span class="housekeeping__thumb housekeeping__thumb--icon"><i class="bi bi-geo-alt"></i></span>
-              <span class="housekeeping__text"><a class="housekeeping__name" href="{{ obj.get_absolute_url }}">{% for node in obj.ancestors %}{% if not forloop.first %} › {% endif %}{{ node.name }}{% endfor %}</a><span class="housekeeping__meta">{{ obj.user.get_full_name|default:obj.user.username }} · {{ obj.date_created|date:"j M Y" }}</span></span>
-            </label>
-          {% endfor %}
-        </div>
-        {% if may_delete_places %}<div class="edit-form__actions"><button type="submit" class="btn btn--secondary btn--sm">{% translate "delete selected…"|capfirst %}</button></div>{% endif %}
-      </form>
-    {% endif %}
-  </section>
-
-  <section class="tag-page__section">
-    <h2 class="section-title">{% translate "records without a file"|capfirst %} <span class="tag__count">{{ missing|length }}</span></h2>
-    <p class="housekeeping__intro">{% translate "Items whose file is missing - upload it on the item's page, or delete the item." %}</p>
-    <div class="housekeeping__list">{% for item in missing %}{% include 'dashboard/_housekeeping_item.html' %}{% endfor %}</div>
-  </section>
+        </ul>
+      </section>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}

@@ -46,4 +46,10 @@ Your own record in the family, and what you've added.
 
 ## Housekeeping
 
-For staff, under *Housekeeping* in the user menu (top right): the archive's storage, checked by eye - deleted items to purge for good, files without a record, the same file twice, records without a file, and unused tags and places (nothing carries them, nothing lies in them). Old categories and typos can go; keep what's meant for later. Every delete first shows a page with exactly what goes, and is for good - only a backup brings it back.
+For staff, under *Housekeeping* in the user menu (top right): the archive's storage, checked by eye. An overview with a count per section, in three groups - each section opens on a page of its own:
+
+- **To review** - *revoked items*: pulled back by staff, each with its discussion (the revocation reasons and what was said since); open one to republish or delete it. *Deleted items*: to purge for good.
+- **Files** - the same file twice, files without a record, records without a file.
+- **Tags and places** - unused ones: nothing carries them, nothing lies in them. Old categories and typos can go; keep what's meant for later.
+
+Every delete first shows a page with exactly what goes, and is for good - only a backup brings it back.

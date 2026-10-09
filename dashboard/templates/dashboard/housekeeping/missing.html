@@ -1,0 +1,6 @@
+{% comment %}
+  Housekeeping: records without a file (dashboard/housekeeping.py SECTIONS) - on its own
+  page (housekeeping_section.html). Its forms post to this page.
+{% endcomment %}
+<p class="housekeeping__intro">{% translate "Items whose file is missing - upload it on the item's page, or delete the item." %}</p>
+<div class="housekeeping__list">{% for item in missing %}{% include 'dashboard/_housekeeping_item.html' %}{% endfor %}</div>

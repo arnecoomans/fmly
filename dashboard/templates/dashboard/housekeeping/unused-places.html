@@ -1,0 +1,21 @@
+{% comment %}
+  Housekeeping: unused places (dashboard/housekeeping.py SECTIONS) - on its own
+  page (housekeeping_section.html). Its forms post to this page.
+{% endcomment %}
+<p class="housekeeping__intro">{% translate "Places nothing lies in or happened at, and not another era's name of a place - keep the ones meant for later." %}</p>
+{% if unused_places %}
+  <form method="post">
+    {% csrf_token %}<input type="hidden" name="action" value="places">
+    {% if may_delete_places %}<label class="housekeeping__all"><input type="checkbox" data-housekeeping-all> {% translate "select all" %}</label>{% endif %}
+    <div class="housekeeping__list">
+      {% for obj in unused_places %}
+        <label class="housekeeping__item">
+          {% if may_delete_places %}<input type="checkbox" name="object" value="{{ obj.token }}">{% endif %}
+          <span class="housekeeping__thumb housekeeping__thumb--icon"><i class="bi bi-geo-alt"></i></span>
+          <span class="housekeeping__text"><a class="housekeeping__name" href="{{ obj.get_absolute_url }}">{% for node in obj.ancestors %}{% if not forloop.first %} › {% endif %}{{ node.name }}{% endfor %}</a><span class="housekeeping__meta">{{ obj.user.get_full_name|default:obj.user.username }} · {{ obj.date_created|date:"j M Y" }}</span></span>
+        </label>
+      {% endfor %}
+    </div>
+    {% if may_delete_places %}<div class="edit-form__actions"><button type="submit" class="btn btn--secondary btn--sm">{% translate "delete selected…"|capfirst %}</button></div>{% endif %}
+  </form>
+{% endif %}

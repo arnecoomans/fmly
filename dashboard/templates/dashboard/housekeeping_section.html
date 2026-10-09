@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% comment %}
+  One housekeeping section on its own page (dashboard.views.HousekeepingView,
+  dashboard/housekeeping.py SECTIONS): its explanation and list -
+  housekeeping/<section>.html. Its forms post here; a delete shows the
+  confirmation (housekeeping_confirm.html), then comes back here.
+  Context: section, label, count, the section's list (under its own name),
+  section_template, may_delete_tags, may_delete_places.
+{% endcomment %}
+
+{% block title %}{{ label|capfirst }} · {% translate "housekeeping"|capfirst %}{% endblock %}
+
+{% block template_js %}
+<script>
+  // "Select all": every enabled checkbox in its own form.
+  document.querySelectorAll('[data-housekeeping-all]').forEach(function (all) {
+    all.addEventListener('change', function () {
+      all.form.querySelectorAll('input[type=checkbox]:not([disabled]):not([data-housekeeping-all])').forEach(function (box) { box.checked = all.checked; });
+    });
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="tag-page housekeeping">
+  <header class="tag-page__header">
+    <div class="tag-page__intro">
+      <a class="tag-page__parent" href="{% url 'dashboard:housekeeping' %}">{% translate "housekeeping"|capfirst %} <i class="bi bi-chevron-right"></i></a>
+      <h1 class="tag-page__name">{{ label|capfirst }} <span class="tag__count">{{ count }}</span></h1>
+    </div>
+  </header>
+  <section class="tag-page__section">
+    {% include section_template %}
+  </section>
+</div>
+{% endblock %}

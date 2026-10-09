@@ -1,0 +1,21 @@
+{% comment %}
+  Housekeeping: revoked items, to review (dashboard/housekeeping.py
+  SECTIONS) - on its own page (housekeeping_section.html). Each with its
+  discussion: every comment on it, oldest first - the revocation reasons
+  titled - so the case reads here; decided on its page: Republish, or
+  Delete - then purged under "deleted items". No delete here: purging for
+  good goes through one place.
+{% endcomment %}
+<p class="housekeeping__intro">{% translate "Pulled back by staff and waiting for a decision. Open one to republish it or delete it - a deleted item can then be purged under deleted items." %}</p>
+<div class="housekeeping__list">
+  {% for item in revoked %}
+    <div class="housekeeping__review">
+      {% include 'dashboard/_housekeeping_item.html' %}
+      <ul class="housekeeping__discussion">
+        {% for comment in item.discussion %}
+          <li class="housekeeping__meta"><span class="housekeeping__said">{{ comment.user.get_full_name|default:comment.user.username }} · {{ comment.date_created|date:"j M Y" }}{% if comment.name %} · <strong>{{ comment.name }}</strong>{% endif %}{% if comment.status == 'r' %} · {% translate "hidden" %}{% endif %}</span> {{ comment.content|linebreaksbr }}</li>
+        {% empty %}<li class="housekeeping__meta">{% translate "no reason given" %} · {% translate "revoked" %} {{ item.date_modified|date:"j M Y" }}</li>{% endfor %}
+      </ul>
+    </div>
+  {% empty %}<p class="housekeeping__meta">{% translate "Nothing to review." %}</p>{% endfor %}
+</div>

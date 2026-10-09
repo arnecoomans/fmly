@@ -1,0 +1,14 @@
+{% comment %}
+  Housekeeping: same file twice (dashboard/housekeeping.py SECTIONS) - on its own
+  page (housekeeping_section.html). Its forms post to this page.
+{% endcomment %}
+<p class="housekeeping__intro">{% translate "Items with the same file. Delete the one you don't want on its page; here it can then be purged - the record and its file." %}</p>
+{% if duplicates %}
+  <form method="post">
+    {% csrf_token %}<input type="hidden" name="action" value="purge">
+    {% for group in duplicates %}
+      <div class="housekeeping__group">{% for item in group %}{% if item.status == 'x' %}{% include 'dashboard/_housekeeping_item.html' with checkbox=True %}{% else %}{% include 'dashboard/_housekeeping_item.html' with placeholder=True %}{% endif %}{% endfor %}</div>
+    {% endfor %}
+    <div class="edit-form__actions"><button type="submit" class="btn btn--secondary btn--sm">{% translate "purge selected…"|capfirst %}</button></div>
+  </form>
+{% endif %}

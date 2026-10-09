@@ -12,7 +12,7 @@
 <div class="tag-page housekeeping">
   <header class="tag-page__header">
     <div class="tag-page__intro">
-      <a class="tag-page__parent" href="{% url 'dashboard:housekeeping' %}">{% translate "housekeeping"|capfirst %} <i class="bi bi-chevron-right"></i></a>
+      <a class="tag-page__parent" href="{% if section %}{% url 'dashboard:housekeeping_section' section %}{% else %}{% url 'dashboard:housekeeping' %}{% endif %}">{% translate "housekeeping"|capfirst %} <i class="bi bi-chevron-right"></i></a>
       <h1 class="tag-page__name">{% if action == 'purge' %}{% translate "purge these items?"|capfirst %}{% elif action == 'tags' %}{% translate "delete these tags?"|capfirst %}{% elif action == 'places' %}{% translate "delete these places?"|capfirst %}{% else %}{% translate "delete these files?"|capfirst %}{% endif %}</h1>
       <p class="tag-page__counts">{% translate "This can't be undone - only a backup brings it back." %}</p>
     </div>
@@ -46,7 +46,7 @@
     </div>
     <div class="edit-form__actions">
       <button type="submit" class="btn btn--primary btn--sm">{% translate "delete for good"|capfirst %}</button>
-      <a class="btn btn--secondary btn--sm" href="{% url 'dashboard:housekeeping' %}">{% translate "cancel"|capfirst %}</a>
+      <a class="btn btn--secondary btn--sm" href="{% if section %}{% url 'dashboard:housekeeping_section' section %}{% else %}{% url 'dashboard:housekeeping' %}{% endif %}">{% translate "cancel"|capfirst %}</a>
     </div>
   </form>
 </div>

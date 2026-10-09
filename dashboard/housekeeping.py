@@ -1,6 +1,12 @@
 """
 Housekeeping (/dashboard/housekeeping/, dashboard.views.HousekeepingView):
 the archive's storage, checked by eye - for staff who may delete content.
+An overview of counts in three groups (SECTIONS), each section a page of
+its own (/dashboard/housekeeping/<section>/).
+
+- revoked items, to review: pulled back by staff, with the discussion -
+  every revocation reason (a titled comment) and what was said since -
+  republished or deleted on their page.
 
 - deleted items: content with status "deleted" (hidden from everyone, but
   record and file still there) - purge: the record, its file and its
@@ -244,4 +250,58 @@ def delete_unused(objects, user):
     LogEntry.objects.log_actions(user.pk, [obj], DELETION, change_message="Deleted in housekeeping (unused)", single_object=True)
     obj.delete()
   return len(objects)
+
+
+def revoked_items():
+  """Content under review: revoked, newest first - each with its
+  discussion (`discussion`: every comment on it, oldest first - the
+  revocation reasons, titled, made when it was revoked (core.forms
+  StatusActionsForm), and what was said about them), so the case can be
+  read here before opening the item. Deleted comments left out; hidden
+  ones shown - this is for staff."""
+  from collections import defaultdict
+  from content.models import Content
+  from core.models import Comment
+  from django.contrib.contenttypes.models import ContentType
+  items = list(Content.objects.filter(status=Content.Status.REVOKED).order_by('-date_modified'))
+  discussion = defaultdict(list)
+  comments = Comment.objects.filter(
+    target_content_type=ContentType.objects.get_for_model(Content), target_id__in=[i.pk for i in items],
+  ).exclude(status=Comment.Status.DELETED).select_related('user').order_by('date_created')
+  for comment in comments:
+    discussion[comment.target_id].append(comment)
+  for item in items:
+    item.discussion = discussion[item.pk]
+  return items
+
+
+# The overview's groups and their sections: (group label, [(section, label,
+# context name, its list)]). A section page renders housekeeping/<section>.html
+# with its list under that context name.
+def _lazy(label):
+  from django.utils.translation import gettext_lazy
+  return gettext_lazy(label)
+
+
+SECTIONS = (
+  (_lazy("to review"), (
+    ('revoked', _lazy("revoked items, to review"), 'revoked', revoked_items),
+    ('deleted', _lazy("deleted items, to purge"), 'deleted', deleted_items),
+  )),
+  (_lazy("files"), (
+    ('duplicates', _lazy("same file twice"), 'duplicates', same_file_twice),
+    ('orphans', _lazy("files without a record"), 'orphans', files_without_record),
+    ('missing', _lazy("records without a file"), 'missing', records_without_file),
+  )),
+  (_lazy("tags and places"), (
+    ('unused-tags', _lazy("unused tags"), 'unused_tags', unused_tags),
+    ('unused-places', _lazy("unused places"), 'unused_places', unused_places),
+  )),
+)
+SECTION_BY_NAME = {name: (label, context, find) for _group, sections in SECTIONS for name, label, context, find in sections}
+
+
+def overview():
+  """[(group label, [(section, label, count)])] - for the overview page."""
+  return [(group, [(name, label, len(find())) for name, label, _context, find in sections]) for group, sections in SECTIONS]
 

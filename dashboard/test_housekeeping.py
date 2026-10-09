@@ -76,7 +76,7 @@ class HousekeepingTests(TestCase):
     orphan = Path(MEDIA) / 'content' / '2020' / 'los.jpg'
     orphan.parent.mkdir(parents=True, exist_ok=True)
     orphan.write_bytes(b'x')
-    page = self.client.get('/dashboard/housekeeping/').content.decode()
+    page = self.client.get('/dashboard/housekeeping/orphans/').content.decode()
     self.assertIn('content/2020/los.jpg', page)
     self.assertNotIn(f'value="{item.file.name}"', page)
     self.client.post('/dashboard/housekeeping/', {'action': 'files', 'file': ['content/2020/los.jpg', item.file.name, '../db.sqlite3'], 'confirm': '1'})
@@ -87,8 +87,8 @@ class HousekeepingTests(TestCase):
     kept = self.item('origineel')
     copy = self.item('kopie', status='x')
     Content.objects.filter(pk__in=[kept.pk, copy.pk]).update(checksum='a' * 64)
-    page = self.client.get('/dashboard/housekeeping/').content.decode().replace('"', '')
-    self.assertLess(page.index('same file twice'.capitalize()), page.index('Deleted items'))   # first on the page
+    page = self.client.get('/dashboard/housekeeping/duplicates/').content.decode().replace('"', '')
+    self.assertIn('<h1 class=tag-page__name>Same file twice', page)              # a page of its own
     self.assertIn(f'value={copy.token}', page)
     self.assertNotIn(f'value={kept.token}', page)                         # not deleted: no checkbox
     path = Path(copy.file.path)
@@ -104,6 +104,34 @@ class HousekeepingTests(TestCase):
     self.client.post('/dashboard/housekeeping/', {'action': 'purge', 'item': [copy.token], 'confirm': '1'})
     self.assertFalse(Content.objects.filter(pk=copy.pk).exists())
     self.assertTrue(Path(kept.file.path).exists())
+
+  def test_overview_counts_and_section_pages(self):
+    self.item('weg', status='x')
+    page = self.client.get('/dashboard/housekeeping/').content.decode().replace('"', '')
+    for section in ('revoked', 'deleted', 'duplicates', 'orphans', 'missing', 'unused-tags', 'unused-places'):
+      self.assertIn(f'href=/dashboard/housekeeping/{section}/', page)
+      self.assertEqual(self.client.get(f'/dashboard/housekeeping/{section}/').status_code, 200)
+    self.assertRegex(page, r'<span class=tag__count>1</span> deleted items, to purge')
+    self.assertIn('class=is-clear', page)                                       # an empty section stays, muted
+    self.assertEqual(self.client.get('/dashboard/housekeeping/nonsense/').status_code, 404)
+
+  def test_after_a_delete_back_to_the_section(self):
+    gone = self.item('weg', status='x')
+    response = self.client.post('/dashboard/housekeeping/deleted/', {'action': 'purge', 'item': [gone.token], 'confirm': '1'})
+    self.assertRedirects(response, '/dashboard/housekeeping/deleted/', fetch_redirect_response=False)
+
+  def test_revoked_items_with_their_reason(self):
+    from core.models import Comment
+    revoked = self.item('ingetrokken', status='r')
+    Comment.objects.create(target=revoked, user=self.staff, name='Revocation reason', content='Dubbel met de scan', status='p', visibility='c')
+    Comment.objects.create(target=revoked, user=self.staff, content='Nee, de achterkant is anders', status='p', visibility='c')
+    self.item('gewoon')
+    page = self.client.get('/dashboard/housekeeping/revoked/').content.decode().replace('"', '')
+    self.assertIn('ingetrokken', page)
+    self.assertNotIn('gewoon', page)
+    self.assertLess(page.index('Dubbel met de scan'), page.index('Nee, de achterkant is anders'))   # the discussion, in order
+    self.assertIn('<strong>Revocation reason</strong>', page)
+    self.assertNotIn('<input type=checkbox', page)                             # decided on its page, not here
 
   def test_staff_open_a_deleted_item_marked_deleted(self):
     gone = self.item('verwijderd', status='x')
@@ -162,9 +190,8 @@ class UnusedTagsAndPlacesTests(TestCase):
     from dashboard import housekeeping
     self.assertEqual([t.name for t in housekeeping.unused_tags()], ['Advertisement', 'Boeken'])
     self.assertEqual([p.name for p in housekeeping.unused_places()], ['Nieuw Guinea'])
-    html = self.client.get('/dashboard/housekeeping/').content.decode()
-    self.assertIn('Advertisement', html)
-    self.assertIn('Nieuw Guinea', html)
+    self.assertIn('Advertisement', self.client.get('/dashboard/housekeeping/unused-tags/').content.decode())
+    self.assertIn('Nieuw Guinea', self.client.get('/dashboard/housekeeping/unused-places/').content.decode())
 
   def test_delete_after_confirmation_and_recheck(self):
     from core.models import Tag
@@ -185,6 +212,6 @@ class UnusedTagsAndPlacesTests(TestCase):
     client = Client()
     client.force_login(staff)
     self.assertEqual(client.post('/dashboard/housekeeping/', {'action': 'places', 'object': [self.lone.token], 'confirm': '1'}).status_code, 404)
-    html = client.get('/dashboard/housekeeping/').content.decode().replace('"', '')
+    html = client.get('/dashboard/housekeeping/unused-places/').content.decode().replace('"', '')
     self.assertNotIn(f'value={self.lone.token}', html)                            # listed, without a checkbox
     self.assertIn('Nieuw Guinea', html)

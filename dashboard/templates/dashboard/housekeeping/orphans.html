@@ -1,0 +1,21 @@
+{% comment %}
+  Housekeeping: files without a record (dashboard/housekeeping.py SECTIONS) - on its own
+  page (housekeeping_section.html). Its forms post to this page.
+{% endcomment %}
+<p class="housekeeping__intro">{% translate "Files in storage no item points to - an old name, an abandoned upload." %}</p>
+{% if orphans %}
+  <form method="post">
+    {% csrf_token %}<input type="hidden" name="action" value="files">
+    <label class="housekeeping__all"><input type="checkbox" data-housekeeping-all> {% translate "select all" %}</label>
+    <div class="housekeeping__list">
+      {% for file in orphans %}
+        <label class="housekeeping__item">
+          <input type="checkbox" name="file" value="{{ file.name }}">
+          {% if file.image %}<img class="housekeeping__thumb" src="{% url 'dashboard:housekeeping_preview' %}?name={{ file.name|urlencode }}" alt="" loading="lazy">{% else %}<span class="housekeeping__thumb housekeeping__thumb--icon"><i class="bi bi-file-earmark"></i></span>{% endif %}
+          <span class="housekeeping__text"><span class="housekeeping__name">{{ file.name }}</span><span class="housekeeping__meta">{{ file.size|filesizeformat }}</span></span>
+        </label>
+      {% endfor %}
+    </div>
+    <div class="edit-form__actions"><button type="submit" class="btn btn--secondary btn--sm">{% translate "delete selected files…"|capfirst %}</button></div>
+  </form>
+{% endif %}

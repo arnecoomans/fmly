@@ -1,0 +1,13 @@
+{% comment %}
+  Housekeeping: deleted items (dashboard/housekeeping.py SECTIONS) - on its own
+  page (housekeeping_section.html). Its forms post to this page.
+{% endcomment %}
+<p class="housekeeping__intro">{% translate "Hidden from everyone, but the record and the file are still there. Purge removes the record, its file and its thumbnails - and its parts." %}</p>
+{% if deleted %}
+  <form method="post">
+    {% csrf_token %}<input type="hidden" name="action" value="purge">
+    <label class="housekeeping__all"><input type="checkbox" data-housekeeping-all> {% translate "select all" %}</label>
+    <div class="housekeeping__list">{% for item in deleted %}{% include 'dashboard/_housekeeping_item.html' with checkbox=True %}{% endfor %}</div>
+    <div class="edit-form__actions"><button type="submit" class="btn btn--secondary btn--sm">{% translate "purge selected…"|capfirst %}</button></div>
+  </form>
+{% endif %}

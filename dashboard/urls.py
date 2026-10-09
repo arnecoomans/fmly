@@ -10,4 +10,6 @@ urlpatterns = [
   path('dashboard/housekeeping/', views.HousekeepingView.as_view(), name='housekeeping'),
   path('dashboard/accounts/', views.AccountsView.as_view(), name='accounts'),
   path('dashboard/housekeeping/preview/', views.housekeeping_preview, name='housekeeping_preview'),
+  # After preview/: a section's page (dashboard/housekeeping.py SECTIONS).
+  path('dashboard/housekeeping/<slug:section>/', views.HousekeepingView.as_view(), name='housekeeping_section'),
 ]

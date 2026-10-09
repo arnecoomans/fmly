@@ -1785,6 +1785,17 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 
 /* Housekeeping (dashboard/housekeeping.html). */
 .housekeeping__intro { margin: 0 0 var(--space-2); font-size: var(--text-sm); color: var(--color-ink-2); }
+/* The overview (housekeeping.html): groups side by side, each a list of
+   sections with their count - an empty one stays, muted. */
+.housekeeping__groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-6); }
+.housekeeping__sections { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.housekeeping__sections a { color: var(--color-ink-2); text-decoration: none; font-size: var(--text-sm); }
+.housekeeping__sections a:hover { color: var(--color-accent); }
+.housekeeping__sections .is-clear a { color: var(--color-ink-3); opacity: 0.7; }
+/* Revoked items, to review: the discussion under each - reasons and replies. */
+.housekeeping__review { display: grid; gap: 2px; margin-bottom: var(--space-2); }
+.housekeeping__discussion { list-style: none; margin: 0; padding: 0 0 0 56px; display: grid; gap: 3px; }
+.housekeeping__said { color: var(--color-ink-3); }
 .housekeeping__list, .housekeeping__group { display: grid; gap: 4px; }
 .housekeeping__group { padding: 8px; margin-bottom: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
 .housekeeping__item { display: flex; align-items: center; gap: 10px; padding: 4px 6px; border-radius: var(--radius-sm); min-width: 0; }
