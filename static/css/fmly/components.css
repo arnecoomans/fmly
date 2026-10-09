@@ -1704,6 +1704,22 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .dashboard__loose-ends { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .dashboard__loose-ends a { color: var(--color-ink-2); text-decoration: none; font-size: var(--text-sm); }
 .dashboard__loose-ends a:hover { color: var(--color-accent); }
+/* A loose end's progress (dashboard/_progress.html, dashboard/progress.py):
+   a thin bar of parts side by side - done (green), partly (accent / amber),
+   to do (grey) - with the numbers in its tooltip; a legend on the loose
+   end's page. Not called .progress-bar: Bootstrap's class of that name
+   stacks its children (flex-direction: column) - thin lines at different
+   heights instead of one bar. */
+.loose-end-progress { display: flex; flex-direction: row; height: 5px; margin-top: 4px; border-radius: var(--radius-pill); overflow: hidden; background: var(--color-surface-alt); }
+.loose-end-progress__part { display: block; height: 100%; }
+.loose-end-progress__part--done, .loose-end-progress__part--both { background: var(--color-complete-text); }
+.loose-end-progress__part--birth { background: var(--color-accent); }
+.loose-end-progress__part--death, .loose-end-progress__part--open { background: var(--color-draft-text); }
+.loose-end-progress__part--none { background: var(--color-border); }
+.tag-page__intro .loose-end-progress { max-width: 420px; margin-top: var(--space-2); }
+.loose-end-progress__legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 6px 0 0; font-size: var(--text-xs); color: var(--color-ink-3); }
+.loose-end-progress__legend-item { display: inline-flex; align-items: center; gap: 5px; }
+.loose-end-progress__swatch { width: 10px; height: 10px; border-radius: 2px; }
 .dashboard__you { display: flex; align-items: center; gap: 12px; margin: 0; font-size: var(--text-sm); }
 .dashboard__numbers { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .dashboard__numbers a { color: var(--color-ink-2); text-decoration: none; font-size: var(--text-sm); }

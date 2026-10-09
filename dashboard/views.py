@@ -77,6 +77,8 @@ class LooseEndView(TemplateView):
       context['marked'] = blocks.marked_loose_ends(self.request)
       context['items'] = [obj for objects in context['marked'].values() for obj in objects]
       return context
+    from .progress import bar
+    context['bar'] = bar(name, self.request)
     show_dismissed = self.request.GET.get('dismissed') == '1'
     items = blocks.loose_end_items(name, self.request, dismissed=show_dismissed)
     if items is None:

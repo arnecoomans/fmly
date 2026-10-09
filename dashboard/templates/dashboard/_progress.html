@@ -1,0 +1,10 @@
+{% comment %}
+  A loose end's progress (dashboard/progress.py): a thin bar of its parts -
+  done first, still to do last - with the numbers as its tooltip and its
+  accessible name. `legend` (the loose end's own page): each part named,
+  with its count. Context: bar, legend (optional).
+{% endcomment %}
+<span class="loose-end-progress" role="img" aria-label="{{ bar.summary }}" title="{{ bar.summary }}">{% for part in bar.segments %}<span class="loose-end-progress__part loose-end-progress__part--{{ part.key }}" style="width: {{ part.percent }}%"></span>{% endfor %}</span>
+{% if legend %}
+  <p class="loose-end-progress__legend">{% for part in bar.segments %}<span class="loose-end-progress__legend-item"><span class="loose-end-progress__swatch loose-end-progress__part--{{ part.key }}" aria-hidden="true"></span>{{ part.label|capfirst }} {{ part.count }}</span>{% endfor %}</p>
+{% endif %}

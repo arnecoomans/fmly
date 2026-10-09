@@ -91,6 +91,7 @@ def your_work(request):
 LOOSE_ENDS = {
   'marked': _("marked as a loose end"),
   'no-birth': _("people without a birth"),
+  'no-death': _("people born over 100 years ago without a death"),
   'no-parents': _("people without parents"),
   'photos-without-people': _("photos without people"),
   'undated-events': _("events without a date"),
@@ -153,6 +154,13 @@ def _loose_end_queryset(name, request):
     return people.exclude(family_connection=Person.FamilyConnection.OUTSIDER).exclude(
       pk__in=Event.objects.current().filter(kind='birth').values('people'),
     )
+  if name == 'no-death':
+    # Born more than a century ago, no death on record - not even one
+    # without a date ("died, details unknown"). Family and possibly family,
+    # as no-birth; without a birth year there's nothing to go by.
+    long_ago = Event.objects.current().filter(kind='birth', year__lte=date.today().year - 100).values('people')
+    died = Event.objects.current().filter(kind='death').values('people')
+    return people.exclude(family_connection=Person.FamilyConnection.OUTSIDER).filter(pk__in=long_ago).exclude(pk__in=died)
   if name == 'no-parents':
     return people.exclude(relations_to__relation_type='parent').filter(family_connection='family')
   if name == 'photos-without-people':
@@ -224,7 +232,8 @@ def is_editor(user):
 
 
 def loose_ends(request):
-  """[(name, label, count)] for an editor - only the ones not empty."""
+  """[(name, label, count, bar)] for an editor - only the ones not empty;
+  bar: its progress (dashboard/progress.py), or None."""
   if not is_editor(request.user):
     return []
   rows = []
@@ -235,7 +244,8 @@ def loose_ends(request):
       count = loose_end_items(name, request).distinct().count()
     if count:
       rows.append((name, label, count))
-  return rows
+  from .progress import attach
+  return attach(rows, request)
 
 
 def you(request):

@@ -30,14 +30,14 @@ See [Photos & documents](content.md) for the inbox in detail.
 
 For editors: what's still missing in the archive, each as a list with a count, for example:
 
-- people without a birth or without parents
+- people without a birth or without parents, and people born over a hundred years ago without a death (a death without a date counts)
 - photos without people
 - documents without a transcript, and transcripts to finish or check
 - events without a date
 - images in low resolution
 - anything marked with the tag **Loose end** - your own reminders
 
-Each list takes you straight to where it's fixed. Something that's as good as it gets - a clipping that won't get sharper, a date that will never be known - can be marked **fine as it is**: it leaves that list (and only that one). *Fine as it is* at the top of a list shows those again, with who decided and why, and puts them back if needed.
+Where there's a lot of work, a thin bar shows how far along it is - for people (birth and death), documents (transcribed, to check, none) and parents; point at it for the numbers, and the list's own page names the colours. Each list takes you straight to where it's fixed. Something that's as good as it gets - a clipping that won't get sharper, a date that will never be known - can be marked **fine as it is**: it leaves that list (and only that one). *Fine as it is* at the top of a list shows those again, with who decided and why, and puts them back if needed.
 
 ## You in the archive
 

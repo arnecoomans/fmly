@@ -139,6 +139,14 @@ class LooseEndRulesTests(DashboardTestCase):
     self.event('birth', [born], date(1910, 9, 23), 1910)
     self.assertEqual(set(self.items('no-birth')), {family, possibly})
 
+  def test_no_death_born_over_a_century_ago(self):
+    old, recent, buried, unknown = self.person('Oud'), self.person('Jong'), self.person('Begraven'), self.person('Onbekend')
+    outsider = self.person('Schrijver', family_connection='outsider')
+    for person, year in ((old, 1880), (recent, 1980), (buried, 1870), (outsider, 1850)):
+      self.event('birth', [person], date(year, 1, 1), year)
+    Event.objects.create(kind='death', user=self.editor).people.set([buried])        # a death without a date counts
+    self.assertEqual(self.items('no-death'), [old])                                   # unknown: no birth year to go by
+
   def test_other_events_with_a_title_are_fine(self):
     untitled = Event.objects.create(kind='other', kind_freetext='Verhuizing', user=self.editor)
     Event.objects.create(kind='other', kind_freetext='Benoeming', title='Benoeming tot ambtenaar', user=self.editor)
@@ -184,7 +192,7 @@ class MarkedLooseEndTests(DashboardTestCase):
     person.tags.add(self.tag)
     item = Content.objects.create(name='Onduidelijke foto', kind='photo', user=self.editor, status='p', visibility='c')
     item.tags.add(self.tag)
-    rows = {name: count for name, _label, count in blocks.loose_ends(self.request(self.editor))}
+    rows = {name: count for name, _label, count, _bar in blocks.loose_ends(self.request(self.editor))}
     self.assertEqual(rows['marked'], 2)
     client = Client()
     client.force_login(self.editor)
@@ -299,7 +307,7 @@ class DismissalTests(DashboardTestCase):
     self.client.force_login(self.editor)
 
   def rows(self, name):
-    return {n: count for n, _label, count in blocks.loose_ends(self.request(self.editor))}.get(name, 0)
+    return {n: count for n, _label, count, _bar in blocks.loose_ends(self.request(self.editor))}.get(name, 0)
 
   def test_dismiss_and_restore(self):
     self.assertEqual(self.rows('low-resolution'), 1)
@@ -406,3 +414,59 @@ class NumbersTests(DashboardTestCase):
     html = client.get('/').content.decode().replace('"', '')
     self.assertIn('href=/notes/', html)
     self.assertIn('href=/comments/', html)
+
+
+class ProgressTests(DashboardTestCase):
+  """dashboard/progress.py: what's done behind the loose ends, as bars."""
+
+  def test_people_in_four_parts(self):
+    from dashboard.progress import bar
+    both, birth, death, neither = (self.person(n) for n in ('Beide', 'Geboren', 'Gestorven', 'Niets'))
+    self.person('Schrijver', family_connection='outsider')                          # not counted
+    for person in (both, birth):
+      self.event('birth', [person], date(1900, 1, 1), 1900)
+    for person in (both, death):
+      Event.objects.create(kind='death', user=self.editor).people.set([person])
+    result = bar('no-birth', self.request(self.editor))
+    self.assertEqual([(p['key'], p['count']) for p in result['segments']], [('both', 1), ('birth', 1), ('death', 1), ('none', 1)])
+    self.assertEqual(result['segments'][0]['percent'], '25.00')                       # CSS-safe: a point, always
+
+  def test_documents_in_three_parts(self):
+    from content.models import Content, Transcript
+    from dashboard.progress import bar
+    make = lambda name: Content.objects.create(name=name, kind='document', user=self.editor, status='p', visibility='c', file=f'content/2026/{name}.jpg')
+    done, open_, none = make('Klaar'), make('Half'), make('Leeg')
+    Transcript.objects.create(content=done, kind='original', language='nl', method='manual', text='Klaar')
+    Transcript.objects.create(content=open_, kind='original', language='nl', method='automatic', text='OCR')
+    result = bar('open-transcripts', self.request(self.editor))                      # the group's bar, from either loose end
+    self.assertEqual([(p['key'], p['count']) for p in result['segments']], [('done', 1), ('open', 1), ('none', 1)])
+
+  def test_single_bar_counts_fine_as_it_is_done(self):
+    from django.contrib.contenttypes.models import ContentType
+    from dashboard.models import LooseEndDismissal
+    from dashboard.progress import bar
+    from people.models import Person, PersonRelation
+    child, orphan, fine = self.person('Kind'), self.person('Wees'), self.person('Vondeling')
+    PersonRelation.objects.create(person_from=self.person('Ouder'), person_to=child, relation_type='parent')
+    LooseEndDismissal.objects.create(name='no-parents', content_type=ContentType.objects.get_for_model(Person), object_id=fine.pk, user=self.editor)
+    summary = bar('no-parents', self.request(self.editor))['summary']
+    self.assertIn('of 4 done', summary)                                                # Ouder has none either: 4 people
+    self.assertTrue(summary.startswith('2 of 4'))                                      # Kind, and Vondeling: fine as it is
+    for name in ('low-resolution', 'photos-without-people', 'undated-events', 'other-events', 'marked'):
+      self.assertIsNone(bar(name, self.request(self.editor)))                          # no bar: little work, or no whole
+
+  def test_on_the_dashboard_once_per_group_and_with_a_legend_on_the_page(self):
+    for name in ('Een', 'Twee'):
+      self.event('birth', [self.person(name)], date(1880, 1, 1), 1880)                # born long ago, no death: no-death
+    self.person('Drie')                                                                # no birth: no-birth
+    client = Client()
+    client.force_login(self.editor)
+    html = client.get('/').content.decode().replace('"', '')
+    birth = html.split('loose-ends/no-birth/')[1].split('<li>')[0]                       # (the minifier drops </li>)
+    death = html.split('loose-ends/no-death/')[1].split('<li>')[0]
+    self.assertNotIn('class=loose-end-progress ', birth)                                   # one bar for both:
+    self.assertEqual(death.count('class=loose-end-progress '), 1)                          # under the last of the two
+    self.assertIn('loose-end-progress__part--birth', html)                                   # (an empty part is left out)
+    page = client.get('/dashboard/loose-ends/no-death/').content.decode()
+    self.assertIn('loose-end-progress__legend', page)
+

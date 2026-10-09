@@ -108,8 +108,8 @@
         <section class="dashboard__block">
           <h2 class="section-title">{% translate "loose ends"|capfirst %}</h2>
           <ul class="dashboard__loose-ends">
-            {% for name, label, count in loose_ends %}
-              <li><a href="{% url 'dashboard:loose_end' name %}"><span class="tag__count">{{ count }}</span> {{ label }}</a></li>
+            {% for name, label, count, bar in loose_ends %}
+              <li><a href="{% url 'dashboard:loose_end' name %}"><span class="tag__count">{{ count }}</span> {{ label }}</a>{% if bar %}{% include 'dashboard/_progress.html' %}{% endif %}</li>
             {% endfor %}
           </ul>
         </section>
