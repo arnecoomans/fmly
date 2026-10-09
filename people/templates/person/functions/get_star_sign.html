@@ -1,0 +1,11 @@
+{% load tags %}
+{% comment %}
+  Function template for Person.get_star_sign() - the star sign badge, for
+  a viewer who chose "superstitious" in their preferences, from an exact
+  birth date (people/star_signs.py). Loaded after the page through the API
+  (person_detail.html, data-load-on-ready), or included when deferred
+  loading is off (CMNSD_LOAD_ON_READY). Context: person, request.
+{% endcomment %}
+{% with sign=person|star_sign:request %}{% if sign %}
+  <span class="person-connection-pill person-star-sign" title="{{ sign.name }}"><span aria-hidden="true">{{ sign.symbol }}</span> {{ sign.name }}</span>
+{% endif %}{% endwith %}

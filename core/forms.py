@@ -197,17 +197,18 @@ class StatusActionsForm(forms.ModelForm):
 
 class PreferencesForm(forms.ModelForm):
   """Your preferences (core.views.PreferencesView): the interface language,
-  and who you count as family - they see what you mark visible to
-  'family'. One-directional: adding someone doesn't make you theirs.
+  whether you're superstitious (star signs on people's pages), and who you
+  count as family - they see what you mark visible to 'family'. One-directional: adding someone doesn't make you theirs.
   Every other active account is offered; those linked to your relatives in
   the tree come first (in_tree)."""
   class Meta:
     from .models import Preferences
     model = Preferences
-    fields = ['language', 'family']
-    labels = {'language': _("language"), 'family': _("family")}
+    fields = ['language', 'superstitious', 'family']
+    labels = {'language': _("language"), 'superstitious': _("superstitious"), 'family': _("family")}
     help_texts = {
       'language': _("Empty: the site's language (English). The Dutch translation of this site is still to come - for now Dutch changes dates and standard texts only."),
+      'superstitious': _("Show the star sign of people whose exact birth date is known, on their page."),
       'family': _("They see what you mark visible to 'family'. It works one way: adding someone doesn't make you their family."),
     }
     widgets = {'family': forms.CheckboxSelectMultiple}

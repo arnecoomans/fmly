@@ -95,3 +95,11 @@ def age_at_death(person):
   from people.timeline import age_at
   death = person.death
   return age_at(person.birth, death) if death else ''
+
+
+@register.filter
+def star_sign(person, request):
+  """{% with sign=person|star_sign:request %} - Person.get_star_sign() with
+  this viewer: a bare {{ person.get_star_sign }} would call it without a
+  request (as relation_to_user)."""
+  return person.get_star_sign(request)

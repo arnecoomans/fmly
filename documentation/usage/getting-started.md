@@ -31,7 +31,7 @@ Click your initials in the top right:
 
 - **My record** - your own page in the family, when your account is linked to it.
 - **Profile** - your name and email address.
-- **Preferences** - your language, and who you count as family (see [Privacy](privacy.md)).
+- **Preferences** - your language, who you count as family (see [Privacy](privacy.md)), and whether you're superstitious: then people with an exact birth date show their star sign.
 - **Log out.**
 
 Staff see a second group, *Staff*, with tools to maintain the archive.

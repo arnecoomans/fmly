@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% comment %}
   Your preferences (core.views.PreferencesView, core.forms.PreferencesForm):
-  the interface language, and who you count as family - accounts linked to
+  the interface language, superstitious (star signs), and who you count as family - accounts linked to
   your relatives in the tree first. A plain form.
 {% endcomment %}
 
@@ -23,6 +23,11 @@
       <label for="{{ form.language.id_for_label }}">{{ form.language.label|capfirst }}</label>
       {{ form.language }}
       <small class="edit-form__help">{{ form.language.help_text }}</small>
+    </div>
+
+    <div class="edit-form__field">
+      <label class="preferences__choice">{{ form.superstitious }} {{ form.superstitious.label|capfirst }}</label>
+      <small class="edit-form__help">{{ form.superstitious.help_text }}</small>
     </div>
 
     <fieldset class="edit-form__field preferences__family">

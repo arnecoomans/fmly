@@ -214,3 +214,5 @@ class Preferences(BasePreferences):
     settings.AUTH_USER_MODEL, blank=True, related_name='family_of',
     help_text=_("Users to treat as family for 'family'-visibility content"),
   )
+  # Just for fun: a star sign badge on a person's page (people/star_signs.py).
+  superstitious = models.BooleanField(default=False, help_text=_("Show star signs on people's pages"))

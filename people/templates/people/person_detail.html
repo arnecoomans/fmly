@@ -48,6 +48,12 @@
         <span class="badge-status badge-status--draft">{{ person.get_status_display }} · {% translate "not published" %}</span>
       {% endif %}
     {% endif %}
+    {# An extra, loaded after the page (Person.get_star_sign): the star sign, for a viewer who's superstitious. #}
+    <span class="cmnsd_js" {% if load_on_ready %}data-model="person" data-object-token="{{ person.token }}" data-field="get_star_sign" id="person-{{ person.slug }}-get_star_sign" data-load-on-ready="true"{% endif %}>
+      {% if not load_on_ready %}
+        {% include 'person/functions/get_star_sign.html' with person=person %}
+      {% endif %}
+    </span>
     <span class="cmnsd_js" {% if load_on_ready %}data-model="person" data-object-token="{{ person.token }}" data-field="get_relation_to_user" id="person-{{ person.slug }}-get_relation_to_user" data-load-on-ready="true"{% endif %}>
       {% if not load_on_ready %}
         {% include 'person/functions/get_relation_to_user.html' with person=person suppress_link=True %}

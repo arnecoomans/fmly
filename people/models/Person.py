@@ -199,6 +199,24 @@ class Person(TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin,
     identity; relating to a viewer isn't."""
     return filter_accessible(self.tags.all(), request)
 
+  @api_field(readonly=True)
+  def get_star_sign(self, request=None):
+    """Their star sign for a viewer who chose "superstitious" in their
+    preferences, from an exact birth date - {'symbol', 'name'}, else None
+    (people/star_signs.py). An extra: the page loads it after it's shown
+    (person/functions/get_star_sign.html), like get_relation_to_user."""
+    from django.core.exceptions import ObjectDoesNotExist
+    from ..star_signs import person_star_sign
+    user = getattr(request, 'user', None)
+    if not (user and user.is_authenticated):
+      return None
+    try:
+      if not user.preferences.superstitious:
+        return None
+    except ObjectDoesNotExist:
+      return None
+    return person_star_sign(self)
+
   @property
   def primary_portrait_link(self):
     """The primary content.Portrait (photo + crop) for this person's
