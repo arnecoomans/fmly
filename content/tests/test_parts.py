@@ -97,7 +97,6 @@ class PartBrowsingTests(TestCase):
   def test_whole_page_gets_the_sequence(self):
     context = self.client.get(self.book.get_absolute_url()).context
     self.assertEqual([i['title'] for i in context['gallery']], ['Book', 'Page 1', 'Page 2', 'Page 3'])
-    self.assertEqual(context['gallery_index'][self.pages[1].token], 2)
 
   def test_part_page_has_previous_and_next(self):
     context = self.client.get(self.pages[1].get_absolute_url()).context
@@ -120,7 +119,8 @@ class PartsSectionTests(PartBrowsingTests):
     self.client.post('/ui/section/', json.dumps({'key': 'content.parts', 'open': False}), content_type='application/json')
     html = self.client.get(self.book.get_absolute_url()).content.decode().replace('"', '')
     self.assertIn('data-cmnsd-section=content.parts>', html)                 # closed...
-    self.assertIn(f'data-gallery-show=2', html)                               # ...but the thumbnails are there
+    self.assertIn(f'href={self.pages[1].get_absolute_url()}', html)          # ...but the thumbnails are there - links to the parts' pages
+    self.assertNotIn('data-gallery-show', html)                               # (not shown in place: the arrows do that)
     self.assertIn('title=Page 2', html)                                        # name as tooltip, no caption
 
 
@@ -136,4 +136,9 @@ class PartsGroupTests(PartBrowsingTests):
     self.assertEqual([c.name for c in response.context['group']], ['Book', 'Page 1', 'Page 2', 'Page 3'])
     html = response.content.decode().replace('"', '')
     self.assertIn('content-part is-current', html)
-    self.assertEqual(response.context['gallery'], [])      # browsing lives on the whole's page
+    # Browsing on a part's page too: the whole group, in order, starting at this part.
+    self.assertEqual([i['title'] for i in response.context['gallery']], ['Book', 'Page 1', 'Page 2', 'Page 3'])
+    self.assertEqual(response.context['gallery_start'], 2)
+    self.assertIn('data-gallery-start=2', html)
+    self.assertIn('<span data-gallery-counter>3 / 4</span>', html)
+    self.assertIn('data-lightbox-items=#content-gallery-items', html)          # full-screen through the parts too

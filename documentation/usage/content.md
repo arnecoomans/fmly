@@ -15,6 +15,8 @@ Your drafts, in the order they were scanned or taken. Open one to describe it; *
 
 **Make these one item:** select several drafts - the pages of a letter, the front and back of a photo - and they become one item with pages. The first selected is the whole, the others its pages, in order.
 
+On an item with pages - the whole and each of its pages alike - the arrows on the image browse through all of them in place, starting at the one you're on; full-screen too. A page's thumbnail under *Parts* opens that page itself - its own details, people and transcript.
+
 ## Describing an item
 
 In edit mode, on the item's page:

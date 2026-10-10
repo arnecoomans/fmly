@@ -85,13 +85,16 @@ class ContentDetailView(VisibilityViewMixin, DetailView):
       group = [whole, *whole_parts]
     context['group'] = group
 
-    # Browsing on the whole's page (cmnsd.js gallery.js): the group's
-    # images in that order - only when the whole is itself an image.
+    # Browsing (cmnsd.js gallery.js, and full-screen in the lightbox): the
+    # group's images in their order - on the whole's page and on each
+    # part's, starting at the one whose page this is (gallery_start). The
+    # arrows step through them in place; a part's thumbnail in the parts
+    # section opens its page (content/_parts.html).
     gallery = []
-    if whole is content and content.file and content.media_type == 'image':
+    if content.file and content.media_type == 'image':
       gallery = [self._gallery_item(item) for item in group if item.file and item.media_type == 'image']
     context['gallery'] = gallery if len(gallery) > 1 else []
-    context['gallery_index'] = {item['token']: index for index, item in enumerate(context['gallery'])}
+    context['gallery_start'] = next((i for i, item in enumerate(context['gallery']) if item['token'] == content.token), 0)
 
     # A draft of yours: it's in your inbox - and the next one there.
     if content.status == Content.Status.CONCEPT and content.user_id == self.request.user.pk:

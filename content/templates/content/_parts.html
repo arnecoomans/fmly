@@ -1,18 +1,17 @@
 {% load content_tags %}
-{% load text_filters %}
 {% comment %}
   The whole group an item belongs to (ContentDetailView's `group`): the
   whole (0), its variants (0) and its parts (1, 2, ...), as small
   numbered thumbnails - the number is the order; the name is in the
-  tooltip/alt. The item whose page this is is marked. On the whole's page
-  an image shows in the main image when clicked (cmnsd.js gallery.js,
-  data-gallery-show); otherwise - and without JS - it links to its page.
+  tooltip/alt. The item whose page this is is marked. A thumbnail opens
+  that part's page - its own details, people and transcript; browsing the
+  images in place is the main image's arrows (cmnsd.js gallery.js).
   In edit mode the parts editor follows (content/_parts_edit.html).
-  Context: `group`, `gallery_index`, `content`, `edit_parts`.
+  Context: `group`, `content`, `edit_parts`.
 {% endcomment %}
 <div class="content-detail__parts-grid">
   {% for part in group %}
-    <a class="content-part{% if part.pk == content.pk %} is-current{% endif %}" href="{{ part.get_absolute_url }}" title="{{ part }}"{% if part.pk == content.pk %} aria-current="page"{% endif %}{% if part.token in gallery_index %} data-gallery-show="{{ gallery_index|get_item:part.token }}"{% endif %}>
+    <a class="content-part{% if part.pk == content.pk %} is-current{% endif %}" href="{{ part.get_absolute_url }}" title="{{ part }}"{% if part.pk == content.pk %} aria-current="page"{% endif %}>
       <span class="content-part__position">{{ part.position }}</span>
       {% if part.file and part.media_type == 'image' %}
         <img src="{{ part|thumb_url:'avatar' }}" alt="{{ part }}" loading="lazy">

@@ -32,8 +32,8 @@
         {% if content.original_filename %}<p class="content-detail__filename">{{ content.original_filename }}</p>{% endif %}
       </div>
     {% elif content.media_type == 'image' %}
-      {# With image parts: browsable (cmnsd.js gallery.js) - the whole, then its parts in order. #}
-      <div class="content-gallery"{% if gallery %} data-cmnsd-gallery{% endif %}>
+      {# With image parts: browsable (cmnsd.js gallery.js) - the whole, then its parts in order, from this page's own image (gallery_start) - on the whole's page and on each part's. #}
+      <div class="content-gallery"{% if gallery %} data-cmnsd-gallery data-gallery-start="{{ gallery_start }}"{% endif %}>
         {# The lightbox (cmnsd.js lightbox.js): full-screen, zoomable, through the parts; without JS the original file. #}
         <a href="{% url 'content:file' content.token %}" title="{% translate 'view larger'|capfirst %}" data-gallery-link
            data-cmnsd-lightbox data-lightbox-src="{% url 'content:thumbnail' content.token 'large' %}" data-lightbox-zoom="{{ content.zoom_url }}"
@@ -48,8 +48,8 @@
           <div class="content-gallery__nav" hidden>
             <button type="button" class="content-gallery__step" data-gallery-previous aria-label="{% translate 'previous'|capfirst %}"><i class="bi bi-chevron-left"></i></button>
             <span class="content-gallery__where">
-              <span data-gallery-counter>1 / {{ gallery|length }}</span> · <a href="{{ content.get_absolute_url }}" data-gallery-caption>{{ content }}</a>
-              {# Shown while a part is in the main image: its own page (description, people, transcript, comments). #}
+              <span data-gallery-counter>{{ gallery_start|add:1 }} / {{ gallery|length }}</span> · <a href="{{ content.get_absolute_url }}" data-gallery-caption>{{ content }}</a>
+              {# Shown while another item than this page's is in the main image: its own page (description, people, transcript, comments). #}
               <a class="content-gallery__open" href="{{ content.get_absolute_url }}" data-gallery-open hidden>{% translate "open page"|capfirst %} <i class="bi bi-arrow-right"></i></a>
             </span>
             <button type="button" class="content-gallery__step" data-gallery-next aria-label="{% translate 'next'|capfirst %}"><i class="bi bi-chevron-right"></i></button>
