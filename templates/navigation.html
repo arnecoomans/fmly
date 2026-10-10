@@ -35,6 +35,8 @@
       <a class="nav-menu__item" href="{% url 'core:tag_list' %}"><i class="bi bi-tags"></i>{% translate "tags"|capfirst %}</a>
       <a class="nav-menu__item" href="{% url 'places:list' %}"><i class="bi bi-geo-alt"></i>{% translate "places"|capfirst %}</a>
       {% if user.is_authenticated %}<a class="nav-menu__item" href="{% url 'notes:list' %}"><i class="bi bi-journal-text"></i>{% translate "notes"|capfirst %}</a>{% endif %}
+      {# The people list's "outsiders" filter (PersonListView) - authors and others in the archive for another reason than family: found here, not only behind the list's filter links. #}
+      <a class="nav-menu__item" href="{% url 'people:person_list' %}?family_connection=outsider"><i class="bi bi-person-badge"></i>{% translate "outsiders"|capfirst %}</a>
       {% if perms.content.add_content or perms.people.add_person %}
         {# Adding to the archive, and the drafts it leaves in your inbox. #}
         <hr class="nav-menu__divider">

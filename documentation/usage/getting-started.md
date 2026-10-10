@@ -18,7 +18,7 @@ Accounts come in two kinds:
 Always at the top of the page:
 
 - **Dashboard**, **People** and **Photos & documents** - the main parts of the archive.
-- **More** - events, comments, tags, places and notes; for editors also *Add content*, *Add person* and your *Inbox*.
+- **More** - events, comments, tags, places, notes and outsiders (people in the archive for another reason than family: authors, neighbours); for editors also *Add content*, *Add person* and your *Inbox*.
 - **Search** - searches the whole archive (see [Research](research.md)).
 - **Edit** - for editors: switches edit mode on and off (see below).
 - Your initials - your personal menu.

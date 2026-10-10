@@ -38,6 +38,12 @@ class FamilyConnectionTests(TestCase):
     self.assertEqual(data['errors'], {'invalid_filters': ['family_connection']})
     self.assertEqual(data['count'], 3)   # ignored, not "nobody"
 
+  def test_outsiders_in_the_more_menu(self):
+    html = self.client.get('/people/').content.decode().replace('&amp;', '&')
+    self.assertIn('/people/?family_connection=outsider', html)               # the More menu's "Outsiders"
+    response = self.client.get('/people/?family_connection=outsider')
+    self.assertIn(self.author.get_absolute_url(), response.content.decode())
+
   def test_person_page_labels(self):
     self.assertNotIn('person-connection-pill', self.client.get(self.eric.get_absolute_url()).content.decode())
     self.assertContains(self.client.get(self.cornelis.get_absolute_url()), 'Possibly family')
