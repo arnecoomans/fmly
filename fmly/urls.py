@@ -8,6 +8,7 @@ from django.conf import settings
 handler400 = 'cmnsd.views.errors.bad_request'
 handler403 = 'cmnsd.views.errors.permission_denied'
 handler404 = 'cmnsd.views.errors.page_not_found'
+handler500 = 'cmnsd.views.errors.server_error'
 
 urlpatterns = [
   path("robots.txt", TemplateView.as_view(

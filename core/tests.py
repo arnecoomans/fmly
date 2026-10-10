@@ -344,3 +344,53 @@ class MultilingualPageTests(TestCase):
     Page.objects.create(slug='over', language='en', title='About', body='Hi', status='p')
     self.assertContains(client.get('/pages/over/'), 'About')                               # no Dutch one: the default
     self.assertEqual(client.get('/pages/nergens/').status_code, 404)
+
+
+def _broken_view(request):
+  raise RuntimeError("broken on purpose")
+
+
+# ErrorPageTests' own URLs: a view that fails, with the site's handler500.
+from django.urls import path as _path   # noqa: E402
+urlpatterns = [_path('broken/', _broken_view)]
+handler500 = 'cmnsd.views.errors.server_error'
+
+
+class ErrorPageTests(TestCase):
+  """Error pages besides 400/403/404: a server error (cmnsd server_error -
+  rendered without the request's context), a form open too long
+  (403_csrf.html), and nginx's static page for when gunicorn doesn't answer."""
+
+  def test_site_uses_the_server_error_page(self):
+    from django.urls import get_resolver
+    self.assertEqual(get_resolver().resolve_error_handler(500).__name__, 'server_error')
+
+  def test_server_error_page(self):
+    from django.test import override_settings
+    with override_settings(ROOT_URLCONF='core.tests'), self.assertLogs('django.request', 'ERROR') as logged:
+      response = Client(raise_request_exception=False).get('/broken/')
+    self.assertIn('broken on purpose', '\n'.join(logged.output) + str(logged.records[0].exc_info))   # logged, with its traceback
+    self.assertEqual(response.status_code, 500)
+    self.assertContains(response, 'Something went wrong', status_code=500)
+    self.assertContains(response, 'err-card', status_code=500)                  # the standalone page, not Django's bare one
+
+  def test_server_error_needs_no_request_context(self):
+    from django.test import RequestFactory
+    from cmnsd.views.errors import server_error
+    response = server_error(RequestFactory().get('/'))                          # no user, no session: still a page
+    self.assertEqual(response.status_code, 500)
+
+  def test_a_form_open_too_long(self):
+    user = get_user_model().objects.create(username='member')
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(user)
+    response = client.post('/preferences/', {'language': ''})                    # no CSRF token: as an expired form
+    self.assertEqual(response.status_code, 403)
+    self.assertContains(response, 'open too long', status_code=403)
+
+  def test_static_page_for_nginx(self):
+    from pathlib import Path
+    from django.conf import settings
+    page = (Path(settings.BASE_DIR) / 'static' / 'errorpages' / '50x.html').read_text()
+    self.assertIn('http-equiv="refresh"', page)
+    self.assertNotIn('{%', page)                                                  # plain HTML: nginx serves it as is

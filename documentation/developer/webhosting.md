@@ -79,6 +79,15 @@ server {
     add_header Cache-Control "public, immutable";
   }
 
+  # gunicorn down, restarting (update.sh) or too slow: nginx's own page,
+  # straight from the repository (static/errorpages/50x.html) - Django
+  # can't answer, so no template; it reloads itself after 20 seconds.
+  error_page 502 503 504 /50x.html;
+  location = /50x.html {
+    root /data/www/fmly.cmns.nl/static/errorpages;
+    internal;
+  }
+
   # The archive's files (private/) are never served directly: Django checks
   # who may see a file, then hands it to nginx here (SENDFILE_BACKEND=nginx).
   location /protected/ {
@@ -95,5 +104,7 @@ server {
   }
 }
 ```
+
+Errors: Django answers 400, 403, 404 and 500 with its own pages (`handler*` in `fmly/urls.py`, templates in `cmnsd/templates/errorpages/`; a form open too long gets `403_csrf.html`). When gunicorn itself doesn't answer, nginx shows `static/errorpages/50x.html`.
 
 There's deliberately no `location` for `private/` itself: the files are only reachable through `/protected/`, which only Django can send to.
