@@ -523,3 +523,25 @@
   .person-relationship-group__list,
   .person-children__group-list { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* A person row's lifespan (get_full_name.html, lifespan_places): its own
+   line under the name, quieter - "(1880 Soerabaja – 1918 Bandoeng)", where
+   a family moved shows down a list of children. It may break before the
+   dash, never inside the birth or death part. The places go when the row's
+   text is narrow - by the text column's own width (a container), not the
+   screen's: the relationships are two columns on a wide screen. */
+.person-row .person-lifespan--places { display: block; margin-top: 2px; white-space: normal; font-size: var(--text-sm); font-weight: 400; color: var(--color-ink-3); }
+.person-lifespan__part { white-space: nowrap; }
+.person-row__body { container: person-row-text / inline-size; }
+@container person-row-text (max-width: 18rem) {
+  .person-lifespan__place { display: none; }
+  .person-row__meta .person-short-name__surname { display: none; }   /* "With Abraham" - the surname is above */
+}
+/* A narrow row (two columns, a card, a phone): the relation badge goes to its
+   own line under the text, indented to it (avatar 34px + gap 12px), so the
+   name gets the width instead of sharing it with "Half-sibling". */
+.person-row { container: person-row / inline-size; flex-wrap: wrap; }
+@container person-row (max-width: 32rem) {
+  .person-row__role { margin-left: 46px; }
+  .person-row__body { flex-basis: calc(100% - 46px); }
+}

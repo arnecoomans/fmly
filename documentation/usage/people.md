@@ -21,7 +21,7 @@ While you type the names, FMLY3 shows people **already in the archive** with tho
 
 - **Names** - given names, the name they were called by, last name at birth, married name, nickname.
 - **Born** and **died** - date and place. A date can be exact, *ca.*, *before* or *after*, and day or month can stay empty.
-- **Family** - parents, partners, children and siblings.
+- **Family** - parents, partners, children and siblings, each with their years and places of birth and death - "(1849 Maassluis – 1916 Bandoeng)" - so a move shows down a list of children. Where a row is narrow - two columns, a phone - the places and the surname after "with" make way, and the relation (*Child*, *Half-sibling*) moves under the name.
 - **Biography** - their story, in your own words.
 - **Photos & documents** they appear in, **comments**, and their **timeline**.
 

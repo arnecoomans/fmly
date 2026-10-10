@@ -60,7 +60,14 @@
   {# Same condition as the opening <a> above - otherwise a stray </a> closes whatever link surrounds this name. #}
   {% if url and not person.is_private and not suppress_link %}</a>{% endif %}
   {% endwith %}
-  {% if lifespan %}
+  {% if lifespan and lifespan_places %}
+    {# In a person row (_person_row.html): with the places - "(1880 Soerabaja – 1918 Bandoeng)", the first place of each event, its own name; birth and death each one unbreakable part, the dash with the death - a break comes before it; the places hidden when the row's text is narrow (person.css). From _attach_lifespan's batch (the events' places prefetched). #}
+    {% with birth=person.birth death=person.death %}
+    {% with birth_year=birth.year_display death_year=death.year_display birth_place=birth.places.all.0 death_place=death.places.all.0 %}
+      {% if birth_year or birth_place or death %}<span class="person-lifespan person-lifespan--places">(<span class="person-lifespan__part">{% if birth_year %}{{ birth_year }}{% else %}*{% endif %}{% if birth_place %}<span class="person-lifespan__place"> {{ birth_place.name }}</span>{% endif %}</span>{% if death %} <span class="person-lifespan__part">– {% if death_year %}{{ death_year }}{% else %}&dagger;{% endif %}{% if death_place %}<span class="person-lifespan__place"> {{ death_place.name }}</span>{% endif %}</span>{% endif %})</span>{% endif %}
+    {% endwith %}
+    {% endwith %}
+  {% elif lifespan %}
     {# year_display: the year with its date qualifier - "(ca. 1880–after 1918)". #}
     {% with birth=person.birth death=person.death %}
     {% with birth_year=birth.year_display death_year=death.year_display %}

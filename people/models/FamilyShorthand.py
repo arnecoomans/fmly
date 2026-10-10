@@ -52,7 +52,7 @@ class FamilyShorthand(models.Model):
     from events.models import Event
     events = Event.objects.current().filter(
       people__in=people, kind__in=(Event.Kind.BIRTH, Event.Kind.DEATH),
-    ).order_by('year', 'month', 'day').prefetch_related('people')
+    ).order_by('year', 'month', 'day').prefetch_related('people', 'places')   # places: the lifespan in a row
     birth_by_pk, death_by_pk = {}, {}
     for event in events:
       target = birth_by_pk if event.kind == Event.Kind.BIRTH else death_by_pk
