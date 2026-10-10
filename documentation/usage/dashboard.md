@@ -32,7 +32,7 @@ For editors: what's still missing in the archive, each as a list with a count, f
 
 - people without a birth or without parents, and people born over a hundred years ago without a death (a death without a date counts)
 - photos without people
-- documents without a transcript, and transcripts to finish or check
+- documents without a transcript, and transcripts to finish or check - not identity documents (passport applications, ID cards): they're forms, so tag the people on them and add their facts to those people instead
 - events without a date
 - images in low resolution
 - places on their own: no parent, and nothing under them - a town that belongs under its country, or a country that's fine as it is

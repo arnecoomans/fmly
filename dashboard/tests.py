@@ -363,6 +363,17 @@ class NoTranscriptTests(DashboardTestCase):
     Transcript.objects.create(content=done, kind='original', language='nl', method='manual', text='Klaar')
     self.assertEqual(list(blocks.loose_end_items('no-transcript', self.request(self.editor))), [scan])
 
+  def test_identity_documents_need_none(self):
+    from content.models import Content
+    from dashboard.progress import bar
+    make = lambda name: Content.objects.create(name=name, kind='document', user=self.editor, status='p', visibility='c', file=f'content/2026/{name}.jpg')
+    letter, passport = make('Brief'), make('Paspoortaanvraag')
+    detail = passport.get_detail()
+    detail.document_kind = 'identity'                                            # a form: its people tagged, not transcribed
+    detail.save()
+    self.assertEqual(list(blocks.loose_end_items('no-transcript', self.request(self.editor))), [letter])
+    self.assertEqual(bar('no-transcript', self.request(self.editor))['total'], 1)   # nor counted in the documents bar
+
 
 class AccountsTests(DashboardTestCase):
   """dashboard/accounts/: waiting accounts approved or declined, activity -

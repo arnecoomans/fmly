@@ -87,7 +87,11 @@ def _documents(request):
   pages yet), as the "without a transcript" loose end: transcribed and
   checked, a transcript to finish or check, none."""
   from content.models import Content, Transcript
-  documents = Content.objects.visible_to(request).listable().filter(kind=Content.Kind.DOCUMENT, file__iregex=IMAGE_FILES)
+  from .blocks import NO_TRANSCRIPT_KINDS
+  documents = (
+    Content.objects.visible_to(request).listable().filter(kind=Content.Kind.DOCUMENT, file__iregex=IMAGE_FILES)
+    .exclude(document_detail__document_kind__in=NO_TRANSCRIPT_KINDS)   # a form: tagged, not transcribed
+  )
   open_ = Transcript.objects.filter(models.Q(incomplete=True) | models.Q(method=Transcript.Method.AUTOMATIC)).values('content')
   with_transcript = documents.filter(transcripts__isnull=False).distinct()
   return [

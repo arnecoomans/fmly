@@ -102,6 +102,12 @@ LOOSE_ENDS = {
   'lone-places': _("places on their own (no parent, nothing under them)"),
 }
 
+# Document kinds whose value is a few facts, not their text: an identity
+# document - a passport application, an ID card - is a form; its people are
+# tagged and its facts go to them (birth, profession). Not "without a
+# transcript", and not counted in the documents bar (dashboard/progress.py).
+NO_TRANSCRIPT_KINDS = ('identity',)
+
 # Below this many pixels an image is a loose end: a better scan or original
 # is worth looking for. Total pixels, not the short side - a newspaper
 # clipping is a narrow strip by nature. 0.5 MP is about 800 x 600.
@@ -185,10 +191,12 @@ def _loose_end_queryset(name, request):
     )
   if name == 'no-transcript':
     # Scanned documents nobody transcribed yet - images only: the transcribe
-    # page doesn't do PDF pages yet. Newest first.
+    # page doesn't do PDF pages yet; not the kinds that need none
+    # (NO_TRANSCRIPT_KINDS). Newest first.
     return (
       Content.objects.visible_to(request).listable()
       .filter(kind=Content.Kind.DOCUMENT, file__iregex=r'\.(jpe?g|png|gif|webp|tiff?)$', transcripts__isnull=True)
+      .exclude(document_detail__document_kind__in=NO_TRANSCRIPT_KINDS)
       .order_by('-date_created', '-pk')
     )
   if name == 'open-transcripts':
