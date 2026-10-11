@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',  # unaccent: accent-free search (cmnsd.models.search)
     'content',
     'people',
     'events',

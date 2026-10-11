@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from datetime import date
 
 from cmnsd.models.access import filter_accessible
+from cmnsd.models.search import contains
 from cmnsd.models.mixins import TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDateMixin, EditableRelationsMixin
 from core.models import CommentableMixin
 
@@ -183,12 +184,12 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
     match would give its words away."""
     from people.models import Person
     named = filter_accessible(Person.objects.all(), request).filter(
-      Q(given_name__icontains=term) | Q(called_name__icontains=term) | Q(last_name__icontains=term)
-      | Q(married_name__icontains=term) | Q(nickname__icontains=term)
+      Q(**{contains('given_name'): term}) | Q(**{contains('called_name'): term}) | Q(**{contains('last_name'): term})
+      | Q(**{contains('married_name'): term}) | Q(**{contains('nickname'): term})
     )
-    q = Q(people__in=named) | Q(places__name__icontains=term)
+    q = Q(people__in=named) | Q(**{contains('places__name'): term})
     if request is not None and request.user.is_authenticated:
-      q |= Q(description__icontains=term)
+      q |= Q(**{contains('description'): term})
     if term.isdigit():
       q |= Q(year=int(term))
     return q

@@ -9,7 +9,7 @@ A ground-up rebuild: a new content design, centred on content and people instead
 - **People** - names, birth and death with partial dates (ca., before, after), parents, partners and children edited on the person's page, a life timeline with ages
 - **Photos & documents** - one kind of content for photos, documents, books, objects and recordings, with their parts; who is on a photo, dates and places, transcripts with OCR
 - **Events and places** as pages of their own, linking people and content
-- **Research** - notes with questions, leads and conclusions; one search across everything, including transcripts and biographies; comments
+- **Research** - notes with questions, leads and conclusions; one search across everything, including transcripts and biographies, ignoring accents (Riede finds Riedé); comments
 - **Edit mode** - change things on the page itself; every change in the admin history
 - **Privacy** - community-visible by default, family-visible and private where needed, drafts until published; no external services, everything loaded from the site itself
 

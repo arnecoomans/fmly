@@ -3,7 +3,8 @@ Possible duplicates of a new person (the "already in the archive?" hint
 under the names on /people/new/ and in the "+ new person" dialog): the
 people this viewer may see whose names hold every word typed - each word
 in any of the name fields, as the people search does, but never the
-biography. "Willem Bake" finds Willem Johan Alexander Bake; spelling
+biography. "Willem Bake" finds Willem Johan Alexander Bake; accents
+needn't match on PostgreSQL (Riede finds Riedé); other spelling
 variants (Baake) are not found. Fewer than MIN_LENGTH letters in all:
 nothing yet.
 """
@@ -11,6 +12,7 @@ nothing yet.
 from django.db.models import Q
 
 from cmnsd.models.access import filter_accessible
+from cmnsd.models.search import contains
 
 from .forms import NAME_FIELDS
 
@@ -30,7 +32,7 @@ def similar_people(request, names):
   for word in dict.fromkeys(words):
     match = Q()
     for field in NAME_FIELDS:
-      match |= Q(**{f'{field}__icontains': word})
+      match |= Q(**{contains(field): word})
     people = people.filter(match)
   people = people.order_by('last_name', 'given_name', 'pk')
   count = people.count()

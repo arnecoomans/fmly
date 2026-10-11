@@ -272,12 +272,13 @@ class Content(TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin
     see. A transcript is as visible as its item, so the item's own
     visibility covers it."""
     from cmnsd.models.access import filter_accessible
+    from cmnsd.models.search import contains
     from people.models import Person
-    in_text = models.Q(transcripts__text__icontains=term)
+    in_text = models.Q(**{contains('transcripts__text'): term})
     parts = Content.objects.visible_to(request).filter(in_text)
     named = models.Q()
     for field in ('given_name', 'called_name', 'last_name', 'married_name', 'nickname'):
-      named |= models.Q(**{f'{field}__icontains': term})
+      named |= models.Q(**{contains(field): term})
     authors = filter_accessible(Person.objects.filter(named), request)
     return in_text | models.Q(parts__in=parts) | models.Q(book_detail__authors__in=authors)
 
