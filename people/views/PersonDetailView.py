@@ -47,6 +47,9 @@ class PersonDetailView(VisibilityViewMixin, DetailView):
     # choices panel, tags, and the family edited in place (people/forms.py,
     # person/_relative_picker.html).
     context['editing'] = is_edit_mode(self.request) and can_edit(self.object, self.request.user)
+    # Birth and death once, places in full: the page, the born/died blocks
+    # and age_at_death all read person.birth/.death - otherwise a query each.
+    Person._attach_lifespan([self.object], place_parents=True)
     return context
 
 

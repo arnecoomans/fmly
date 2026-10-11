@@ -39,20 +39,23 @@ class FamilyShorthand(models.Model):
     return 'relations_from' in cache and 'relations_to' in cache
 
   @staticmethod
-  def _attach_lifespan(people):
+  def _attach_lifespan(people, place_parents=False):
     """Batch-fetch birth AND death events for the given people in one
     query (not one per person, per kind), and cache the result directly on
     each instance as _prefetched_birth/_prefetched_death. EventShorthand's
     birth/death properties check for these first, so this benefits ANY
     later .birth/.death access on these instances - a lifespan display in
-    _person_row.html, not just the sort key below."""
+    _person_row.html, not just the sort key below. place_parents: also
+    the places' parents and grandparents, for a page that names a place in
+    full ("Maassluis - Zuid-Holland - Nederland", field/places/name.html) -
+    a person's own page; a row names only the place itself."""
     people = list(people)
     if not people:
       return people
     from events.models import Event
     events = Event.objects.current().filter(
       people__in=people, kind__in=(Event.Kind.BIRTH, Event.Kind.DEATH),
-    ).order_by('year', 'month', 'day').prefetch_related('people', 'places')   # places: the lifespan in a row
+    ).order_by('year', 'month', 'day').prefetch_related('people', 'places__parent__parent' if place_parents else 'places')   # places: the lifespan in a row
     birth_by_pk, death_by_pk = {}, {}
     for event in events:
       target = birth_by_pk if event.kind == Event.Kind.BIRTH else death_by_pk
@@ -152,7 +155,18 @@ class FamilyShorthand(models.Model):
     # PARTNER rows are canonically ordered by pk (see PersonRelation.save()),
     # not by which side is "self" - so self can be person_from or person_to
     # depending on the other person's pk. Both directions must be checked.
+    # With the relations prefetched (a person's own page), the sorted list is
+    # kept on the instance: the partners group, get_children()'s grouping and
+    # the timeline each ask, and _sort_by_birth() costs queries every time.
+    # Kept only as long as that same prefetch is: adding or removing a
+    # relation drops it (Django), a new prefetch replaces it - either way
+    # the key below no longer matches.
     if self._relations_prefetched():
+      cache = self._prefetched_objects_cache
+      key = (cache['relations_from'], cache['relations_to'])
+      kept = getattr(self, '_sorted_partners', None)
+      if kept and kept[0][0] is key[0] and kept[0][1] is key[1]:
+        return kept[1]
       partners = [
         r.person_to for r in self.relations_from.all()
         if r.relation_type == PersonRelation.RelationType.PARTNER
@@ -161,6 +175,9 @@ class FamilyShorthand(models.Model):
         r.person_from for r in self.relations_to.all()
         if r.relation_type == PersonRelation.RelationType.PARTNER
       ]
+      partners = self._sort_by_birth(partners)
+      self._sorted_partners = (key, partners)
+      return partners
     else:
       from_ids = self.relations_from.filter(
         relation_type=PersonRelation.RelationType.PARTNER

@@ -14,7 +14,7 @@ up in a parent's timeline. A fixed number of queries, however long the life.
 
 from dataclasses import dataclass, field
 
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.utils.translation import gettext as _, pgettext
 
 from cmnsd.models.access import filter_accessible
@@ -93,11 +93,7 @@ def life_timeline(person, request):
 
   content = Prefetch('content', queryset=Content.objects.visible_to(request), to_attr='visible_content')
   visible_people = filter_accessible(Person.objects.all(), request)
-  events = filter_accessible(Event.objects.all(), request).prefetch_related(content, 'places__parent', 'people')
-
-  own = list(events.filter(people=person))
-  birth = next((e for e in own if e.kind == Event.Kind.BIRTH), None)
-  death = next((e for e in own if e.kind == Event.Kind.DEATH), None)
+  events = filter_accessible(Event.objects.all(), request).prefetch_related(content, 'places__parent__parent', 'people')
 
   # Close family, as far as this viewer may see them.
   family = {}
@@ -112,9 +108,23 @@ def life_timeline(person, request):
     'parent': (Event.Kind.DEATH,),
     'partner': (Event.Kind.DEATH,),
   }
+
+  # One query for all three - the person's own events, the family's births
+  # and deaths, history - sorted out below; each its own query would
+  # repeat the prefetches above. History by year in Python: few events.
+  ends = (Event.Kind.BIRTH, Event.Kind.DEATH)
+  candidates = list(events.filter(
+    Q(people=person) | Q(people__in=visible_ids, kind__in=ends) | Q(kind=Event.Kind.HISTORICAL, people__isnull=True)
+  ).distinct())
+  own = [e for e in candidates if any(p.pk == person.pk for p in e.people.all())]
+  birth = next((e for e in own if e.kind == Event.Kind.BIRTH), None)
+  death = next((e for e in own if e.kind == Event.Kind.DEATH), None)
+
   own_ids = {e.pk for e in own}
   family_entries = []
-  for event in events.filter(people__in=visible_ids, kind__in=(Event.Kind.BIRTH, Event.Kind.DEATH)).exclude(pk__in=own_ids).distinct():
+  for event in candidates:
+    if event.pk in own_ids or event.kind not in ends:
+      continue
     # Within the person's life, when its ends are known.
     if event.year and ((birth and birth.year and event.year < birth.year) or (death and death.year and event.year > death.year)):
       continue
@@ -132,8 +142,8 @@ def life_timeline(person, request):
     from datetime import date
     last = death.year if death and death.year else min(birth.year + 100, date.today().year)
     history_entries = [
-      Entry(event, history=True)
-      for event in events.filter(kind=Event.Kind.HISTORICAL, people__isnull=True, year__gte=birth.year, year__lte=last)
+      Entry(event, history=True) for event in candidates
+      if event.kind == Event.Kind.HISTORICAL and not event.people.all() and event.year is not None and birth.year <= event.year <= last
     ]
 
   entries = [entry for entry in [Entry(event) for event in own] + family_entries + history_entries if _placed(entry)]
@@ -145,6 +155,14 @@ def life_timeline(person, request):
       p for p in entry.event.people.all()
       if p.pk != person.pk and (entry.relative is None or p.pk != entry.relative.pk)
     ]
-  # Spouses' ages at a marriage (event/_event.html): their births in one query.
-  Person._attach_lifespan([p for entry in entries if entry.event.kind == Event.Kind.MARRIAGE for p in entry.others])
+  # Spouses' ages at a marriage (event/_event.html): their births in one
+  # query - none for a partner whose births get_partners() already has.
+  known = {relative.pk: relative for _, relative in family.values() if hasattr(relative, '_prefetched_birth')}
+  spouses = []
+  for p in (p for entry in entries if entry.event.kind == Event.Kind.MARRIAGE for p in entry.others):
+    if p.pk in known:
+      p._prefetched_birth, p._prefetched_death = known[p.pk]._prefetched_birth, known[p.pk]._prefetched_death
+    else:
+      spouses.append(p)
+  Person._attach_lifespan(spouses)
   return sorted(entries, key=_entry_key)
