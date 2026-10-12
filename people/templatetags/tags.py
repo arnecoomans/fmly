@@ -62,6 +62,28 @@ def kind_counts(items):
 
 
 @register.filter
+def type_counts(items):
+  """[(kind, count, [(type, label, count), ...]), ...] - per kind with
+  types (documents, photos), the types present in a content list, in their
+  choices' order: the second row of filter pills. Only kinds with two
+  types or more - one type has nothing to choose between."""
+  from collections import Counter
+  from content.models import Content
+  from content.models.details import DocumentContent, PhotoContent
+  choices = {
+    Content.Kind.DOCUMENT: DocumentContent.DocumentKind.choices,
+    Content.Kind.PHOTO: PhotoContent.PhotoKind.choices,
+  }
+  counts = Counter((item.kind, item.sub_kind) for item in items if item.kind in choices)
+  rows = []
+  for kind in choices:
+    types = [(value, label, counts[kind, value]) for value, label in choices[kind] if counts[kind, value]]
+    if len(types) > 1:
+      rows.append((kind, sum(count for _, _, count in types), types))
+  return rows
+
+
+@register.filter
 def for_row(person):
   """{% with person=person|for_row %} - one person ready for
   people/_person_row.html on its own (lifespan + portrait attached, as a

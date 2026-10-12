@@ -250,6 +250,17 @@ class Content(TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin
     return reverse('content:list')
 
   @property
+  def sub_kind(self):
+    """The detail's photo_kind / document_kind value ('newspaper') - '' for
+    a kind without types. 'other' included: the type filter shows how much
+    is still unclassified (content/_content_grid.html)."""
+    detail = self.get_detail()
+    for field in ('photo_kind', 'document_kind'):
+      if detail is not None and hasattr(detail, field):
+        return getattr(detail, field)
+    return ''
+
+  @property
   def sub_kind_display(self):
     """The detail's photo_kind / document_kind label - '' if none, and ''
     for 'other': a label that only says "other" adds nothing next to the

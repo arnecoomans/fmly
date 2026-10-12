@@ -2,7 +2,9 @@
 {% load tags %}
 {% comment %}
   A grid of content cards with filter pills by kind (cmnsd.js filter.js;
-  the chosen kind goes into the address as ?kind= - kept on reload)
+  the chosen kind goes into the address as ?kind= - kept on reload), and
+  under Documents and Photos a second row by their type (?type=), shown
+  once that kind is chosen - "other" included, so the unclassified show
   and a remembered sort switch - recently added / chronologically
   (sort.js, saved under `save_key`). Both hidden without JS. Shared by the
   person page's Content section and tag pages.
@@ -20,6 +22,14 @@
           <button type="button" class="content-grid-pill" data-filter="{{ kind }}" aria-pressed="false">{{ label|capfirst }} {{ count }}</button>
         {% endfor %}
       </div>
+      {% for kind, total, types in items|type_counts %}
+        <div class="content-grid-pills content-grid-pills--types" data-cmnsd-filter="#{{ grid_id }}" data-cmnsd-filter-key="type" data-cmnsd-filter-when="value={{ kind }}" data-cmnsd-filter-param="type" hidden>
+          <button type="button" class="content-grid-pill is-active" data-filter="" aria-pressed="true">{% translate "all"|capfirst %} {{ total }}</button>
+          {% for type, label, count in types %}
+            <button type="button" class="content-grid-pill" data-filter="{{ type }}" aria-pressed="false">{{ label|capfirst }} {{ count }}</button>
+          {% endfor %}
+        </div>
+      {% endfor %}
     {% endif %}
     {% if items|length > 1 %}
       <div class="content-grid-sort" data-cmnsd-sort="#{{ grid_id }}" data-cmnsd-sort-save="{{ save_key }}" hidden>
