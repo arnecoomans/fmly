@@ -74,7 +74,7 @@ class TagDetailView(VisibilityViewMixin, DetailView):
   slug_url_kwarg = 'token'
   context_object_name = 'tag'
   template_name = 'tag/tag_detail.html'
-  SORTS = ('added', 'date')
+  SORTS = ('added', 'date', 'favorites')   # content_tags.CONTENT_SORTS
 
   def get_queryset(self):
     return self.get_accessible_queryset(Tag.objects.select_related('parent'))

@@ -5,7 +5,8 @@
   the chosen kind goes into the address as ?kind= - kept on reload), and
   under Documents and Photos a second row by their type (?type=), shown
   once that kind is chosen - "other" included, so the unclassified show
-  and a remembered sort switch - recently added / chronologically
+  and a remembered sort switch - recently added / chronologically / most
+  favorited
   (sort.js, saved under `save_key`). Both hidden without JS. Shared by the
   person page's Content section and tag pages.
 
@@ -35,6 +36,7 @@
       <div class="content-grid-sort" data-cmnsd-sort="#{{ grid_id }}" data-cmnsd-sort-save="{{ save_key }}" hidden>
         <button type="button" class="content-grid-pill{% if sort == 'added' %} is-active{% endif %}" data-sort-key="added" data-sort-direction="desc" aria-pressed="{% if sort == 'added' %}true{% else %}false{% endif %}">{% translate "recently added"|capfirst %}</button>
         <button type="button" class="content-grid-pill{% if sort == 'date' %} is-active{% endif %}" data-sort-key="date" data-sort-direction="asc" aria-pressed="{% if sort == 'date' %}true{% else %}false{% endif %}">{% translate "chronologically"|capfirst %}</button>
+        <button type="button" class="content-grid-pill{% if sort == 'favorites' %} is-active{% endif %}" data-sort-key="favorites" data-sort-direction="desc" aria-pressed="{% if sort == 'favorites' %}true{% else %}false{% endif %}" title="{% translate 'most favorited first'|capfirst %}"><i class="bi bi-heart"></i> {% translate "favorites"|capfirst %}</button>
       </div>
     {% endif %}
   </div>

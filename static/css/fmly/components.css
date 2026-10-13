@@ -527,6 +527,49 @@
 }
 .content-card__transcript.is-incomplete { color: var(--color-draft-text); border: 1.5px dashed var(--color-draft-text); }
 .content-card--icon > .content-card__transcript { top: auto; bottom: 10px; }
+/* Favorites (favorite/_badge.html): a heart with the count, top left on the
+   thumbnail - the other corners are taken. Filled when one is yours. On an
+   icon card it's part of the kind line instead (content-card__favorites-inline). */
+.content-card__favorites {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: var(--radius-pill);
+  background: rgba(30, 24, 18, 0.72);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.content-card__favorites i { font-size: 12px; }
+.content-card__favorites.is-mine i,
+.content-card__favorites-inline.is-mine i { color: var(--color-favorite); }
+
+/* The heart on an item's page (favorite/heart.html): a button with the
+   count, then who. */
+.favorite { display: inline-flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.favorite__button,
+.favorite__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-2);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+}
+.favorite__button { cursor: pointer; }
+.favorite__button:hover,
+.favorite__button.is-mine { color: var(--color-favorite); border-color: var(--color-favorite); }
+.favorite__names { font-size: var(--text-xs); color: var(--color-ink-3); }
 .content-card--icon { position: relative; }
 
 .content-card--icon .content-card__body {
@@ -1896,3 +1939,9 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .inbox__owner { padding: var(--space-3) 0; border-top: 1px solid var(--color-border); }
 .inbox__owner-name { margin: 0 0 var(--space-2); font-size: var(--text-sm); display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
 .dashboard__others-drafts { margin: 0 0 var(--space-2); font-size: var(--text-sm); }
+
+/* The dashboard's family favorites (issue #453): the count before the name. */
+.dashboard__thumb-heart { color: var(--color-favorite); }
+/* The dashboard's foldable blocks (a <details>, page-section): the heading
+   fills the row, so "more →" sits at its end, before the chevron. */
+.dashboard__block > .page-section__header .section-title { flex: 1; }

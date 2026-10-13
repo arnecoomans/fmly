@@ -84,7 +84,7 @@ class SectionShorthand(models.Model):
       item.by_this_person = item.pk in authored
     return items
 
-  CONTENT_SORTS = ('added', 'date')
+  CONTENT_SORTS = ('added', 'date', 'favorites')   # content_tags.CONTENT_SORTS
 
   def content_sort(self, request=None):
     """'added' (default) or 'date' - the viewer's remembered order for the

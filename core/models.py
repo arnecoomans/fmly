@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -203,6 +204,62 @@ class CommentableMixin(models.Model):
     comment.save()
     messages.success(request, _("Comment posted."))
     return {'comment': comment}
+
+class Favorite(models.Model):
+  """A user's favorite (issue #453): public and social - what stands out
+  in the archive, and an easy way back to what you liked. One row per user
+  per object, with the date: "favorited by ..." needs the names, "my
+  favorites" your own, newest first. An action, so it relates to the
+  User, never to a Person. A generic target, as comments - Content now,
+  other models when they compose FavoritableMixin."""
+
+  user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='favorites')
+  target_content_type = models.ForeignKey('contenttypes.ContentType', on_delete=models.CASCADE)
+  target_id = models.PositiveIntegerField()
+  target = GenericForeignKey('target_content_type', 'target_id')
+  date_created = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    ordering = ['-date_created']
+    constraints = [
+      models.UniqueConstraint(fields=['user', 'target_content_type', 'target_id'], name='core_favorite_once_per_user'),
+    ]
+    indexes = [
+      # An object's favorites (counts, names) - as Comment's target index.
+      models.Index(fields=['target_content_type', 'target_id'], name='core_favorite_target'),
+    ]
+
+  def __str__(self):
+    return f"{self.user} ♥ {self.target}"
+
+
+class FavoritableMixin(models.Model):
+  """Favorites on a model: the relation and the toggle_favorite API action
+  (the heart, core/templates/favorite/heart.html). Only a published object
+  can be favorited - a draft doesn't collect hearts."""
+
+  favorites = GenericRelation(Favorite, content_type_field='target_content_type', object_id_field='target_id')
+
+  class Meta:
+    abstract = True
+
+  @api_action(requires_auth=True)
+  def toggle_favorite(self, request, data):
+    """Favorite this, or undo it. Only reachable when the viewer may see
+    this object (the action dispatcher looks it up first)."""
+    existing = self.favorites.filter(user=request.user)
+    if existing.exists():
+      existing.delete()
+    else:
+      if self.status != self.Status.PUBLISHED:
+        raise ValidationError(_("Only a published item can be a favorite."))
+      Favorite.objects.get_or_create(
+        user=request.user, target_content_type=ContentType.objects.get_for_model(self), target_id=self.pk,
+      )
+    # For actions/toggle_favorite.html: the heart again, for any model.
+    from cmnsd.api.registry import API_REGISTRY
+    return {'target': self, 'model': API_REGISTRY[type(self)]['name']}
+
 
 class Preferences(BasePreferences):
   # Read by VisibilityMixin.filter_visibility()/is_visible_to() via

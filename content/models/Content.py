@@ -14,7 +14,7 @@ from cmnsd.models.mixins import (
 )
 from cmnsd.api.registry import api_action, api_model
 from cmnsd.models.access import filter_accessible
-from core.models import CommentableMixin
+from core.models import CommentableMixin, FavoritableMixin
 
 from ..files import content_upload_to, is_meaningless_filename, rename_content_file, split_filename
 
@@ -46,8 +46,12 @@ class ContentQuerySet(models.QuerySet):
 
   def in_order(self, sort):
     """'date': chronologically by the item's own date, undated last;
-    anything else ('added'): most recently added first. The two orders of
-    the content grid's sort switch (content/_content_grid.html)."""
+    'favorites': the most favorited first (core.models.Favorite), then the
+    most recently added; anything else ('added'): most recently added
+    first. The orders of the content grid's sort switch
+    (content/_content_grid.html)."""
+    if sort == 'favorites':
+      return self.annotate(favorite_count=models.Count('favorites', distinct=True)).order_by('-favorite_count', '-date_created', 'name')
     if sort == 'date':
       return self.order_by(
         models.F('year').asc(nulls_last=True), models.F('month').asc(nulls_last=True),
@@ -69,7 +73,7 @@ class ContentQuerySet(models.QuerySet):
 
 @api_model(search_fields=['name', 'description'])
 class Content(TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin, VisibilityMixin,
-              PartialDateMixin, CommentableMixin, EditableRelationsMixin, models.Model):
+              PartialDateMixin, CommentableMixin, FavoritableMixin, EditableRelationsMixin, models.Model):
   """Everything that is uploaded - one file per row. See
   docs/FMLY-3.0-PLAN.md, Content.
 

@@ -10,8 +10,10 @@
   book without a cover, a record whose file isn't supplied yet - gets the
   icon-forward card. data-filter-value carries the kind and
   data-filter-type the document or photo type, for the filter pills
-  (cmnsd.js filter.js); data-sort-added / data-sort-date feed the
-  sort switch (sort.js).
+  (cmnsd.js filter.js); data-sort-added / data-sort-date /
+  data-sort-favorites (zero-padded, '' without any: last) feed the sort
+  switch (sort.js). A heart with the count when it has favorites
+  (mark_wholes) - on the thumbnail, or in an icon card's kind line.
 
   A draft (or revoked) item - only its creator and staff see it - is marked:
   .content-card--draft, a dashed frame and its status as a badge.
@@ -27,12 +29,13 @@
 {% endcomment %}
 {% with date=item|partial_date sub=item.sub_kind_display %}
 {% if item.file and item.media_type == 'image' %}
-  <a class="content-card{% if item.has_parts %} content-card--has-parts{% endif %}{% if item.needs_attention %} content-card--draft{% endif %}" href="{{ item.get_absolute_url }}" data-filter-value="{{ item.kind }}" data-filter-type="{{ item.sub_kind }}" data-sort-added="{{ item.date_created|date:'c' }}" data-sort-date="{{ item|date_sort_key }}">
+  <a class="content-card{% if item.has_parts %} content-card--has-parts{% endif %}{% if item.needs_attention %} content-card--draft{% endif %}" href="{{ item.get_absolute_url }}" data-filter-value="{{ item.kind }}" data-filter-type="{{ item.sub_kind }}" data-sort-added="{{ item.date_created|date:'c' }}" data-sort-date="{{ item|date_sort_key }}" data-sort-favorites="{% if item.favorite_count %}{{ item.favorite_count|stringformat:'05d' }}{% endif %}">
     <span class="content-card__thumb">
       <img src="{{ item|thumb_url:'card' }}" alt="" loading="lazy">
       <span class="content-card__kind-icon" title="{{ item.get_kind_display|capfirst }}"><i class="bi bi-{{ item|kind_icon }}"></i></span>
       {% if item.has_parts %}{% include 'content/_parts_badge.html' %}{% endif %}
       {% if item.transcript %}{% include 'content/_transcript_badge.html' %}{% endif %}
+      {% if item.favorite_count %}{% include 'favorite/_badge.html' %}{% endif %}
     </span>
     <span class="content-card__body">
       <span class="content-card__title">{% if item.needs_attention %}<span class="badge-status badge-status--draft content-card__status">{{ item.get_status_display }}</span> {% endif %}{{ item }}</span>
@@ -40,13 +43,13 @@
     </span>
   </a>
 {% else %}
-  <a class="content-card content-card--icon{% if item.has_parts %} content-card--has-parts{% endif %}{% if item.needs_attention %} content-card--draft{% endif %}" href="{{ item.get_absolute_url }}" data-filter-value="{{ item.kind }}" data-filter-type="{{ item.sub_kind }}" data-sort-added="{{ item.date_created|date:'c' }}" data-sort-date="{{ item|date_sort_key }}">
+  <a class="content-card content-card--icon{% if item.has_parts %} content-card--has-parts{% endif %}{% if item.needs_attention %} content-card--draft{% endif %}" href="{{ item.get_absolute_url }}" data-filter-value="{{ item.kind }}" data-filter-type="{{ item.sub_kind }}" data-sort-added="{{ item.date_created|date:'c' }}" data-sort-date="{{ item|date_sort_key }}" data-sort-favorites="{% if item.favorite_count %}{{ item.favorite_count|stringformat:'05d' }}{% endif %}">
     {% if item.has_parts %}{% include 'content/_parts_badge.html' %}{% endif %}
     {% if item.transcript %}{% include 'content/_transcript_badge.html' %}{% endif %}
     <span class="content-card__body">
       <span class="content-card__icon-chip"><i class="bi bi-{{ item|kind_icon }}"></i></span>
       <span class="content-card__text">
-        <span class="content-card__kind-label">{{ item.get_kind_display }}{% if sub %} · {{ sub }}{% endif %}{% if item.by_this_person %} · <span class="content-card__role">{% translate "author" %}</span>{% endif %}</span>
+        <span class="content-card__kind-label">{{ item.get_kind_display }}{% if sub %} · {{ sub }}{% endif %}{% if item.by_this_person %} · <span class="content-card__role">{% translate "author" %}</span>{% endif %}{% if item.favorite_count %} · <span class="content-card__favorites-inline{% if item.is_favorite %} is-mine{% endif %}"><i class="bi bi-heart{% if item.is_favorite %}-fill{% endif %}"></i> {{ item.favorite_count }}</span>{% endif %}</span>
         <span class="content-card__title">{% if item.needs_attention %}<span class="badge-status badge-status--draft content-card__status">{{ item.get_status_display }}</span> {% endif %}{{ item }}</span>
         {% if date %}<span class="content-card__subtitle">{{ date }}</span>{% elif not item.file %}<span class="content-card__subtitle">{% translate "file not available yet" %}</span>{% endif %}
       </span>

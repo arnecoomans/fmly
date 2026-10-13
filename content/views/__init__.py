@@ -4,9 +4,11 @@ from .TranscribeView import TranscribeView
 from .transcribe_guess import transcribe_guess
 from .upload import InboxView, UploadView, content_upload, inbox_group
 from .files import content_file, content_thumbnail, portrait_thumbnail
+from .favorites import FavoritesView
 
 __all__ = [
   'InboxView',
+  'FavoritesView',
   'UploadView',
   'content_upload',
   'inbox_group',

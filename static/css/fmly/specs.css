@@ -24,6 +24,7 @@
   --color-accent: #A8522E;
   --color-accent-hover: #8A4224;
   --color-accent-soft: #F1DFD3;  /* accent backgrounds: active tabs, chips */
+  --color-favorite: #C0392B;     /* the heart (core.models.Favorite) */
 
   /* ---- Color: visibility (Private / Family / Community / Public) ----
      Every Person, Content item and Storyline carries one of these.

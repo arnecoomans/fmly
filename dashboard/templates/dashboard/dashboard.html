@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
-{% load content_tags %}{% load dashboard %}{% load markdown %}{% load viewer_name %}
+{% load content_tags %}{% load dashboard %}{% load markdown %}{% load viewer_name %}{% load ui_state %}
 {% comment %}
   The dashboard (dashboard.views.DashboardView): where you land. Left, for
-  everyone: on this day, recently added, the conversation, one item from the
-  archive. Right: your work (the inbox with a dropzone, open notes) and the
-  loose ends - for someone who edits - then your own record and the archive
-  in numbers. Each block only what this viewer may see; an empty block
+  everyone: on this day, then blocks that fold - recently added, family
+  favorites, the conversation, your open notes (for who edits) - and one
+  item from the archive to close with, always open. Right: the inbox with a dropzone and the loose ends -
+  for someone who edits - then your own record and the archive in
+  numbers. Each block only what this viewer may see; an empty block
   isn't shown.
 {% endcomment %}
 
@@ -43,9 +44,16 @@
         </section>
       {% endif %}
 
+      {% comment %}
+        Between "on this day" and "from the archive": blocks that fold - a <details> each, open or
+        closed remembered per user (cmnsd.js sections.js, the same as a
+        person page's sections; cmnsd/ui/state.py, key dashboard.<name>).
+        Folded, a block is still rendered, just closed.
+      {% endcomment %}
       {% if recent %}
-        <section class="dashboard__block">
-          <h2 class="section-title">{% translate "recently added"|capfirst %} <a class="dashboard__more" href="{% url 'content:list' %}">{% translate "all content" %} →</a></h2>
+        {% section_open 'dashboard.recent' as is_open %}
+        <details class="dashboard__block page-section" data-cmnsd-section="dashboard.recent"{% if is_open %} open{% endif %}>
+          <summary class="page-section__header"><h2 class="section-title">{% translate "recently added"|capfirst %} <a class="dashboard__more" href="{% url 'content:list' %}">{% translate "all content" %} →</a></h2></summary>
           <div class="dashboard__thumbs dashboard__thumbs--recent">
             {% for item in recent %}
               <a class="dashboard__thumb" href="{{ item.get_absolute_url }}" title="{{ item }}">
@@ -54,12 +62,29 @@
               </a>
             {% endfor %}
           </div>
-        </section>
+        </details>
+      {% endif %}
+
+      {% if favorites %}
+        {# What stands out: the most favorited (issue #453) - the number on each, then a way to your own. #}
+        {% section_open 'dashboard.favorites' as is_open %}
+        <details class="dashboard__block page-section" data-cmnsd-section="dashboard.favorites"{% if is_open %} open{% endif %}>
+          <summary class="page-section__header"><h2 class="section-title">{% translate "family favorites"|capfirst %} <a class="dashboard__more" href="{% url 'content:favorites' %}">{% translate "your favorites" %} →</a></h2></summary>
+          <div class="dashboard__thumbs dashboard__thumbs--recent">
+            {% for item in favorites %}
+              <a class="dashboard__thumb" href="{{ item.get_absolute_url }}" title="{{ item }}">
+                {% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}
+                <span class="dashboard__thumb-name"><i class="bi bi-heart-fill dashboard__thumb-heart"></i> {{ item.favorite_count }} · {{ item }}</span>
+              </a>
+            {% endfor %}
+          </div>
+        </details>
       {% endif %}
 
       {% if comments %}
-        <section class="dashboard__block">
-          <h2 class="section-title">{% translate "conversation"|capfirst %} <a class="dashboard__more" href="{% url 'core:comment_list' %}">{% translate "all comments" %} →</a></h2>
+        {% section_open 'dashboard.conversation' as is_open %}
+        <details class="dashboard__block page-section" data-cmnsd-section="dashboard.conversation"{% if is_open %} open{% endif %}>
+          <summary class="page-section__header"><h2 class="section-title">{% translate "conversation"|capfirst %} <a class="dashboard__more" href="{% url 'core:comment_list' %}">{% translate "all comments" %} →</a></h2></summary>
           <ul class="dashboard__comments">
             {% for comment in comments %}
               <li class="dashboard__comment">
@@ -68,12 +93,26 @@
               </li>
             {% endfor %}
           </ul>
-        </section>
+        </details>
+      {% endif %}
+
+      {% if work.notes %}
+        {% section_open 'dashboard.notes' as is_open %}
+        <details class="dashboard__block page-section" data-cmnsd-section="dashboard.notes"{% if is_open %} open{% endif %}>
+          <summary class="page-section__header"><h2 class="section-title">{% translate "your open notes"|capfirst %} <a class="dashboard__more" href="{% url 'notes:list' %}">{% translate "notes" %} →</a></h2></summary>
+          <ul class="note-list note-list--compact">{% for note in work.notes %}{% include 'note/_note_row.html' %}{% endfor %}</ul>
+        </details>
       {% endif %}
 
       {% if random_item %}
-        <section class="dashboard__block dashboard__random" id="from-the-archive">
-          {% include 'dashboard/_random.html' %}
+        {# The closer - always open. "Another" swaps only the item (#from-the-archive); the heading stays. #}
+        <section class="dashboard__block dashboard__random">
+          <h2 class="section-title">{% translate "from the archive"|capfirst %}
+            <form class="dashboard__more" action="{% url 'dashboard:home' %}#from-the-archive" method="get" data-cmnsd-list-url="{% url 'dashboard:home' %}" data-cmnsd-target="#from-the-archive">
+              <button type="submit" class="dashboard__more-button">{% translate "another" %} ↻</button>
+            </form>
+          </h2>
+          <div id="from-the-archive">{% include 'dashboard/_random.html' %}</div>
         </section>
       {% endif %}
     </div>
@@ -94,13 +133,6 @@
               <label class="dropzone__choose">{% translate "choose files" %}<input type="file" multiple data-upload-input accept="image/*,application/pdf,audio/*,video/*"></label></p>
             <ul class="upload-list upload-list--compact" data-upload-list></ul>
           </div>
-        </section>
-      {% endif %}
-
-      {% if work.notes %}
-        <section class="dashboard__block">
-          <h2 class="section-title">{% translate "your open notes"|capfirst %} <a class="dashboard__more" href="{% url 'notes:list' %}">{% translate "notes" %} →</a></h2>
-          <ul class="note-list note-list--compact">{% for note in work.notes %}{% include 'note/_note_row.html' %}{% endfor %}</ul>
         </section>
       {% endif %}
 

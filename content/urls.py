@@ -13,6 +13,7 @@ urlpatterns = [
   path('new/upload/', views.content_upload, name='upload_file'),
   path('inbox/', views.InboxView.as_view(), name='inbox'),
   path('inbox/group/', views.inbox_group, name='inbox_group'),
+  path('favorites/', views.FavoritesView.as_view(), name='favorites'),
   # File URLs first: at the same position as the slug below, and never
   # shadowed by it (Content.reserved_slugs keeps slugs off these words).
   path('<str:token>/file/', views.content_file, name='file'),

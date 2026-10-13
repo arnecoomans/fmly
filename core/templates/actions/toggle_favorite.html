@@ -1,0 +1,2 @@
+{# toggle_favorite on any FavoritableMixin model: the heart in its new state, replacing the old one (cmnsd.js actions.js). #}
+{% load favorites %}{% include 'favorite/heart.html' with obj=result.target model=result.model heart=result.target|heart:request %}

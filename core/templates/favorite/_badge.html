@@ -1,0 +1,6 @@
+{% comment %}
+  A content card's heart (item.favorite_count, the grid's mark_wholes):
+  how many favorited it - filled when one of them is you. Top left on the
+  thumbnail.
+{% endcomment %}
+<span class="content-card__favorites{% if item.is_favorite %} is-mine{% endif %}" title="{% blocktranslate count counter=item.favorite_count %}{{ counter }} favorite{% plural %}{{ counter }} favorites{% endblocktranslate %}"><i class="bi bi-heart{% if item.is_favorite %}-fill{% endif %}"></i> {{ item.favorite_count }}</span>

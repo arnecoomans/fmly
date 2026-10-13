@@ -1,0 +1,22 @@
+{% comment %}
+  The heart on an object's page (core.models.FavoritableMixin, issue
+  #453): the count, and who - names only for who's signed in (`heart`:
+  core.favorites.heart). Signed in and the object published: a button that
+  favorites it or undoes that (toggle_favorite), replacing this block with
+  its new state (actions/toggle_favorite.html). Otherwise just the count,
+  when there is one.
+  Context: `obj`, `model` (the API name, e.g. 'content'), `heart`.
+{% endcomment %}
+<span class="favorite" id="favorite-{{ obj.token }}">
+  {% if request.user.is_authenticated and obj.status == 'p' %}
+    <button type="button" class="favorite__button{% if heart.mine %} is-mine{% endif %}" data-cmnsd-action="toggle_favorite" data-model="{{ model }}" data-object-token="{{ obj.token }}"
+            data-cmnsd-target="#favorite-{{ obj.token }}" data-cmnsd-insert="replace" aria-pressed="{{ heart.mine|yesno:'true,false' }}"
+            title="{% if heart.mine %}{% translate 'Remove from your favorites' %}{% else %}{% translate 'Add to your favorites' %}{% endif %}">
+      <i class="bi bi-heart{% if heart.mine %}-fill{% endif %}"></i>{% if heart.count %} {{ heart.count }}{% endif %}
+    </button>
+    {% if heart.names %}<span class="favorite__names">{{ heart.names|join:", " }}</span>{% endif %}
+  {% elif heart.count %}
+    <span class="favorite__count" title="{% translate 'favorites'|capfirst %}"><i class="bi bi-heart"></i> {{ heart.count }}</span>
+    {% if heart.names %}<span class="favorite__names">{{ heart.names|join:", " }}</span>{% endif %}
+  {% endif %}
+</span>

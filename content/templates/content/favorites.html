@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% comment %}
+  Your favorites (content.views.FavoritesView, issue #453): what you
+  favorited, the most recently favorited first - the content grid, its
+  sort switch re-sorting in the page (not remembered: `sort` none).
+{% endcomment %}
+
+{% block title %}{% translate "your favorites"|capfirst %}{% endblock %}
+
+{% block template_css %}
+<link rel="stylesheet" href="{% static 'css/fmly/content.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="tag-page">
+  <header class="tag-page__header">
+    <div class="tag-page__intro">
+      <a class="tag-page__parent" href="{% url 'content:list' %}">{% translate "content"|capfirst %} <i class="bi bi-chevron-right"></i></a>
+      <h1 class="tag-page__name"><i class="bi bi-heart"></i> {% translate "your favorites"|capfirst %}</h1>
+      <p class="tag-page__counts">{% blocktranslate count counter=items|length %}{{ counter }} item, the most recently favorited first.{% plural %}{{ counter }} items, the most recently favorited first.{% endblocktranslate %}</p>
+    </div>
+  </header>
+  {% if items %}
+    {% include 'content/_content_grid.html' with items=items sort='' save_key='' grid_id='favorites-grid' %}
+  {% else %}
+    <p class="timeline__empty">{% translate "Nothing yet - the heart on an item's page adds it here." %}</p>
+  {% endif %}
+</div>
+{% endblock %}

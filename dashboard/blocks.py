@@ -33,6 +33,13 @@ def recently_added(request, count=10):
   )
 
 
+def family_favorites(request, count=10):
+  """What stands out: the items with the most favorites (core/favorites.py)
+  - ten, as recently added."""
+  from core.favorites import family_favorites as favorites
+  return favorites(request, count)
+
+
 def conversation(request, count=3):
   """The latest comments this viewer may see (core/comments.py)."""
   if not request.user.is_authenticated:

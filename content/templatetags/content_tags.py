@@ -85,40 +85,51 @@ def date_sort_key(obj):
 
 
 LIST_SORT_KEY = 'content.list'
+# The content grid's sort switch (content/_content_grid.html) - the same
+# three on every page that shows the grid.
+CONTENT_SORTS = ('added', 'date', 'favorites')
 
 
 @register.filter
 def list_sort(request):
-  """{{ request|list_sort }} -> 'added' / 'date': the viewer's remembered
-  order for the content list (cmnsd/ui/state.py, key 'content.list')."""
+  """{{ request|list_sort }} -> 'added' / 'date' / 'favorites': the
+  viewer's remembered order for the content list (cmnsd/ui/state.py, key
+  'content.list')."""
   from cmnsd.ui.state import get_sort
-  return get_sort(request, LIST_SORT_KEY, 'added', ('added', 'date'))
+  return get_sort(request, LIST_SORT_KEY, 'added', CONTENT_SORTS)
 
 
 @register.filter
 def in_list_order(items, request):
   """{% with items=content_list|in_list_order:request %} - the list in the
-  viewer's remembered order (list_sort): most recently added first, or
-  chronologically with undated items last. Sorted here rather than in the
+  viewer's remembered order (list_sort): most recently added first,
+  chronologically with undated items last, or the most favorited first. Sorted here rather than in the
   query because the page and the list API (live search) render the same
   template (content/content_list.html) from a generic query."""
   items = list(items)
-  if list_sort(request) == 'date':
+  sort = list_sort(request)
+  if sort == 'date':
     return sorted(items, key=lambda c: (c.year is None, c.year or 0, c.month or 0, c.day or 0, c.name.lower()))
   by_name = sorted(items, key=lambda c: c.name.lower())
-  return sorted(by_name, key=lambda c: c.date_created, reverse=True)  # stable: name order within a moment
+  added = sorted(by_name, key=lambda c: c.date_created, reverse=True)  # stable: name order within a moment
+  if sort == 'favorites':
+    from core.favorites import counts
+    number = counts(added)
+    return sorted(added, key=lambda c: number.get(c.pk, 0), reverse=True)   # stable: most recently added within a count
+  return added
 
 
 @register.filter
 def mark_wholes(items, request):
   """{% for item in items|mark_wholes:request %} - what a content card
-  shows about an item beyond itself, for a whole list in two queries:
+  shows about an item beyond itself, for a whole list in three queries:
   - item.has_parts / item.group_size: the whole plus the parts this viewer
     may see - the same number as the item page's Parts section (a book
     with 6 pages: 7) - the count badge;
   - item.transcript: None, or {languages, pages, incomplete} - its own
     transcripts' languages, how many of its (visible) parts have one, and
-    whether any is marked incomplete - the transcript badge."""
+    whether any is marked incomplete - the transcript badge;
+  - item.favorite_count / item.is_favorite: the heart (core/favorites.py)."""
   from collections import defaultdict
   from content.models import Content, Transcript
   from content.languages import Language
@@ -155,7 +166,8 @@ def mark_wholes(items, request):
       }
     else:
       item.transcript = None
-  return items
+  from core.favorites import attach
+  return attach(items, request)
 
 
 @register.filter

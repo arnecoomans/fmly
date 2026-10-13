@@ -2,6 +2,8 @@
 
 The dashboard is where you land after signing in, and where you come back to: the logo in the top left always leads here. It shows what's going on in the archive, and - for editors - what's waiting for you.
 
+Between *On this day* and *From the archive*, each block on the left can be **folded**: click its heading. The dashboard remembers which blocks you keep closed.
+
 ## On this day
 
 Births, marriages, deaths and historical events that happened on today's date, with how long ago. On a quiet day it shows the coming week instead.
@@ -11,11 +13,16 @@ For the whole year at a glance: **calendar →** next to the heading opens the c
 ## Recently added and from the archive
 
 - **Recently added** - the newest photos and documents.
+- **Family favorites** - what stands out: the items with the most hearts. *Your favorites →* lists your own.
 - **From the archive** - one item picked at random, to rediscover something. *Another* picks a new one.
 
 ## The conversation
 
 The latest comments, wherever they were made - on a photo, a person or an event. Click one to go to the conversation.
+
+## Your open notes
+
+For editors: your notes still to finish - to-dos, questions, hypotheses. *Notes →* opens them all.
 
 ## Your inbox
 

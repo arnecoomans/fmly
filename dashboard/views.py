@@ -43,6 +43,7 @@ class DashboardView(TemplateView):
       'anniversaries': anniversaries,
       'anniversaries_label': anniversaries_label,
       'recent': blocks.recently_added(request),
+      'favorites': blocks.family_favorites(request),
       'comments': blocks.conversation(request),
       'random_item': blocks.from_the_archive(request),
       'numbers': blocks.numbers(request),

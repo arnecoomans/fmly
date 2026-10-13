@@ -136,11 +136,12 @@ class TranscriptBadgeTests(TestCase):
     self.assertIn('content-card__transcript is-incomplete', card)
     self.assertIn('(incomplete)', card)
 
-  def test_two_queries_for_the_whole_list(self):
+  def test_three_queries_for_the_whole_list(self):
     from django.test import RequestFactory
     from content.templatetags.content_tags import mark_wholes
     request = RequestFactory().get('/')
     request.user = self.user
     items = list(Content.objects.filter(parent__isnull=True))
-    with self.assertNumQueries(2):
+    # Parts, transcripts - and favorites (the heart, core/favorites.py).
+    with self.assertNumQueries(3):
       mark_wholes(items, request)

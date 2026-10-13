@@ -26,7 +26,7 @@ class PlaceDetailView(DetailView):
   slug_url_kwarg = 'token'
   context_object_name = 'place'
   template_name = 'place/place_detail.html'
-  SORTS = ('added', 'date')
+  SORTS = ('added', 'date', 'favorites')   # content_tags.CONTENT_SORTS
 
   def get_queryset(self):
     return Place.objects.select_related('parent')

@@ -120,8 +120,19 @@ class AnotherFromTheArchiveTests(DashboardTestCase):
     client.force_login(self.reader)
     response = client.get('/', headers={'x-requested-with': 'XMLHttpRequest', 'accept': 'application/json'})
     html = response.json()['html']
-    self.assertIn('data-cmnsd-target="#from-the-archive"', html)
     self.assertNotIn('<html', html)
+    # Only the item: the heading with "Another" stays on the page.
+    self.assertNotIn('data-cmnsd-target', html)
+
+  def test_another_swaps_only_the_item(self):
+    from content.models import Content
+    Content.objects.create(name='Strand', user=self.reader, status='p', visibility='c', kind='photo', file='x.jpg')
+    client = Client()
+    client.force_login(self.reader)
+    page = client.get('/').content.decode().replace('"', '')
+    self.assertNotIn('data-cmnsd-section=dashboard.random', page)   # the closer doesn't fold
+    self.assertIn('data-cmnsd-target=#from-the-archive', page)
+    self.assertIn('id=from-the-archive', page)
 
   def test_signed_out_gets_the_welcome(self):
     response = Client().get('/', headers={'x-requested-with': 'XMLHttpRequest'})

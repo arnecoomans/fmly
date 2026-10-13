@@ -35,6 +35,14 @@ When it's complete, **publish** it - it leaves your inbox and is shared.
 
 Click the image to open it full screen: **scroll** to move around, **pinch** (or Ctrl + scroll) to zoom - a sharper version loads as you zoom in. ‹ and › step through the pages. *Open original* shows the file itself.
 
+## Favorites
+
+Found something you really like? The **heart** on its page makes it one of your favorites; click it again to undo. Favorites are shared: the item shows how many people favorited it and who.
+
+- **Your favorites** - *More* → **Your favorites**: everything you favorited, the most recent first.
+- **Most favorited** - in a list of photos and documents, the ♥ sort puts what the family likes most on top. Cards show a heart with the count.
+- Only a published item can be a favorite.
+
 ## Transcribing
 
 A transcript makes a document readable and searchable. **Transcribe** opens the image beside the text:
