@@ -4,7 +4,7 @@
 
 ## Adding content
 
-For editors: *More* → **Add content**, or drop files on the dashboard. Several files at once is fine - they're uploaded one by one, in name order.
+For editors: *More* → **Add content**, or drop files on the dashboard. Several files at once is fine - they're uploaded one by one, in name order. On a person's page in edit mode, the dropzone in *Content* adds files already linked to that person ([People](people.md)).
 
 - A file that's **already in the archive** is recognised and not added twice.
 - Each upload becomes a **draft** in your **inbox**: visible only to you until you publish it.

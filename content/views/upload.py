@@ -11,6 +11,8 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
 from cmnsd.edit.log import log_change
+from cmnsd.edit.mode import can_edit
+from cmnsd.models.access import filter_accessible
 from cmnsd.views.api.response import api_response, api_view
 
 from ..models import Content
@@ -33,21 +35,44 @@ def content_upload(request):
   (content/uploads.py). Answers in the cmnsd API shape:
   {created: {token, name, url, thumb}} or {duplicate: {...}} - a file
   that's in the archive already (by checksum); `duplicate` has a url only
-  when this user may see that item. 403 without content.add_content."""
+  when this user may see that item. 403 without content.add_content.
+
+  Optional `person` (a token - the dropzone on a person's page, issue
+  #456): the new item is linked to that person. A file that's in the
+  archive already gets the person linked instead - when this user may see
+  and change that item - answered as `duplicate` with `linked`: uploading
+  on someone's page means "this belongs with them". A person this user
+  may not see (or no such token) is a 400, before anything is stored."""
   if not (request.user.is_authenticated and request.user.has_perm('content.add_content')):
     return api_response(request, status=403, error=_("You may not add content."), errors={'permission': True})
   uploaded = request.FILES.get('file')
   if uploaded is None:
     return api_response(request, status=400, error=_("No file sent."), errors={'request': 'file'})
+  person = None
+  if request.POST.get('person'):
+    from people.models import Person
+    person = filter_accessible(Person.objects.all(), request).filter(token=request.POST['person']).first()
+    if person is None:
+      return api_response(request, status=400, error=_("That person wasn't found."), errors={'person': True})
   content, duplicate = create_upload(uploaded, request.user)
   if duplicate is not None:
     visible = Content.objects.visible_to(request).filter(pk=duplicate.pk).exists()
+    deleted = duplicate.status == Content.Status.DELETED
+    linked = bool(person and visible and not deleted and can_edit(duplicate, request.user))
+    if linked and not duplicate.people.filter(pk=person.pk).exists():
+      duplicate.people.add(person)
+      log_change(request, duplicate, f"Added people: {person} (uploaded again on their page)")
     return api_response(request, duplicate={
       'name': str(duplicate) if visible else '',
       'url': duplicate.get_absolute_url() if visible else '',
-      'deleted': duplicate.status == Content.Status.DELETED,
+      'deleted': deleted,
+      'linked': linked,
     })
-  log_change(request, content, "Uploaded")
+  if person is not None:
+    content.people.add(person)
+    log_change(request, content, f"Uploaded, with {person}")
+  else:
+    log_change(request, content, "Uploaded")
   return api_response(request, obj=content, created={
     'token': content.token, 'name': str(content), 'url': content.get_absolute_url(),
     'thumb': reverse('content:thumbnail', args=[content.token, 'avatar']) if content.media_type == 'image' else '',

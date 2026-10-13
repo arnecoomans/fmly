@@ -5,6 +5,11 @@
   this viewer's remembered order for person pages. Rendered in the page
   when the section is open, or through the API when it's opened
   (cmnsd/section.html). By kind for now; grouping by Mention role comes
-  with Mention. Context: `person`, `request`.
+  with Mention. In edit mode, for who may add content, a dropzone first:
+  new files become drafts linked to this person (issue #456).
+  Context: `person`, `request`.
 {% endcomment %}
+{% if edit_mode and perms.content.add_content %}
+  {% include 'content/_upload_for.html' with param='person' token=person.token name=person.get_short_name %}
+{% endif %}
 {% include 'content/_content_grid.html' with items=person|visible_content:request sort=person|content_sort:request save_key='person.content' grid_id='person-content-grid' %}

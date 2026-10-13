@@ -1,0 +1,30 @@
+{% comment %}
+  A dropzone that adds content to the archive *for* something on the page
+  it's on (issue #456): every file becomes a draft in your inbox, linked
+  to it - on a person's page, to that person (content_upload's `person`).
+  A file that's in the archive already gets linked instead, when you may
+  change that item. cmnsd.js upload.js; the hidden input goes along with
+  each file (data-upload-param). Each added file's row links straight to
+  the new draft ("Open") - the way on is describing it, not reloading this
+  page to find it in the grid. Edit mode, for who may add content - the
+  caller checks.
+  Context: `param` (the upload view's field, e.g. 'person'), `token`, `name`
+  (shown: "linked to <name>").
+{% endcomment %}
+<div class="upload-for">
+  <div class="dropzone dropzone--compact" data-cmnsd-upload="{% url 'content:upload_file' %}"
+       data-text-sending="{% translate 'Sending…' %}" data-text-added="{% translate 'Open' %}"
+       data-text-duplicate="{% translate 'Already in the archive:' %}"
+       data-text-duplicate-linked="{% translate 'Already in the archive - linked:' %}"
+       data-text-duplicate-deleted="{% translate 'Already in the archive (deleted).' %}"
+       data-text-too-large="{% translate 'Too large for the server.' %}" data-text-failed="{% translate 'Not added' %}">
+    <input type="hidden" name="{{ param }}" value="{{ token }}" data-upload-param>
+    <p class="dropzone__text"><i class="bi bi-cloud-arrow-up"></i> {% blocktranslate %}Add content for {{ name }}: drop files here, or{% endblocktranslate %}
+      <label class="dropzone__choose">{% translate "choose files" %}<input type="file" multiple data-upload-input accept="image/*,application/pdf,audio/*,video/*"></label></p>
+    <ul class="upload-list upload-list--compact" data-upload-list></ul>
+  </div>
+  <p class="upload-for__done" data-upload-done hidden>
+    {% blocktranslate %}Added as drafts in your inbox, linked to {{ name }}.{% endblocktranslate %}
+    {% translate "Open one above to describe it, or" %} <a href="{% url 'content:inbox' %}">{% translate "open the inbox" %}</a>.
+  </p>
+</div>

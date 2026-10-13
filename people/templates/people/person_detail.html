@@ -109,7 +109,7 @@
     {% endif %}
 
     {% translate "content" as title %}
-    <div class="via-region" data-cmnsd-via-links="person:{{ person.token }}">{% include 'cmnsd/section.html' with key='person.content' title=title|capfirst count=person|content_count:request body='person/functions/get_visible_content.html' model='person' token=person.token field='get_visible_content' %}</div>
+    <div class="via-region" data-cmnsd-via-links="person:{{ person.token }}">{% include 'cmnsd/section.html' with key='person.content' title=title|capfirst count=person|content_count:request body='person/functions/get_visible_content.html' model='person' token=person.token field='get_visible_content' empty_body=editing %}</div>
 
     {% translate "comments" as title %}
     {% include 'cmnsd/section.html' with key='person.comments' title=title|capfirst count=person|comment_count:request body='person/functions/get_comments.html' model='person' token=person.token field='get_comments' empty_body=request.user.is_authenticated count_list='#comments-'|add:person.token count_items='.comment-row' %}

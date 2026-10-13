@@ -7,6 +7,7 @@ A ground-up rebuild: a new content design, centred on content and people instead
 ### New
 - **Dashboard** - on this day and the calendar, recently added, from the archive, the latest comments, an inbox for uploads, loose ends to complete, and your own place in the archive
 - **People** - names, birth and death with partial dates (ca., before, after), parents, partners and children edited on the person's page, a life timeline with ages
+- **Add content from a person's page** - in edit mode, files dropped there become drafts already linked to that person; a file in the archive already gets them linked ([#456](https://github.com/arnecoomans/fmly/issues/456))
 - **Photos & documents** - one kind of content for photos, documents, books, objects and recordings, with their parts; who is on a photo, dates and places, transcripts with OCR
 - **Events and places** as pages of their own, linking people and content
 - **Favorites** - a heart on an item's page, shared: who favorited it, family favorites on the dashboard, your own list, and a *most favorited* sort ([#453](https://github.com/arnecoomans/fmly/issues/453))
