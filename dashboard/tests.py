@@ -451,6 +451,14 @@ class NumbersTests(DashboardTestCase):
     self.assertIn('href=/notes/', html)
     self.assertIn('href=/comments/', html)
 
+  def test_people_counts_family_only(self):
+    """As the People list it links to shows by default."""
+    before = blocks.numbers(self.request(self.editor))['people']
+    self.person('Familie')
+    self.person('Schrijver', family_connection='outsider')
+    self.person('Misschien', family_connection='possibly_family')
+    self.assertEqual(blocks.numbers(self.request(self.editor))['people'], before + 1)
+
 
 class ProgressTests(DashboardTestCase):
   """dashboard/progress.py: what's done behind the loose ends, as bars."""

@@ -58,7 +58,9 @@ def from_the_archive(request):
 def numbers(request):
   """The archive in numbers - each as far as this viewer may see it: the
   things in it (people, items, events, places) and what's said and found
-  about them (comments, notes, tags)."""
+  about them (comments, notes, tags). People: family only, as the People
+  list it links to shows by default - outsiders (authors, neighbours) and
+  possibly family are in the archive for another reason."""
   from content.models import Content
   from core.comments import visible_comment_feed
   from core.models import Tag
@@ -67,7 +69,7 @@ def numbers(request):
   from people.models import Person
   from places.models import Place
   return {
-    'people': filter_accessible(Person.objects.all(), request).count(),
+    'people': filter_accessible(Person.objects.filter(family_connection=Person.FamilyConnection.FAMILY), request).count(),
     'content': Content.objects.visible_to(request).listable().count(),
     'events': Event.objects.filter(pk__in=filter_accessible(Event.objects.all(), request).values('pk')).count(),
     'places': Place.objects.count(),
