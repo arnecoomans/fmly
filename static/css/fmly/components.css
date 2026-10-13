@@ -1200,7 +1200,8 @@ a.tag:hover { border-color: var(--color-accent); color: var(--color-accent-hover
 /* ===== Edit mode: chips with a remove button, inline pickers ===== */
 /* cmnsd/edit/unlink.html next to a chip, inside .chip-edit (removed as a
    whole on success); cmnsd/edit/link_picker.html under the chip list. */
-.chip-edit { display: inline-flex; align-items: center; }
+/* stretch: the "×" is as tall as its chip, also when the chip's text wraps. */
+.chip-edit { display: inline-flex; align-items: stretch; }
 .chip-edit > .tag { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: 0; }
 .chip-edit__remove { margin: 0; display: inline-flex; }
 .chip-edit__remove button {
@@ -1247,8 +1248,12 @@ a.tag:hover { border-color: var(--color-accent); color: var(--color-accent-hover
 .picker-result__name--single { grid-row: 1 / 3; white-space: normal; }
 .picker-result__name--single .person-lifespan { font-weight: 400; color: var(--color-ink-3); }
 /* A place chip: the name with its parents wraps as one text, not as
-   separate flex columns; in edit mode the places stack as chips. */
-.tag--place { align-items: flex-start; }
+   separate flex columns; in edit mode the places stack as chips. A fixed
+   radius instead of the pill: still round on one line, but a wrapped,
+   taller chip keeps straight sides instead of turning into a blob - its
+   "×" (.chip-edit) follows the same corners. */
+.tag--place { align-items: flex-start; border-radius: 15px; }
+.chip-edit > .tag--place + .chip-edit__remove button { border-radius: 0 15px 15px 0; }
 .tag--place > i { margin-top: 2px; }
 .tag__text { min-width: 0; }
 .content-detail__places--edit { display: flex; flex-wrap: wrap; gap: var(--space-2); }
