@@ -93,6 +93,22 @@ def for_row(person):
 
 
 @register.filter
+def timeline_history(request):
+  """{{ request|timeline_history }} -> 'all' / 'life': whether this viewer
+  keeps history on a person's timeline (cmnsd ui_state key person.history,
+  saved by filter.js data-cmnsd-filter-save; default: shown)."""
+  from cmnsd.ui.state import get_sort
+  return get_sort(request, 'person.history', 'all', ('all', 'life'))
+
+
+@register.filter
+def has_history(entries):
+  """{% if entries|has_history %} - a timeline with general history in it,
+  which the show/hide switch is for."""
+  return any(entry.history for entry in entries)
+
+
+@register.filter
 def life_timeline(person, request):
   """{% for entry in person|life_timeline:request %} - the person's own
   events and their close family's, by date (people/timeline.py)."""

@@ -43,6 +43,9 @@ class EventDetailView(DetailView):
       'editing': is_edit_mode(request) and can_edit(event, request.user),
       'people': people,
       'places': list(event.places.select_related('parent')),
+      # Background (issue #464), as far as this viewer may see those events.
+      'background': list(filter_accessible(event.background.all(), request)),
+      'background_for': list(filter_accessible(event.background_for.all(), request)),
     })
     if context['editing']:
       context['suggested_content'] = suggested_content(event, request)
@@ -50,6 +53,8 @@ class EventDetailView(DetailView):
       'people': ','.join(p.token for p in people),
       'places': ','.join(p.token for p in context['places']),
       'content': ','.join(item.token for item in event.visible_content),
+      # Never itself (Event._related refuses it too).
+      'background': ','.join([event.token, *(other.token for other in context['background'])]),
     }
     return context
 

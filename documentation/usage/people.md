@@ -38,6 +38,8 @@ The timeline puts a life in order: their own events (birth, marriage, divorce, m
 
 An event without a date has no place in time, so it's left out - except the person's own birth (first) and death (last).
 
+**Background** of their own events shows too, marked *background to …* - see [Events and places](events-and-places.md). **With historic events / own events** above the timeline shows or hides the general history; your choice is remembered for every person's page. Background stays: it's their own context.
+
 ## Private people
 
 Some people - usually living relatives - are marked **private**. Their name appears in family lists and on photos, but their page only opens for themselves, their parents and staff.

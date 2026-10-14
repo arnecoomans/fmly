@@ -23,5 +23,5 @@ class EventAdmin(TimestampAdminMixin, OwnershipAdminMixin, admin.ModelAdmin):
   list_filter = ('kind',)
   # Also what the person admin's event autocomplete searches.
   search_fields = ('title', 'kind_freetext', 'description', 'people__given_name', 'people__called_name', 'people__last_name', 'year')
-  autocomplete_fields = ('people', 'places')
+  autocomplete_fields = ('people', 'places', 'background_for')
   inlines = [EventContentInline]

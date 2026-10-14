@@ -5,4 +5,5 @@
 {% if result.relation == 'people' %}{% with person=result.object %}{% include 'event/_person.html' %}{% endwith %}
 {% elif result.relation == 'places' %}{% with place=result.object %}{% include 'event/_place.html' %}{% endwith %}
 {% elif result.relation == 'content' %}{% with item=result.object %}{% include 'event/_item.html' %}{% endwith %}
+{% elif result.relation == 'background' %}{% with other=result.object %}{% include 'event/_event_chip.html' with unlink='background' %}{% endwith %}
 {% endif %}

@@ -1,0 +1,13 @@
+{% load edit_mode %}
+{% comment %}
+  Another event, as a chip on an event's page - its background, or what
+  it's background for (issue #464). With `unlink` (the relation's name,
+  e.g. 'background'), in edit mode for who may change this event: its "×".
+  Also what the link action returns.
+  Context: other (the event shown), event (the page's), request; optional unlink.
+{% endcomment %}
+{% if unlink and edit_mode and event|can_edit:request %}
+  <span class="chip-edit"><a class="tag" href="{{ other.get_absolute_url }}"><i class="bi bi-calendar-event"></i>{{ other.label }}{% if other.year %} <span class="tag__meta">{{ other.year }}</span>{% endif %}</a>{% include 'cmnsd/edit/unlink.html' with model='event' owner=event relation=unlink object=other %}</span>
+{% else %}
+  <a class="tag" href="{{ other.get_absolute_url }}"><i class="bi bi-calendar-event"></i>{{ other.label }}{% if other.year %} <span class="tag__meta">{{ other.year }}</span>{% endif %}</a>
+{% endif %}

@@ -3,19 +3,32 @@
   Function template for Person.get_visible_events() - the Events section
   body: the person's life as a timeline (people/timeline.py) - their own
   events and their close family's (children's births and deaths, parents'
-  and partners' deaths) and history (historical events without people) within
-  their life, by date, each with their age then; family and history events
-  quieter, with the relation or "history". Each event as
+  and partners' deaths), the background of their own events, and history
+  (historical events in their life, issue #464) - by date, each with their
+  age then; family and history events quieter, with the relation or
+  "history", background with what it's background to. Each event as
   event/_event.html. Rendered in the page when the section is open, or
   through the API when it's opened. Context: `person`, `request`.
+
+  With history in it: a switch to show or hide it (cmnsd.js filter.js) -
+  remembered per user (data-cmnsd-filter-save, key person.history, read
+  back by timeline_history). Background stays: it's the person's own context.
 {% endcomment %}
-<ol class="timeline">
-  {% for entry in person|life_timeline:request %}
-    <li class="timeline__entry">{% include 'event/_event.html' with event=entry.event others=entry.others relative=entry.relative relation=entry.relation age=entry.age history=entry.history %}</li>
+{% with entries=person|life_timeline:request history_choice=request|timeline_history %}
+{% if entries|has_history %}
+  <div class="content-grid-pills timeline__switch" data-cmnsd-filter="#timeline-{{ person.token }}" data-cmnsd-filter-save="person.history" hidden>
+    <button type="button" class="content-grid-pill{% if history_choice == 'all' %} is-active{% endif %}" data-filter="" aria-pressed="{% if history_choice == 'all' %}true{% else %}false{% endif %}">{% translate "with historic events"|capfirst %}</button>
+    <button type="button" class="content-grid-pill{% if history_choice == 'life' %} is-active{% endif %}" data-filter="life" aria-pressed="{% if history_choice == 'life' %}true{% else %}false{% endif %}">{% translate "own events"|capfirst %}</button>
+  </div>
+{% endif %}
+<ol class="timeline" id="timeline-{{ person.token }}">
+  {% for entry in entries %}
+    <li class="timeline__entry" data-filter-value="{% if entry.history %}history{% else %}life{% endif %}">{% include 'event/_event.html' with event=entry.event others=entry.others relative=entry.relative relation=entry.relation age=entry.age history=entry.history background=entry.background explains=entry.explains %}</li>
   {% empty %}
     <li class="timeline__empty">{% translate "No events yet." %}</li>
   {% endfor %}
 </ol>
+{% endwith %}
 {% if edit_mode and perms.events.add_event and person|can_edit:request %}
   {# A new event with this person in it, in a dialog - the timeline reloads. #}
   <button type="button" class="btn btn--secondary btn--sm timeline__new" data-cmnsd-create="{% url 'cmnsd_api:object_create' 'event' %}?person={{ person.token }}" data-cmnsd-create-title="{% translate 'new event'|capfirst %}" data-cmnsd-create-then="reload"><i class="bi bi-plus-lg"></i> {% translate "add an event"|capfirst %}</button>

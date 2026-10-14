@@ -17,7 +17,15 @@ An event has a date (exact, *ca.*, *before* or *after*, or just a year), places,
 
 ## History and the calendar
 
-*More* → **Events** lists the historical events - the history the family lived through - and is where new ones are added. They also appear in the timeline of everyone alive at the time.
+*More* → **Events** lists the historical events - the history the family lived through - and is where new ones are added. They also appear in the timeline of everyone alive at the time. Someone linked to a historical event - they took part in it - has it as their own event; for everyone else it stays history.
+
+**Background.** Some history is context for one particular event rather than for everyone: "Sibajak released for repatriation" matters to those who arrived on the Sibajak later, though they weren't part of it. On the page of the event with the people - the arrival - in edit mode, add it under **Background**, or make it right there with **+ new historical event**. Then:
+
+- the people of that event see it on their timeline, marked *background to …* - also when it happened before they were born;
+- it no longer shows as history for everyone else - linked, it's specific context;
+- it only works one way: being in the background event doesn't bring the event it explains.
+
+Background is for the people in an event, so only an event with people has it. To say that history led to other history - the atomic bombs to the surrender of Japan - use the description: both stay history for everyone. The background event's page lists, read only, what it's background for.
 
 The **calendar** shows the whole year: every birth, marriage, death and historical event by day, with how long ago it was.
 

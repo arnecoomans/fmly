@@ -2,8 +2,8 @@
 {% load content_tags %}{% load edit_mode %}{% load events %}
 {% comment %}
   An event's page (events.views.EventDetailView): what it is, when, who,
-  where, what happened, the items documenting it, the notes about it and
-  the comments.
+  where, what happened, its background and what it's background for, the
+  items documenting it, the notes about it and the comments.
   In edit mode (`editing`): blocks for what, when and the description
   (Event.api_edit_forms) and pickers for people, places and items
   (EditableRelationsMixin) - a new person in a dialog.
@@ -49,6 +49,32 @@
         {% translate "add a place" as add_label %}
         {% include 'cmnsd/edit/link_picker.html' with model='event' owner=event relation='places' picker_model='place' target='#event-places' label=add_label|capfirst placeholder=add_label|capfirst exclude=tokens.places can_create=perms.places.add_place new_dialog='' %}
       {% endif %}
+    </section>
+  {% endif %}
+
+  {% comment %}
+    Background (issue #464): what explains this event, edited here - only
+    on an event with people, since background is for them: they see it on
+    their timeline. "+ new historical event" makes one in a dialog and
+    links it. "Background for": the other way, read only - edited on those
+    events' pages.
+  {% endcomment %}
+  {% if background or editing and people %}
+    <section class="tag-page__section">
+      <h2 class="section-title">{% translate "background"|capfirst %}</h2>
+      <div class="tag-list" id="event-background">{% for other in background %}{% include 'event/_event_chip.html' with unlink='background' %}{% endfor %}</div>
+      {% if editing and people %}
+        <p class="edit-form__help">{% translate "What made this event possible, or explains it - its people see it on their timeline as background." %}</p>
+        {% translate "add background" as add_label %}{% translate "new historical event" as new_label %}
+        {% url 'cmnsd_api:object_create' 'event' as create_url %}
+        {% include 'cmnsd/edit/link_picker.html' with model='event' owner=event relation='background' picker_model='event' target='#event-background' label=add_label|capfirst placeholder=add_label|capfirst exclude=tokens.background new_dialog=create_url|add:'?kind=historical' new_param='title' new_label=new_label|capfirst can_new=perms.events.add_event %}
+      {% endif %}
+    </section>
+  {% endif %}
+  {% if background_for %}
+    <section class="tag-page__section">
+      <h2 class="section-title">{% translate "background for"|capfirst %}</h2>
+      <div class="tag-list">{% for other in background_for %}{% include 'event/_event_chip.html' %}{% endfor %}</div>
     </section>
   {% endif %}
 

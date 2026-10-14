@@ -1,5 +1,7 @@
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -64,6 +66,22 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
   # a treaty signed across two countries) - plain M2M, no from/to ordering.
   places = models.ManyToManyField('places.Place', blank=True, related_name='events')
 
+  # Background (issue #464): this event made those possible, or explains
+  # them - "Sibajak released for repatriation" is background for "Arrival
+  # per Sibajak". One way: the people of those events see this one on
+  # their timeline as background, not the other way around
+  # (people/timeline.py); one step, it doesn't carry on. A historical event
+  # that's background for an event *with people* is specific context, no
+  # longer general history for everyone alive at the time - background for
+  # an event without people changes nothing on a timeline (Hiroshima for
+  # the surrender of Japan would otherwise vanish from all of them).
+  # event.background: the reverse - what explains this event. Edited from
+  # that side, on an event with people (api_editable_relations).
+  background_for = models.ManyToManyField(
+    'self', symmetrical=False, blank=True, related_name='background',
+    help_text=_("Events this one is background for: what made them possible, or explains them"),
+  )
+
   objects = EventQuerySet.as_manager()
   # Dismissed from a loose end ("fine as it is", dashboard.LooseEndDismissal):
   # the rows go with the item.
@@ -85,7 +103,24 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
     'people': {},
     'places': {'create': {}},
     'content': {},
+    # What explains this event (Event.background_for seen from here) - only
+    # for an event with people, never itself: _related refuses both.
+    'background': {},
   }
+  def _related(self, manager, request, token):
+    """EditableRelationsMixin: the object to link. For `background` (the
+    only relation to events): never this event itself, and only when this
+    event has people - background is for the people in it (people/
+    timeline.py). Refused before anything is added (see
+    not_its_own_background below)."""
+    obj = super()._related(manager, request, token)
+    if isinstance(obj, Event):
+      if obj == self:
+        raise ValidationError(_("An event can't be background for itself."))
+      if not self.people.exists():
+        raise ValidationError(_("Background is for the people in an event - add them first."))
+    return obj
+
   # A new event in a dialog (cmnsd object_create): the events page's
   # "+ New event", a timeline's "+ add an event", the event pickers.
   api_create_form = 'events.forms.EventCreateForm'
@@ -214,3 +249,14 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
       partial_date = date(self.year, self.month, self.day)
       return partial_date
     return None
+
+
+@receiver(m2m_changed, sender=Event.background_for.through)
+def not_its_own_background(sender, instance, action, pk_set, **kwargs):
+  """An event is never background for itself - from either side of the
+  relation, whoever adds it (the admin, a script): dropped quietly. Not
+  raised: add() runs in an atomic block without a savepoint, so an error
+  here would break the whole surrounding transaction. The link action
+  refuses it with a message first (Event._related)."""
+  if action == 'pre_add' and pk_set:
+    pk_set.discard(instance.pk)
