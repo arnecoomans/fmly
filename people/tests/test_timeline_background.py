@@ -167,3 +167,21 @@ class BackgroundTests(TestCase):
     set_sort(request, 'person.history', 'life')
     html = client.get(url, HTTP_ACCEPT='application/json').json()['fields']['get_visible_events'].replace('"', '')
     self.assertRegex(html, r'content-grid-pill is-active[^>]*data-filter=life')
+
+
+class ResidenceTests(TestCase):
+  """A residence event (issue #465): proof someone lived somewhere, from a
+  source outside the archive - their own event, like any other."""
+
+  def test_residence_is_an_own_event(self):
+    user = get_user_model().objects.create(username='viewer')
+    user.save()
+    lisa = Person.objects.create(given_name='Lisa', user=user, status='p', visibility='c')
+    Event.objects.create(kind='birth', year=1920, user=user).people.set([lisa])
+    residence = Event.objects.create(kind='residence', year=1935, user=user, description='Adresboek Amsterdam 1935')
+    residence.people.set([lisa])
+    request = RequestFactory().get('/')
+    request.user = user
+    entry = next(e for e in life_timeline(lisa, request) if e.event == residence)
+    self.assertFalse(entry.history or entry.background)
+    self.assertEqual(entry.age, 'about 15')

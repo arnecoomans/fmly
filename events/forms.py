@@ -22,12 +22,12 @@ DATE_WIDGETS = {
   'day': forms.NumberInput(attrs={'min': 1, 'max': 31, 'inputmode': 'numeric'}),
   'year': forms.NumberInput(attrs={'min': 1, 'inputmode': 'numeric'}),
 }
-WHAT_LABELS = {
-  'kind': _("kind"), 'title': _("title"), 'kind_freetext': _("own label"),
-}
+WHAT_LABELS = {'kind': _("kind"), 'title': _("title")}
+# One field for what it was and what it's called (it used to be two, title
+# and own label - the same text in practice). Hidden for the kinds that
+# name themselves (Event.UNTITLED_KINDS, components.css).
 WHAT_HELP = {
-  'title': _("Optional - e.g. 'Inval Japan Nederlands Indië'. Without one, the kind names it."),
-  'kind_freetext': _("For kind 'other': what it was - e.g. 'verhuizing naar Medan'."),
+  'title': _("What it was, or its name - e.g. 'Verloving' or 'Inval Japan Nederlands Indië'. Required for 'other'; a historical event needs one to say what it is."),
 }
 
 
@@ -37,13 +37,13 @@ def _month_choices(form):
 
 
 class EventWhatForm(forms.ModelForm):
-  """What the event is: its kind, and a title or own label."""
+  """What the event is: its kind, and its title."""
   class Meta:
     model = Event
-    fields = ['kind', 'title', 'kind_freetext']
+    fields = ['kind', 'title']
     labels = WHAT_LABELS
     help_texts = WHAT_HELP
-    widgets = {'title': forms.TextInput(attrs={'autocomplete': 'off'}), 'kind_freetext': forms.TextInput(attrs={'autocomplete': 'off'})}
+    widgets = {'title': forms.TextInput(attrs={'autocomplete': 'off'})}
 
 
 class EventDateForm(forms.ModelForm):
@@ -87,7 +87,7 @@ class EventCreateForm(forms.ModelForm):
   and the description; the documenting items are added on its page.
   Prefilled from the query: ?kind= (the events page's kind), ?person=<token>
   (a person's timeline - linked to the new event, if this user may see
-  them). Published, like the rest.
+  them), ?content=<token> (an item documenting it). Published, like the rest.
 
   Who, besides that person: `with_people`, their close family to tick
   (partners, parents, children - those this user may see), and
@@ -102,7 +102,7 @@ class EventCreateForm(forms.ModelForm):
     widget=PickerInput(
       'place', label=lambda place: ' › '.join(ancestor.name for ancestor in place.ancestors()),
       placeholder=_("search a place"), empty_label=_("unknown"), clear_label=_("remove"), submit=False,
-      create_label=_("+ new place"),
+      create_label=_("+ new place"), empty_until_cleared=True,
     ),
   )
   person = forms.CharField(required=False, widget=forms.HiddenInput)
@@ -110,7 +110,18 @@ class EventCreateForm(forms.ModelForm):
   other_person = forms.ModelChoiceField(
     Person.objects.none(), to_field_name='token', required=False, label=_("someone else"),
     widget=PickerInput(
-      'person', placeholder=_("search a person"), empty_label=_("no one"), clear_label=_("remove"), submit=False,
+      'person', placeholder=_("search a person"), empty_label=_("no one"), clear_label=_("remove"), submit=False, empty_until_cleared=True,
+    ),
+  )
+  # The evidence to hand, if any: one item, linked as "documented by" on
+  # save. More, with suggestions from its people, on the event's page.
+  # ?content=<token> prefills it (residence suggestions, #465); left out
+  # when the dialog comes from an item's page, which links that item itself
+  # (?from_content=1).
+  content = forms.ModelChoiceField(
+    Person.objects.none(), to_field_name='token', required=False, label=_("documented by"),
+    widget=PickerInput(
+      'content', placeholder=_("search an item"), empty_label=_("nothing yet"), clear_label=_("remove"), submit=False, empty_until_cleared=True,
     ),
   )
 
@@ -118,12 +129,12 @@ class EventCreateForm(forms.ModelForm):
   PARTNER_KINDS = (Event.Kind.MARRIAGE, Event.Kind.DIVORCE)
 
   # The template groups these (event/forms/new.html).
-  what_fields = ['kind', 'title', 'kind_freetext']
+  what_fields = ['kind', 'title']
   date_fields = DATE_FIELDS
 
   class Meta:
     model = Event
-    fields = ['kind', 'title', 'kind_freetext', *DATE_FIELDS, 'description']
+    fields = ['kind', 'title', *DATE_FIELDS, 'description']
     labels = {**WHAT_LABELS, **DATE_LABELS, 'description': _("description")}
     help_texts = WHAT_HELP
     widgets = {**DATE_WIDGETS, 'description': forms.Textarea(attrs={'rows': 4})}
@@ -148,6 +159,12 @@ class EventCreateForm(forms.ModelForm):
     else:
       del self.fields['with_people']
     self.fields['other_person'].widget.exclude = [t for t in [getattr(self.linked_person, 'token', None), *(t for t, _l in family)] if t]
+    # Documented by: an item this user may see; not from an item's page.
+    from content.models import Content
+    if not self.is_bound and self.request.GET.get('from_content'):
+      del self.fields['content']
+    else:
+      self.fields['content'].queryset = Content.objects.visible_to(self.request)
 
   def _family(self, visible):
     """[(token, "Jacoba Bake (wife)")] - the linked person's partners, then
@@ -197,6 +214,9 @@ class EventCreateForm(forms.ModelForm):
       self.instance.people.add(self.linked_person)
     if others:
       self.instance.people.add(*others)
+    item = self.cleaned_data.get('content')
+    if item is not None:
+      self.instance.content.add(item)
     if self.linked_person is not None and self.instance.kind in self.PARTNER_KINDS:
       self._link_partners(others)
 

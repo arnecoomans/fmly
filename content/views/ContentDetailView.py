@@ -117,7 +117,9 @@ class ContentDetailView(VisibilityViewMixin, DetailView):
     date = {name: getattr(content, name) for name in ('year', 'month', 'day') if getattr(content, name)}
     if date:
       date['date_qualifier'] = content.date_qualifier
-    context['new_event_query'] = f'?{urlencode(date)}' if date else ''
+    # from_content: the dialog leaves out its own "documented by" - this
+    # page's picker links the item once the event is made.
+    context['new_event_query'] = '?' + urlencode({**date, 'from_content': 1})
     # A deleted item (only staff get here) is opened to be checked: every
     # section open, whatever is remembered (cmnsd/section.html).
     context['unfold_sections'] = content.status == Content.Status.DELETED

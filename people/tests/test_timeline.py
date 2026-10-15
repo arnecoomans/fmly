@@ -63,13 +63,13 @@ class TimelineTests(TestCase):
     self.assertEqual(ages[1884], '')                            # his own birth
     self.assertEqual(ages[1898], 'aged 14')                     # 24-8 after 16-4: complete dates
     self.assertEqual(ages[1930], 'about 46')                    # a year only: about
-    early = Event(kind='other', kind_freetext='x', year=1900, month=1, day=1)
+    early = Event(kind='other', title='x', year=1900, month=1, day=1)
     self.assertEqual(age_at(self.birth, early), 'aged 15')      # before his birthday that year
 
   def test_undated_birth_first_death_last_others_left_out(self):
     from people.models import Person
     person = Person.objects.create(given_name='Onbekend', user=self.user, status='p', visibility='c')
-    for fields in ({'kind': 'death'}, {'kind': 'other', 'kind_freetext': 'Iets'}, {'kind': 'migration', 'year': 1920}, {'kind': 'birth'}):
+    for fields in ({'kind': 'death'}, {'kind': 'other', 'title': 'Iets'}, {'kind': 'migration', 'year': 1920}, {'kind': 'birth'}):
       Event.objects.create(user=self.user, **fields).people.set([person])
     request = RequestFactory().get('/')
     request.user = self.user

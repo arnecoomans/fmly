@@ -55,7 +55,7 @@ class PersonEventInline(admin.TabularInline):
 
   @admin.display(description="kind")
   def kind(self, obj):
-    return obj.event.kind_freetext or obj.event.get_kind_display() if obj.pk else '-'
+    return obj.event.label() if obj.pk else '-'
 
   @admin.display(description="date")
   def date(self, obj):

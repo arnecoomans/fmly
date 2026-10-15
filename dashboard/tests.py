@@ -172,10 +172,12 @@ class LooseEndRulesTests(DashboardTestCase):
     client.post('/dashboard/loose-ends/lone-places/', {'object_id': oceaan.pk, 'note': 'een oceaan ligt nergens in'})
     self.assertEqual(self.items('lone-places'), [oirschot])                               # fine as it is
 
-  def test_other_events_with_a_title_are_fine(self):
-    untitled = Event.objects.create(kind='other', kind_freetext='Verhuizing', user=self.editor)
-    Event.objects.create(kind='other', kind_freetext='Benoeming', title='Benoeming tot ambtenaar', user=self.editor)
-    self.assertEqual(self.items('other-events'), [untitled])
+  def test_other_events_ask_whether_a_kind_fits(self):
+    """Every 'other' event, until it gets its kind or is fine as it is."""
+    move = Event.objects.create(kind='other', title='Verhuizing naar Medan', user=self.editor)   # a migration, really
+    appointment = Event.objects.create(kind='other', title='Benoeming tot ambtenaar', user=self.editor)
+    Event.objects.create(kind='migration', title='Vertrek', user=self.editor)                 # has its kind
+    self.assertEqual(set(self.items('other-events')), {move, appointment})
 
   def test_open_transcripts(self):
     from content.models import Content, Transcript

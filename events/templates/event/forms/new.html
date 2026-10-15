@@ -1,7 +1,7 @@
 {% comment %}
   A new event in a dialog (cmnsd object_create, EventCreateForm): what it
   is, when (one line, like an item's date), where, who, and the
-  description; the documenting items follow on its page. Who: the person
+  description; one documenting item can be chosen here, more follow on its page. Who: the person
   it was started from (named below), their close family to tick, and
   someone else through the picker. For a marriage or a divorce a hint says
   the others are partners (shown by the kind chosen - components.css
@@ -12,7 +12,7 @@
   {% for field in form.hidden_fields %}{{ field }}{% endfor %}
   {% if form.non_field_errors %}<p class="edit-form__error">{{ form.non_field_errors|join:' ' }}</p>{% endif %}
   {% for field in form.visible_fields %}{% if field.name in form.what_fields %}
-    <div class="edit-form__field">
+    <div class="edit-form__field edit-form__field--{{ field.name }}">
       <label for="{{ field.id_for_label }}">{{ field.label|capfirst }}</label>
       {{ field }}
       {% if field.help_text %}<small class="edit-form__help">{{ field.help_text }}</small>{% endif %}
@@ -47,6 +47,14 @@
     {% for error in form.other_person.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
     <small class="edit-form__help event-form__partner-hint">{% if form.linked_person %}{% blocktranslate with name=form.linked_person %}A marriage or divorce is between partners: choose {{ name }}'s partner. Someone who isn't linked as a partner yet becomes one.{% endblocktranslate %}{% else %}{% translate "A marriage or divorce is between partners: choose one here, the other on the event's page." %}{% endif %}</small>
   </div>
+  {% if 'content' in form.fields %}
+    {# The evidence to hand, if any - more, with suggestions, on the event's page. #}
+    <div class="edit-form__field">
+      <label for="{{ form.content.id_for_label }}">{{ form.content.label|capfirst }}</label>
+      {{ form.content }}
+      {% for error in form.content.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
+    </div>
+  {% endif %}
   <div class="edit-form__field">
     <label for="{{ form.description.id_for_label }}">{{ form.description.label|capfirst }}</label>
     {{ form.description }}

@@ -45,3 +45,12 @@ Most interactive parts exist twice on purpose: a plain page or form that works w
 - **Database:** SQLite by default (`DATABASE_URL`).
 - **Files:** `private/content/<year>/` - uploads and imported files, named after the item when the original name says nothing (`content/files.py`). Thumbnails are cached in `private/cache/`.
 - **Static files:** collected into `public/static/` with hashed names.
+
+## Design principles
+
+**Don't administer by hand what's logged automatically - and don't derive automatically what can easily be managed by hand.**
+
+- *Logged automatically:* who changed what and when (the admin history, `log_change`), who favorited an item, uploads and their checksums, dates in files. Nobody should have to keep these up to date themselves.
+- *Managed by hand:* what the data *means* - who was where, what an item is evidence of, which history matters to whom. Derived from links that don't say *how* someone is connected, it guesses - and a timeline that guesses wrong is worse than one that shows less. Derived "seen in" was built and removed for this reason ([#465](https://github.com/arnecoomans/fmly/issues/465)): a postcard addressed to someone isn't proof they were there.
+- *The test case - parents and siblings:* parents are entered by hand, siblings are derived (`get_siblings`). That works one way only: sharing one parent makes two people siblings - half-siblings if they share only one - but knowing two people are siblings doesn't say they share *all* their parents. So siblings follow safely from parents, and parents can't follow from siblings: they're recorded by hand.
+- In between: **suggest, and let a person decide** - a loose end or a hint that proposes ("residence suggestions"), with one click to record it and one to dismiss it. And where meaning is recorded explicitly (a *background for* link, an item linked to an event), derive from that freely: the decision was made by hand.

@@ -7,6 +7,8 @@ A ground-up rebuild: a new content design, centred on content and people instead
 ### New
 - **Dashboard** - on this day and the calendar, recently added, from the archive, the latest comments, an inbox for uploads, loose ends to complete, and your own place in the archive
 - **People** - names, birth and death with partial dates (ca., before, after), parents, partners and children edited on the person's page, a life timeline with ages
+- **Event title** - one field for what an event was or what it's called (it used to be title *and* own label, which held the same text); not asked for births, deaths, marriages and divorces; the new-event dialog says "unknown" for the place only once one's removed, and takes the item documenting it
+- **Residence** - an event for proof someone lived somewhere without knowing when they moved there, from a source outside the archive ([#465](https://github.com/arnecoomans/fmly/issues/465))
 - **History on the timeline** - a historical event can be *background for* another event: its people see it on their timeline, and it no longer shows for everyone; people linked to a historical event don't hide it from others; *with historic events / own events* on the timeline, remembered ([#464](https://github.com/arnecoomans/fmly/issues/464))
 - **Add content from a person's page** - in edit mode, files dropped there become drafts already linked to that person; a file in the archive already gets them linked ([#456](https://github.com/arnecoomans/fmly/issues/456))
 - **Photos & documents** - one kind of content for photos, documents, books, objects and recordings, with their parts; who is on a photo, dates and places, transcripts with OCR

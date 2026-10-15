@@ -104,7 +104,7 @@ LOOSE_ENDS = {
   'no-parents': _("people without parents"),
   'photos-without-people': _("photos without people"),
   'undated-events': _("events without a date"),
-  'other-events': _("events of kind 'other' without a title"),
+  'other-events': _("events of kind 'other' - does a kind fit?"),
   'open-transcripts': _("transcripts to finish or check"),
   'no-transcript': _("documents without a transcript"),
   'low-resolution': _("images in low resolution"),
@@ -184,7 +184,9 @@ def _loose_end_queryset(name, request):
   if name == 'undated-events':
     return events.filter(year__isnull=True)
   if name == 'other-events':
-    return events.filter(kind='other', title='')
+    # A migration or residence entered as 'other' ("Aankomst per Sibajak"):
+    # give it its kind - or "fine as it is" for what really is something else.
+    return events.filter(kind='other')
   if name == 'lone-places':
     # Outside the place tree: a town that belongs under its country, or a
     # country with nothing under it yet ("fine as it is"). Places have no

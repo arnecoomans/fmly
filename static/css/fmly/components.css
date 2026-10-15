@@ -1226,6 +1226,10 @@ a.tag:hover { border-color: var(--color-accent); color: var(--color-accent-hover
 .picker__chosen-name:empty { display: none; }
 .picker__chosen-empty { color: var(--color-ink-3); }
 .picker__chosen-name:not(:empty) + .picker__chosen-empty { display: none; }   /* chosen in the browser */
+/* Nothing to show - no choice, and its "unknown" not shown yet (a form for
+   something new, PickerInput empty_until_cleared): no empty row above the
+   search box. */
+.picker__chosen:has(> .picker__chosen-name:empty):not(:has(> .picker__chosen-empty:not([hidden]))) { display: none; }
 .picker__input {
   width: 100%;
   height: 36px;
@@ -1314,6 +1318,10 @@ a.tag:hover { border-color: var(--color-accent); color: var(--color-accent-hover
    is between partners - only while one of those kinds is chosen. */
 .event-form__partner-hint { display: none; }
 form:has(select[name="kind"] :is(option[value="marriage"], option[value="divorce"]):checked) .event-form__partner-hint { display: block; }
+/* An event's title - in the new-event dialog and the "what" block: not for
+   the kinds that name themselves (Event.UNTITLED_KINDS; clean() clears it).
+   [name$="kind"]: the block's field is prefixed (what-kind). */
+form:has(select[name$="kind"] :is(option[value="birth"], option[value="death"], option[value="marriage"], option[value="divorce"]):checked) .edit-form__field--title { display: none; }
 .edit-form__row--date .edit-form__field--day { flex: 0 0 64px; }
 .edit-form__row--date .edit-form__field--month { flex: 1 1 130px; }
 .edit-form__row--date .edit-form__field--year { flex: 0 0 88px; }
@@ -1578,6 +1586,11 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .event__header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; }
 .event__what { font-weight: 600; color: var(--color-ink); }
 .event__relation { font-weight: 400; color: var(--color-ink-2); }
+/* "background to ..." on a timeline (issue #464): a note about the entry,
+   smaller and quieter than the event itself. */
+.event__background { margin: 2px 0 0; font-size: var(--text-xs); color: var(--color-ink-3); }
+.event__background a { color: inherit; text-decoration: underline; text-decoration-color: var(--color-border); }
+.event__background a:hover { color: var(--color-ink-2); }
 .event__when { font-size: var(--text-sm); color: var(--color-ink-2); font-variant-numeric: tabular-nums; }
 .event__age, .event__undated { color: var(--color-ink-3); }
 .event__people, .event__places, .event__content { margin: 2px 0 0; font-size: var(--text-sm); color: var(--color-ink-2); }

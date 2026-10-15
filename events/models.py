@@ -27,7 +27,7 @@ class EventQuerySet(models.QuerySet):
 # In the API for the event picker (edit mode); visibility derived from the
 # people (filter_visibility below), search via api_search_q. Not the
 # description here: it's for signed-in viewers only (api_search_q).
-@api_model(search_fields=['title', 'kind_freetext'])
+@api_model(search_fields=['title'])
 class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDateMixin, EditableRelationsMixin,
             CommentableMixin, models.Model):
   class Kind(models.TextChoices):
@@ -36,8 +36,17 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
     MARRIAGE = "marriage", _("marriage")
     DIVORCE = "divorce", _("divorce")       # explains a timeline: why a partner is gone while alive
     MIGRATION = "migration", _("migration")
+    # Proof someone lived somewhere, without knowing when they moved there -
+    # evidence that isn't an item in the archive (an address book, a
+    # population register; the source in the description). GEDCOM RESI.
+    # A person's own event like any other (issue #465).
+    RESIDENCE = "residence", _("residence")
     HISTORICAL = "historical", _("historical")   # history, often without people (the Japanese invasion)
     OTHER = "other", _("other")
+
+  # Kinds that name themselves ("Marriage", with its people): no title -
+  # the forms hide the field, clean() clears it (events/forms.py).
+  UNTITLED_KINDS = (Kind.BIRTH, Kind.DEATH, Kind.MARRIAGE, Kind.DIVORCE)
 
   # Published from the start, like people (the site's default status is
   # concept); deleting is a status (StatusMixin): hidden from everyone,
@@ -46,10 +55,6 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
 
   kind = api_field(readonly=True)(
     models.CharField(max_length=20, choices=Kind.choices)
-  )
-  kind_freetext = models.CharField(
-    max_length=255, blank=True,
-    help_text=_("Custom label for this event - required when kind is 'other'"),
   )
   title = models.CharField(max_length=255, blank=True)
   description = models.TextField(blank=True)
@@ -144,10 +149,9 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
     return reverse('events:list')
 
   def label(self):
-    """What it is, in a word or a title: its own title, else its own label
-    (an 'other' event), else its kind - 'Inval Japan Nederlands Indië',
-    'Verhuizing naar Medan', 'Marriage'."""
-    return self.title or (self.kind_freetext[:1].upper() + self.kind_freetext[1:]) or self.get_kind_display().capitalize()
+    """What it is, in a word or a title: its title, else its kind - 'Inval
+    Japan Nederlands Indië', 'Verhuizing naar Medan', 'Marriage'."""
+    return (self.title[:1].upper() + self.title[1:]) or self.get_kind_display().capitalize()
 
   def __str__(self):
     """Every person by name - for the admin and logs only. Anything a
@@ -156,7 +160,7 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
     return self._title([p.get_full_name() for p in self.people.all()])
 
   def _title(self, names):
-    title = self.title or self.kind_freetext or self.get_kind_display()
+    title = self.title or self.get_kind_display()
     if names:
       title += f" of { ', '.join(names) }"
     places = [p.name for p in self.places.all()]
@@ -231,9 +235,13 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
   
   def clean(self):
     super().clean()   # the partial date's rules (PartialDateMixin)
-    if self.kind == self.Kind.OTHER and not self.kind_freetext:
+    # The four fixed kinds name themselves: a title there is a leftover from
+    # another kind (the forms hide it for them).
+    if self.kind in self.UNTITLED_KINDS:
+      self.title = ''
+    if self.kind == self.Kind.OTHER and not self.title:
       raise ValidationError({
-        'kind_freetext': _("Provide a freetext label when kind is 'other'."),
+        'title': _("Say what it was - required for kind 'other'."),
       })
 
   def save(self, *args, **kwargs):

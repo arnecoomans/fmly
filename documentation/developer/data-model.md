@@ -28,7 +28,7 @@ Birth and death are **events**, not fields: `person.birth` and `person.death` fi
 
 ## Events and places
 
-**`Event`** (`events/models.py`) - `kind`: *birth*, *death*, *marriage*, *divorce*, *migration*, *historical* or *other* (with `kind_freetext`); an optional `title`, a partial date, `people`, `places`, and the content that documents it.
+**`Event`** (`events/models.py`) - `kind`: *birth*, *death*, *marriage*, *divorce*, *migration*, *residence*, *historical* or *other*; a `title` - what it was or its name, required for *other*, empty for the four kinds that name themselves (`Event.UNTITLED_KINDS`; it replaced the former `kind_freetext`, which held the same text); a partial date, `people`, `places`, `background_for` (one way, to other events), and the content that documents it.
 
 **`Place`** (`places/models.py`) - `name`, `alias`, a `parent` place (`HierarchyMixin`: *Batavia* within *Java*), alternatives for the same place under another name.
 

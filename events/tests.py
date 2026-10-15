@@ -214,8 +214,8 @@ class EventEditingTests(TestCase):
     self.assertIn(f'href={self.history.get_absolute_url()}>Inval Japan</a>', html)
 
   def test_what_needs_a_label_for_other(self):
-    self.assertEqual(self.save(self.history, 'what', kind='other', title='', kind_freetext='').status_code, 400)
-    self.assertEqual(self.save(self.history, 'what', kind='other', title='', kind_freetext='Bezetting').status_code, 200)
+    self.assertEqual(self.save(self.history, 'what', kind='other', title='').status_code, 400)
+    self.assertEqual(self.save(self.history, 'what', kind='other', title='Bezetting').status_code, 200)
     self.assertEqual(Event.objects.get(pk=self.history.pk).label(), 'Bezetting')
 
   def test_create_with_a_person(self):
@@ -237,8 +237,42 @@ class EventEditingTests(TestCase):
     return wife, son, other
 
   def new(self, **fields):
-    data = {'kind': 'other', 'kind_freetext': 'Feest', 'date_qualifier': 'exact', 'year': '1950', 'person': self.person.token, **fields}
+    data = {'kind': 'other', 'title': 'Feest', 'date_qualifier': 'exact', 'year': '1950', 'person': self.person.token, **fields}
     return self.client.post('/api/event/new/', data)
+
+  def test_one_title_field_hidden_for_kinds_that_name_themselves(self):
+    """Title and own label are one field now; the new-event dialog marks it
+    so components.css can hide it for birth/death/marriage/divorce, and a
+    title sent for those kinds isn't kept."""
+    html = self.client.get(f'/api/event/new/?person={self.person.token}').json()['html'].replace('"', '')
+    self.assertIn('edit-form__field edit-form__field--title', html)
+    self.assertNotIn('kind_freetext', html)
+    self.new(kind='birth', title='Geboorte in Batavia')
+    self.assertFalse(Event.objects.filter(title='Geboorte in Batavia').exists())   # made, without the title
+    self.assertEqual(self.new(kind='other', title='').status_code, 400)   # 'other' says what it was
+
+  def test_new_event_place_says_unknown_only_after_removing(self):
+    html = self.client.get(f'/api/event/new/?person={self.person.token}').json()['html'].replace('"', '')
+    self.assertRegex(html, r'class=picker__chosen-empty data-picker-empty hidden>unknown')
+    self.assertRegex(html, r'data-picker-clear hidden[ >]')            # nothing chosen: no "remove"
+
+  def test_documented_by_one_item(self):
+    from content.models import Content
+    item = Content.objects.create(name='Trouwakte', kind='document', user=self.editor, status='p', visibility='c')
+    html = self.client.get(f'/api/event/new/?person={self.person.token}&content={item.token}').json()['html']
+    self.assertIn('Trouwakte', html)                                          # prefilled (?content=)
+    self.new(content=item.token)
+    self.assertEqual(list(Event.objects.get(title='Feest').content.all()), [item])
+
+  def test_documented_by_only_what_you_may_see(self):
+    from content.models import Content
+    hidden = Content.objects.create(name='Geheim', user=get_user_model().objects.create(username='owner'), status='p', visibility='q')
+    self.assertEqual(self.new(content=hidden.token).status_code, 400)
+    self.assertFalse(Event.objects.filter(title='Feest').exists())
+
+  def test_no_documented_by_from_an_items_page(self):
+    html = self.client.get('/api/event/new/?from_content=1').json()['html']
+    self.assertNotIn('documented by', html.lower())
 
   def test_create_offers_the_family_and_anyone(self):
     wife, son, _other = self.family()
@@ -255,21 +289,21 @@ class EventEditingTests(TestCase):
   def test_create_with_people(self):
     wife, son, other = self.family()
     self.assertEqual(self.new(with_people=[wife.token, son.token], other_person=other.token).status_code, 200)
-    event = Event.objects.get(kind_freetext='Feest')
+    event = Event.objects.get(title='Feest')
     self.assertEqual(set(event.people.all()), {self.person, wife, son, other})
     self.assertNotIn(other, self.person.get_partners())                         # not a marriage: no partner link
 
   def test_marriage_links_a_new_partner(self):
     wife, son, other = self.family()
-    self.new(kind='marriage', kind_freetext='', other_person=other.token)       # a first marriage, not linked yet
+    self.new(kind='marriage', other_person=other.token)       # a first marriage, not linked yet
     self.assertEqual(set(Event.objects.get(kind='marriage').people.all()), {self.person, other})
     self.assertEqual(set(self.person.get_partners()), {wife, other})
-    self.new(kind='divorce', kind_freetext='', with_people=[wife.token])        # already a partner: nothing to link
+    self.new(kind='divorce', with_people=[wife.token])        # already a partner: nothing to link
     self.assertEqual(len(self.person.get_partners()), 2)
 
   def test_a_refused_partner_link_keeps_the_event(self):
     wife, son, other = self.family()
-    response = self.new(kind='marriage', kind_freetext='', with_people=[son.token])   # a child can't be a partner
+    response = self.new(kind='marriage', with_people=[son.token])   # a child can't be a partner
     self.assertEqual(response.status_code, 200)
     self.assertEqual(set(Event.objects.get(kind='marriage').people.all()), {self.person, son})
     self.assertNotIn(son, self.person.get_partners())

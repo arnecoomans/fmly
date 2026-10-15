@@ -4,9 +4,11 @@ Events and places link people and content together and put them in order: who wa
 
 ## Events
 
-An event is something that happened: a **birth**, **marriage**, **divorce**, **death** or **migration**, an **other** event with its own label - or a **historical** event like an invasion or a transfer of sovereignty, which happened to everyone at once.
+An event is something that happened: a **birth**, **marriage**, **divorce**, **death** or **migration**, a **residence** - proof someone lived somewhere without knowing when they moved there, from a source that isn't in the archive (an address book, a population register; name the source in the description) - an **other** event - or a **historical** event like an invasion or a transfer of sovereignty, which happened to everyone at once.
 
-An event has a date (exact, *ca.*, *before* or *after*, or just a year), places, the people involved, and the photos and documents that record it - a birth announcement for a birth, a passenger list for a migration.
+An event's **title** says what it was or what it's called: "Verloving", "Inval Japan Nederlands Indië". An *other* event needs one; a birth, marriage, divorce or death names itself, so the title isn't asked for there. The loose end *events of kind 'other'* lists them all, to give one its proper kind - a move entered as *other* is a migration - or to mark it fine as it is.
+
+An event has a date (exact, *ca.*, *before* or *after*, or just a year), places, the people involved, and the photos and documents that record it - a birth announcement for a birth, a passenger list for a migration. When you add an event, **documented by** takes the one item you have to hand; more - with suggestions from the event's people - on the event's page.
 
 - Births and deaths are added on a person's page (see [People](people.md)).
 - Other events: on a person's page, or from a photo or document in edit mode - **+ new event** starts on the item's date, which you can change: a clipping is usually published just after the event.
