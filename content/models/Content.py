@@ -322,6 +322,13 @@ class Content(TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin
     major = mimetype.split('/')[0]
     return major if major in ('image', 'audio', 'video') else 'other'
 
+  @property
+  def has_thumbnail(self):
+    """Whether lists show it with a thumbnail (content:thumbnail): an
+    image, or a PDF by its first page (content/previews.py). Image-only
+    features - the lightbox, portraits, OCR - still ask media_type."""
+    return bool(self.file) and self.media_type in ('image', 'pdf')
+
   def get_detail(self):
     return getattr(self, f"{self.kind}_detail", None)
 

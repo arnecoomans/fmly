@@ -28,7 +28,7 @@
   shown as "author".
 {% endcomment %}
 {% with date=item|partial_date sub=item.sub_kind_display %}
-{% if item.file and item.media_type == 'image' %}
+{% if item.has_thumbnail %}
   <a class="content-card{% if item.has_parts %} content-card--has-parts{% endif %}{% if item.needs_attention %} content-card--draft{% endif %}" href="{{ item.get_absolute_url }}" data-filter-value="{{ item.kind }}" data-filter-type="{{ item.sub_kind }}" data-sort-added="{{ item.date_created|date:'c' }}" data-sort-date="{{ item|date_sort_key }}" data-sort-favorites="{% if item.favorite_count %}{{ item.favorite_count|stringformat:'05d' }}{% endif %}">
     <span class="content-card__thumb">
       <img src="{{ item|thumb_url:'card' }}" alt="" loading="lazy">

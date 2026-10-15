@@ -71,6 +71,10 @@ def create_upload(uploaded, user):
   )
   content.file = uploaded
   content.save()
+  # A PDF's first page as its preview, now - not when the inbox first
+  # shows it (content/previews.py; also made on first use, for older ones).
+  from .previews import ensure_preview
+  ensure_preview(content)
   return content, None
 
 

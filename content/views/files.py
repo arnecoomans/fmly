@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.views.decorators.http import require_GET
 from django_sendfile import sendfile
 from sorl.thumbnail import get_thumbnail
@@ -45,12 +46,16 @@ def _stored_path(file):
   return file.storage.path(file.name)
 
 
+@xframe_options_sameorigin
 @require_GET
 def content_file(request, token):
   """content/<token>/file/ - the original, served inline via sendfile.
   Files live in private/content/<year>/ (MEDIA_ROOT = SENDFILE_ROOT =
   private/), which the web server never serves directly - see
-  docs/FMLY-3.0-PLAN.md, Content, "Storage and serving"."""
+  docs/FMLY-3.0-PLAN.md, Content, "Storage and serving".
+  SAMEORIGIN, not the site's DENY (XFrameOptionsMiddleware): the item page
+  shows a PDF in an <iframe> - the browser's own viewer - and DENY blocks
+  that too ("blocked:other"). Other sites still can't frame a file."""
   content = _visible_content(request, token)
   return sendfile(request, _stored_path(content.file), attachment=False)
 
@@ -60,16 +65,17 @@ def content_thumbnail(request, token, preset):
   """content/<token>/thumb/<preset>/ - a sorl thumbnail of an image, in a
   named size. sorl writes its cache to the default storage, i.e.
   private/cache/, so thumbnails are as protected as originals.
-  Non-images have no thumbnail (yet) and 404. 'card' and 'avatar' use the
-  item's own crop and turn when it has one (Content.thumb_crop_*,
-  content/crop.py); ?v= in the URL (content_tags.thumb_url) changes with it."""
+  A PDF's are made from its preview - the first page, rendered once
+  (content/previews.py); other files have none and 404. 'card' and
+  'avatar' use the item's own crop and turn when it has one
+  (Content.thumb_crop_*, content/crop.py); ?v= in the URL
+  (content_tags.thumb_url) changes with it."""
   options = thumbnail_presets().get(preset)
   if options is None:
     raise Http404("Unknown thumbnail size.")
   content = _visible_content(request, token)
-  if content.media_type != 'image':
-    raise Http404("No thumbnail for this kind of file.")
-  path = _stored_path(content.file)
+  source = _thumbnail_source(content)
+  path = _stored_path(source)
   options = dict(options)
   if preset in CROPPED_PRESETS:
     cropbox = sorl_cropbox(content.thumb_crop_box, path, content.thumb_rotation)
@@ -81,10 +87,26 @@ def content_thumbnail(request, token, preset):
         # Cut and sized upright, then turned: a 4:3 card is 3:4 before the turn.
         width, height = options['geometry'].split('x')
         options['geometry'] = f'{height}x{width}'
-  thumbnail = get_thumbnail(content.file, options.pop('geometry'), **options)
+  thumbnail = get_thumbnail(source, options.pop('geometry'), **options)
   # sorl swallows generation errors (THUMBNAIL_DEBUG off) and returns a
   # thumbnail it never wrote - 404 rather than a sendfile error.
   return sendfile(request, _stored_path(thumbnail), attachment=False)
+
+
+def _thumbnail_source(content):
+  """What a thumbnail is made from: the image itself, or a PDF's preview
+  (its first page, content/previews.py) - a name in the default storage
+  for sorl. 404 for anything else, or a PDF that can't be rendered."""
+  from ..previews import ensure_preview, has_preview
+  if content.media_type == 'image':
+    return content.file
+  if has_preview(content):
+    name = ensure_preview(content)
+    if name:
+      from django.core.files.storage import default_storage
+      from sorl.thumbnail.images import ImageFile
+      return ImageFile(name, default_storage)
+  raise Http404("No thumbnail for this kind of file.")
 
 
 @require_GET

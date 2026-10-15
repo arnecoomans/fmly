@@ -91,7 +91,7 @@
               <form data-cmnsd-action="link" data-model="event" data-object-token="{{ event.token }}" data-cmnsd-insert="reload">
                 <input type="hidden" name="relation" value="content"><input type="hidden" name="token" value="{{ item.token }}">
                 <button type="submit" class="dashboard__thumb event-page__suggestion" title="{% translate 'link' %}: {{ item }}">
-                  {% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'card' }}" alt="" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}
+                  {% if item.has_thumbnail %}<img src="{{ item|thumb_url:'card' }}" alt="" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}
                   <span class="dashboard__thumb-name">{{ item }}</span>
                   {% with date=item|partial_date %}{% if date %}<span class="dashboard__thumb-meta">{{ date }}</span>{% endif %}{% endwith %}
                 </button>

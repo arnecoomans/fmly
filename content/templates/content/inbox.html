@@ -30,7 +30,7 @@
           <li class="inbox__row">
             <label class="inbox__select" title="{% translate 'select' %}"><input type="checkbox" name="tokens" value="{{ item.token }}"></label>
             <a class="inbox__thumb" href="{{ item.get_absolute_url }}">
-              {% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'avatar' }}" alt="" loading="lazy">{% else %}<i class="bi bi-{{ item|kind_icon }}"></i>{% endif %}
+              {% if item.has_thumbnail %}<img src="{{ item|thumb_url:'avatar' }}" alt="" loading="lazy">{% else %}<i class="bi bi-{{ item|kind_icon }}"></i>{% endif %}
             </a>
             <span class="inbox__body">
               <a class="inbox__name" href="{{ item.get_absolute_url }}">{{ item }}</a>
@@ -78,7 +78,7 @@
         <div class="inbox__owner">
           <p class="inbox__owner-name">{% if group.owner.person %}{% include 'person/functions/get_full_name.html' with person=group.owner.person %}{% else %}{{ group.owner.get_full_name|default:group.owner.username }}{% endif %}
             <span class="inbox__meta">{% blocktranslate count counter=group.count %}{{ counter }} draft{% plural %}{{ counter }} drafts{% endblocktranslate %} · {% blocktranslate with when=group.oldest|timesince %}the oldest {{ when }} ago{% endblocktranslate %}</span></p>
-          {% if group.content %}<div class="dashboard__drafts">{% for item in group.content %}<a href="{{ item.get_absolute_url }}" title="{{ item }}">{% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'avatar' }}" alt="{{ item }}" loading="lazy">{% else %}<i class="bi bi-{{ item|kind_icon }}"></i>{% endif %}</a>{% endfor %}</div>{% endif %}
+          {% if group.content %}<div class="dashboard__drafts">{% for item in group.content %}<a href="{{ item.get_absolute_url }}" title="{{ item }}">{% if item.has_thumbnail %}<img src="{{ item|thumb_url:'avatar' }}" alt="{{ item }}" loading="lazy">{% else %}<i class="bi bi-{{ item|kind_icon }}"></i>{% endif %}</a>{% endfor %}</div>{% endif %}
           {% if group.people %}<div class="tag-page__people">{% for person in group.people %}{% include 'people/_person_row.html' with related=person %}{% endfor %}</div>{% endif %}
           {% if group.events %}<ol class="events-page__list">{% for event in group.events %}<li class="event-row">{% include 'event/_event.html' with others=event.people.all %}</li>{% endfor %}</ol>{% endif %}
         </div>

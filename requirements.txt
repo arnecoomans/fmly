@@ -22,8 +22,10 @@ django-sendfile2 >= 0.7.2
 # # Graphviz for Family Tree
 # graphviz >= 0.20.1
 
-# # PyMuPDF for PDFs in Image-to-Attachment conversion
-# PyMuPDF >= 1.24.9
+# A PDF's first page as its preview/thumbnail (content/previews.py) -
+# PDFium, Chrome's PDF engine, as a wheel: no system package needed.
+# Apache/BSD licensed (PyMuPDF would be AGPL).
+pypdfium2 >= 5.0
 
 # Django Toolbar
 django-debug-toolbar >= 6.2.0

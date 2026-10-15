@@ -37,7 +37,7 @@ Already cloned without the submodule: `git submodule update --init`, then the ch
 ### System requirements
 
 - **Python 3.14**
-- **Tesseract** - OCR for transcripts ("Read the image with OCR" on the transcribe page). It runs on the server itself, so images never leave it. Optional: without it the button shows, disabled, with "not installed on this server", and becomes available by itself once installed.
+- **Tesseract** - OCR for transcripts ("Read the image with OCR" on the transcribe page). It runs on the server itself, so images never leave it. Optional: without it the button shows, disabled, with "not installed on this server", and becomes available by itself once installed. PDF previews (`content/previews.py`, pypdfium2) need nothing extra: the PDF engine comes with the pip package.
 
   **macOS (development):**
 

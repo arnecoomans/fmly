@@ -11,7 +11,7 @@
 {% with kind=target|model_name %}
 <a class="comment-target" href="{{ target.get_absolute_url }}{% if kind == 'content' %}#comments{% endif %}">
   {% if kind == 'content' %}
-    {% if target.file and target.media_type == 'image' %}
+    {% if target.has_thumbnail %}
       <img class="comment-target__thumb" src="{{ target|thumb_url:'avatar' }}" alt="" loading="lazy">
     {% else %}
       <span class="comment-target__thumb comment-target__thumb--icon"><i class="bi bi-{{ target|kind_icon }}"></i></span>

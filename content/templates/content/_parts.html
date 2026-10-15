@@ -13,7 +13,7 @@
   {% for part in group %}
     <a class="content-part{% if part.pk == content.pk %} is-current{% endif %}" href="{{ part.get_absolute_url }}" title="{{ part }}"{% if part.pk == content.pk %} aria-current="page"{% endif %}>
       <span class="content-part__position">{{ part.position }}</span>
-      {% if part.file and part.media_type == 'image' %}
+      {% if part.has_thumbnail %}
         <img src="{{ part|thumb_url:'avatar' }}" alt="{{ part }}" loading="lazy">
       {% else %}
         <span class="content-part__icon" aria-label="{{ part }}"><i class="bi bi-file-earmark"></i></span>

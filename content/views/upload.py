@@ -75,7 +75,7 @@ def content_upload(request):
     log_change(request, content, "Uploaded")
   return api_response(request, obj=content, created={
     'token': content.token, 'name': str(content), 'url': content.get_absolute_url(),
-    'thumb': reverse('content:thumbnail', args=[content.token, 'avatar']) if content.media_type == 'image' else '',
+    'thumb': reverse('content:thumbnail', args=[content.token, 'avatar']) if content.has_thumbnail else '',
   })
 
 

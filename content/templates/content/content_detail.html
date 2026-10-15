@@ -74,7 +74,7 @@
     {# Variants of this item (parts at position 0), e.g. a colorized version - shown with it. #}
     {% for variant in variants %}
       <a class="content-detail__variant" href="{{ variant.get_absolute_url }}">
-        {% if variant.file and variant.media_type == 'image' %}
+        {% if variant.has_thumbnail %}
           <img class="content-detail__image" src="{% url 'content:thumbnail' variant.token 'large' %}" alt="{{ variant }}" loading="lazy">
         {% endif %}
         <span class="content-detail__variant-name">{{ variant }}</span>
@@ -232,7 +232,7 @@
         {% if content.source or edit_relations %}
           {% include 'cmnsd/edit/block.html' with model='content' obj=content block='source' block_class='content-detail__field--wide' %}
         {% endif %}
-        {% if edit_relations and content.file and content.media_type == 'image' %}
+        {% if edit_relations and content.has_thumbnail %}
           {# Its own thumbnail - the card in lists: the pencil opens the cropper (ContentThumbnailForm). #}
           {% translate "thumbnail" as thumb_title %}
           {% include 'cmnsd/edit/block.html' with model='content' obj=content block='thumbnail' dialog=thumb_title|capfirst %}

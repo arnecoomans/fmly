@@ -14,7 +14,7 @@
       {% for item in items %}
         <tr>
           <td><input type="radio" name="lead" value="{{ item.pk }}" id="lead-{{ item.pk }}"{% if forloop.first %} checked{% endif %}></td>
-          <td>{% if item.file and item.media_type == 'image' %}<img src="{{ item|thumb_url:'avatar' }}" alt="" width="48" height="48" style="object-fit:cover;border-radius:4px">{% endif %}</td>
+          <td>{% if item.has_thumbnail %}<img src="{{ item|thumb_url:'avatar' }}" alt="" width="48" height="48" style="object-fit:cover;border-radius:4px">{% endif %}</td>
           <td><label for="lead-{{ item.pk }}">{{ item }}</label></td>
           <td>{{ item.get_kind_display }}</td>
           <td>{{ item.parent|default:"—" }}</td>

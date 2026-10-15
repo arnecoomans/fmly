@@ -1,6 +1,6 @@
 {% load text_filters %}{% load content_tags %}
 <a class="search-hit-row" href="{{ hit.get_absolute_url }}">
-  {% if hit.file and hit.media_type == 'image' %}
+  {% if hit.has_thumbnail %}
     <img class="search-hit-row__thumb" src="{{ hit|thumb_url:'avatar' }}" alt="" loading="lazy">
   {% else %}
     <span class="search-hit-row__thumb search-hit-row__thumb--icon"><i class="bi bi-{{ hit|kind_icon }}"></i></span>
