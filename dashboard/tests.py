@@ -179,6 +179,21 @@ class LooseEndRulesTests(DashboardTestCase):
     Event.objects.create(kind='migration', title='Vertrek', user=self.editor)                 # has its kind
     self.assertEqual(set(self.items('other-events')), {move, appointment})
 
+  def test_undocumented_events(self):
+    """Events with people, not history, without an item documenting them
+    that this viewer may see."""
+    from content.models import Content
+    proven, unproven, hidden_proof = (self.event('birth', [self.person(n)], date(1900, 1, 1), 1900) for n in ('Bewezen', 'Onbewezen', 'Verborgen'))
+    Content.objects.create(name='Akte', user=self.editor, status='p', visibility='c').events.add(proven)
+    secret = get_user_model().objects.create(username='geheim')
+    Content.objects.create(name='Privé', user=secret, status='p', visibility='q').events.add(hidden_proof)   # not for the editor
+    self.event('historical', [], date(1942, 3, 9), 1942)                                  # history: its source is its description
+    Event.objects.create(kind='other', title='Zonder mensen', user=self.editor)              # no people: nothing to prove for
+    self.assertEqual(set(self.items('undocumented-events')), {unproven, hidden_proof})
+    from .progress import bar
+    summary = bar('undocumented-events', self.request(self.editor))['summary']
+    self.assertTrue(summary.startswith('1 of 3'), summary)                                 # proven: done
+
   def test_open_transcripts(self):
     from content.models import Content, Transcript
     item = Content.objects.create(name='Krant', kind='document', user=self.editor, status='p', visibility='c')
@@ -298,7 +313,7 @@ class UndatedPerPersonTests(DashboardTestCase):
     birth = Event.objects.create(kind='birth', user=self.editor)
     birth.people.set([bert])
     Event.objects.create(kind='birth', year=1900, user=self.editor).people.set([anna])   # dated: not here
-    events = blocks.undated_by_person(Event.objects.filter(year__isnull=True), self.request(self.editor))
+    events = blocks.events_by_person(Event.objects.filter(year__isnull=True), self.request(self.editor))
     self.assertEqual([e.pk for e in events], [marriage.pk, birth.pk, death.pk, loose.pk])   # Aal (not hidden Aaa), Bos, nobody
     client = Client()
     client.force_login(self.editor)

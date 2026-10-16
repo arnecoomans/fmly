@@ -26,7 +26,7 @@ GROUPS = {
 # Loose ends with a bar of their own: done / to do. Only where there's a fair
 # amount of work: photos without people matter less, and undated or
 # untitled events are to be resolved down to none - a bar adds nothing.
-SINGLE = ('no-parents',)
+SINGLE = ('no-parents', 'undocumented-events')
 
 IMAGE_FILES = r'\.(jpe?g|png|gif|webp|tiff?)$'
 
@@ -104,9 +104,13 @@ def _documents(request):
 def _single(name, request):
   """The whole a loose end is part of; done = the whole less what's still
   on the list (so "fine as it is" counts as done)."""
+  from events.models import Event
   from people.models import Person
-  from .blocks import loose_end_items
-  whole = filter_accessible(Person.objects.all(), request).filter(family_connection='family')   # no-parents
+  from .blocks import documentable_events, loose_end_items
+  if name == 'undocumented-events':
+    whole = documentable_events(filter_accessible(Event.objects.all(), request))
+  else:   # no-parents
+    whole = filter_accessible(Person.objects.all(), request).filter(family_connection='family')
   total = whole.distinct().count()
   todo = loose_end_items(name, request).distinct().count()
   return [('done', _("done"), total - todo), ('none', _("to do"), todo)]

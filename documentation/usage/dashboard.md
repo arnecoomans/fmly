@@ -41,6 +41,7 @@ For editors: what's still missing in the archive, each as a list with a count, f
 - photos without people
 - documents without a transcript, and transcripts to finish or check - not identity documents (passport applications, ID cards): they're forms, so tag the people on them and add their facts to those people instead
 - events without a date
+- events without documentation - births, marriages, migrations and the like with no photo or document linked under *documented by*; historical events aren't counted, their source goes in their description. A bar shows how many are proven.
 - images in low resolution
 - places on their own: no parent, and nothing under them - a town that belongs under its country, or a country that's fine as it is
 - anything marked with the tag **Loose end** - your own reminders

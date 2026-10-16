@@ -99,9 +99,9 @@ class LooseEndView(TemplateView):
       for item in context['items']:
         item.dismissal = by_id.get(item.pk)
       return context
-    if name == 'undated-events':
-      # Each person's together: what's undated in one life, side by side.
-      context['items'] = blocks.undated_by_person(items.distinct().filter(pk__in=[e.pk for e in context['items']]), self.request)
+    if name in ('undated-events', 'undocumented-events'):
+      # Each person's together: what's undated or unproven in one life, side by side.
+      context['items'] = blocks.events_by_person(items.distinct().filter(pk__in=[e.pk for e in context['items']]), self.request)
     return context
 
 

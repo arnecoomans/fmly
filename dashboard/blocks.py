@@ -105,6 +105,7 @@ LOOSE_ENDS = {
   'photos-without-people': _("photos without people"),
   'undated-events': _("events without a date"),
   'other-events': _("events of kind 'other' - does a kind fit?"),
+  'undocumented-events': _("events without documentation"),
   'open-transcripts': _("transcripts to finish or check"),
   'no-transcript': _("documents without a transcript"),
   'low-resolution': _("images in low resolution"),
@@ -181,6 +182,12 @@ def _loose_end_queryset(name, request):
     return people.exclude(relations_to__relation_type='parent').filter(family_connection='family')
   if name == 'photos-without-people':
     return Content.objects.visible_to(request).listable().filter(kind=Content.Kind.PHOTO, people__isnull=True)
+  if name == 'undocumented-events':
+    # Proven events: an item documenting it (the event page's "documented
+    # by") - as far as this viewer may see: what they can't see doesn't
+    # count, nor leak. Not history: its source goes in its description.
+    from content.models import Content
+    return documentable_events(events).exclude(content__in=Content.objects.visible_to(request)).distinct()
   if name == 'undated-events':
     return events.filter(year__isnull=True)
   if name == 'other-events':
@@ -226,13 +233,22 @@ def _loose_end_queryset(name, request):
   return None
 
 
-def undated_by_person(events, request):
-  """The undated events in one list, each person's together - their birth
+def documentable_events(events):
+  """The events a document can prove: those with people, not history."""
+  from events.models import Event
+  return events.exclude(kind=Event.Kind.HISTORICAL).filter(people__isnull=False).distinct()
+
+
+def events_by_person(events, request):
+  """Events in one list, each person's together - their birth
   first, death last - people by name (as the people list), each event
   once (a marriage under the first of its people); events without people
   this viewer may see last."""
   from people.models import Person
-  events = list(events.prefetch_related('people'))
+  # Rendered as event rows (event/_event.html): places named in full, and
+  # spouses' ages at a marriage - preloaded, not a query each.
+  events = list(events.prefetch_related('people', 'places__parent__parent'))
+  Person._attach_lifespan([p for event in events if event.kind == 'marriage' for p in event.people.all()])
   visible = set(filter_accessible(Person.objects.all(), request).filter(
     pk__in=[p.pk for event in events for p in event.people.all()],
   ).values_list('pk', flat=True))

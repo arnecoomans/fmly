@@ -7,6 +7,7 @@ A ground-up rebuild: a new content design, centred on content and people instead
 ### New
 - **Dashboard** - on this day and the calendar, recently added, from the archive, the latest comments, an inbox for uploads, loose ends to complete, and your own place in the archive
 - **People** - names, birth and death with partial dates (ca., before, after), parents, partners and children edited on the person's page, a life timeline with ages
+- **Loose end: events without documentation** - the events with people that no item proves yet, each person's together, with a bar for how many are proven
 - **PDF previews** - a PDF's first page as its thumbnail in lists, on the dashboard and in pickers, made on upload (pypdfium2); the thumbnail crop works on it too
 - **Event title** - one field for what an event was or what it's called (it used to be title *and* own label, which held the same text); not asked for births, deaths, marriages and divorces; the new-event dialog says "unknown" for the place only once one's removed, and takes the item documenting it
 - **Residence** - an event for proof someone lived somewhere without knowing when they moved there, from a source outside the archive ([#465](https://github.com/arnecoomans/fmly/issues/465))
