@@ -7,7 +7,7 @@
 {% endcomment %}
 {% if not request.user.is_authenticated %}
 {% elif event.description %}
-  <div class="event-page__description reading-copy">{{ event.description|markdown }}</div>
+  <div class="event-page__description reading-copy">{{ event.description|markdown:request }}</div>
 {% elif edit_mode %}
   <p class="event-page__description edit-block__empty">{% translate "No description yet." %}</p>
 {% endif %}

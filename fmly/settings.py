@@ -168,6 +168,10 @@ SENDFILE_BACKEND = env('SENDFILE_BACKEND', default='django_sendfile.backends.sim
 # SORL Thumbnail
 # Decodes large JPEG scans at reduced size for thumbnails - see
 # content/thumbnail_engine.py (and content/apps.py for the pixel limit).
+# What can be mentioned in text - [Eric](person:<token>) - by API name
+# (cmnsd/markdown/mentions.py, issue #468). Links only for who may see it.
+CMNSD_MENTION_MODELS = ['person', 'content', 'event', 'place', 'note']
+
 THUMBNAIL_ENGINE = 'content.thumbnail_engine.Engine'
 THUMBNAIL_DEBUG = env('DEBUG', default=False)  # True while developing, if you want verbose errors instead of silent fallback
 

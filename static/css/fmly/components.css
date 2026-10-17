@@ -1926,6 +1926,9 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 }
 /* Preferences (core/templates/preferences/preferences.html). */
 .preferences__form { max-width: 720px; }
+/* Mentions in text (cmnsd/markdown/mentions.py): a link like any other; one
+   this viewer may not see is plain, quieter text - never a link. */
+.mention--hidden { color: var(--color-ink-3); }
 /* Saved on every change (autosave.js): its state, quiet - as the transcribe page's. */
 .preferences__status { min-height: 1.2em; margin: 0 0 var(--space-2); font-size: var(--text-xs); color: var(--color-ink-3); }
 .preferences__status[data-state="saving"] { color: var(--color-ink-2); }

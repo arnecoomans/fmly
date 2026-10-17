@@ -8,7 +8,7 @@
 {% if content.description %}
   <section class="content-detail__description">
     <h2 class="section-title">{% translate "description"|capfirst %}</h2>
-    <div class="reading-copy">{{ content.description|markdown }}</div>
+    <div class="reading-copy">{{ content.description|markdown:request }}</div>
   </section>
 {% elif edit_mode %}
   <section class="content-detail__description">

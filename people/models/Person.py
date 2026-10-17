@@ -118,6 +118,19 @@ class Person(TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin,
     """The page's address, private or not - for code that checked access."""
     return reverse('people:person_detail', kwargs={'token': self.token, 'slug': self.slug})
 
+  def mention_url(self, request):
+    """A mention's address (cmnsd/markdown/mentions.py): the page, if this
+    viewer may open it - else none, and the name shows without a link."""
+    return self.page_url_for(getattr(request, 'user', None))
+
+  @staticmethod
+  def mention_hidden_text(label):
+    """How a mention of a person this viewer may not see reads: the label
+    obfuscated, as names elsewhere (initials) - it was typed by the author,
+    so it would give the name away."""
+    from core.templatetags.visibility import obfuscate_name
+    return obfuscate_name(label)
+
   def page_url_for(self, user):
     """The page's address if this user may open it as far as `private`
     goes - the person themself, their parents and staff (people/privacy.py) -

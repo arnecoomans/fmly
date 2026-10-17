@@ -27,7 +27,7 @@
       {% if comment.name %}<span class="comment-row__title">{{ comment.name }}</span>{% endif %}
       {% if comment.status == 'r' %}<span class="badge-status badge-status--draft">{% translate "hidden" %}</span>{% endif %}
     </div>
-    <div class="comment-row__text">{{ comment.content|markdown }}</div>
+    <div class="comment-row__text">{{ comment.content|markdown:request }}</div>
 
     {% if request.user.is_authenticated %}
       {% if request.user.pk == comment.user_id or request.user.is_staff %}

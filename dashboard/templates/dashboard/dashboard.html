@@ -89,7 +89,7 @@
             {% for comment in comments %}
               <li class="dashboard__comment">
                 <span class="dashboard__comment-meta">{% if comment.user.person %}{% include 'person/functions/get_short_name.html' with person=comment.user.person %}{% else %}{{ comment.user.username }}{% endif %} · <a href="{{ comment.target.get_absolute_url }}">{{ comment.target|viewer_name:request }}</a> · {{ comment.date_created|date:"j M" }}</span>
-                <span class="dashboard__comment-text">{{ comment.content|markdown|striptags|truncatewords:30 }}</span>
+                <span class="dashboard__comment-text">{{ comment.content|markdown:request|striptags|truncatewords:30 }}</span>
               </li>
             {% endfor %}
           </ul>

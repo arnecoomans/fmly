@@ -7,6 +7,7 @@ A ground-up rebuild: a new content design, centred on content and people instead
 ### New
 - **Dashboard** - on this day and the calendar, recently added, from the archive, the latest comments, an inbox for uploads, loose ends to complete, and your own place in the archive
 - **People** - names, birth and death with partial dates (ca., before, after), parents, partners and children edited on the person's page, a life timeline with ages
+- **Mentions** - `[Eric](person:…)` in a biography, description, note or comment links to that person, item, event, place or note - only for who may see it; anyone else sees the text, a person's name as initials ([#468](https://github.com/arnecoomans/fmly/issues/468))
 - **Preferences save themselves** - each change is saved at once, with "Saved" to confirm; a new language reloads the page in it ([#461](https://github.com/arnecoomans/fmly/issues/461))
 - **Loose end: events without documentation** - the events with people that no item proves yet, each person's together, with a bar for how many are proven
 - **PDF previews** - a PDF's first page as its thumbnail in lists, on the dashboard and in pickers, made on upload (pypdfium2); the thumbnail crop works on it too

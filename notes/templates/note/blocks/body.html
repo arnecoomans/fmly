@@ -4,7 +4,7 @@
   shown even when empty in edit mode.
 {% endcomment %}
 {% if note.body %}
-  <div class="note-page__body reading-copy">{{ note.body|markdown }}</div>
+  <div class="note-page__body reading-copy">{{ note.body|markdown:request }}</div>
 {% elif edit_mode %}
   <p class="note-page__body edit-block__empty">{% translate "No text yet - the pencil opens it." %}</p>
 {% endif %}

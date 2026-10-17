@@ -20,6 +20,10 @@ A new note is yours until you share it. *More* → **Notes** lists all notes you
 
 **Tip:** a research line about a photo or a person belongs in a note, not in a comment or a tag - a note has room for the question and the answers, and it stays findable as open work.
 
+## Mentioning people, items, events and places
+
+In a biography, a description, a note or a comment, a mention links to what you refer to: `[Eric](person:…)`, `[the passenger list](content:…)`, `[the wedding](event:…)`, `[Soerabaja](place:…)`, `[the question](note:…)` - after the colon the code from its address (`/person/aa7d8ab2…/` → `person:aa7d8ab2…`). Everyone sees it as a link only if they may see what it points to; anyone else sees the text - a person's name as initials. Leave the label empty - `[](event:…)` - and its own name is filled in when it's shown: always current, and as each reader may see it. Typing `@` to choose is coming.
+
 ## Search
 
 The search field in the header searches the whole archive at once: people, photos and documents, events, notes, places and tags - including the text of transcripts and biographies. Results appear while you type, a section per kind. When a word is found in a text rather than a name, the words around it are shown, so you can see why it matched.
