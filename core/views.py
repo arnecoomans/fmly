@@ -157,13 +157,26 @@ class PreferencesView(LoginRequiredMixin, TemplateView):
     return context
 
   def post(self, request, *args, **kwargs):
+    """Saved on every change by cmnsd.js autosave (issue #461) - answered as
+    JSON, with `reload` when the language changed: the page then shows in
+    it. Without JavaScript: the Save button, and back to the page."""
     from django.contrib import messages
     from django.utils.translation import get_language, gettext, override
+    from cmnsd.views.api.response import api_response
     from .forms import PreferencesForm
+    autosave = request.headers.get('x-requested-with') == 'XMLHttpRequest'
     form = PreferencesForm(request.POST, instance=self.preferences(), user=request.user)
     if not form.is_valid():
+      if autosave:
+        return api_response(request, status=400, error=gettext("Please correct the errors in the form."), errors={'validation': form.errors.get_json_data()})
       return self.render_to_response(self.get_context_data(form=form))
+    language_changed = 'language' in form.changed_data
     form.save()
+    if autosave:
+      if language_changed:
+        with override(form.cleaned_data.get('language') or get_language()):
+          messages.success(request, gettext("Preferences saved."))
+      return api_response(request, reload=language_changed)
     # The message in the language just chosen - override, not activate: that
     # would stay on for whatever this thread does next.
     with override(form.cleaned_data.get('language') or get_language()):

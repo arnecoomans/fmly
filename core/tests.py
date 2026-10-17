@@ -318,6 +318,28 @@ class PreferencesTests(TestCase):
     self.assertEqual(list(me.preferences.family.all()), [sister])
     self.assertEqual(me.preferences.language, 'nl')
     self.assertEqual(Client().get('/preferences/').status_code, 302)          # signed in only
+
+  def test_saved_on_every_change(self):
+    """Issue #461: cmnsd.js autosave posts each change - JSON back, a reload
+    only when the language changed (the page then shows in it)."""
+    from core.models import Preferences
+    me = get_user_model().objects.create(username='ik')
+    me.save()
+    client = Client()
+    client.force_login(me)
+    html = client.get('/preferences/').content.decode().replace('"', '')
+    self.assertIn('data-cmnsd-autosave=quiet', html)
+    self.assertIn('data-autosave-fallback', html)                              # the Save button, without JS
+    ajax = {'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest', 'HTTP_ACCEPT': 'application/json'}
+    current = Preferences.objects.get(user=me).language                        # made on the first visit
+    other = 'nl' if current != 'nl' else 'en'
+    response = client.post('/preferences/', {'language': current, 'superstitious': 'on'}, **ajax)
+    self.assertEqual((response.status_code, response.json()['ok'], response.json().get('reload')), (200, True, False))
+    self.assertTrue(Preferences.objects.get(user=me).superstitious)
+    response = client.post('/preferences/', {'language': other, 'superstitious': 'on'}, **ajax)
+    self.assertTrue(response.json()['reload'])                                 # another language: the page reloads in it
+    response = client.post('/preferences/', {'language': 'xx'}, **ajax)
+    self.assertEqual(response.status_code, 400)                                # not saved, said why
     menu = client.get('/people/').content.decode().replace('"', '')
     self.assertIn('href=/accounts/profile/', menu)
     self.assertIn('href=/preferences/', menu)

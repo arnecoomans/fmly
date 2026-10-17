@@ -2,7 +2,9 @@
 {% comment %}
   Your preferences (core.views.PreferencesView, core.forms.PreferencesForm):
   the interface language, superstitious (star signs), and who you count as family - accounts linked to
-  your relatives in the tree first. A plain form.
+  your relatives in the tree first. Saved on every change (cmnsd.js
+  autosave, issue #461) - a new language reloads the page in it; without
+  JavaScript, the Save button.
 {% endcomment %}
 
 {% block title %}{% translate "preferences"|capfirst %}{% endblock %}
@@ -15,8 +17,10 @@
     </div>
   </header>
 
-  <form class="edit-form preferences__form" method="post" novalidate>
+  <form class="edit-form preferences__form" method="post" novalidate data-cmnsd-autosave="quiet">
     {% csrf_token %}
+    <p class="preferences__status" data-autosave-status data-text-saving="{% translate 'Saving…' %}" data-text-saved="{% translate 'Saved' %}" data-text-unsaved="{% translate 'Not saved yet' %}" data-text-error="{% translate 'Not saved' %}" aria-live="polite"></p>
+    <p class="edit-form__error" data-cmnsd-error hidden></p>
     {% if form.non_field_errors %}<p class="edit-form__error">{{ form.non_field_errors|join:' ' }}</p>{% endif %}
 
     <div class="edit-form__field">
@@ -46,7 +50,7 @@
       {% for error in form.family.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
     </fieldset>
 
-    <div class="edit-form__actions">
+    <div class="edit-form__actions" data-autosave-fallback>
       <button type="submit" class="btn btn--primary btn--sm">{% translate "save"|capfirst %}</button>
     </div>
   </form>
