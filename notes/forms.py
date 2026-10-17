@@ -6,6 +6,7 @@ validation is the model's own (PartialDateMixin.clean for the date).
 
 from django import forms
 from django.utils.translation import gettext_lazy as _
+from cmnsd.forms.widgets import MentionTextarea
 
 from core.forms import StatusActionsForm
 
@@ -27,7 +28,7 @@ class NoteBodyForm(forms.ModelForm):
     fields = ['body']
     labels = {'body': _("text")}
     help_texts = {'body': _("Markdown: *italic*, **bold**, [link](https://...), # heading, - list.")}
-    widgets = {'body': forms.Textarea(attrs={'rows': 14})}
+    widgets = {'body': MentionTextarea(attrs={'rows': 14})}
 
 
 class NoteDateForm(forms.ModelForm):

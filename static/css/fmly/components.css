@@ -1975,3 +1975,20 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 /* The dashboard's foldable blocks (a <details>, page-section): the heading
    fills the row, so "more →" sits at its end, before the chevron. */
 .dashboard__block > .page-section__header .section-title { flex: 1; }
+
+/* Mentions while typing (cmnsd.js mentions.js): under the text field, the
+   matches grouped by kind - the rows are the pickers' own (.picker-result). */
+.mention-results {
+  margin-top: 4px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: 0 6px 18px rgba(30, 24, 18, 0.12);
+}
+.mention-results__group + .mention-results__group { margin-top: var(--space-2); }
+.mention-results__kind { margin: 0 0 4px; font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-ink-3); }
+.mention-results .picker-result { width: 100%; }
+.mention-results .picker-result.is-active { background: var(--color-accent-soft); }

@@ -8,7 +8,7 @@ from django import forms
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
-from cmnsd.forms.widgets import SuggestInput
+from cmnsd.forms.widgets import SuggestInput, MentionTextarea
 from core.forms import StatusActionsForm
 
 from .models import BookContent, Content, DocumentContent, PhotoContent, Transcript
@@ -28,7 +28,7 @@ class ContentDescriptionForm(forms.ModelForm):
     fields = ['description']
     labels = {'description': _("description")}
     help_texts = {'description': _("What you see - Markdown: *italic*, **bold**, [link](https://...).")}
-    widgets = {'description': forms.Textarea(attrs={'rows': 6})}
+    widgets = {'description': MentionTextarea(attrs={'rows': 6})}
 
 
 class ContentDateForm(forms.ModelForm):

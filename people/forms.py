@@ -8,7 +8,7 @@ own (Person.clean: at least one name).
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from cmnsd.forms.widgets import PickerInput
+from cmnsd.forms.widgets import PickerInput, MentionTextarea
 from cmnsd.models.access import filter_accessible
 from content.models import Portrait
 from core.forms import StatusActionsForm
@@ -40,7 +40,7 @@ class PersonBiographyForm(forms.ModelForm):
     fields = ['biography']
     labels = {'biography': _("biography")}
     help_texts = {'biography': _("Markdown: *italic*, **bold**, [link](https://...).")}
-    widgets = {'biography': forms.Textarea(attrs={'rows': 10})}
+    widgets = {'biography': MentionTextarea(attrs={'rows': 10})}
 
 
 class LifeEventForm(forms.ModelForm):

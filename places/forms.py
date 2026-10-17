@@ -7,7 +7,7 @@ validation is the model's own (Place.clean: no loops in the parents).
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from cmnsd.forms.widgets import PickerInput
+from cmnsd.forms.widgets import PickerInput, MentionTextarea
 
 from .models import Place
 from .places import descendant_tokens
@@ -35,7 +35,7 @@ class PlaceDescriptionForm(forms.ModelForm):
     model = Place
     fields = ['description']
     labels = {'description': _("description")}
-    widgets = {'description': forms.Textarea(attrs={'rows': 5})}
+    widgets = {'description': MentionTextarea(attrs={'rows': 5})}
 
 
 class PlaceParentForm(forms.ModelForm):

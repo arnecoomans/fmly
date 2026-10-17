@@ -37,7 +37,7 @@
               <summary>{% translate "edit" %}</summary>
               <form class="comment-form" data-cmnsd-action="edit_comment" data-model="comment" data-object-token="{{ comment.token }}"
                     data-cmnsd-target="closest:.comment-row" data-cmnsd-insert="replace">
-                <textarea name="content" rows="3" required maxlength="5000">{{ comment.content }}</textarea>
+                <textarea name="content" rows="3" {% mentions_attrs %} required maxlength="5000">{{ comment.content }}</textarea>
                 <p class="comment-form__error" data-cmnsd-error hidden></p>
                 <button class="btn" type="submit">{% translate "save"|capfirst %}</button>
               </form>

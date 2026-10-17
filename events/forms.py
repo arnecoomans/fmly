@@ -8,7 +8,7 @@ an 'other' event needs its own label; PartialDateMixin: the date's rules).
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from cmnsd.forms.widgets import PickerInput
+from cmnsd.forms.widgets import PickerInput, MentionTextarea
 from cmnsd.models.access import filter_accessible
 from core.forms import StatusActionsForm
 from people.models import Person
@@ -66,7 +66,7 @@ class EventDescriptionForm(forms.ModelForm):
     fields = ['description']
     labels = {'description': _("description")}
     help_texts = {'description': _("What happened, and the sources - Markdown: [bron](https://...).")}
-    widgets = {'description': forms.Textarea(attrs={'rows': 8})}
+    widgets = {'description': MentionTextarea(attrs={'rows': 8})}
 
 
 class EventStatusForm(StatusActionsForm):
@@ -137,7 +137,7 @@ class EventCreateForm(forms.ModelForm):
     fields = ['kind', 'title', *DATE_FIELDS, 'description']
     labels = {**WHAT_LABELS, **DATE_LABELS, 'description': _("description")}
     help_texts = WHAT_HELP
-    widgets = {**DATE_WIDGETS, 'description': forms.Textarea(attrs={'rows': 4})}
+    widgets = {**DATE_WIDGETS, 'description': MentionTextarea(attrs={'rows': 4})}
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)

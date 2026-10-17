@@ -22,7 +22,7 @@ A new note is yours until you share it. *More* → **Notes** lists all notes you
 
 ## Mentioning people, items, events and places
 
-In a biography, a description, a note or a comment, a mention links to what you refer to: `[Eric](person:…)`, `[the passenger list](content:…)`, `[the wedding](event:…)`, `[Soerabaja](place:…)`, `[the question](note:…)` - after the colon the code from its address (`/person/aa7d8ab2…/` → `person:aa7d8ab2…`). Everyone sees it as a link only if they may see what it points to; anyone else sees the text - a person's name as initials. Leave the label empty - `[](event:…)` - and its own name is filled in when it's shown: always current, and as each reader may see it. Typing `@` to choose is coming.
+In a biography, a description, a note or a comment, a mention links to what you refer to: `[Eric](person:…)`, `[the passenger list](content:…)`, `[the wedding](event:…)`, `[Soerabaja](place:…)`, `[the question](note:…)` - after the colon the code from its address (`/person/aa7d8ab2…/` → `person:aa7d8ab2…`). Everyone sees it as a link only if they may see what it points to; anyone else sees the text - a person's name as initials. Leave the label empty - `[](event:…)` - and its own name is filled in when it's shown: always current, and as each reader may see it. **Type `@` and a few letters** - or several words, "@eric coomans", or a code from an address - to choose instead: people, items, events, places and notes you may see appear under the field, by kind - arrows and Enter (or a click) put the mention in, Escape closes the list.
 
 ## Search
 

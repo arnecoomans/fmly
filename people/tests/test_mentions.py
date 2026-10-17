@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.test import Client, RequestFactory, TestCase
+from django.test import Client, RequestFactory, TestCase, override_settings
 
 from cmnsd.templatetags.markdown import markdown
 from content.models import Content
@@ -102,6 +102,44 @@ class MentionTests(TestCase):
   def test_label_formatting_doesnt_leak(self):
     html = self.render(f'[**Geheime** Persoon](person:{self.secret.token})')
     self.assertNotIn('Geheime', html)
+
+  # --- @ while typing (issue #469) ---
+
+  def test_text_fields_offer_mentions(self):
+    from django.contrib.auth.models import Permission
+    for codename in ('change_person', 'add_comment'):
+      self.me.user_permissions.add(Permission.objects.get(codename=codename))
+    self.me.save()
+    client = Client()
+    client.force_login(self.me)
+    form = client.get(f'/api/person/{self.eric.token}/form/biography/', HTTP_ACCEPT='application/json').json()['html'].replace('"', '')
+    self.assertIn('data-cmnsd-mentions=person:People,content:Content,event:Events,place:Places,note:Notes', form)
+    self.assertIn('data-cmnsd-mentions-param=q', form)
+    page = client.get(self.item.get_absolute_url()).content.decode().replace('"', '')
+    self.assertRegex(page, r'<textarea [^>]*data-cmnsd-mentions=person:People[^>]*name=content')   # the comment form (the minifier orders attributes)
+
+  def test_a_token_finds_its_object(self):
+    """@ followed by a token from an address - and the search box, pickers."""
+    client = Client()
+    client.force_login(self.me)
+    found = client.get(f'/api/event/?q={self.event.token}&format=picker', HTTP_ACCEPT='application/json').json()
+    self.assertEqual(found['count'], 1)
+    self.assertIn(self.event.token, found['html'])
+    hidden = client.get(f'/api/person/?q={self.secret.token}&format=picker', HTTP_ACCEPT='application/json').json()
+    self.assertEqual(hidden['count'], 0)                                  # not what you may not see
+    several = client.get('/api/person/?q=eric coomans&format=picker', HTTP_ACCEPT='application/json').json()
+    self.assertEqual(several['count'], 1)                                 # several words: each must match
+
+  @override_settings(CMNSD_MENTION_MODELS=[])
+  def test_no_mention_attrs_without_mentionable_models(self):
+    from cmnsd.markdown.mentions import mention_field_attrs
+    self.assertEqual(mention_field_attrs(), {})
+
+  def test_a_chosen_name_with_brackets_renders(self):
+    """mentions.js escapes brackets in a name: "Huis \\[oud\\]"."""
+    self.eric.given_name = 'Huis [oud]'
+    html = self.render(f'[Huis \\[oud\\]](person:{self.eric.token})')
+    self.assertIn('>Huis [oud]</a>', html)
 
   # --- the sanitizer still decides the rest ---
 
