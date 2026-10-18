@@ -104,8 +104,7 @@ class MentionIndexTests(TestCase):
     self.corry.biography = f'Zij trouwt in 1915 eerst met {self.mention(self.joot, "Joot")}, scheidt later van hem en trouwt zijn broer.'
     self.corry.save()
     excerpt = str(mentioned_in(self.joot, self.request())[0]['excerpts'][0])
-    self.assertTrue(excerpt.startswith('… in 1915 eerst met <strong><a'), excerpt)
-    self.assertIn('>Joot</a></strong>', excerpt)
+    self.assertTrue(excerpt.startswith('… in 1915 eerst met <strong><span class="mention mention--current">Joot</span></strong>'), excerpt)   # this page: no link back
     self.assertTrue(excerpt.endswith('</strong>, scheidt later van hem …'), excerpt)   # the comma sticks to the mention
 
   def test_every_mention_its_excerpt_close_ones_shared(self):
@@ -116,6 +115,14 @@ class MentionIndexTests(TestCase):
     self.assertEqual(len(row['excerpts']), 3)                                   # the limit
     self.assertEqual(str(row['excerpts'][1]).count('<strong>'), 2)             # "weer Joot en hij": close - one excerpt, both bold
     self.assertEqual(row['more'], 1)                                           # and one more
+
+  def test_excerpt_links_others_not_this_page(self):
+    self.corry.biography = f'{self.mention(self.joot, "Joot")} en {self.mention(self.wiwi, "Wiwi")}'
+    self.corry.save()
+    excerpt = str(mentioned_in(self.joot, self.request())[0]['excerpts'][0])
+    self.assertIn('mention--current">Joot<', excerpt)                         # Joot's own page: no link
+    self.assertIn(f'href="{self.wiwi.page_url()}"', excerpt)                  # someone else: a link
+    self.assertNotIn(f'href="{self.joot.page_url()}"', excerpt)
 
   def test_excerpt_hides_what_the_viewer_may_not_see(self):
     secret = Person.objects.create(given_name='Geheime', last_name='Minnaar', user=self.other, status='p', visibility='q')

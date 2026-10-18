@@ -1933,6 +1933,9 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
    link. */
 a.mention { color: var(--color-accent); text-decoration: underline; text-decoration-color: var(--color-accent-soft); text-underline-offset: 2px; }
 a.mention:hover { text-decoration-color: currentColor; }
+/* The page you're on, in an excerpt under "mentioned in": a mention's look,
+   no link back to here. */
+.mention--current { color: var(--color-accent); text-decoration: underline; text-decoration-color: var(--color-accent-soft); text-underline-offset: 2px; cursor: default; }
 .mention--hidden { color: var(--color-ink-3); }
 /* Saved on every change (autosave.js): its state, quiet - as the transcribe page's. */
 .preferences__status { min-height: 1.2em; margin: 0 0 var(--space-2); font-size: var(--text-xs); color: var(--color-ink-3); }
