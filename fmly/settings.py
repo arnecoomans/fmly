@@ -179,9 +179,22 @@ THUMBNAIL_DEBUG = env('DEBUG', default=False)  # True while developing, if you w
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
+# EMAIL_URL in .env, as DATABASE_URL: smtp+tls://user:password@host:587
+# (or smtp+ssl://...:465) - characters like @ and / in the user or password
+# percent-encoded (%40, %2F). Without it: the console - mail in the log.
+_email = env.email_url('EMAIL_URL', default='consolemail://')
 MAILERS = {
     'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+        'BACKEND': _email['EMAIL_BACKEND'],
+        **({'OPTIONS': {
+            'host': _email['EMAIL_HOST'],
+            'port': _email['EMAIL_PORT'],
+            'username': _email['EMAIL_HOST_USER'],
+            'password': _email['EMAIL_HOST_PASSWORD'],
+            'use_tls': _email.get('EMAIL_USE_TLS', False),
+            'use_ssl': _email.get('EMAIL_USE_SSL', False),
+            'timeout': 10,   # a mail server that hangs doesn't hang the request
+        }} if _email['EMAIL_HOST'] else {}),
     },
 }
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@localhost')
