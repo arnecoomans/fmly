@@ -47,3 +47,12 @@ def source_url(source):
 def verbose_kind(obj):
   """{{ source|verbose_kind }} -> 'comment', 'person': what kind of thing it is."""
   return obj._meta.verbose_name
+
+
+@register.filter
+def reach_label(obj):
+  """'' for what everyone signed in may see, else a word for who may:
+  "family only", "private", "draft" (cmnsd mention_reach) - a picker's
+  pill: choosing it links something not every reader sees."""
+  from cmnsd.models.Mention import mention_reach
+  return mention_reach(obj)[2]

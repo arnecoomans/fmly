@@ -20,7 +20,7 @@
               <span class="picker-result__thumb picker-result__thumb--icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>
             {% endif %}
             <span class="picker-result__name">{% highlight_search search_query %}{{ item }}{% endhighlight_search %}</span>
-            <span class="picker-result__meta">{{ item.get_kind_display }}{% if item.year %} · {{ item|partial_date }}{% endif %}{% with count=item.parts.count %}{% if count %} · {% blocktranslate count counter=count %}{{ counter }} part{% plural %}{{ counter }} parts{% endblocktranslate %}{% endif %}{% endwith %}</span>
+            <span class="picker-result__meta">{{ item.get_kind_display }}{% if item.year %} · {{ item|partial_date }}{% endif %}{% with count=item.parts.count %}{% if count %} · {% blocktranslate count counter=count %}{{ counter }} part{% plural %}{{ counter }} parts{% endblocktranslate %}{% endif %}{% endwith %}{% include 'mention/_reach.html' with obj=item %}</span>
           </button>
         </li>
       {% endfor %}

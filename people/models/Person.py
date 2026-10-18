@@ -135,6 +135,16 @@ class Person(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, Stat
       return visible
     return visible.filter(Q(private=False) | Q(pk__in=private_pages_open_to(user)))
 
+  def mention_reach(self):
+    """A private person reaches few - their page opens for them, their
+    parents and staff (people/privacy.py) - whatever their visibility
+    (cmnsd mention_reach). Else: none, the default rule."""
+    if self.private:
+      from django.utils.translation import gettext as _
+      from cmnsd.models.Mention import OWNER
+      return (OWNER, None, _("private"))
+    return None
+
   def mention_url(self, request):
     """A mention's address (cmnsd/markdown/mentions.py): the page, if this
     viewer may open it - else none, and the name shows without a link."""

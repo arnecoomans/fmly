@@ -17,7 +17,7 @@
         <li data-picker-row>
           <button type="button" class="picker-result" data-picker-choose="{{ person.token }}" data-picker-name="{{ person.get_full_name }}">
             <span class="picker-result__thumb picker-result__thumb--avatar">{% include 'person/avatar.html' with person=person size='sm' %}</span>
-            <span class="picker-result__name picker-result__name--single">{% highlight_search search_query %}{% include 'person/functions/get_full_name.html' with person=person lifespan=True suppress_link=True %}{% endhighlight_search %}</span>
+            <span class="picker-result__name picker-result__name--single">{% highlight_search search_query %}{% include 'person/functions/get_full_name.html' with person=person lifespan=True suppress_link=True %}{% endhighlight_search %}{% include 'mention/_reach.html' with obj=person %}</span>
           </button>
         </li>
       {% endfor %}

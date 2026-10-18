@@ -39,6 +39,10 @@ class Transcript(MentionableSourceMixin, TimestampMixin, models.Model):
   # "mentioned in the transcript of ...".
   mention_fields = ('text',)
 
+  def mention_reach_of(self):
+    """Who reads this transcript: who may see its item (cmnsd reaches_fewer)."""
+    return self.content
+
   def mention_excluded_targets(self):
     """What this transcript mentioning doesn't count as "mentioned in"
     (cmnsd sync_mentions): its own item - the whole and its parts, a page

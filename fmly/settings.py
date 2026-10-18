@@ -61,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'cmnsd.middleware.user_language.UserLanguageMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'cmnsd.middleware.mention_notices.MentionNoticeMiddleware',   # after messages
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'cmnsd.middleware.html_output.HtmlOutputMiddleware',
 ]

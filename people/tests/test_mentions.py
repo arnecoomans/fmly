@@ -253,3 +253,56 @@ class MentionTests(TestCase):
     self.assertIn('met Eric', dashboard)
     self.assertNotIn('met E…', dashboard)
     self.assertIn(link, client.get(self.item.get_absolute_url()).content.decode().replace('"', ''))
+
+
+class MentionReachTests(TestCase):
+  """Mentioning something fewer may see than the text: a pill in the
+  picker before, a warning on save after - only for a mention just added."""
+
+  def setUp(self):
+    from django.contrib.auth.models import Permission
+    self.staff = get_user_model().objects.create(username='reach', is_staff=True)
+    self.staff.user_permissions.add(Permission.objects.get(codename='change_person'))
+    self.staff.save()
+    self.client = Client()
+    self.client.force_login(self.staff)
+    self.writer = Person.objects.create(given_name='Schrijver', user=self.staff, status='p', visibility='c')
+    self.family = Person.objects.create(given_name='Familielid', user=self.staff, status='p', visibility='f')
+    self.open = Person.objects.create(given_name='Iedereen', user=self.staff, status='p', visibility='c')
+
+  def save_biography(self, text):
+    self.writer.refresh_from_db()
+    return self.client.post(f'/api/person/{self.writer.token}/form/biography/', {
+      '_modified': self.writer.date_modified.isoformat(), 'biography-biography': text,
+    }, HTTP_ACCEPT='application/json').json()
+
+  def warnings(self, response):
+    return [m['text'] for m in response['messages'] if m['level'] == 'warning']
+
+  def test_picker_pill(self):
+    html = self.client.get('/api/person/?q=familielid&format=picker', HTTP_ACCEPT='application/json').json()['html']
+    self.assertIn('family only', html)
+    html = self.client.get('/api/person/?q=iedereen&format=picker', HTTP_ACCEPT='application/json').json()['html']
+    self.assertNotIn('picker-result__reach', html)
+
+  def test_warns_once_for_a_new_narrower_mention(self):
+    response = self.save_biography(f'met [Familielid](person:{self.family.token}) en [Iedereen](person:{self.open.token})')
+    self.assertEqual(len(self.warnings(response)), 1, response['messages'])
+    self.assertIn('Familielid', self.warnings(response)[0])
+    self.assertIn('family only', self.warnings(response)[0])
+    again = self.save_biography(f'nog steeds [Familielid](person:{self.family.token}) en [Iedereen](person:{self.open.token})')
+    self.assertEqual(self.warnings(again), [])                              # already there: no nagging
+
+  def test_no_warning_when_the_text_reaches_as_few(self):
+    self.writer.visibility = 'f'
+    self.writer.save()
+    response = self.save_biography(f'met [Familielid](person:{self.family.token})')
+    self.assertEqual(self.warnings(response), [])
+
+  def test_a_private_person_and_a_draft(self):
+    from cmnsd.models.Mention import mention_reach, reaches_fewer
+    self.open.private = True
+    self.assertEqual(mention_reach(self.open)[2], 'private')
+    self.assertTrue(reaches_fewer(self.open, self.writer))
+    draft = Person.objects.create(given_name='Concept', user=self.staff, status='c', visibility='c')
+    self.assertEqual(mention_reach(draft)[2], 'draft')

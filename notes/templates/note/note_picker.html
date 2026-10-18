@@ -11,7 +11,7 @@
         <li data-picker-row>
           <button type="button" class="picker-result picker-result--plain" data-picker-choose="{{ note.token }}" data-picker-name="{{ note }}">
             <span class="picker-result__name"><i class="bi bi-journal-text"></i> {% highlight_search search_query %}{{ note }}{% endhighlight_search %}</span>
-            <span class="picker-result__meta">{{ note.get_kind_display|capfirst }}</span>
+            <span class="picker-result__meta">{{ note.get_kind_display|capfirst }}{% include 'mention/_reach.html' with obj=note %}</span>
           </button>
         </li>
       {% endfor %}

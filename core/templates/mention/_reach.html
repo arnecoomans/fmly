@@ -1,0 +1,7 @@
+{% load mentions %}
+{% comment %}
+  A picker row's pill when not everyone signed in may see this object:
+  "family only", "private", "draft" (core.templatetags.mentions reach_label)
+  - linking or mentioning it, some readers see only the words. Context: obj.
+{% endcomment %}
+{% with label=obj|reach_label %}{% if label %}<span class="picker-result__reach">{{ label }}</span>{% endif %}{% endwith %}
