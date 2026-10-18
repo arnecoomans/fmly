@@ -309,6 +309,7 @@
     {% endif %}
 
     {% include 'note/_notes_section.html' with obj=content key='content.notes' %}
+    {% include 'mention/_section.html' with obj=content key='content.mentions' %}
 
     {% include 'comment/comments.html' with target=content model='content' %}
   </div>

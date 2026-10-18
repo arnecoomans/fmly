@@ -7,6 +7,7 @@ A ground-up rebuild: a new content design, centred on content and people instead
 ### New
 - **Dashboard** - on this day and the calendar, recently added, from the archive, the latest comments, an inbox for uploads, loose ends to complete, and your own place in the archive
 - **People** - names, birth and death with partial dates (ca., before, after), parents, partners and children edited on the person's page, a life timeline with ages
+- **Mentioned in** - a person's, item's, event's, place's or note's page lists the biographies, descriptions, notes and comments that mention it - those you may read ([#470](https://github.com/arnecoomans/fmly/issues/470))
 - **@ to mention** - in a biography, description, note or comment, `@` and a few letters list what you may mention, by kind; choosing writes the mention - or, after `[your own words](@`, only its address ([#469](https://github.com/arnecoomans/fmly/issues/469))
 - **Mentions** - `[Eric](person:…)` in a biography, description, note or comment links to that person, item, event, place or note - only for who may see it; anyone else sees the text, a person's name as initials ([#468](https://github.com/arnecoomans/fmly/issues/468))
 - **Preferences save themselves** - each change is saved at once, with "Saved" to confirm; a new language reloads the page in it ([#461](https://github.com/arnecoomans/fmly/issues/461))

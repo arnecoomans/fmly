@@ -108,6 +108,7 @@
   {% endif %}
 
   {% include 'note/_notes_section.html' with obj=event key='event.notes' %}
+  {% include 'mention/_section.html' with obj=event key='event.mentions' %}
 
   {% include 'comment/comments.html' with target=event model='event' %}
 </div>

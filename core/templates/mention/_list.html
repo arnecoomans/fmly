@@ -1,0 +1,24 @@
+{% load viewer_name %}
+{% comment %}
+  The texts mentioning something (mention/_section.html): each where it's
+  said - a biography, a description, a note, a comment - linking to it.
+  Names as this viewer may see them (viewer_name: an event's hidden people
+  obfuscated). Context: rows, request.
+{% endcomment %}
+<ul class="mentioned-in">
+  {% for row in rows %}{% with source=row.source %}
+    <li class="mentioned-in__row">
+      {% if row.kind == 'person' %}
+        <i class="bi bi-person"></i> {% translate "biography of" %} <a href="{{ source.page_url }}">{{ source.get_full_name }}</a>
+      {% elif row.kind == 'note' %}
+        <i class="bi bi-journal-text"></i> {% translate "note" %} <a href="{{ source.get_absolute_url }}">{{ source.title|default:_("untitled") }}</a>
+      {% elif row.kind == 'comment' %}
+        <i class="bi bi-chat-left-text"></i> {% translate "comment by" %} {% if source.user.person %}{% include 'person/functions/get_short_name.html' with person=source.user.person %}{% else %}{{ source.user.username }}{% endif %} {% translate "on" %} <a href="{{ source.get_absolute_url }}">{{ source.target|viewer_name:request }}</a>
+      {% else %}
+        <i class="bi bi-{% if row.kind == 'event' %}calendar-event{% elif row.kind == 'place' %}geo-alt{% else %}file-earmark-text{% endif %}"></i> {% translate "description of" %} <a href="{{ source.get_absolute_url }}">{{ source|viewer_name:request }}</a>
+      {% endif %}
+      {% for excerpt in row.excerpts %}<p class="mentioned-in__excerpt">{{ excerpt }}</p>{% endfor %}
+      {% if row.more %}<p class="mentioned-in__excerpt mentioned-in__more">{% blocktranslate count counter=row.more %}and {{ counter }} more mention in this text{% plural %}and {{ counter }} more mentions in this text{% endblocktranslate %}</p>{% endif %}
+    </li>
+  {% endwith %}{% endfor %}
+</ul>

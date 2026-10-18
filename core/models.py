@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from cmnsd.api.registry import api_action, api_model
 from cmnsd.models.access import filter_accessible
 
-from cmnsd.models import BaseTag, BaseComment, BasePreferences
+from cmnsd.models import BaseTag, BaseComment, BasePreferences, MentionableSourceMixin
 from cmnsd.models.mixins import (
   TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin,
   VisibilityMixin, SearchableMixin
@@ -77,7 +77,17 @@ COMMENT_MAX_LENGTH = 5000
 
 
 @api_model()
-class Comment(VisibilityMixin, BaseComment):
+class Comment(MentionableSourceMixin, VisibilityMixin, BaseComment):
+  mention_fields = ('content',)   # indexed on save (cmnsd.models.Mention)
+
+  @classmethod
+  def mention_sources_for(cls, queryset, request):
+    """The comments among these this viewer may see as "mentioned in" - on a
+    target they may see too (core/comments.py), not only the comment's own
+    status and visibility."""
+    from .comments import visible_comment_feed
+    return visible_comment_feed(request).filter(pk__in=queryset.values('pk'))
+
   """A comment on any object (GenericForeignKey, BaseComment). Visibility
   of its own, on top of the item's: a comment shows only where the viewer
   may see both. Status: published on creation; the author deletes their

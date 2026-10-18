@@ -1,0 +1,15 @@
+{% load mentions %}
+{% comment %}
+  "Mentioned in" on a person's, item's, event's, place's or note's page
+  (issue #470): the texts that mention it - a biography, a description, a
+  note, a comment - as far as this viewer may see them. Only when there
+  are any. A collapsible section (cmnsd/section.html, rendered with the
+  page: eager).
+  Context: obj, key (the section's key, e.g. 'person.mentions'), request.
+{% endcomment %}
+{% with rows=obj|mentioned_in:request %}
+  {% if rows %}
+    {% translate "mentioned in" as title %}
+    {% include 'cmnsd/section.html' with title=title|capfirst count=rows|length body='mention/_list.html' eager=True %}
+  {% endif %}
+{% endwith %}

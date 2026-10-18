@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from cmnsd.api.registry import api_model
+from cmnsd.models import MentionableSourceMixin
 from cmnsd.models.mixins import (
   TimestampMixin, TokenMixin, OwnershipMixin, HierarchyMixin, SlugMixin, EditableRelationsMixin,
 )
@@ -13,7 +14,7 @@ from cmnsd.models.mixins import (
 # No status or visibility - readable by anyone (place names already show on
 # public items; docs/EDIT-MODE-PLAN.md).
 @api_model(search_fields=['name', 'alias'])
-class Place(TimestampMixin, TokenMixin, SlugMixin, OwnershipMixin, HierarchyMixin, EditableRelationsMixin, models.Model):
+class Place(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, OwnershipMixin, HierarchyMixin, EditableRelationsMixin, models.Model):
   name = models.CharField(max_length=255)
   alias = models.CharField(
     max_length=255, blank=True,
@@ -30,6 +31,7 @@ class Place(TimestampMixin, TokenMixin, SlugMixin, OwnershipMixin, HierarchyMixi
   longitude = models.FloatField(null=True, blank=True)
 
   description = models.TextField(blank=True)
+  mention_fields = ('description',)   # indexed on save (cmnsd.models.Mention)
 
   # The URL is led by the token (places/<token>/<slug>/), so the slug may
   # follow a rename - an old address redirects (PlaceDetailView).

@@ -11,5 +11,8 @@ python manage.py create_default_pages
 # Checksums and dimensions of files that don't have them yet (new uploads have them already).
 python manage.py content_checksums
 
+# The index of mentions ("mentioned in"): built on the first run, repaired after - only differences written.
+python manage.py mentions_index
+
 # Warnings worth seeing after an update, e.g. a missing OCR language.
 python manage.py check

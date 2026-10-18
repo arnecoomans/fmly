@@ -10,6 +10,7 @@ from datetime import date
 
 from cmnsd.models.access import filter_accessible
 from cmnsd.models.search import contains
+from cmnsd.models import MentionableSourceMixin
 from cmnsd.models.mixins import TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDateMixin, EditableRelationsMixin
 from core.models import CommentableMixin
 
@@ -28,7 +29,7 @@ class EventQuerySet(models.QuerySet):
 # people (filter_visibility below), search via api_search_q. Not the
 # description here: it's for signed-in viewers only (api_search_q).
 @api_model(search_fields=['title'])
-class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDateMixin, EditableRelationsMixin,
+class Event(MentionableSourceMixin, TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDateMixin, EditableRelationsMixin,
             CommentableMixin, models.Model):
   class Kind(models.TextChoices):
     BIRTH = "birth", _("birth")
@@ -58,6 +59,7 @@ class Event(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDate
   )
   title = models.CharField(max_length=255, blank=True)
   description = models.TextField(blank=True)
+  mention_fields = ('description',)   # indexed on save (cmnsd.models.Mention)
 
   # blank=True: a historical event (opening of the Suez Canal) has
   # no people at all; birth/death/marriage/divorce populate this.

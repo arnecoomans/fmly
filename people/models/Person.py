@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
+from cmnsd.models import MentionableSourceMixin
 from cmnsd.models.mixins import (
   TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin,
   VisibilityMixin, SearchableMixin, SlugMixin, EditableRelationsMixin,
@@ -23,7 +24,7 @@ from .RelativesEditing import RelativesEditing
 from cmnsd.api.registry import api_model, api_field
 
 @api_model(search_fields=['given_name', 'called_name', 'last_name', 'married_name', 'nickname', 'biography'])
-class Person(TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin, VisibilityMixin,
+class Person(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin, VisibilityMixin,
              FamilyShorthand, EventShorthand, RelationshipLabel, SectionShorthand, CommentableMixin,
              EditableRelationsMixin, RelativesEditing, models.Model):
   class Gender(models.TextChoices):
@@ -56,6 +57,8 @@ class Person(TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin,
   ))
 
   biography =models.TextField(blank=True)
+  # Its mentions indexed on save (cmnsd.models.Mention, issue #470).
+  mention_fields = ('biography',)
 
   # Relationships
   private = models.BooleanField(default=False, help_text=_("If checked, this person still appears in the family tree but has no clickable detail page - for people who are part of the tree (e.g. living relatives) but not represented with viewable details"))
@@ -117,6 +120,20 @@ class Person(TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin,
   def page_url(self):
     """The page's address, private or not - for code that checked access."""
     return reverse('people:person_detail', kwargs={'token': self.token, 'slug': self.slug})
+
+  @classmethod
+  def mention_sources_for(cls, queryset, request):
+    """The people among these whose biography this viewer may read as
+    "mentioned in": visible, and a private one only for who may open their
+    page (people/privacy.py) - as PersonDetailView."""
+    from django.db.models import Q
+    from cmnsd.models.access import filter_accessible
+    from ..privacy import opens_every_private_page, private_pages_open_to
+    visible = filter_accessible(queryset, request)
+    user = getattr(request, 'user', None)
+    if opens_every_private_page(user):
+      return visible
+    return visible.filter(Q(private=False) | Q(pk__in=private_pages_open_to(user)))
 
   def mention_url(self, request):
     """A mention's address (cmnsd/markdown/mentions.py): the page, if this

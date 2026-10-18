@@ -118,6 +118,7 @@
     <div class="via-region" data-cmnsd-via-links="person:{{ person.token }}">{% include 'cmnsd/section.html' with key='person.events' title=title|capfirst count=person|event_count:request body='person/functions/get_visible_events.html' model='person' token=person.token field='get_visible_events' empty_body=editing %}</div>
 
     {% include 'note/_notes_section.html' with obj=person key='person.notes' %}
+    {% include 'mention/_section.html' with obj=person key='person.mentions' %}
 
   </div>
 </div>

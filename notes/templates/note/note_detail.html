@@ -50,5 +50,7 @@
       <ul class="note-list">{% for note in linked_from %}{% include 'note/_note_row.html' %}{% endfor %}</ul>
     </section>
   {% endif %}
+
+  {% include 'mention/_section.html' with obj=note key='note.mentions' %}
 </div>
 {% endblock %}

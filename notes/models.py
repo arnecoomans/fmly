@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from cmnsd.api.registry import api_field, api_model
 from cmnsd.models.access import filter_accessible
+from cmnsd.models import MentionableSourceMixin
 from cmnsd.models.mixins import (
   TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, VisibilityMixin, PartialDateMixin,
   EditableRelationsMixin,
@@ -31,7 +32,7 @@ class NoteQuerySet(models.QuerySet):
 # In the API: the picker for "links to another note" (GET api/note/?q=...&
 # format=picker), the list filter ?kind=, and the edit-mode blocks.
 @api_model(search_fields=['title', 'body'])
-class Note(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, VisibilityMixin, PartialDateMixin,
+class Note(MentionableSourceMixin, TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, VisibilityMixin, PartialDateMixin,
            EditableRelationsMixin, models.Model):
   """Research material: a lead, a question, a hypothesis, a conclusion,
   background - one model, told apart by `kind`, so a question can become
@@ -67,6 +68,7 @@ class Note(TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, VisibilityMi
   )
   title = models.CharField(max_length=255, blank=True)
   body = models.TextField(blank=True, help_text=_("The reasoning, a quoted source, the anecdote - Markdown"))
+  mention_fields = ('body',)   # indexed on save (cmnsd.models.Mention)
   confidence = models.CharField(max_length=20, choices=Confidence.choices, blank=True)
 
   # A new note is a private draft (StatusMixin / VisibilityMixin default

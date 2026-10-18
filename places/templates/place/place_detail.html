@@ -61,6 +61,7 @@
   {% endif %}
 
   {% include 'note/_notes_section.html' with obj=place key='place.notes' %}
+  {% include 'mention/_section.html' with obj=place key='place.mentions' %}
 
   {% if items %}
     <section class="tag-page__section" data-cmnsd-via-links="place:{{ place.token }}">

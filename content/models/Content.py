@@ -8,6 +8,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext, gettext_lazy as _
 
+from cmnsd.models import MentionableSourceMixin
 from cmnsd.models.mixins import (
   TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin,
   VisibilityMixin, PartialDateMixin, SlugMixin, EditableRelationsMixin,
@@ -72,7 +73,7 @@ class ContentQuerySet(models.QuerySet):
 
 
 @api_model(search_fields=['name', 'description'])
-class Content(TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin, VisibilityMixin,
+class Content(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin, VisibilityMixin,
               PartialDateMixin, CommentableMixin, FavoritableMixin, EditableRelationsMixin, models.Model):
   """Everything that is uploaded - one file per row. See
   docs/FMLY-3.0-PLAN.md, Content.
@@ -164,6 +165,7 @@ class Content(TimestampMixin, TokenMixin, SlugMixin, StatusMixin, OwnershipMixin
   checksum = models.CharField(max_length=64, blank=True, db_index=True, editable=False)
   name = models.CharField(max_length=255, blank=True)
   description = models.TextField(blank=True)
+  mention_fields = ('description',)   # indexed on save (cmnsd.models.Mention)
   source = models.CharField(max_length=1000, blank=True, help_text=_("Where this came from: a person, archive or URL"))
 
   # The item's own thumbnail (content.forms.ContentThumbnailForm): a 4:3
