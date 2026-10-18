@@ -503,3 +503,23 @@ class EventDescriptionPrivacyTests(TestCase):
     member.force_login(self.user)
     self.assertEqual(count(member), 1)
     self.assertEqual(Client().get('/api/event/', {'q': 'Japan'}).json().get('count'), 1)   # the title still finds it
+
+
+class CareerAndEngagementKindTests(TestCase):
+  """Engagement names itself, as a marriage; an appointment or a
+  discharge keeps its title - the position is in it."""
+
+  def setUp(self):
+    self.user = get_user_model().objects.create(username='kinds')
+
+  def test_engagement_names_itself(self):
+    event = Event(kind=Event.Kind.ENGAGEMENT, title='Verloofd', user=self.user)
+    event.clean()
+    self.assertEqual(event.title, '')
+    self.assertEqual(event.label(), 'Engagement')
+
+  def test_career_steps_keep_their_title(self):
+    for kind in (Event.Kind.APPOINTMENT, Event.Kind.DISCHARGE):
+      event = Event(kind=kind, title='Aanstelling als Beheerder', user=self.user)
+      event.clean()
+      self.assertEqual(event.title, 'Aanstelling als Beheerder')

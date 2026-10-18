@@ -1322,7 +1322,7 @@ form:has(select[name="kind"] :is(option[value="marriage"], option[value="divorce
 /* An event's title - in the new-event dialog and the "what" block: not for
    the kinds that name themselves (Event.UNTITLED_KINDS; clean() clears it).
    [name$="kind"]: the block's field is prefixed (what-kind). */
-form:has(select[name$="kind"] :is(option[value="birth"], option[value="death"], option[value="marriage"], option[value="divorce"]):checked) .edit-form__field--title { display: none; }
+form:has(select[name$="kind"] :is(option[value="birth"], option[value="death"], option[value="engagement"], option[value="marriage"], option[value="divorce"]):checked) .edit-form__field--title { display: none; }
 .edit-form__row--date .edit-form__field--day { flex: 0 0 64px; }
 .edit-form__row--date .edit-form__field--month { flex: 1 1 130px; }
 .edit-form__row--date .edit-form__field--year { flex: 0 0 88px; }

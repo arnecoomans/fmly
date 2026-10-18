@@ -27,7 +27,7 @@ WHAT_LABELS = {'kind': _("kind"), 'title': _("title")}
 # and own label - the same text in practice). Hidden for the kinds that
 # name themselves (Event.UNTITLED_KINDS, components.css).
 WHAT_HELP = {
-  'title': _("What it was, or its name - e.g. 'Verloving' or 'Inval Japan Nederlands Indië'. Required for 'other'; a historical event needs one to say what it is."),
+  'title': _("What it was, or its name - e.g. 'Aanstelling als Beheerder bij departement Zoutaanmaak' or 'Inval Japan Nederlands Indië'. Required for 'other'; a historical event needs one to say what it is."),
 }
 
 

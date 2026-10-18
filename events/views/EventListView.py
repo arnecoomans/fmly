@@ -14,10 +14,13 @@ KINDS = (
   ('historical', _("historical")),
   ('all', _("all")),
   ('birth', _("births")),
+  ('engagement', _("engagements")),
   ('marriage', _("marriages")),
   ('divorce', _("divorces")),
   ('migration', _("migrations")),
   ('residence', _("residences")),
+  ('appointment', _("appointments")),
+  ('discharge', _("discharges")),
   ('death', _("deaths")),
   ('other', _("other")),
 )

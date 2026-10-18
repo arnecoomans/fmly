@@ -34,6 +34,9 @@ class Event(MentionableSourceMixin, TimestampMixin, TokenMixin, StatusMixin, Own
   class Kind(models.TextChoices):
     BIRTH = "birth", _("birth")
     DEATH = "death", _("death")
+    # Names itself, as a marriage - but makes no partners: an engagement
+    # can be broken off. GEDCOM ENGA.
+    ENGAGEMENT = "engagement", _("engagement")
     MARRIAGE = "marriage", _("marriage")
     DIVORCE = "divorce", _("divorce")       # explains a timeline: why a partner is gone while alive
     MIGRATION = "migration", _("migration")
@@ -42,12 +45,18 @@ class Event(MentionableSourceMixin, TimestampMixin, TokenMixin, StatusMixin, Own
     # population register; the source in the description). GEDCOM RESI.
     # A person's own event like any other (issue #465).
     RESIDENCE = "residence", _("residence")
+    # A career, step by step - the title says which: "Aanstelling als
+    # Beheerder bij departement Zoutaanmaak". An appointment is GEDCOM OCCU
+    # (the position, dated); a discharge (ontslag, pension) RETI. Leave, a
+    # transfer: other.
+    APPOINTMENT = "appointment", _("appointment")
+    DISCHARGE = "discharge", _("discharge")
     HISTORICAL = "historical", _("historical")   # history, often without people (the Japanese invasion)
     OTHER = "other", _("other")
 
   # Kinds that name themselves ("Marriage", with its people): no title -
   # the forms hide the field, clean() clears it (events/forms.py).
-  UNTITLED_KINDS = (Kind.BIRTH, Kind.DEATH, Kind.MARRIAGE, Kind.DIVORCE)
+  UNTITLED_KINDS = (Kind.BIRTH, Kind.DEATH, Kind.ENGAGEMENT, Kind.MARRIAGE, Kind.DIVORCE)
 
   # Published from the start, like people (the site's default status is
   # concept); deleting is a status (StatusMixin): hidden from everyone,
@@ -237,7 +246,7 @@ class Event(MentionableSourceMixin, TimestampMixin, TokenMixin, StatusMixin, Own
   
   def clean(self):
     super().clean()   # the partial date's rules (PartialDateMixin)
-    # The four fixed kinds name themselves: a title there is a leftover from
+    # The fixed kinds name themselves: a title there is a leftover from
     # another kind (the forms hide it for them).
     if self.kind in self.UNTITLED_KINDS:
       self.title = ''
