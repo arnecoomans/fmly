@@ -8,6 +8,7 @@ urlpatterns = [
   path('search/', views.SearchView.as_view(), name='search'),
   path('preferences/', views.PreferencesView.as_view(), name='preferences'),
   path('comments/', views.CommentListView.as_view(), name='comment_list'),
+  path('mentions/unlink/', views.unlink_mention, name='unlink_mention'),
   path('tags/', views.TagListView.as_view(), name='tag_list'),
   # A tag's page: the token finds it (slugs are only unique per parent),
   # the slug is for reading; token-only / outdated slugs redirect.

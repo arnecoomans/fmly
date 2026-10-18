@@ -10,3 +10,40 @@ def mentioned_in(obj, request):
   [{'source', 'fields', 'kind'}]."""
   from cmnsd.models.Mention import mentioned_in as rows
   return rows(obj, request)
+
+
+@register.filter
+def mention_kind(obj):
+  """{{ person|mention_kind }} -> 'person': the API name a mention of it uses."""
+  from cmnsd.api.registry import API_REGISTRY
+  return API_REGISTRY.get(type(obj), {}).get('name', obj._meta.model_name)
+
+
+@register.filter
+def content_type_id(obj):
+  from django.contrib.contenttypes.models import ContentType
+  return ContentType.objects.get_for_model(obj).pk
+
+
+@register.filter
+def may_unlink(source, request):
+  """{% if source|may_unlink:request %} - may change that text's words."""
+  from cmnsd.models.Mention import may_change_mentions
+  return may_change_mentions(source, getattr(request, 'user', None))
+
+
+@register.filter
+def source_url(source):
+  """Where a text is read: a person's page, a transcript's item, else its own page."""
+  if hasattr(source, 'page_url'):
+    return source.page_url()
+  if hasattr(source, 'get_absolute_url'):
+    return source.get_absolute_url()
+  item = getattr(source, 'content', None)
+  return item.get_absolute_url() if item is not None and hasattr(item, 'get_absolute_url') else ''
+
+
+@register.filter
+def verbose_kind(obj):
+  """{{ source|verbose_kind }} -> 'comment', 'person': what kind of thing it is."""
+  return obj._meta.verbose_name

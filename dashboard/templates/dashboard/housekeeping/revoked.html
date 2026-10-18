@@ -1,21 +1,40 @@
+{% load mentions %}
 {% comment %}
-  Housekeeping: revoked items, to review (dashboard/housekeeping.py
-  SECTIONS) - on its own page (housekeeping_section.html). Each with its
-  discussion: every comment on it, oldest first - the revocation reasons
-  titled - so the case reads here; decided on its page: Republish, or
-  Delete - then purged under "deleted items". No delete here: purging for
-  good goes through one place.
+  Housekeeping: revoked, to review (dashboard/housekeeping.py SECTIONS) -
+  on its own page (housekeeping_section.html). People, content, events and
+  notes, by kind (review_kind). Each with its discussion: every comment on
+  it, oldest first - the revocation reasons titled - so the case reads
+  here; decided on its page: Republish, or Delete - content is then purged
+  under "deleted items". No delete here: purging for good goes through one
+  place. A note has no comments, so no discussion.
 {% endcomment %}
 <p class="housekeeping__intro">{% translate "Pulled back by staff and waiting for a decision. Open one to republish it or delete it - a deleted item can then be purged under deleted items." %}</p>
-<div class="housekeeping__list">
-  {% for item in revoked %}
-    <div class="housekeeping__review">
-      {% include 'dashboard/_housekeeping_item.html' %}
-      <ul class="housekeeping__discussion">
-        {% for comment in item.discussion %}
-          <li class="housekeeping__meta"><span class="housekeeping__said">{{ comment.user.get_full_name|default:comment.user.username }} · {{ comment.date_created|date:"j M Y" }}{% if comment.name %} · <strong>{{ comment.name }}</strong>{% endif %}{% if comment.status == 'r' %} · {% translate "hidden" %}{% endif %}</span> {{ comment.content|linebreaksbr }}</li>
-        {% empty %}<li class="housekeeping__meta">{% translate "no reason given" %} · {% translate "revoked" %} {{ item.date_modified|date:"j M Y" }}</li>{% endfor %}
-      </ul>
-    </div>
-  {% empty %}<p class="housekeeping__meta">{% translate "Nothing to review." %}</p>{% endfor %}
-</div>
+{% regroup revoked by review_kind as kinds %}
+{% for kind in kinds %}
+  <h3 class="housekeeping__kind">{{ kind.grouper|capfirst }} <span class="page-section__count">{{ kind.list|length }}</span></h3>
+  <div class="housekeeping__list">
+    {% for item in kind.list %}
+      <div class="housekeeping__review">
+        {% if item.is_content %}
+          {% include 'dashboard/_housekeeping_item.html' %}
+        {% else %}
+          <div class="housekeeping__item">
+            <span class="housekeeping__text">
+              <span class="housekeeping__name"><a href="{{ item|source_url }}" target="_blank" rel="noopener">{{ item }}</a></span>
+              <span class="housekeeping__meta">{{ item|verbose_kind }} · {{ item.get_status_display|lower }}</span>
+            </span>
+          </div>
+        {% endif %}
+        {% if item.has_discussion %}
+          <ul class="housekeeping__discussion">
+            {% for comment in item.discussion %}
+              <li class="housekeeping__meta"><span class="housekeeping__said">{{ comment.user.get_full_name|default:comment.user.username }} · {{ comment.date_created|date:"j M Y" }}{% if comment.name %} · <strong>{{ comment.name }}</strong>{% endif %}{% if comment.status == 'r' %} · {% translate "hidden" %}{% endif %}</span> {{ comment.content|linebreaksbr }}</li>
+            {% empty %}<li class="housekeeping__meta">{% translate "no reason given" %} · {% translate "revoked" %} {{ item.date_modified|date:"j M Y" }}</li>{% endfor %}
+          </ul>
+        {% else %}
+          <p class="housekeeping__meta">{% translate "revoked" %} {{ item.date_modified|date:"j M Y" }}</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+{% empty %}<p class="housekeeping__meta">{% translate "Nothing to review." %}</p>{% endfor %}

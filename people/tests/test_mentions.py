@@ -130,6 +130,22 @@ class MentionTests(TestCase):
     several = client.get('/api/person/?q=eric coomans&format=picker', HTTP_ACCEPT='application/json').json()
     self.assertEqual(several['count'], 1)                                 # several words: each must match
 
+  def test_no_revoked_or_deleted_suggestions(self):
+    """Staff may see what's revoked, but a picker doesn't offer it to link
+    or mention; a list still shows it, and a draft is still offered."""
+    staff = get_user_model().objects.create(username='pickstaff', is_staff=True)
+    staff.save()
+    client = Client()
+    client.force_login(staff)
+    pick = lambda: client.get(f'/api/event/?q={self.event.token}&format=picker', HTTP_ACCEPT='application/json').json()['count']
+    for status, offered in (('c', 1), ('r', 0), ('x', 0)):
+      self.event.status = status
+      self.event.save()
+      self.assertEqual(pick(), offered, status)
+    self.event.status = 'r'
+    self.event.save()
+    self.assertEqual(client.get(f'/api/event/?q={self.event.token}', HTTP_ACCEPT='application/json').json()['count'], 1)
+
   @override_settings(CMNSD_MENTION_MODELS=[])
   def test_no_mention_attrs_without_mentionable_models(self):
     from cmnsd.markdown.mentions import mention_field_attrs

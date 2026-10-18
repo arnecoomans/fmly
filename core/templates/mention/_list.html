@@ -1,4 +1,4 @@
-{% load viewer_name %}
+{% load viewer_name %}{% load mentions %}
 {% comment %}
   The texts mentioning something (mention/_section.html): each where it's
   said - a biography, a description, a note, a comment - linking to it.
@@ -18,6 +18,16 @@
         <i class="bi bi-chat-left-text"></i> {% translate "comment by" %} {% if source.user.person %}{% include 'person/functions/get_short_name.html' with person=source.user.person %}{% else %}{{ source.user.username }}{% endif %} {% translate "on" %} <a href="{{ source.get_absolute_url }}">{{ source.target|viewer_name:request }}</a>
       {% else %}
         <i class="bi bi-{% if row.kind == 'event' %}calendar-event{% elif row.kind == 'place' %}geo-alt{% else %}file-earmark-text{% endif %}"></i> {% translate "description of" %} <a href="{{ source.get_absolute_url }}">{{ source|viewer_name:request }}</a>
+      {% endif %}
+      {% if edit_mode and source|may_unlink:request %}
+        {# Edit mode: the link goes, the words stay (core.views.unlink_mention). #}
+        <form class="mentioned-in__unlink" method="post" action="{% url 'core:unlink_mention' %}">
+          {% csrf_token %}
+          <input type="hidden" name="source_type" value="{{ source|content_type_id }}"><input type="hidden" name="source_id" value="{{ source.pk }}">
+          <input type="hidden" name="scheme" value="{{ obj|mention_kind }}"><input type="hidden" name="token" value="{{ obj.token }}">
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <button type="submit" class="mentioned-in__unlink-button" title="{% translate 'Remove the link from this text - its words stay' %}"><i class="bi bi-x"></i> {% translate "remove link" %}</button>
+        </form>
       {% endif %}
       {% for excerpt in row.excerpts %}<p class="mentioned-in__excerpt">{{ excerpt }}</p>{% endfor %}
       {% if row.more %}<p class="mentioned-in__excerpt mentioned-in__more">{% blocktranslate count counter=row.more %}and {{ counter }} more mention in this text{% plural %}and {{ counter }} more mentions in this text{% endblocktranslate %}</p>{% endif %}

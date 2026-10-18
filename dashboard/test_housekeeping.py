@@ -133,6 +133,24 @@ class HousekeepingTests(TestCase):
     self.assertIn('<strong>Revocation reason</strong>', page)
     self.assertNotIn('<input type=checkbox', page)                             # decided on its page, not here
 
+  def test_revoked_people_events_and_notes_too(self):
+    """One review queue, by kind: a revoked person with the reason given,
+    an event, a note (no comments - no discussion)."""
+    from core.models import Comment
+    from events.models import Event
+    from notes.models import Note
+    from people.models import Person
+    person = Person.objects.create(given_name='Dubbelganger', user=self.staff, status='r', visibility='c')
+    Comment.objects.create(target=person, user=self.staff, name='Revocation reason', content='Zelfde als Jan', status='p', visibility='c')
+    Person.objects.create(given_name='Gewoonmens', user=self.staff, status='p', visibility='c')
+    Event.objects.create(title='Verkeerd feest', kind='other', user=self.staff, status='r')
+    Note.objects.create(title='Oude vraag', user=self.staff, status='r', visibility='c')
+    page = self.client.get('/dashboard/housekeeping/revoked/').content.decode().replace('"', '')
+    for shown in ('Dubbelganger', 'Zelfde als Jan', 'Verkeerd feest', 'Oude vraag', 'People', 'Events', 'Notes'):
+      self.assertIn(shown, page)
+    self.assertNotIn('Gewoonmens', page)
+    self.assertLess(page.index('People'), page.index('Events'))
+
   def test_staff_open_a_deleted_item_marked_deleted(self):
     gone = self.item('verwijderd', status='x')
     page = self.client.get(gone.get_absolute_url())

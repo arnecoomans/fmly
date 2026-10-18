@@ -191,3 +191,136 @@ class MentionIndexTests(TestCase):
     html = client.get(self.joot.page_url()).content.decode()
     self.assertIn('Mentioned in', html)
     self.assertIn('biography of', html)
+
+
+class MentionHousekeepingTests(TestCase):
+  """Mentions that lead nowhere (housekeeping), and removing a link - the
+  words stay (core.views.unlink_mention)."""
+
+  def setUp(self):
+    from django.contrib.auth.models import Permission
+    User = get_user_model()
+    self.staff = User.objects.create(username='staf', is_staff=True)
+    for codename in ('delete_content', 'change_person', 'change_comment'):
+      self.staff.user_permissions.add(Permission.objects.get(codename=codename))
+    self.staff.save()
+    self.author = User.objects.create(username='schrijver')
+    self.author.save()
+    self.editor = User.objects.create(username='redacteur')
+    self.editor.user_permissions.add(Permission.objects.get(codename='change_comment'))
+    self.editor.save()
+    make = lambda given, status='p': Person.objects.create(given_name=given, last_name='Riedé', user=self.staff, status=status, visibility='c')
+    self.joot, self.gone_soon, self.revoked = make('Joot'), make('Weg'), make('Ingetrokken', 'r')
+    self.item = Content.objects.create(name='Trouwfoto', user=self.staff, status='p', visibility='c')
+
+  def comment(self, text, user=None):
+    return Comment.objects.create(target=self.item, user=user or self.author, content=text, status='p', visibility='c')
+
+  def unlink(self, client, source, scheme, token, next_url='/'):
+    from django.contrib.contenttypes.models import ContentType
+    return client.post('/mentions/unlink/', {
+      'source_type': ContentType.objects.get_for_model(source).pk, 'source_id': source.pk,
+      'scheme': scheme, 'token': token, 'next': next_url,
+    })
+
+  def login(self, user):
+    client = Client()
+    client.force_login(user)
+    return client
+
+  def test_problems_gone_revoked_deleted(self):
+    from cmnsd.models.Mention import mention_problems
+    token = self.gone_soon.token
+    self.comment(f'[Joot](person:{self.joot.token}) [Weg](person:{token}) [Ingetrokken](person:{self.revoked.token}) [Fout](person:NOSUCHTOKEN)')
+    self.gone_soon.delete()
+    problems = {(row['label'], row['problem']) for row in mention_problems()}
+    self.assertEqual(problems, {('Weg', 'gone'), ('Ingetrokken', 'revoked'), ('Fout', 'gone')})   # Joot: fine
+
+  def test_unlink_keeps_the_words(self):
+    from cmnsd.models.Mention import unlink_mention
+    comment = self.comment(f'getrouwd met [O. RIEDÉ](person:{self.joot.token}) en [](person:{self.joot.token}).')
+    self.assertEqual(unlink_mention(comment, 'person', self.joot.token), 2)
+    comment.refresh_from_db()
+    self.assertEqual(comment.content, 'getrouwd met O. RIEDÉ en Joot Riedé.')   # an empty label: the name
+    self.assertFalse(Mention.objects.filter(source_id=comment.pk).exists())       # the index follows
+
+  def test_who_may_remove_a_link_from_a_comment(self):
+    comment = self.comment(f'[Joot](person:{self.joot.token})')
+    self.assertEqual(self.unlink(self.login(self.editor), comment, 'person', self.joot.token).status_code, 404)   # someone else's comment
+    self.assertIn('](person:', Comment.objects.get(pk=comment.pk).content)
+    response = self.unlink(self.login(self.author), comment, 'person', self.joot.token, next_url='/comments/')
+    self.assertRedirects(response, '/comments/', fetch_redirect_response=False)
+    self.assertEqual(Comment.objects.get(pk=comment.pk).content, 'Joot')
+    from django.contrib.admin.models import LogEntry
+    self.assertTrue(LogEntry.objects.filter(change_message__startswith='Removed the link of a mention').exists())
+
+  def test_staff_may_and_next_stays_on_this_site(self):
+    comment = self.comment(f'[Joot](person:{self.joot.token})')
+    response = self.unlink(self.login(self.staff), comment, 'person', self.joot.token, next_url='https://elders.example/')
+    self.assertRedirects(response, '/', fetch_redirect_response=False)                # not to another site
+    self.assertEqual(Comment.objects.get(pk=comment.pk).content, 'Joot')
+
+  def test_housekeeping_lists_them(self):
+    self.comment(f'zie [Ingetrokken](person:{self.revoked.token})')
+    html = self.login(self.staff).get('/dashboard/housekeeping/mentions/').content.decode()
+    self.assertIn('Ingetrokken', html)
+    self.assertIn('/mentions/unlink/', html)
+
+  def test_remove_link_in_edit_mode_only_for_who_may(self):
+    self.comment(f'zie [Joot](person:{self.joot.token})')
+    client = self.login(self.author)
+    client.post('/ui/edit/', {'on': '1', 'next': '/'})
+    self.assertNotIn('remove link', client.get(self.joot.page_url()).content.decode())   # the author may - but has no edit mode for people
+    staff = self.login(self.staff)
+    staff.post('/ui/edit/', {'on': '1', 'next': '/'})
+    self.assertIn('remove link', staff.get(self.joot.page_url()).content.decode())
+
+
+class MentionWarningTests(TestCase):
+  """Before revoking or deleting something that's mentioned: say so - and
+  where to fix it after."""
+
+  def setUp(self):
+    from django.contrib.auth.models import Permission
+    self.staff = get_user_model().objects.create(username='staf', is_staff=True)
+    for codename in ('change_person', 'delete_content', 'delete_place'):
+      self.staff.user_permissions.add(Permission.objects.get(codename=codename))
+    self.staff.save()
+    self.joot = Person.objects.create(given_name='Joot', user=self.staff, status='p', visibility='c')
+    self.corry = Person.objects.create(given_name='Corry', user=self.staff, status='p', visibility='c', biography='')
+    self.client = Client()
+    self.client.force_login(self.staff)
+    self.client.post('/ui/edit/', {'on': '1', 'next': '/'})
+
+  def mention_joot(self):
+    self.corry.biography = f'trouwt [Joot](person:{self.joot.token})'
+    self.corry.save()
+
+  def test_status_buttons_warn_when_mentioned(self):
+    html = self.client.get(self.joot.page_url()).content.decode()
+    self.assertNotIn("It's mentioned in", html)
+    self.mention_joot()
+    html = self.client.get(self.joot.page_url()).content.decode()
+    self.assertIn("It's mentioned in 1 text - that link will lead nowhere for most readers.", html)
+
+  def test_after_revoking_where_to_fix(self):
+    from people.forms import PersonStatusForm
+    from django.test import RequestFactory
+    self.mention_joot()
+    request = RequestFactory().post('/')
+    request.user = self.staff
+    request.session = {}
+    form = PersonStatusForm({'status': 'r', 'reason': 'dubbel'}, instance=self.joot)
+    form.request = request
+    self.assertTrue(form.is_valid(), form.errors)
+    form.save()
+    self.assertIn('Housekeeping → mentions that lead nowhere', form.success_message())
+
+  def test_a_mentioned_place_isnt_unused(self):
+    from dashboard.housekeeping import unused_places
+    from places.models import Place
+    place = Place.objects.create(name='Rengat', user=self.staff)
+    self.assertIn(place, unused_places())
+    self.corry.biography = f'woonde in [Rengat](place:{place.token})'
+    self.corry.save()
+    self.assertNotIn(place, unused_places())

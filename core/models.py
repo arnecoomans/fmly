@@ -80,6 +80,11 @@ COMMENT_MAX_LENGTH = 5000
 class Comment(MentionableSourceMixin, VisibilityMixin, BaseComment):
   mention_fields = ('content',)   # indexed on save (cmnsd.models.Mention)
 
+  def can_change_text(self, user):
+    """Who may change this comment's words - to remove a mention's link
+    (cmnsd may_change_mentions): its author or staff, as editing it."""
+    return bool(user and user.is_authenticated and (user.pk == self.user_id or user.is_staff))
+
   @classmethod
   def mention_sources_for(cls, queryset, request):
     """The comments among these this viewer may see as "mentioned in" - on a

@@ -4,7 +4,8 @@ the archive's storage, checked by eye - for staff who may delete content.
 An overview of counts in three groups (SECTIONS), each section a page of
 its own (/dashboard/housekeeping/<section>/).
 
-- revoked items, to review: pulled back by staff, with the discussion -
+- revoked, to review: people, content, events and notes pulled back by
+  staff, by kind, with the discussion -
   every revocation reason (a titled comment) and what was said since -
   republished or deleted on their page.
 
@@ -38,7 +39,7 @@ from pathlib import Path
 from django.conf import settings
 from django.contrib.admin.models import DELETION, LogEntry
 from django.core.files.storage import default_storage
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.utils.translation import ngettext
 
 
@@ -225,11 +226,15 @@ def unused_tags():
 
 def unused_places():
   """Places nothing lies in or happened at - also not another era's name of
-  a place (alternatives): Djakarta matters as Batavia's later name."""
+  a place (alternatives): Djakarta matters as Batavia's later name - and not
+  mentioned in any text: deleting it would leave that link leading nowhere."""
+  from django.contrib.contenttypes.models import ContentType
+  from cmnsd.models import Mention
   from places.models import Place
+  mentioned = Mention.objects.filter(target_content_type=ContentType.objects.get_for_model(Place)).values('target_id')
   return list(
     Place.objects.filter(content__isnull=True, events__isnull=True, notes__isnull=True, children__isnull=True, alternatives__isnull=True)
-    .select_related('parent', 'user').distinct().order_by('name')
+    .exclude(pk__in=mentioned).select_related('parent', 'user').distinct().order_by('name')
   )
 
 
@@ -253,25 +258,40 @@ def delete_unused(objects, user):
 
 
 def revoked_items():
-  """Content under review: revoked, newest first - each with its
-  discussion (`discussion`: every comment on it, oldest first - the
-  revocation reasons, titled, made when it was revoked (core.forms
-  StatusActionsForm), and what was said about them), so the case can be
-  read here before opening the item. Deleted comments left out; hidden
-  ones shown - this is for staff."""
-  from collections import defaultdict
+  """Everything under review: revoked people, content, events and notes -
+  by kind, newest first within each (`review_kind`: the kind's name, for
+  the page's headings). Each with its discussion (`discussion`: every
+  comment on it, oldest first - the revocation reasons, titled, made when
+  it was revoked (core.forms StatusActionsForm), and what was said about
+  them), so the case can be read here before opening it. A note has no
+  comments: no discussion. Deleted comments left out; hidden ones shown -
+  this is for staff. One query per kind, and one for the comments."""
   from content.models import Content
   from core.models import Comment
   from django.contrib.contenttypes.models import ContentType
-  items = list(Content.objects.filter(status=Content.Status.REVOKED).order_by('-date_modified'))
-  discussion = defaultdict(list)
-  comments = Comment.objects.filter(
-    target_content_type=ContentType.objects.get_for_model(Content), target_id__in=[i.pk for i in items],
-  ).exclude(status=Comment.Status.DELETED).select_related('user').order_by('date_created')
-  for comment in comments:
-    discussion[comment.target_id].append(comment)
-  for item in items:
-    item.discussion = discussion[item.pk]
+  from events.models import Event
+  from notes.models import Note
+  from people.models import Person
+  items = []
+  for model in (Person, Content, Event, Note):
+    found = list(model.objects.filter(status=model.Status.REVOKED).order_by('-date_modified'))
+    for item in found:
+      item.review_kind = model._meta.verbose_name_plural
+      item.is_content = model is Content          # its own row: preview, kind, file
+      item.has_discussion = hasattr(model, 'comments')
+      item.discussion = []
+    items += found
+  wanted = None
+  for model in {type(item) for item in items}:
+    if hasattr(model, 'comments'):
+      query = Q(target_content_type=ContentType.objects.get_for_model(model), target_id__in=[i.pk for i in items if type(i) is model])
+      wanted = query if wanted is None else wanted | query
+  if wanted is not None:
+    discussion = defaultdict(list)
+    for comment in Comment.objects.filter(wanted).exclude(status=Comment.Status.DELETED).select_related('user').order_by('date_created'):
+      discussion[(comment.target_content_type_id, comment.target_id)].append(comment)
+    for item in items:
+      item.discussion = discussion[(ContentType.objects.get_for_model(item).pk, item.pk)]
   return items
 
 
@@ -283,9 +303,16 @@ def _lazy(label):
   return gettext_lazy(label)
 
 
+def broken_mentions():
+  """Mentions that lead nowhere (cmnsd mention_problems): gone, revoked or
+  deleted - remove the link (the words stay), or restore the target."""
+  from cmnsd.models.Mention import mention_problems
+  return mention_problems()
+
+
 SECTIONS = (
   (_lazy("to review"), (
-    ('revoked', _lazy("revoked items, to review"), 'revoked', revoked_items),
+    ('revoked', _lazy("revoked, to review"), 'revoked', revoked_items),
     ('deleted', _lazy("deleted items, to purge"), 'deleted', deleted_items),
   )),
   (_lazy("files"), (
@@ -296,6 +323,9 @@ SECTIONS = (
   (_lazy("tags and places"), (
     ('unused-tags', _lazy("unused tags"), 'unused_tags', unused_tags),
     ('unused-places', _lazy("unused places"), 'unused_places', unused_places),
+  )),
+  (_lazy("texts"), (
+    ('mentions', _lazy("mentions that lead nowhere"), 'mentions', broken_mentions),
   )),
 )
 SECTION_BY_NAME = {name: (label, context, find) for _group, sections in SECTIONS for name, label, context, find in sections}

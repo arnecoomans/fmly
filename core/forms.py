@@ -213,14 +213,48 @@ class StatusActionsForm(forms.ModelForm):
       )
     return obj
 
+  def _mention_count(self, request):
+    """How many texts this viewer may read mention this record
+    (cmnsd mentioned_in) - 0 for a model nothing can mention."""
+    if not getattr(self.instance, 'pk', None) or not hasattr(self.instance, 'token'):
+      return 0
+    from cmnsd.models.Mention import mentioned_in
+    return len(mentioned_in(self.instance, request))
+
+  def choice_warning(self, value, request):
+    """Before revoking or deleting something that's mentioned: say so - its
+    links would lead nowhere for most readers (cmnsd edit_choices). Counts
+    the texts this viewer may read."""
+    S = self._meta.model.Status
+    if value not in (S.REVOKED, S.DELETED):
+      return ''
+    count = self._mention_count(request)
+    if not count:
+      return ''
+    from django.utils.translation import ngettext
+    return ngettext(
+      "It's mentioned in %(n)s text - that link will lead nowhere for most readers.",
+      "It's mentioned in %(n)s texts - those links will lead nowhere for most readers.", count,
+    ) % {'n': count}
+
   def success_message(self):
     S = self._meta.model.Status
-    return {
+    message = {
       S.DELETED: _("“%(item)s” deleted - it can be recovered in the admin."),
       S.REVOKED: _("“%(item)s” revoked - only staff see it now."),
       S.PUBLISHED: _("“%(item)s” published."),   # also after republishing a revoked record
       S.CONCEPT: _("“%(item)s” is a draft again."),
     }.get(self.instance.status, '') % {'item': self.instance}
+    # Revoked or deleted, and mentioned: where to fix those texts.
+    if self.instance.status in (S.REVOKED, S.DELETED):
+      count = self._mention_count(getattr(self, 'request', None))
+      if count:
+        from django.utils.translation import ngettext
+        message += ' ' + ngettext(
+          "It's mentioned in %(n)s text: remove the link there, or see Housekeeping → mentions that lead nowhere.",
+          "It's mentioned in %(n)s texts: remove the links there, or see Housekeeping → mentions that lead nowhere.", count,
+        ) % {'n': count}
+    return message
 
 
 class PreferencesForm(forms.ModelForm):

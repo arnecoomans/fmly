@@ -56,8 +56,9 @@ Your own record in the family, and what you've added.
 
 For staff, under *Housekeeping* in the user menu (top right): the archive's storage, checked by eye. An overview with a count per section, in three groups - each section opens on a page of its own:
 
-- **To review** - *revoked items*: pulled back by staff, each with its discussion (the revocation reasons and what was said since); open one to republish or delete it. *Deleted items*: to purge for good.
+- **To review** - *revoked*: people, items, events and notes pulled back by staff, by kind, each with its discussion (the revocation reasons and what was said since - a note has none); open one to republish or delete it. *Deleted items*: to purge for good.
 - **Files** - the same file twice, files without a record, records without a file.
-- **Tags and places** - unused ones: nothing carries them, nothing lies in them. Old categories and typos can go; keep what's meant for later.
+- **Tags and places** - unused ones: nothing carries them, nothing lies in them, no text mentions them. Old categories and typos can go; keep what's meant for later.
+- **Texts** - *mentions that lead nowhere*: a mention of something deleted for good, or of something revoked or deleted (most readers see only the words). *Remove link* keeps the words and drops the link - or restore what it points to.
 
 Every delete first shows a page with exactly what goes, and is for good - only a backup brings it back.

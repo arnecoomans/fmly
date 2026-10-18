@@ -1,0 +1,30 @@
+{% load mentions %}{% load viewer_name %}
+{% comment %}
+  Housekeeping: mentions that lead nowhere (dashboard/housekeeping.py
+  broken_mentions, cmnsd mention_problems) - on its own page
+  (housekeeping_section.html). Gone: the token doesn't exist (deleted for
+  good, or never right); revoked or deleted: most readers see only the
+  words. Remove the link - the words stay (core.views.unlink_mention) - or
+  restore what it points to on its page.
+{% endcomment %}
+<p class="housekeeping__intro">{% translate "Links in texts to something that's gone, revoked or deleted - readers see only the words. Remove the link (the words stay), or restore what it points to." %}</p>
+<ul class="mentioned-in housekeeping__mentions">
+  {% for row in mentions %}
+    <li class="mentioned-in__row">
+      <span class="badge-status badge-status--draft">{% if row.problem == 'gone' %}{% translate "gone" %}{% elif row.problem == 'revoked' %}{% translate "revoked" %}{% else %}{% translate "deleted" %}{% endif %}</span>
+      “{{ row.label|default:"…" }}” → {{ row.scheme }}{% if row.target %}: <a href="{{ row.target|source_url }}">{{ row.target|viewer_name:request }}</a>{% endif %}
+      · {% translate "in" %} <a href="{{ row.source|source_url }}">{{ row.source|verbose_kind }} {{ row.source|viewer_name:request|truncatechars:60 }}</a>
+      {% if row.source|may_unlink:request %}
+        <form class="mentioned-in__unlink" method="post" action="{% url 'core:unlink_mention' %}">
+          {% csrf_token %}
+          <input type="hidden" name="source_type" value="{{ row.source|content_type_id }}"><input type="hidden" name="source_id" value="{{ row.source.pk }}">
+          <input type="hidden" name="scheme" value="{{ row.scheme }}"><input type="hidden" name="token" value="{{ row.token }}">
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <button type="submit" class="mentioned-in__unlink-button"><i class="bi bi-x"></i> {% translate "remove link" %}</button>
+        </form>
+      {% endif %}
+    </li>
+  {% empty %}
+    <li class="timeline__empty">{% translate "None - every mention leads somewhere." %}</li>
+  {% endfor %}
+</ul>

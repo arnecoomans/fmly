@@ -1874,6 +1874,7 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .housekeeping__sections .is-clear a { color: var(--color-ink-3); opacity: 0.7; }
 /* Revoked items, to review: the discussion under each - reasons and replies. */
 .housekeeping__review { display: grid; gap: 2px; margin-bottom: var(--space-2); }
+.housekeeping__kind { font-size: var(--text-base, 1rem); margin: var(--space-3) 0 var(--space-1); }
 .housekeeping__discussion { list-style: none; margin: 0; padding: 0 0 0 56px; display: grid; gap: 3px; }
 .housekeeping__said { color: var(--color-ink-3); }
 .housekeeping__list, .housekeeping__group { display: grid; gap: 4px; }
@@ -2014,3 +2015,9 @@ a.mention:hover { text-decoration-color: currentColor; }
    selected words become a mention - quiet, like a toolbar button. */
 .mention-button { display: inline-flex; align-items: center; margin-bottom: 4px; padding: 2px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-pill); background: var(--color-surface-alt); color: var(--color-ink-2); font-size: var(--text-xs); font-weight: 600; cursor: pointer; }
 .mention-button:hover { color: var(--color-accent); border-color: var(--color-accent); }
+
+/* "× remove link" (core.views.unlink_mention): in edit mode under "mentioned
+   in", and in housekeeping - a quiet inline button. */
+.mentioned-in__unlink { display: inline; margin: 0 0 0 var(--space-2); }
+.mentioned-in__unlink-button { padding: 0; border: 0; background: none; font: inherit; font-size: var(--text-xs); color: var(--color-ink-3); cursor: pointer; }
+.mentioned-in__unlink-button:hover { color: var(--color-draft-text); text-decoration: underline; }

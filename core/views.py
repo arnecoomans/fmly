@@ -182,3 +182,39 @@ class PreferencesView(LoginRequiredMixin, TemplateView):
     with override(form.cleaned_data.get('language') or get_language()):
       messages.success(request, gettext("Preferences saved."))
     return redirect('core:preferences')
+
+
+def unlink_mention(request):
+  """POST mentions/unlink/ (source_type, source_id, scheme, token, next) -
+  remove a mention's link from a text, the words stay (cmnsd
+  unlink_mention): "× remove link" under "mentioned in" in edit mode, and
+  housekeeping's "mentions that lead nowhere". Only for who may change that
+  text (cmnsd may_change_mentions - a comment: its author or staff); in the
+  history. Back to `next` (this site only)."""
+  from django.contrib import messages
+  from django.contrib.contenttypes.models import ContentType
+  from django.core.exceptions import ObjectDoesNotExist
+  from django.http import Http404
+  from django.shortcuts import redirect
+  from django.utils.http import url_has_allowed_host_and_scheme
+  from django.utils.translation import gettext as _
+  from cmnsd.edit.log import log_change
+  from cmnsd.models.Mention import may_change_mentions, unlink_mention as unlink
+  if request.method != 'POST':
+    raise Http404
+  try:
+    model = ContentType.objects.get_for_id(int(request.POST.get('source_type', ''))).model_class()
+    source = model.objects.get(pk=int(request.POST.get('source_id', '')))
+  except (ValueError, TypeError, AttributeError, ObjectDoesNotExist):   # not a number, no such type or text
+    raise Http404
+  if not getattr(model, 'mention_fields', None) or not may_change_mentions(source, request.user):
+    raise Http404
+  scheme, token = request.POST.get('scheme', ''), request.POST.get('token', '')
+  removed = unlink(source, scheme, token)
+  if removed:
+    log_change(request, source, f"Removed the link of a mention ({scheme}:{token}) - the words stay")
+    messages.success(request, _("Link removed - the words stay."))
+  target = request.POST.get('next', '')
+  if not url_has_allowed_host_and_scheme(target, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+    target = '/'
+  return redirect(target)
