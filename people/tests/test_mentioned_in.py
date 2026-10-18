@@ -138,6 +138,43 @@ class MentionIndexTests(TestCase):
     with self.assertNumQueries(5):   # the rows; the people (with their private-page rule); the notes; the subject once for every excerpt - not one per row
       mentioned_in(self.joot, self.request())
 
+  # --- transcripts as sources (issue #474) ---
+
+  def test_a_transcript_mentions_once_per_item(self):
+    from content.models import Transcript
+    Transcript.objects.create(content=self.item, kind='translation', language='en', text=f'married {self.mention(self.joot, "Joot")}')
+    Transcript.objects.create(content=self.item, kind='original', language='nl', text=f'getrouwd met {self.mention(self.joot, "Joot")}')
+    rows = [row for row in mentioned_in(self.joot, self.request()) if row['kind'] == 'transcript']
+    self.assertEqual(len(rows), 1)                                              # one item, two languages: once
+    self.assertEqual(rows[0]['source'].kind, 'original')                       # the original first
+    self.assertIn('getrouwd met', str(rows[0]['excerpts'][0]))
+
+  def test_a_transcript_doesnt_count_for_its_own_item(self):
+    from content.models import Transcript
+    page = Content.objects.create(name='Pagina 2', user=self.me, status='p', visibility='c', parent=self.item)
+    other = Content.objects.create(name='Foto van het schip', user=self.me, status='p', visibility='c')
+    transcript = Transcript.objects.create(content=page, language='nl', text=(
+      f'[deze akte](content:{page.token}), [het boek](content:{self.item.token}) en [de foto](content:{other.token})'
+    ))
+    self.assertEqual(self.targets(transcript), {other})                       # its own page and its whole don't count
+
+  def test_a_transcript_as_visible_as_its_item(self):
+    from content.models import Transcript
+    hidden = Content.objects.create(name='Privé', user=self.other, status='p', visibility='q')
+    Transcript.objects.create(content=hidden, language='nl', text=self.mention(self.joot))
+    self.assertEqual([row for row in mentioned_in(self.joot, self.request()) if row['kind'] == 'transcript'], [])
+
+  def test_the_transcribe_field_mentions_only_around_the_words(self):
+    from django.contrib.auth.models import Permission
+    for codename in ('change_content', 'add_transcript', 'change_transcript'):
+      self.me.user_permissions.add(Permission.objects.get(codename=codename))
+    self.me.save()
+    client = Client()
+    client.force_login(self.me)
+    html = client.get(f'/content/{self.item.token}/transcribe/').content.decode().replace('"', '')
+    self.assertRegex(html, r'<textarea [^>]*data-cmnsd-mentions-mode=label')
+    self.assertIn('data-cmnsd-mentions-button=@ mention', html)
+
   def test_section_only_when_mentioned(self):
     client = Client()
     client.force_login(self.me)

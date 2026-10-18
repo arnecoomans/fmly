@@ -12,6 +12,8 @@
         <i class="bi bi-person"></i> {% translate "biography of" %} <a href="{{ source.page_url }}">{{ source.get_full_name }}</a>
       {% elif row.kind == 'note' %}
         <i class="bi bi-journal-text"></i> {% translate "note" %} <a href="{{ source.get_absolute_url }}">{{ source.title|default:_("untitled") }}</a>
+      {% elif row.kind == 'transcript' %}
+        <i class="bi bi-text-paragraph"></i> {% translate "transcript of" %} <a href="{{ source.content.get_absolute_url }}">{{ source.content|viewer_name:request }}</a>
       {% elif row.kind == 'comment' %}
         <i class="bi bi-chat-left-text"></i> {% translate "comment by" %} {% if source.user.person %}{% include 'person/functions/get_short_name.html' with person=source.user.person %}{% else %}{{ source.user.username }}{% endif %} {% translate "on" %} <a href="{{ source.get_absolute_url }}">{{ source.target|viewer_name:request }}</a>
       {% else %}

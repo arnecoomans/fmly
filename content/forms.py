@@ -242,4 +242,5 @@ class TranscriptForm(forms.ModelForm):
     fields = ['kind', 'language', 'method', 'incomplete', 'text']
     labels = {'kind': _("original or translation"), 'language': _("language"), 'method': _("how it was made"),
               'incomplete': _("transcription incomplete"), 'text': _("text")}
-    widgets = {'text': forms.Textarea(attrs={'rows': 10})}
+    # Mentions only around the words as written (cmnsd.js mentions.js, mode label).
+    widgets = {'text': MentionTextarea(attrs={'rows': 10, 'data-cmnsd-mentions-mode': 'label', 'data-cmnsd-mentions-button': _("@ mention")})}

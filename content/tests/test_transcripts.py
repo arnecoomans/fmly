@@ -64,7 +64,8 @@ class TranscriptTests(TestCase):
     self.transcript(language='nl', kind='translation', method='automatic', text='vertaald')
     html = self.client.get(self.item.get_absolute_url()).content.decode()
     self.assertNotIn('<script>x', html)
-    self.assertIn('regel 1<br>regel 2', html)
+    self.assertRegex(html, r'regel 1<br>\s*regel 2')                     # line breaks as in the original
+    self.assertRegex(html, r'&lt;script(&gt;|>)x&lt;/script')              # a "<" in a transcript is text (|markdown_faithful; the minifier writes > as is)
     self.assertIn('vertaald', html)
     self.assertIn('automatic, not checked', html)
     self.assertIn('data-cmnsd-filter', html)

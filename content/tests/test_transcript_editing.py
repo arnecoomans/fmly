@@ -188,7 +188,7 @@ class TranscribeFlowTests(TestCase):
   def test_translation_opens_beside_the_original(self):
     translation = Transcript.objects.create(content=self.item, kind='translation', language='en', text='Dear mother,')
     html = self.html(f'?transcript={translation.pk}')
-    self.assertIn('class=transcribe__original-text>Lieve moeder,', html)    # the original on the left
+    self.assertIn('class=transcribe__original-text><p>Lieve moeder,', html)    # the original on the left
     self.assertIn('left=original', html)                                    # the switch (no image to switch to: this item has no file)
     image_side = self.html(f'?transcript={translation.pk}&left=image')
     self.assertNotIn('transcribe__original-text', image_side)

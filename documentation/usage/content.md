@@ -54,3 +54,8 @@ A transcript makes a document readable and searchable. **Transcribe** opens the 
 - Mark a transcript **incomplete** until it's done; translations sit next to the original.
 
 Transcripts still to do or to check are listed under loose ends on the dashboard.
+
+
+**As written.** A transcript is shown exactly as typed - every character, the line breaks of the original. A little Markdown helps without changing anything: `## ` before a line makes it a heading (a newspaper's headline), `**bold**` and `*italic*` copy what the original stresses - a ship's name, a heading in a list - a table can lay out a register, and a mention - `[the words in the text](person:…)` - links a name in it to that person. The asterisks must hug their words: an asterisk after a word, as a footnote mark (`echtg.*;`), stays an asterisk; `\*` is one too. Lists and other markup are left as typed: a numbered line in a register stays numbered as in the original. Text from OCR or Delpher is never Markdown: where it would become a heading or bold (`# 12`, `*Batavia*`), it arrives with a backslash (`\# 12`, `\*Batavia\*`) so it stays as read - take the backslash away if the original really has it.
+
+**Mentioning who's in it.** Select the words that name someone - "Corry Bake" - and click **@ mention** above the text (or press Alt+M): the words stay exactly as written, and the list shows who they might be; choose, and the name links to that person. A bare `@` does nothing here - in a transcript only the document's own words name someone. The person's page then lists the item under *mentioned in*.

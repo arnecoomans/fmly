@@ -39,6 +39,11 @@ def guess(content, name=None):
     if source.applies(content)[0] and source.available()[0]:
       result = source.guess(content)
       if result and result.text.strip():
+        # Read, not written as Markdown - no source returns any: what would
+        # turn into a heading, bold or italic in a transcript stays as read
+        # (|markdown_faithful). All Markdown in a transcript is typed.
+        from cmnsd.templatetags.markdown import escape_faithful_markdown
+        result.text = escape_faithful_markdown(result.text)
         return source, result
       if name:
         raise TranscriptionError(_("%(source)s found no text.") % {'source': source.short})

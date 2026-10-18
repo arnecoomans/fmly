@@ -141,6 +141,55 @@ class MentionTests(TestCase):
     html = self.render(f'[Huis \\[oud\\]](person:{self.eric.token})')
     self.assertIn('>Huis [oud]</a>', html)
 
+  # --- transcripts: faithful Markdown (issue #474) ---
+
+  def test_faithful_keeps_every_character(self):
+    from cmnsd.templatetags.markdown import markdown_faithful
+    html = str(markdown_faithful('0. J. F. Bruins;\n1. Jan*; echtg.*\n- streepje\n\\j< en <b>vet</b>\n    ingesprongen', self.request()))
+    self.assertIn('0. J. F. Bruins;', html)                       # not a list, not renumbered
+    self.assertIn('Jan*; echtg.*', html)                          # footnote asterisks stay
+    self.assertIn('- streepje', html)
+    self.assertIn('\\j&lt;', html)                                 # OCR noise: backslash and < as text
+    self.assertIn('&lt;b&gt;vet&lt;/b&gt;', html)                 # no raw HTML - shown, not swallowed
+    self.assertNotIn('<ol', html)
+    self.assertNotIn('<em', html)
+    self.assertNotIn('<pre', html)
+
+  def test_faithful_bold_and_italic_only_hugging_their_words(self):
+    from cmnsd.templatetags.markdown import markdown_faithful
+    html = str(markdown_faithful('**PASSAGIERS** met het *Sumatra* - echtg.*; J. Hagen*; en 5 * 3 en \\* los', self.request()))
+    self.assertIn('<strong>PASSAGIERS</strong>', html)
+    self.assertIn('<em>Sumatra</em>', html)                         # the ship, as in the original
+    self.assertIn('echtg.*; J. Hagen*;', html)                     # footnote asterisks: after a word, not emphasis
+    self.assertIn('5 * 3', html)
+    self.assertIn('en * los', html)                                # \* is an asterisk
+    html = str(markdown_faithful(f'**[Eric](person:{self.eric.token})** zei', self.request()))
+    self.assertIn('<strong><a class="mention"', html)              # a mention in bold
+
+  def test_ocr_escapes_only_asterisks_that_would_become_emphasis(self):
+    from unittest import mock
+    from content import transcription
+    from content.transcription.base import Guess
+
+    class FakeOCR:
+      name = short = 'fake'
+      def applies(self, content): return True, ''
+      def available(self): return True, ''
+      def guess(self, content): return Guess(text='# 12 regel\nhet *Sumatra* - echtg.*; J. Hagen*; 5 * 3')
+
+    with mock.patch.object(transcription, 'SOURCES', [FakeOCR()]):
+      _source, result = transcription.guess(self.item, 'fake')
+    self.assertEqual(result.text, '\\# 12 regel\nhet \\*Sumatra\\* - echtg.*; J. Hagen*; 5 * 3')   # only what would become a heading or italics
+
+  def test_faithful_has_headings_tables_and_mentions(self):
+    from cmnsd.templatetags.markdown import markdown_faithful
+    text = f'## Advertentiën\n\n| naam | plaats |\n|---|---|\n| [Eric](person:{self.eric.token}) | Soerabaja |\n\nmet [Geheime Persoon](person:{self.secret.token})'
+    html = str(markdown_faithful(text, self.request()))
+    self.assertIn('<h2>Advertentiën</h2>', html)                   # a headline, typed as Markdown by hand
+    self.assertIn('<table>', html)
+    self.assertIn(f'href="{self.eric.page_url()}"', html)
+    self.assertIn('G… P…', html)                                   # a hidden person: initials, as everywhere
+
   # --- the sanitizer still decides the rest ---
 
   def test_only_mention_classes_survive(self):

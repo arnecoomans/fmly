@@ -121,7 +121,7 @@
                 {% if transcript.incomplete %}<span class="badge-status badge-status--draft">{% translate "incomplete" %}</span>{% endif %}
               </p>
               <input type="checkbox" id="clamp-transcript-{{ transcript.pk }}" class="clamp-toggle">
-              <div class="clamp-content content-transcript__text">{{ transcript.text|linebreaksbr }}</div>
+              <div class="clamp-content content-transcript__text">{{ transcript.text|markdown_faithful:request }}</div>
               <label for="clamp-transcript-{{ transcript.pk }}" class="clamp-toggle-label"><span class="is-more">{% translate "read more"|capfirst %}</span><span class="is-less">{% translate "read less"|capfirst %}</span></label>
             </div>
           {% empty %}

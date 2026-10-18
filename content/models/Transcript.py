@@ -3,12 +3,13 @@ from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
+from cmnsd.models import MentionableSourceMixin
 from cmnsd.models.mixins import TimestampMixin
 
 from ..languages import Language
 
 
-class Transcript(TimestampMixin, models.Model):
+class Transcript(MentionableSourceMixin, TimestampMixin, models.Model):
   """What is literally written on an item (the original), or a
   translation of that - separate from the description, which says what
   the item is. Any kind of content: documents, but also a photo's back or
@@ -34,6 +35,33 @@ class Transcript(TimestampMixin, models.Model):
   language = models.CharField(max_length=10, choices=Language.choices)
   method = models.CharField(max_length=20, choices=Method.choices, default=Method.MANUAL)
   text = models.TextField()
+  # Its mentions indexed on save (cmnsd.models.Mention, issue #474):
+  # "mentioned in the transcript of ...".
+  mention_fields = ('text',)
+
+  def mention_excluded_targets(self):
+    """What this transcript mentioning doesn't count as "mentioned in"
+    (cmnsd sync_mentions): its own item - the whole and its parts, a page
+    of a book naming the book - it's that item's own text."""
+    from .Content import Content
+    whole_id = self.content.parent_id or self.content_id
+    pks = {whole_id, self.content_id, *Content.objects.filter(parent_id=whole_id).values_list('pk', flat=True)}
+    return [(Content, pks)]
+
+  @classmethod
+  def mention_sources_for(cls, queryset, request):
+    """The transcripts among these this viewer may read as "mentioned in":
+    as visible as their item (a transcript has no visibility of its own).
+    One per item - the original before a translation - so an item that
+    names someone in two languages is listed once."""
+    from .Content import Content
+    visible = queryset.filter(content__in=Content.objects.visible_to(request)).order_by('content_id', 'pk')
+    first = {}
+    for transcript in visible:
+      kept = first.get(transcript.content_id)
+      if kept is None or (kept.kind != cls.Kind.ORIGINAL and transcript.kind == cls.Kind.ORIGINAL):
+        first[transcript.content_id] = transcript
+    return list(first.values())
   # Not all of it typed yet - an honest marker for a partial transcript
   # (off by default: the aim is a full one).
   incomplete = models.BooleanField(default=False, help_text=_("Only part of the text is transcribed so far"))

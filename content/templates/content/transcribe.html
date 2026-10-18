@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load markdown %}
 {% comment %}
   The transcribe page (content.views.TranscribeView): the item's image,
   zoomable (cmnsd.js viewer.js), beside one transcript, which saves itself
@@ -58,7 +59,7 @@
     {% elif left_original %}
       <div class="transcribe__original">
         <p class="transcribe__original-meta">{{ left_original.get_language_display }} · {% translate "original" %}{% if left_original.incomplete %} · {% translate "incomplete" %}{% endif %}</p>
-        <div class="transcribe__original-text">{{ left_original.text|linebreaksbr }}</div>
+        <div class="transcribe__original-text">{{ left_original.text|markdown_faithful:request }}</div>
       </div>
     {% elif image %}
       <div class="transcribe__image" data-cmnsd-viewer>
@@ -100,7 +101,8 @@
           <p class="transcribe__guess-note" data-guess-note></p>
         </div>
       {% endif %}
-      <textarea class="transcribe__text" name="{{ form.text.html_name }}" spellcheck="false" placeholder="{% translate 'Type what is written - a ? where you can’t read it.' %}" aria-label="{% translate 'text'|capfirst %}">{{ form.text.value|default_if_none:'' }}</textarea>
+      {# Mentions (issue #474): only around the words as written - select them, then "@ mention" or Alt+M; a bare @ opens nothing (cmnsd.js mentions.js, mode label). #}
+      <textarea class="transcribe__text" name="{{ form.text.html_name }}" {% mentions_attrs %} data-cmnsd-mentions-mode="label" data-cmnsd-mentions-button="{% translate '@ mention' %}" spellcheck="false" placeholder="{% translate 'Type what is written - a ? where you can’t read it.' %}" aria-label="{% translate 'text'|capfirst %}">{{ form.text.value|default_if_none:'' }}</textarea>
       <p class="transcribe__error" data-cmnsd-error hidden></p>
       <p class="transcribe__hint">{% translate "Saves itself · Ctrl+S saves now · Alt + arrows / plus / minus moves the image" %}</p>
     </form>
