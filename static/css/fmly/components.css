@@ -288,6 +288,12 @@
 .reading-copy p:last-child { margin-bottom: 0; }
 .reading-copy a { color: var(--color-accent); text-decoration: underline; text-decoration-color: var(--color-accent-soft); }
 .reading-copy ul, .reading-copy ol { margin: 0 0 var(--space-4); padding-left: 1.3em; }
+/* base.css resets list-style for component lists - in written text (a
+   biography, a description, a comment) a list shows as one. */
+.reading-copy ul, .comment-row__text ul { list-style: disc; }
+.reading-copy ol, .comment-row__text ol { list-style: decimal; }
+.comment-row__text ul, .comment-row__text ol { margin: 0 0 var(--space-2); padding-left: 1.3em; }
+.reading-copy li::marker, .comment-row__text li::marker { color: var(--color-ink-3); }
 .reading-copy li + li { margin-top: var(--space-1); }
 .reading-copy blockquote {
   margin: 0 0 var(--space-4);
