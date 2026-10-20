@@ -258,7 +258,8 @@
             </div>
           {% endif %}
           {% if content.file %}
-            <a class="content-detail__original" href="{% url 'content:file' content.token %}"><i class="bi bi-box-arrow-up-right"></i> {% translate "open original"|capfirst %}</a>
+            {# A new tab, as the lightbox's and the transcribe page's: the bare file has no way back to the site. #}
+            <a class="content-detail__original" href="{% url 'content:file' content.token %}" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right"></i> {% translate "open original"|capfirst %}</a>
             {# Format, size in pixels (an image) and on disk (content_tags.file_info). #}
             <span class="content-detail__file-info">{{ content|file_info }}</span>
           {% endif %}
