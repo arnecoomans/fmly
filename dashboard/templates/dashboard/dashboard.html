@@ -32,17 +32,29 @@
 
   <div class="dashboard__columns">
     <div class="dashboard__main">
-      {% if anniversaries or request.user.is_authenticated %}
-        <section class="dashboard__block">
-          <h2 class="section-title">{{ anniversaries_label|capfirst }} <a class="dashboard__more" href="{% url 'events:calendar' %}#day-{% now 'j' %}">{% translate "calendar" %} →</a></h2>
-          {% if not anniversaries %}<p class="timeline__empty">{% translate "Nothing on this day or in the coming week." %}</p>{% endif %}
+      {% comment %}
+        Anniversaries (dashboard/blocks.py on_this_day): the coming week
+        always - the block keeps its shape from day to day - and today's
+        above it, under a heading of its own, when there are any.
+      {% endcomment %}
+      <section class="dashboard__block">
+        <h2 class="section-title">{% if today_events %}{% translate "on this day"|capfirst %}{% else %}{% translate "this coming week"|capfirst %}{% endif %} <a class="dashboard__more" href="{% url 'events:calendar' %}#day-{% now 'j' %}">{% translate "calendar" %} →</a></h2>
+        {% if today_events %}
           <ol class="events-page__list">
-            {% for event in anniversaries %}
+            {% for event in today_events %}
               <li class="event-row dashboard__anniversary">{% include 'event/_event.html' with others=event.people.all %}<span class="dashboard__years-ago">{{ event|years_ago }}</span></li>
             {% endfor %}
           </ol>
-        </section>
-      {% endif %}
+          <h3 class="dashboard__subtitle">{% translate "this coming week"|capfirst %}</h3>
+        {% endif %}
+        {% if week_events %}
+          <ol class="events-page__list">
+            {% for event in week_events %}
+              <li class="event-row dashboard__anniversary">{% include 'event/_event.html' with others=event.people.all %}<span class="dashboard__years-ago">{{ event|years_ago }}</span></li>
+            {% endfor %}
+          </ol>
+        {% else %}<p class="timeline__empty">{% translate "Nothing in the coming week." %}</p>{% endif %}
+      </section>
 
       {% comment %}
         Between "on this day" and "from the archive": blocks that fold - a <details> each, open or

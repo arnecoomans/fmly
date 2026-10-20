@@ -1745,6 +1745,8 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .dashboard__columns { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--space-8); }
 .dashboard__block { margin-bottom: var(--space-8); }
 .dashboard__block .section-title { display: flex; align-items: baseline; gap: 8px; }
+/* The coming week under today's anniversaries - the section title's look, a step quieter. */
+.dashboard__subtitle { margin: var(--space-4) 0 var(--space-2); font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ink-3); }
 .dashboard__more { margin-left: auto; font-size: var(--text-xs); font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--color-accent); text-decoration: none; }
 /* "Another" from the archive: a form (swapped in place by list.js), its button looks like the links. */
 .dashboard__more-button { padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }

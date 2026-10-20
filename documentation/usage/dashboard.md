@@ -6,7 +6,7 @@ Between *On this day* and *From the archive*, each block on the left can be **fo
 
 ## On this day
 
-Births, marriages, deaths and historical events that happened on today's date, with how long ago. On a quiet day it shows the coming week instead.
+The coming week's anniversaries - births, marriages, deaths and historical events with a known day and month, with how long ago - a teaser; migrations, career steps and the like are on people's pages and in the calendar. When something happened on today's date, it's listed above the week, under its own heading. A living person's birthday shows only for someone signed in.
 
 For the whole year at a glance: **calendar →** next to the heading opens the calendar, at today.
 

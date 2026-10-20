@@ -48,28 +48,30 @@ class OnThisDayTests(DashboardTestCase):
     born = self.event('birth', [deceased], today, 1884)
     self.event('birth', [living], today, 1990)
     married = self.event('marriage', [deceased, living], today, 1909)
-    events, label = blocks.on_this_day(self.request(self.reader), today)
+    events, week = blocks.on_this_day(self.request(self.reader), today)
     living_birth = Event.objects.get(kind='birth', people=living)
     self.assertEqual(events, [born, married, living_birth])                # by year; signed in: living birthdays too
-    self.assertEqual(str(label), 'on this day')
+    self.assertEqual(len(week), 1)                                         # the week too, today or not
     from django.contrib.auth.models import AnonymousUser
     from events.anniversaries import anniversaries
     signed_out = anniversaries(self.request(AnonymousUser()), days=[today])
     self.assertNotIn(living_birth, signed_out)                              # signed out: only of the dead
 
-  def test_every_kind_with_a_day(self):
+  def test_milestones_and_history_only(self):
     today = date(2026, 3, 9)
     invasion = Event.objects.create(kind='historical', title='Inval Japan', year=1942, month=3, day=9, user=self.editor)
     move = self.event('migration', [self.person('Albert')], today, 1946)
-    events, _label = blocks.on_this_day(self.request(self.reader), today)
-    self.assertEqual(events, [invasion, move])
+    events, _week = blocks.on_this_day(self.request(self.reader), today)
+    self.assertEqual(events, [invasion])                                   # a teaser: not a migration
+    from events.anniversaries import anniversaries
+    self.assertEqual(anniversaries(self.request(self.reader), days=[today]), [invasion, move])   # the calendar: every kind
 
   def test_the_coming_week_on_an_empty_day(self):
     today = date(2026, 10, 3)
     person = self.person('Corry')
     soon = self.event('death', [person], today + timedelta(days=3), 1994)
-    events, label = blocks.on_this_day(self.request(self.reader), today)
-    self.assertEqual((events, str(label)), ([soon], 'this coming week'))
+    events, week = blocks.on_this_day(self.request(self.reader), today)
+    self.assertEqual((events, week), ([], [soon]))
 
 
 class DashboardPageTests(DashboardTestCase):

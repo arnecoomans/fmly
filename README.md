@@ -6,7 +6,7 @@ Welcome to FMLY 3.0: a whole new content design, focusing on content- and person
 
 ## Dashboard
 New in FMLY: start from one central place.
-- **On this day** - births, marriages, deaths and history that happened on today's date; on a quiet day, the coming week. The calendar shows the whole year.
+- **On this day** - the coming week's anniversaries, and today's above them: births, marriages, deaths, history and more. The calendar shows the whole year.
 - **Recently added** and **from the archive** - what's new, and a random item to rediscover.
 - **The conversation** - the latest comments, wherever they were made.
 - **Your inbox** - drop files straight onto the dashboard; they wait as drafts until you've described them.

@@ -38,10 +38,10 @@ class DashboardView(TemplateView):
       from django.conf import settings
       context['approval'] = getattr(settings, 'CMNSD_REGISTRATION_REQUIRES_APPROVAL', False)
       return context
-    anniversaries, anniversaries_label = blocks.on_this_day(request)
+    today, coming_week = blocks.on_this_day(request)
     context.update({
-      'anniversaries': anniversaries,
-      'anniversaries_label': anniversaries_label,
+      'today_events': today,
+      'week_events': coming_week,
       'recent': blocks.recently_added(request),
       'favorites': blocks.family_favorites(request),
       'comments': blocks.conversation(request),

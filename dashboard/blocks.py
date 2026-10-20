@@ -12,15 +12,24 @@ from django.utils.translation import gettext_lazy as _
 
 from cmnsd.models.access import filter_accessible
 
+# The dashboard's anniversaries: a teaser to the archive - the milestones of
+# a life and history. A migration, a career step, an engagement matter once
+# someone interests you: on their page and in the calendar, not here.
+ANNIVERSARY_KINDS = ('birth', 'death', 'marriage', 'historical')
+
+
 def on_this_day(request, today=None):
-  """(events, label): what happened on today's date across the years - or, on a day without any, those of the coming week. The
-  rules (what's shown) are events/anniversaries.py's."""
+  """(today's, the coming week's): what happened on today's date across
+  the years, and on the seven days after it - the week always, so the
+  block doesn't change shape from one day to the next; today's above it
+  when there are any. Births, deaths, marriages and history only
+  (ANNIVERSARY_KINDS); the rest of the rules are events/anniversaries.py's."""
   from events.anniversaries import anniversaries
   today = today or date.today()
-  events = anniversaries(request, days=[today])
-  if events:
-    return events, _("on this day")
-  return anniversaries(request, days=[today + timedelta(days=n) for n in range(1, 8)]), _("this coming week")
+  return (
+    anniversaries(request, days=[today], kinds=ANNIVERSARY_KINDS),
+    anniversaries(request, days=[today + timedelta(days=n) for n in range(1, 8)], kinds=ANNIVERSARY_KINDS),
+  )
 
 
 def recently_added(request, count=10):

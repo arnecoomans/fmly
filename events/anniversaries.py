@@ -21,11 +21,13 @@ def shown(event, request=None):
   return all(person.death for person in event.people.all())
 
 
-def anniversaries(request, days=None, month=None):
+def anniversaries(request, days=None, month=None, kinds=None):
   """The events on these days (dates: month and day count, the
   year doesn't) - or, with `month`, every day of that month - by day, then
-  year."""
+  year. `kinds`: only those (the dashboard's teaser); default every kind."""
   events = filter_accessible(Event.objects.all(), request).filter(day__isnull=False, month__isnull=False)
+  if kinds:
+    events = events.filter(kind__in=kinds)
   if month:
     events = events.filter(month=month)
   else:
