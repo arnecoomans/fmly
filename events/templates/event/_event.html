@@ -2,7 +2,8 @@
 {% comment %}
   An event, built from its parts rather than one sentence (Event.display_for
   stays for pickers and the admin): what it is, when (and the person's age
-  then), who, where, the description, and the items documenting it - its
+  then), who, where, the description, and the items documenting it (folded: icons and a
+  count; open: their thumbnails) - its
   name linking to the event's own page. Used on
   a person's timeline, an item's page and a place's page.
   Context: event, request; optional:
@@ -38,8 +39,12 @@
     {% endif %}{% endwith %}{% endif %}
     {# Signed in only: the description may say more than the people do (Event.api_search_q). #}
     {% if event.description and request.user.is_authenticated %}<div class="event__description reading-copy">{{ event.description|markdown:request }}</div>{% endif %}
+    {# Its proof: folded to a line of icons and a count; open, the thumbnails - each to its item. #}
     {% if event.visible_content %}
-      <p class="event__content">{% for item in event.visible_content %}<a href="{{ item.get_absolute_url }}" title="{{ item }}"><i class="bi bi-{{ item|kind_icon }}"></i></a>{% endfor %}</p>
+      <details class="event__content">
+        <summary>{% for item in event.visible_content %}<i class="bi bi-{{ item|kind_icon }}" aria-hidden="true"></i>{% endfor %} <span class="event__content-count">{% blocktranslate count counter=event.visible_content|length %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktranslate %}</span> <i class="bi bi-chevron-down event__content-chevron" aria-hidden="true"></i></summary>
+        <div class="event__proof">{% for item in event.visible_content %}<a class="event__proof-thumb" href="{{ item.get_absolute_url }}" title="{{ item }}">{% if item.has_thumbnail %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}</a>{% endfor %}</div>
+      </details>
     {% endif %}
   </div>
 </article>

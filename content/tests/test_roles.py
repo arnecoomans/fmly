@@ -132,3 +132,40 @@ class SuggestedRoleTests(TestCase):
     loose = self.client.get('/dashboard/loose-ends/people-without-role/').content.decode()
     self.assertIn('All: depicted', loose)
     self.assertIn('Set: subject', loose)
+
+
+class RelatedContentTests(TestCase):
+  """Items that reach a person through their own events (Person.
+  get_related_content): under Content, a heading of its own - not history,
+  not what's linked to them already."""
+
+  def setUp(self):
+    from events.models import Event
+    self.user = get_user_model().objects.create(username='related', is_staff=True)
+    self.user.save()
+    self.bob = Person.objects.create(given_name='Bob', user=self.user, status='p', visibility='c')
+    self.voyage = Event.objects.create(kind='migration', year=1952, title='Per Oranje', user=self.user)
+    self.voyage.people.add(self.bob)
+    self.invasion = Event.objects.create(kind='historical', year=1942, title='Inval', user=self.user)
+    self.invasion.people.add(self.bob)
+    self.clipping = Content.objects.create(name='Oranje morgen in Amsterdam', kind='document', user=self.user, status='p', visibility='c')
+    self.history = Content.objects.create(name='Inval Java', kind='document', user=self.user, status='p', visibility='c')
+    self.linked = Content.objects.create(name='Paspoort', kind='document', user=self.user, status='p', visibility='c')
+    self.voyage.content.add(self.clipping, self.linked)
+    self.invasion.content.add(self.history)
+    self.linked.people.add(self.bob)
+    self.client = Client()
+    self.client.force_login(self.user)
+
+  def test_rules(self):
+    request = self.client.get('/').wsgi_request
+    related = self.bob.get_related_content(request)
+    self.assertEqual([item.name for item in related], ['Oranje morgen in Amsterdam'])   # not history, not what's linked
+    self.assertEqual(related[0].via, ['migration 1952'])
+    from content.templatetags.content_tags import card_role
+    self.assertEqual(card_role(related[0]), 'via migration 1952')
+
+  def test_on_the_page(self):
+    html = self.client.get(f'/api/person/{self.bob.token}/fields/?fields=get_visible_content', HTTP_ACCEPT='application/json')
+    page = self.client.get(self.bob.page_url()).content.decode()
+    self.assertIn('Related content', page + html.content.decode())

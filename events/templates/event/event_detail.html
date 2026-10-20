@@ -81,7 +81,7 @@
   {% if event.visible_content or editing %}
     <section class="tag-page__section" data-cmnsd-via-links="event:{{ event.token }}">
       <h2 class="section-title">{% translate "documented by"|capfirst %}</h2>
-      <div class="tag-list" id="event-content">{% for item in event.visible_content %}{% include 'event/_item.html' %}{% endfor %}</div>
+      <div class="dashboard__thumbs event-proof" id="event-content">{% for item in event.visible_content %}{% include 'event/_item.html' %}{% endfor %}</div>
       {% if editing %}
         {% if suggested_content %}
           {# The items its people are in (EventDetailView.suggested_content): one click links one - the page reloads, the item moves up into the list. #}

@@ -1,4 +1,4 @@
-{% load tags %}
+{% load tags %}{% load ui_state %}
 {% comment %}
   Function template for Person.get_visible_content() - the Content
   section body: the shared content grid (content/_content_grid.html) with
@@ -13,3 +13,12 @@
   {% include 'content/_upload_for.html' with param='person' token=person.token name=person.get_short_name %}
 {% endif %}
 {% include 'content/_content_grid.html' with items=person|visible_content:request sort=person|content_sort:request save_key='person.content' grid_id='person-content-grid' %}
+{# Through their own events, not linked to them (Person.get_related_content): a sub-section of Content - folded with it - and foldable itself, remembered (person.related). Content keeps meaning "linked to them". #}
+{% with related=person|related_content:request %}{% if related %}
+  {% section_open 'person.related' as related_open %}
+  <details class="page-section page-section--sub person-related" data-cmnsd-section="person.related"{% if related_open %} open{% endif %}>
+    <summary class="page-section__header"><h3 class="section-title">{% translate "related content"|capfirst %} <span class="page-section__count">{{ related|length }}</span></h3></summary>
+    <p class="person-related__help">{% translate "Documenting their events - not linked to them." %}</p>
+    {% include 'content/_content_grid.html' with items=related sort=person|content_sort:request save_key='person.content' grid_id='person-related-grid' %}
+  </details>
+{% endif %}{% endwith %}

@@ -94,6 +94,34 @@ class SectionShorthand(models.Model):
       item.person_role = ContentPerson.Role.CREATOR if item.by_this_person else roles.get(item.pk, '')
     return items
 
+  def get_related_content(self, request=None):
+    """Items that reach this person through their own events, not linked to
+    them: a clipping about the ship they sailed on, a passport request
+    documenting their death - each with `via` (the events, as "migration
+    1952"). Their own events only - not history: a clipping about the
+    invasion isn't about everyone. What their Content shows already isn't
+    repeated; parts give their whole, as there. Under Content, a heading of
+    its own (person/functions/get_visible_content.html): Content keeps
+    meaning "linked to them"."""
+    from collections import defaultdict
+    from content.models import Content
+    from events.models import Event
+    events = Event.objects.filter(people=self).exclude(kind=Event.Kind.HISTORICAL)
+    direct = self._visible_content(request).values('pk')
+    items = list(
+      Content.objects.visible_to(request).listable()
+      .filter(Q(events__in=events) | Q(parts__events__in=events)).exclude(pk__in=direct).distinct()
+      .select_related('photo_detail', 'document_detail', 'book_detail').in_order(self.content_sort(request))
+    )
+    via = defaultdict(list)
+    for event in events.filter(Q(content__in=items) | Q(content__parent__in=items)).distinct().prefetch_related('content'):
+      label = f"{event.get_kind_display()} {event.year}" if event.year else event.get_kind_display()
+      for item in event.content.all():
+        via[item.parent_id or item.pk].append(label)
+    for item in items:
+      item.via = sorted(set(via[item.pk]))
+    return items
+
   CONTENT_SORTS = ('added', 'date', 'favorites')   # content_tags.CONTENT_SORTS
 
   def content_sort(self, request=None):

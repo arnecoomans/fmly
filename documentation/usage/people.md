@@ -23,7 +23,7 @@ While you type the names, FMLY3 shows people **already in the archive** with tho
 - **Born** and **died** - date and place. A date can be exact, *ca.*, *before* or *after*, and day or month can stay empty.
 - **Family** - parents, partners, children and siblings, each with their years and places of birth and death - "(1849 Maassluis – 1916 Bandoeng)" - so a move shows down a list of children. Where a row is narrow - two columns, a phone - the places and the surname after "with" make way, and the relation (*Child*, *Half-sibling*) moves under the name.
 - **Biography** - their story, in your own words.
-- **Photos & documents** they appear in - filtered by kind, and by their role on it once roles are set: *subject*, *creator*, *addressee*, *depicted*, *possibly depicted*, *owner* - **comments**, and their **timeline**.
+- **Photos & documents** they appear in - filtered by kind, and by their role on it once roles are set: *subject*, *creator*, *addressee*, *depicted*, *possibly depicted*, *owner*. Inside it, folding with it and on its own (remembered), **related content**: items that document their own events but aren't linked to them - the clipping about the ship they sailed on - each saying through which event ("via migration 1952"); historical events don't count - **comments**, and their **timeline**.
 
 ## In edit mode
 

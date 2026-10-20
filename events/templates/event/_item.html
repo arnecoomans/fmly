@@ -1,10 +1,11 @@
 {% load edit_mode %}{% load content_tags %}
 {% comment %}
-  An item documenting an event, on its page; in edit mode with its "×".
-  Also what the link action returns. Context: item, event, request.
+  An item documenting an event, on its page: its thumbnail (or its kind's
+  icon) and name, as the dashboard's cards - the evidence at a glance; in
+  edit mode with its "×". Also what the link action returns.
+  Context: item, event, request.
 {% endcomment %}
-{% if edit_mode and event|can_edit:request %}
-  <span class="chip-edit"><a class="tag" href="{{ item.get_absolute_url }}"><i class="bi bi-{{ item|kind_icon }}"></i>{{ item }}</a>{% include 'cmnsd/edit/unlink.html' with model='event' owner=event relation='content' object=item %}</span>
-{% else %}
-  <a class="tag" href="{{ item.get_absolute_url }}"><i class="bi bi-{{ item|kind_icon }}"></i>{{ item }}</a>
-{% endif %}
+<div class="event-proof__card{% if edit_mode and event|can_edit:request %} chip-edit{% endif %}">
+  <a class="dashboard__thumb" href="{{ item.get_absolute_url }}" title="{{ item }}">{% if item.has_thumbnail %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}<span class="dashboard__thumb-name">{{ item }}</span></a>
+  {% if edit_mode and event|can_edit:request %}{% include 'cmnsd/edit/unlink.html' with model='event' owner=event relation='content' object=item %}{% endif %}
+</div>

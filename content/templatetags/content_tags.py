@@ -263,8 +263,12 @@ def role_counts(items):
 def card_role(item):
   """The word for how the page's person is on this item, on their page
   (_content_card.html): "author" for a book they wrote, else their role
-  ("depicted", "addressee" - item.person_role); '' elsewhere or unknown."""
+  ("depicted", "addressee" - item.person_role), or "via migration 1952"
+  for related content (item.via); '' elsewhere or unknown."""
+  from django.utils.translation import gettext
   if getattr(item, 'by_this_person', False):
-    from django.utils.translation import gettext
     return gettext("author")
+  if getattr(item, 'via', None):
+    # Related content (Person.get_related_content): through which events.
+    return gettext("via %(events)s") % {'events': ', '.join(item.via)}
   return role_label(getattr(item, 'person_role', ''))

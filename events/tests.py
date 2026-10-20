@@ -523,3 +523,26 @@ class CareerAndEngagementKindTests(TestCase):
       event = Event(kind=kind, title='Aanstelling als Beheerder', user=self.user)
       event.clean()
       self.assertEqual(event.title, 'Aanstelling als Beheerder')
+
+
+class EventProofTests(TestCase):
+  """Proof shown: thumbnail cards on the event's page; on a timeline folded
+  to icons and a count, open the thumbnails."""
+
+  def test_page_and_timeline(self):
+    from django.test import Client
+    from content.models import Content
+    user = get_user_model().objects.create(username='proof', is_staff=True)
+    user.save()
+    person = Person.objects.create(given_name='Pieter', user=user, status='p', visibility='c')
+    event = Event.objects.create(kind=Event.Kind.DEATH, year=1918, user=user)
+    event.people.add(person)
+    passport = Content.objects.create(name='Paspoortaanvraag', kind='document', user=user, status='p', visibility='c')
+    event.content.add(passport)
+    client = Client()
+    client.force_login(user)
+    page = client.get(event.get_absolute_url()).content.decode().replace('"', '')
+    self.assertRegex(page, r'class=dashboard__thumb[^>]*href=' + passport.get_absolute_url() + '|href=' + passport.get_absolute_url() + '[^>]*class=dashboard__thumb')
+    timeline = client.get(person.page_url()).content.decode().replace('"', '')
+    self.assertIn('<details class=event__content>', timeline)
+    self.assertIn('1 item', timeline)

@@ -22,6 +22,11 @@ def visible_content(person, request):
 
 
 @register.filter
+def related_content(person, request):
+  return person.get_related_content(request)
+
+
+@register.filter
 def visible_events(person, request):
   return person.get_visible_events(request)
 
