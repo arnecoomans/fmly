@@ -99,6 +99,21 @@ class LooseEndView(TemplateView):
       for item in context['items']:
         item.dismissal = by_id.get(item.pk)
       return context
+    if name == 'people-without-role':
+      # The people to give a role, on each item - one query, rows ready.
+      from content.models import ContentPerson
+      from people.models import Person
+      from cmnsd.models.access import filter_accessible
+      links = ContentPerson.objects.filter(
+        content__in=context['items'], role='', person__in=filter_accessible(Person.objects.all(), self.request),
+      ).select_related('person')
+      people = Person._attach_portraits(Person._attach_lifespan([link.person for link in links]))
+      by_item = {}
+      for link, person in zip(links, people):
+        person.content_role = ''
+        by_item.setdefault(link.content_id, []).append(person)
+      for item in context['items']:
+        item.roleless_people = by_item.get(item.pk, [])
     if name in ('undated-events', 'undocumented-events'):
       # Each person's together: what's undated or unproven in one life, side by side.
       context['items'] = blocks.events_by_person(items.distinct().filter(pk__in=[e.pk for e in context['items']]), self.request)

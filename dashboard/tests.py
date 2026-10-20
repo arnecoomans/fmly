@@ -533,3 +533,58 @@ class ProgressTests(DashboardTestCase):
     page = client.get('/dashboard/loose-ends/no-death/').content.decode()
     self.assertIn('loose-end-progress__legend', page)
 
+
+
+class PeopleWithoutRoleTests(DashboardTestCase):
+  """People on items without a role (ContentPerson, issue #471): by item,
+  only people this viewer may see; a bar of items done - every person on
+  them with a role, or fine as it is."""
+
+  def setUp(self):
+    super().setUp()
+    from content.models import Content
+    self.photo = Content.objects.create(name='Kerstfeest', kind='photo', user=self.editor, status='p', visibility='c')
+    self.letter = Content.objects.create(name='Brief', kind='document', user=self.editor, status='p', visibility='c')
+    self.bare = Content.objects.create(name='Leeg', kind='photo', user=self.editor, status='p', visibility='c')
+    self.ida, self.winke = self.person('Ida'), self.person('Winke')
+    self.photo.people.add(self.ida, self.winke)
+    self.letter.people.add(self.ida)
+
+  def set_role(self, item, person, role):
+    from content.models import ContentPerson
+    ContentPerson.objects.filter(content=item, person=person).update(role=role)
+
+  def test_items_and_counts(self):
+    self.set_role(self.photo, self.ida, 'depicted')
+    items = {item.name: item.without_role for item in blocks.loose_end_items('people-without-role', self.request(self.editor)).distinct()}
+    self.assertEqual(items, {'Kerstfeest': 1, 'Brief': 1})                     # not an item without people
+
+  def test_someone_hidden_doesnt_count(self):
+    secret = Person.objects.create(given_name='Geheim', user=self.reader, status='p', visibility='q')
+    self.bare.people.add(secret)
+    names = {item.name for item in blocks.loose_end_items('people-without-role', self.request(self.editor))}
+    self.assertNotIn('Leeg', names)
+
+  def test_the_bar(self):
+    from dashboard.progress import bar
+    self.set_role(self.letter, self.ida, 'addressee')
+    found = bar('people-without-role', self.request(self.editor))
+    self.assertEqual({s['key']: s['count'] for s in found['segments']}, {'done': 1, 'none': 1})
+    self.assertIn('1 of 2 done', found['summary'])
+
+  def test_the_page_sets_roles_here(self):
+    client = Client()
+    client.force_login(self.editor)
+    html = client.get('/dashboard/loose-ends/people-without-role/').content.decode().replace('"', '')
+    self.assertIn(f'href={self.photo.get_absolute_url()}', html)                # to the item
+    self.assertIn('data-cmnsd-action=set_person_role', html)                    # the menu, without edit mode
+    self.assertIn('Winke', html)
+
+  def test_no_remove_on_the_loose_end(self):
+    client = Client()
+    client.force_login(self.editor)
+    html = client.get('/dashboard/loose-ends/people-without-role/').content.decode().replace('"', '')
+    self.assertNotIn('data-cmnsd-action=unlink', html)                         # removing someone: on the item's page
+    import json
+    back = client.post(f'/api/content/{self.photo.token}/set_person_role/', json.dumps({'person': self.ida.token, 'role': 'depicted', 'roles_only': '1'}), content_type='application/json')
+    self.assertNotIn('data-cmnsd-action=unlink', back.json()['html'].replace('"', ''))   # and not after a role is set

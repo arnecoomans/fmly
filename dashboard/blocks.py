@@ -112,6 +112,7 @@ LOOSE_ENDS = {
   'no-death': _("people born over 100 years ago without a death"),
   'no-parents': _("people without parents"),
   'photos-without-people': _("photos without people"),
+  'people-without-role': _("people on items without a role"),
   'undated-events': _("events without a date"),
   'other-events': _("events of kind 'other' - does a kind fit?"),
   'undocumented-events': _("events without documentation"),
@@ -167,6 +168,15 @@ def loose_end_items(name, request, dismissed=False):
   return items.filter(pk__in=ids) if dismissed else items.exclude(pk__in=ids)
 
 
+def role_items(request):
+  """The items with someone on them this viewer may see - the whole of the
+  "without a role" loose end (its bar, dashboard/progress.py)."""
+  from content.models import Content
+  from people.models import Person
+  people = filter_accessible(Person.objects.all(), request)
+  return Content.objects.visible_to(request).filter(person_links__person__in=people).distinct()
+
+
 def _loose_end_queryset(name, request):
   """Each loose end's own rule, before dismissals."""
   from content.models import Content
@@ -197,6 +207,13 @@ def _loose_end_queryset(name, request):
     # count, nor leak. Not history: its source goes in its description.
     from content.models import Content
     return documentable_events(events).exclude(content__in=Content.objects.visible_to(request)).distinct()
+  if name == 'people-without-role':
+    # An item with someone on it whose role isn't set (ContentPerson, issue
+    # #471) - only people this viewer may see: they can't set the role of
+    # someone hidden. Parts too: a person can be on a page. With the count.
+    return role_items(request).filter(person_links__role='', person_links__person__in=people).select_related('photo_detail', 'document_detail').annotate(
+      without_role=models.Count('person_links', filter=models.Q(person_links__role='', person_links__person__in=people), distinct=True),
+    )
   if name == 'undated-events':
     return events.filter(year__isnull=True)
   if name == 'other-events':

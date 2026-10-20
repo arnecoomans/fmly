@@ -6,7 +6,8 @@ A bar is about a whole (the family's people, the scanned documents, the
 photos, the events), split into parts. Two loose ends about the same
 whole share one bar (GROUPS): people without a birth and without a death
 in four parts, documents without a transcript and transcripts to check in
-three. People without parents has a bar of two parts: done - "fine as it
+three. People without parents, events without documentation and items
+with people without a role have a bar of two parts: done - "fine as it
 is" included - and still to do. The others have none: little work left,
 or no whole to measure against.
 
@@ -26,7 +27,7 @@ GROUPS = {
 # Loose ends with a bar of their own: done / to do. Only where there's a fair
 # amount of work: photos without people matter less, and undated or
 # untitled events are to be resolved down to none - a bar adds nothing.
-SINGLE = ('no-parents', 'undocumented-events')
+SINGLE = ('no-parents', 'undocumented-events', 'people-without-role')
 
 IMAGE_FILES = r'\.(jpe?g|png|gif|webp|tiff?)$'
 
@@ -106,9 +107,12 @@ def _single(name, request):
   on the list (so "fine as it is" counts as done)."""
   from events.models import Event
   from people.models import Person
-  from .blocks import documentable_events, loose_end_items
+  from .blocks import documentable_events, loose_end_items, role_items
   if name == 'undocumented-events':
     whole = documentable_events(filter_accessible(Event.objects.all(), request))
+  elif name == 'people-without-role':
+    # By item: done when everyone on it has a role (or it's fine as it is).
+    whole = role_items(request)
   else:   # no-parents
     whole = filter_accessible(Person.objects.all(), request).filter(family_connection='family')
   total = whole.distinct().count()

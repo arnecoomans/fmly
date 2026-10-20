@@ -1,0 +1,7 @@
+{% load tags %}{% load content_tags %}
+{% comment %}
+  The person's chip again after their role changed (set_person_role,
+  content/roles.py) - replaces the one on the page. Context: content,
+  result ({relation, object}), request.
+{% endcomment %}
+{% with person=result.object|for_row|with_role:content %}{% include 'content/_person_link.html' with roles_here=True roles_only=result.roles_only %}{% endwith %}

@@ -1,0 +1,16 @@
+{% comment %}
+  The role menu of a person on an item (edit mode) - inside their row,
+  under the name (people/_person_row.html role_form). Saves on change
+  (set_person_role); the chip comes back with it. The role the item's
+  kind suggests is marked (Content.suggested_person_role) - not chosen. Context: person,
+  content, role (content/_person_link.html).
+{% endcomment %}
+<form class="person-role" data-cmnsd-action="set_person_role" data-model="content" data-object-token="{{ content.token }}" data-cmnsd-target="closest:.chip-edit" data-cmnsd-insert="replace">
+  <input type="hidden" name="person" value="{{ person.token }}">
+  {% if roles_only %}<input type="hidden" name="roles_only" value="1">{% endif %}
+  <select name="role" data-cmnsd-autosubmit aria-label="{% translate 'role' %}" title="{% translate 'How they are on this item' %}">
+    <option value=""{% if not role %} selected{% endif %}>{% translate "no role" %}</option>
+    {% with suggested=content.suggested_person_role %}{% for value, label in content.person_roles %}<option value="{{ value }}"{% if value == role %} selected{% endif %}>{{ label }}{% if value == suggested %} ({% translate "suggested" %}){% endif %}</option>{% endfor %}{% endwith %}
+  </select>
+  <p class="edit-form__error" data-cmnsd-error hidden></p>
+</form>

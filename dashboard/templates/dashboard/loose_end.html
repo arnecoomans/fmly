@@ -33,7 +33,24 @@
   {% elif name == 'photos-without-people' or name == 'open-transcripts' or name == 'no-transcript' or name == 'low-resolution' %}
     <div class="dashboard__thumbs">
       {% for item in items %}
-        <div class="loose-end__cell"><a class="dashboard__thumb" href="{% if name == 'open-transcripts' or name == 'no-transcript' %}{% url 'content:transcribe' item.token %}{% else %}{{ item.get_absolute_url }}{% endif %}" title="{{ item }}">{% if item.has_thumbnail %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}<span class="dashboard__thumb-name">{{ item }}{% if name == 'low-resolution' %} <span class="dashboard__thumb-meta">{{ item.width }} × {{ item.height }}</span>{% elif name == 'open-transcripts' %} <span class="dashboard__thumb-meta">{% if item.open_incomplete %}{% translate "incomplete" %}{% endif %}{% if item.open_incomplete and item.open_unchecked %} · {% endif %}{% if item.open_unchecked %}{% translate "not checked" %}{% endif %}</span>{% endif %}</span></a>{% include 'dashboard/_dismiss.html' with item=item %}</div>
+        <div class="loose-end__cell"><a class="dashboard__thumb" href="{% if name == 'open-transcripts' or name == 'no-transcript' %}{% url 'content:transcribe' item.token %}{% else %}{{ item.get_absolute_url }}{% endif %}" title="{{ item }}">{% if item.has_thumbnail %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}<span class="dashboard__thumb-name">{{ item }}{% if name == 'low-resolution' %} <span class="dashboard__thumb-meta">{{ item.width }} × {{ item.height }}</span>{% elif name == 'people-without-role' %} <span class="dashboard__thumb-meta">{% blocktranslate count counter=item.without_role %}{{ counter }} without a role{% plural %}{{ counter }} without a role{% endblocktranslate %}</span>{% elif name == 'open-transcripts' %} <span class="dashboard__thumb-meta">{% if item.open_incomplete %}{% translate "incomplete" %}{% endif %}{% if item.open_incomplete and item.open_unchecked %} · {% endif %}{% if item.open_unchecked %}{% translate "not checked" %}{% endif %}</span>{% endif %}</span></a>{% include 'dashboard/_dismiss.html' with item=item %}</div>
+      {% endfor %}
+    </div>
+  {% elif name == 'people-without-role' %}
+    {# Each item with the people on it whose role isn't set - set it here (the item page's own menu, content/_person_link.html roles_here). #}
+    <div class="loose-end__roles">
+      {% for item in items %}
+        <div class="loose-end__role-item">
+          <a class="dashboard__thumb" href="{{ item.get_absolute_url }}" title="{{ item }}">{% if item.has_thumbnail %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}<span class="dashboard__thumb-name">{{ item }}</span></a>
+          <div class="loose-end__role-people">{% for person in item.roleless_people %}{% include 'content/_person_link.html' with content=item roles_here=True roles_only=True %}{% endfor %}</div>
+          <div class="loose-end__role-actions">
+            {% with suggested=item.suggested_person_role %}{% if suggested and item.roleless_people %}
+              {# The kind's suggestion for everyone here at once - after a look at the item. #}
+              <button type="button" class="loose-end__suggest" data-cmnsd-action="apply_suggested_roles" data-model="content" data-object-token="{{ item.token }}" data-cmnsd-insert="reload">{% if item.roleless_people|length > 1 %}{% blocktranslate with role=suggested|role_label %}All: {{ role }}{% endblocktranslate %}{% else %}{% blocktranslate with role=suggested|role_label %}Set: {{ role }}{% endblocktranslate %}{% endif %}</button>
+            {% endif %}{% endwith %}
+            {% include 'dashboard/_dismiss.html' with item=item %}
+          </div>
+        </div>
       {% endfor %}
     </div>
   {% else %}

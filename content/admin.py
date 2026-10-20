@@ -6,7 +6,7 @@ from django.shortcuts import render
 from cmnsd.admin.mixins import (
   TimestampAdminMixin, StatusAdminMixin, VisibilityAdminMixin, OwnershipAdminMixin,
 )
-from .models import BookContent, Content, DocumentContent, PhotoContent, Portrait, Transcript
+from .models import BookContent, Content, ContentPerson, DocumentContent, PhotoContent, Portrait, Transcript
 
 
 class PhotoContentInline(admin.StackedInline):
@@ -31,6 +31,15 @@ class TranscriptInline(admin.StackedInline):
   model = Transcript
   extra = 0
   fields = ('kind', 'language', 'method', 'text')
+
+
+class ContentPersonInline(admin.TabularInline):
+  """The people on it, each with their role (issue #471)."""
+  model = ContentPerson
+  extra = 0
+  autocomplete_fields = ('person',)
+  verbose_name = 'person'
+  verbose_name_plural = 'people'
 
 
 class PortraitInline(admin.TabularInline):
@@ -63,7 +72,7 @@ class ContentAdmin(
   search_fields = ('name', 'description', 'original_filename', 'source')
   readonly_fields = ('slug', 'original_filename', 'stored_filename')
   raw_id_fields = ('parent',)
-  filter_horizontal = ('people', 'tags', 'places', 'events')
+  filter_horizontal = ('tags', 'places', 'events')   # people: ContentPersonInline (a role each)
   actions = [
     'mark_status_c', 'mark_status_p', 'mark_status_r', 'mark_status_x',
     'mark_visibility_p', 'mark_visibility_c', 'mark_visibility_f', 'mark_visibility_q',
@@ -117,6 +126,7 @@ class ContentAdmin(
     if obj and obj.kind in self._DETAIL_INLINES:
       inlines.append(self._DETAIL_INLINES[obj.kind])
     if obj:
+      inlines.append(ContentPersonInline)
       inlines.append(TranscriptInline)
     if obj and obj.kind == Content.Kind.PHOTO:
       inlines.append(PortraitInline)

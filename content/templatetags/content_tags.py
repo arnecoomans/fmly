@@ -229,3 +229,42 @@ def file_info(content):
   except (OSError, ValueError):
     pass
   return ' · '.join(parts)
+
+
+@register.filter
+def role_label(role):
+  """A person's role on an item as a word ("depicted") - '' for none
+  (ContentPerson.Role, issue #471)."""
+  from content.models import ContentPerson
+  return dict(ContentPerson.Role.choices).get(role or '', '')
+
+
+@register.filter
+def with_role(person, content):
+  """{% with person=person|with_role:content %} - their role on that item
+  attached (person.content_role), for one chip on its own: what the
+  set_person_role action returns."""
+  from content.roles import attach_roles
+  return attach_roles(content, [person])[0]
+
+
+@register.filter
+def role_counts(items):
+  """[(role, label, count)] - the roles a person has on these items
+  (item.person_role, set on their page), in ContentPerson.Role's order;
+  [] when none has one, or elsewhere (a tag page): no pills."""
+  from collections import Counter
+  from content.models import ContentPerson
+  counts = Counter(getattr(item, 'person_role', '') for item in items)
+  return [(role, label, counts[role]) for role, label in ContentPerson.Role.choices if counts[role]]
+
+
+@register.filter
+def card_role(item):
+  """The word for how the page's person is on this item, on their page
+  (_content_card.html): "author" for a book they wrote, else their role
+  ("depicted", "addressee" - item.person_role); '' elsewhere or unknown."""
+  if getattr(item, 'by_this_person', False):
+    from django.utils.translation import gettext
+    return gettext("author")
+  return role_label(getattr(item, 'person_role', ''))

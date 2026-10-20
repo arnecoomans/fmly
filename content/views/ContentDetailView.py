@@ -51,7 +51,8 @@ class ContentDetailView(VisibilityViewMixin, DetailView):
     content = self.object
     people = filter_accessible(content.people.all(), self.request)
     # Rows render lifespan + avatar: batch both, not a query per person.
-    context['visible_people'] = Person._attach_portraits(Person._attach_lifespan(people))
+    from ..roles import attach_roles
+    context['visible_people'] = attach_roles(content, Person._attach_portraits(Person._attach_lifespan(people)))
     # With their content counts: how much a tag groups shows how important it is.
     context['visible_tags'] = by_count(attach_content_counts(filter_accessible(content.tags.all(), self.request), self.request))
     context['places'] = list(content.places.select_related('parent__parent'))

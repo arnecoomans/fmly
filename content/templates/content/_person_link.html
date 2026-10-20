@@ -1,16 +1,29 @@
 {% load edit_mode %}{% load content_tags %}
 {% comment %}
-  One person on an item's page (people/_person_row.html) - in edit mode,
-  for someone who may change the item, with its "×"
+  One person on an item's page (people/_person_row.html) - with their role
+  on it (person.content_role, content/roles.py attach_roles; issue #471)
+  under the name, nothing when unknown. In edit mode, for someone who may
+  change the item, a role menu under the name that saves on change
+  (content/_person_role_form.html, set_person_role - the action returns
+  this chip again) and its "×"
   (cmnsd/edit/unlink.html). Also what the link action returns for a newly
-  added person (content/actions/link.html). A portrait icon when this
-  photo is the person's portrait (portrait_from).
-  Context: person (with lifespan + portrait attached), content, request.
+  added person (content/actions/link.html) - without a role yet. A
+  portrait icon when this photo is the person's portrait (portrait_from).
+  `roles_here` (bool): the menu without edit mode - the loose end "people
+  on items without a role", and what set_person_role returns, so the menu
+  stays. `roles_only` (bool): without the "×" - removing someone is for the
+  item's page (the loose end; the form carries it, set_person_role sends it
+  back). Context: person (with lifespan + portrait attached), content, request.
 {% endcomment %}
-{% with portrait_here=person|portrait_from:content %}
-{% if edit_mode and content|can_edit:request %}
-  <div class="chip-edit chip-edit--row">{% include 'people/_person_row.html' with related=person show_visibility=True %}{% include 'cmnsd/edit/unlink.html' with model='content' owner=content relation='people' object=person %}</div>
+{% with portrait_here=person|portrait_from:content role=person.content_role|default:'' %}
+{% if edit_mode or roles_here %}{% if content|can_edit:request %}
+  <div class="chip-edit chip-edit--row">
+    {% include 'people/_person_row.html' with related=person show_visibility=True role_form='content/_person_role_form.html' %}
+    {% if not roles_only %}{% include 'cmnsd/edit/unlink.html' with model='content' owner=content relation='people' object=person %}{% endif %}
+  </div>
 {% else %}
-  {% include 'people/_person_row.html' with related=person show_visibility=True %}
+  {% include 'people/_person_row.html' with related=person show_visibility=True link_role=role|role_label %}
+{% endif %}{% else %}
+  {% include 'people/_person_row.html' with related=person show_visibility=True link_role=role|role_label %}
 {% endif %}
 {% endwith %}

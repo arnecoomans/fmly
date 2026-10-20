@@ -80,8 +80,18 @@ class SectionShorthand(models.Model):
     # Mark what they wrote, so the card can say "author" - "wrote this" is
     # not the same as "is in it".
     authored = set(self.authored_books.values_list('content_id', flat=True))
+    # Their role on each (ContentPerson, issue #471) - for the role pills:
+    # on the item, else on a part of it (the back of a postcard addressed
+    # to them); a book they wrote: creator. '' when unknown.
+    from content.models import ContentPerson
+    roles = {}
+    for content_id, parent_id, role in ContentPerson.objects.filter(person=self).exclude(role='').values_list('content_id', 'content__parent_id', 'role'):
+      roles.setdefault(content_id, role)
+      if parent_id:
+        roles.setdefault(parent_id, role)
     for item in items:
       item.by_this_person = item.pk in authored
+      item.person_role = ContentPerson.Role.CREATOR if item.by_this_person else roles.get(item.pk, '')
     return items
 
   CONTENT_SORTS = ('added', 'date', 'favorites')   # content_tags.CONTENT_SORTS

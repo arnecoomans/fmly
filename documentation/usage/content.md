@@ -23,7 +23,7 @@ In edit mode, on the item's page:
 
 - **Name**, **description** and **date** - a date can be exact, *ca.*, *before* or *after*, or just a year. For a book, the date is when it was published.
 - **Kind** - photo, document, book, object, recording. A photo is *portrait* or *group* (posed), *candid* (not posed), or *historical*; hover over a button for its meaning.
-- **People** on it, **tags**, **places**, and the **events** it documents.
+- **People** on it - each with how, if you know: *subject* (it's about them - their record, their request), *creator* (wrote or made it - a photographer too), *addressee*, *depicted* (in it) or *possibly depicted* (you think so - an identification to confirm), or *owner* (it was theirs). In that order of weight: where several fit - a passport request with his photo - choose the first that does (subject). The item's kind **suggests** one, marked in the menu - a portrait: subject; a candid or group photo: depicted; an identity document or civil record: subject - but never sets it; in edit mode a menu next to each person. Without a role they're simply linked. A book's authors have their own field. **Tags**, **places**, and the **events** it documents.
   A tag has a page of its own with everything that carries it; in edit mode its name, description and the tag it sits under can be changed there. Links to the old name keep working.
 - **Source** - where it came from: a person, an archive, a web address.
 - **Thumbnail** - choose the part of the image shown in lists.

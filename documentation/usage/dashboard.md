@@ -41,6 +41,7 @@ For editors: what's still missing in the archive, each as a list with a count, f
 - photos without people
 - documents without a transcript, and transcripts to finish or check - not identity documents (passport applications, ID cards): they're forms, so tag the people on them and add their facts to those people instead
 - events without a date
+- people on items without a role - photos and documents with someone on them whose role isn't set yet (*subject*, *depicted*, ...), with how many - set them right there, each with its menu, or with one click to the role the item's kind suggests (*All: depicted* on a group photo) after a look at it. Set the photo or document kind first: an unclassified one suggests nothing. A bar shows how many items are done.
 - events without documentation - births, marriages, migrations and the like with no photo or document linked under *documented by*; historical events aren't counted, their source goes in their description. A bar shows how many are proven.
 - images in low resolution
 - places on their own: no parent, and nothing under them - a town that belongs under its country, or a country that's fine as it is

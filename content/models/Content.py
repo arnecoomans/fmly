@@ -188,8 +188,8 @@ class Content(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, Sta
     default=0, choices=[(0, '0°'), (90, '90°'), (180, '180°'), (270, '270°')],
   )
 
-  # Plain M2M until Mention exists (docs/FMLY-3.0-PLAN.md).
-  people = models.ManyToManyField('people.Person', blank=True, related_name='content')
+  # With a role each (ContentPerson, issue #471): depicted, creator, ...
+  people = models.ManyToManyField('people.Person', through='content.ContentPerson', blank=True, related_name='content')
   tags = models.ManyToManyField('core.Tag', blank=True, related_name='content')
   places = models.ManyToManyField('places.Place', blank=True, related_name='content')
   # Events this item documents (a birth announcement for a birth). Plain M2M
@@ -405,6 +405,37 @@ class Content(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, Sta
     if item is None:
       raise ValidationError(gettext("That item wasn't found."))
     return item
+
+  def person_roles(self):
+    """The roles a person may have on this item: all of ContentPerson's -
+    but not creator on a book, whose authors are on its detail."""
+    from .ContentPerson import ContentPerson
+    roles = ContentPerson.Role
+    return [(value, label) for value, label in roles.choices if not (value == roles.CREATOR and self.kind == self.Kind.BOOK)]
+
+  def suggested_person_role(self):
+    """The role its kind suggests for the people on it - '' when it says
+    nothing (content/roles.py SUGGESTED_ROLES). A suggestion to confirm,
+    never set by itself."""
+    from ..roles import suggested_role
+    return suggested_role(self)
+
+  @api_action()
+  def apply_suggested_roles(self, request, data):
+    """Everyone on it without a role gets the suggested one (the loose end's
+    "All: ..." - after a look at the item)."""
+    from ..roles import apply_suggested_roles
+    apply_suggested_roles(self, request)
+    return {}
+
+  @api_action()
+  def set_person_role(self, request, data):
+    """data: {person: token, role} - how that person is on this item
+    (content/roles.py)."""
+    from ..roles import set_person_role
+    result = set_person_role(self, data.get('person'), data.get('role', ''), request)
+    result['roles_only'] = bool(data.get('roles_only'))   # the chip comes back as it was sent: without its "×" on the loose end
+    return result
 
   @api_action()
   def set_portrait(self, request, data):
