@@ -122,10 +122,10 @@ class SameDayTests(TestCase):
 
   def test_marks(self):
     from types import SimpleNamespace as Row
-    from people.timeline import mark_same_day
+    from events.same_day import mark_same_day
     def entry(year, month=None, day=None, qualifier='exact', history=False):
       return Row(event=Row(year=year, month=month, day=day, date_qualifier=qualifier), history=history)
-    rows = mark_same_day([
+    rows = mark_same_day(event=lambda row: row.event, group=lambda row: row.history, rows=[
       entry(1875, 1, 13), entry(1875, 1, 13),          # twins
       entry(1888), entry(1888),                        # a year: no
       entry(1890, 5, 1, 'circa'), entry(1890, 5, 1, 'circa'),

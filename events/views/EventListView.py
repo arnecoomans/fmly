@@ -64,6 +64,9 @@ class EventListView(TemplateView):
         decades.setdefault(event.year // 10 * 10, []).append(event)
       else:
         undated.append(event)
+    from ..same_day import mark_same_day
+    for rows in decades.values():
+      mark_same_day(rows)
     context.update({
       'kind': kind,
       'kinds': [(value, label, sum(counts.values()) if value == 'all' else counts[value]) for value, label in KINDS],

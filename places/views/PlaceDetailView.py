@@ -40,6 +40,7 @@ class PlaceDetailView(DetailView):
   def get_context_data(self, **kwargs):
     from content.models import Content
     from events.models import Event
+    from events.same_day import mark_same_day
     context = super().get_context_data(**kwargs)
     place, request = self.object, self.request
     editing = is_edit_mode(request) and can_edit(place, request.user)
@@ -60,7 +61,7 @@ class PlaceDetailView(DetailView):
       'items': items,
       'sort': sort,
       'cover': dated_images[0] if dated_images else next((item for item in items if item.file and item.media_type == 'image'), None),
-      'events': list(filter_accessible(Event.objects.filter(places=place), request).prefetch_related('people').order_by('year', 'month', 'day')),
+      'events': mark_same_day(list(filter_accessible(Event.objects.filter(places=place), request).prefetch_related('people').order_by('year', 'month', 'day'))),
       'sub_places': sub_places(place, request, show_all=editing),
       'alternatives': attach_counts(place.alternatives.select_related('parent'), request),
     })

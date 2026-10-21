@@ -34,7 +34,7 @@
     <section class="events-page__decade">
       <h2 class="section-title">{{ decade }}s</h2>
       <ol class="events-page__list">
-        {% for event in events %}<li class="event-row">{% include 'event/_event.html' with others=event.people.all %}</li>{% endfor %}
+        {% for event in events %}<li class="event-row">{% include 'event/_event.html' with others=event.people.all same_day=event.same_day %}</li>{% endfor %}
       </ol>
     </section>
   {% endfor %}

@@ -625,3 +625,19 @@ class NarrowProofTests(TestCase):
   def test_only_its_own_pages(self):
     self.assertEqual(self.narrow(self.almanac, self.other).status_code, 400)
     self.assertEqual(list(self.event.content.all()), [self.almanac])
+
+
+class SameDayListTests(TestCase):
+  """The events page marks a row on the exact date of the one before it."""
+
+  def test_events_page(self):
+    from django.test import Client
+    user = get_user_model().objects.create(username='sameday', is_staff=True)
+    user.save()
+    for name in ('Pieter', 'Willem'):
+      twin = Person.objects.create(given_name=name, user=user, status='p', visibility='c')
+      Event.objects.create(kind='birth', year=1875, month=1, day=13, user=user).people.add(twin)
+    client = Client()
+    client.force_login(user)
+    page = client.get('/events/?kind=birth').content.decode()
+    self.assertEqual(page.count('same day'), 1)
