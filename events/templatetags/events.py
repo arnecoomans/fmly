@@ -19,3 +19,23 @@ def age_at_event(person, event):
   date."""
   from people.timeline import age_at
   return age_at(person.birth, event)
+
+
+# A blank line ends a paragraph (Markdown) - spaces on it too, and a
+# browser's line endings (\r\n: a textarea's, as stored).
+_PARAGRAPH_BREAK = __import__('re').compile(r'\r?\n[ \t\r]*\r?\n')
+
+
+@register.filter
+def first_paragraph(text):
+  """The text up to its first blank line - an event row's excerpt
+  (event/_event.html): the writer's own split, not a count of words; the
+  rest on the event's page ("read more"). Single line breaks stay - they're
+  within the paragraph."""
+  return _PARAGRAPH_BREAK.split((text or '').strip(), maxsplit=1)[0]
+
+
+@register.filter
+def has_more_paragraphs(text):
+  """Whether the text goes on after its first paragraph."""
+  return len(_PARAGRAPH_BREAK.split((text or '').strip(), maxsplit=1)) > 1

@@ -546,3 +546,34 @@ class EventProofTests(TestCase):
     timeline = client.get(person.page_url()).content.decode().replace('"', '')
     self.assertIn('<details class=event__content>', timeline)
     self.assertIn('1 item', timeline)
+
+
+class EventExcerptTests(TestCase):
+  """An event row shows its description's first paragraph, with "read more"
+  to the event's page; its page shows all of it."""
+
+  def test_first_paragraph(self):
+    from events.templatetags.events import first_paragraph, has_more_paragraphs
+    text = "Vertrek vanuit Nieuwdiep.\nOp 20 juni Gibraltar.\n  \nIn Suez schipbreuk."
+    self.assertEqual(first_paragraph(text), "Vertrek vanuit Nieuwdiep.\nOp 20 juni Gibraltar.")
+    self.assertTrue(has_more_paragraphs(text))
+    self.assertFalse(has_more_paragraphs("Eén alinea.\nTwee regels."))
+    self.assertEqual(first_paragraph(''), '')
+    from_a_form = "Vertrek vanuit Nieuwdiep.\r\nOp 20 juni Gibraltar.\r\n\r\nIn de ochtend van 30 juni."   # a textarea's line endings
+    self.assertEqual(first_paragraph(from_a_form), "Vertrek vanuit Nieuwdiep.\r\nOp 20 juni Gibraltar.")
+    self.assertTrue(has_more_paragraphs(from_a_form))
+
+  def test_on_the_timeline_and_the_page(self):
+    from django.test import Client
+    user = get_user_model().objects.create(username='excerpt', is_staff=True)
+    user.save()
+    person = Person.objects.create(given_name='Abraham', user=user, status='p', visibility='c')
+    event = Event.objects.create(kind='migration', year=1873, title='Naar Indië', description='Vertrek vanuit Nieuwdiep.\n\nIn Suez schipbreuk.', user=user)
+    event.people.add(person)
+    client = Client()
+    client.force_login(user)
+    timeline = client.get(person.page_url()).content.decode()
+    self.assertIn('Vertrek vanuit Nieuwdiep.', timeline)
+    self.assertNotIn('In Suez schipbreuk.', timeline)
+    self.assertIn('read more', timeline)
+    self.assertIn('In Suez schipbreuk.', client.get(event.get_absolute_url()).content.decode())
