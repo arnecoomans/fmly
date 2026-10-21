@@ -1,16 +1,17 @@
 # Changelog
 
-## [26.10] - FMLY 3.0 (unreleased)
+## [26.10] - 2026-10-21 - FMLY 3.0
 
 A ground-up rebuild: a new content design, centred on content and people instead of on separate records. FMLY 3.0 shares no code with FMLY 2 and starts from a new database, filled from the old one by the legacy import. What it does: [README.md](README.md); how to use it: [documentation/usage/](documentation/usage/readme.md).
 
 ### New
-- **Dashboard** - on this day and the calendar, recently added, from the archive, the latest comments, an inbox for uploads, loose ends to complete, and your own place in the archive
+- **Dashboard** - on this day and the coming week (births, marriages, deaths and history) and the calendar, recently added, from the archive, the latest comments, an inbox for uploads, loose ends to complete, and your own place in the archive; blocks fold, remembered per user
 - **People** - names, birth and death with partial dates (ca., before, after), parents, partners and children edited on the person's page, a life timeline with ages
 - **Transcripts as written, with a little Markdown** - headings, bold and italic, tables and mentions; nothing that changes a character (no lists or HTML; a footnote asterisk stays one); select words and *@ mention* to link who's named - the words stay as written, and the item shows under *mentioned in* ([#474](https://github.com/arnecoomans/fmly/issues/474))
 - **One birth, one death** - a person has one of each, and each is one person's: refused on every way in, and Housekeeping lists what's from before
 - **Same day** - on a timeline, the events page and a place, a row on the exact date of the one above says *same day*: twins, a double wedding
-- **Proof you can see** - an event's page shows the items documenting it as thumbnails; on a timeline its proof folds out from a line of icons; a person's *Content* adds *related content*: items documenting their own events, not linked to them
+- **Proof you can see** - an event's page shows the items documenting it as thumbnails, and *choose a page* narrows a document with parts down to the page that proves it; on a timeline its proof folds out from a line of icons; a person's *Content* adds *related content*: items documenting their own events, not linked to them
+- **Event rows read short** - a timeline, the dashboard, an item's or a place's page show an event's description up to its first blank line, with *read more* to the event's page
 - **Roles of people on an item** - subject, creator, addressee, depicted, possibly depicted or owner - in that order of weight - chosen per person in edit mode and shown under their name; a person's *Content* filters by role. Existing links have no role yet: the loose end *people on items without a role*, with a bar, lists them - set there, or with one click to the role the item's kind suggests (a portrait: subject; a group photo: depicted) ([#471](https://github.com/arnecoomans/fmly/issues/471))
 - **Event kinds: engagement, appointment, discharge** - an engagement names itself (as a marriage, without making partners); an appointment or discharge says which in its title. For GEDCOM: ENGA, OCCU, RETI
 - **Mentions that lead nowhere** - housekeeping lists mentions of what's gone, revoked or deleted; *remove link* keeps the words. Revoking or deleting something that's mentioned warns first, a mentioned place doesn't count as unused, pickers and `@` no longer offer what's revoked or deleted, *revoked, to review* lists people, events and notes too, and mentioning something not every reader sees (family only, private, a draft) shows a pill while choosing and a warning on save
@@ -34,7 +35,8 @@ A ground-up rebuild: a new content design, centred on content and people instead
 ### Under the hood
 - Built on **cmnsd 3** (git submodule, branch `fmly`): models with status and visibility, an API, edit mode and cmnsd.js - see `cmnsd/documentation/`
 - Django 6, Python 3.14; files served through Django's access checks (sendfile with nginx); static files with hashed names
-- Settings from `.env` - template: `.env.example`
+- Settings from `.env` - template: `.env.example`; mail through SMTP with `EMAIL_URL` (password resets, registrations)
+- `manage.py gedcom_export <token> --depth N`: one person and N levels of partners and children as GEDCOM 5.5.1 - living people as initials, private people and outsiders left out ([#463](https://github.com/arnecoomans/fmly/issues/463), the download and the whole tree to follow)
 - Apps: core, people, content, events, places, notes, dashboard - replacing the single `archive` app; the project package is now `fmly` (was `family`)
 
 ### Moving from FMLY 2
