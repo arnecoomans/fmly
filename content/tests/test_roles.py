@@ -169,3 +169,31 @@ class RelatedContentTests(TestCase):
     html = self.client.get(f'/api/person/{self.bob.token}/fields/?fields=get_visible_content', HTTP_ACCEPT='application/json')
     page = self.client.get(self.bob.page_url()).content.decode()
     self.assertIn('Related content', page + html.content.decode())
+
+
+class FromPagesTests(TestCase):
+  """A whole's page shows what its pages are linked to - people and events,
+  each once with the pages - apart from its own links."""
+
+  def test_people_and_events_of_its_pages(self):
+    from events.models import Event
+    user = get_user_model().objects.create(username='pages', is_staff=True)
+    user.save()
+    abraham = Person.objects.create(given_name='Abraham', user=user, status='p', visibility='c')
+    almanac = Content.objects.create(name='Regeeringsalmanak', kind='book', year=1874, user=user, status='p', visibility='c')
+    p1879 = Content.objects.create(name='Almanak 1879', kind='document', year=1879, parent=almanac, position=1, user=user, status='p', visibility='c')
+    p1880 = Content.objects.create(name='Almanak 1880', kind='document', year=1880, parent=almanac, position=2, user=user, status='p', visibility='c')
+    for page in (p1879, p1880):
+      page.people.add(abraham)
+    ContentPerson.objects.filter(content=p1879).update(role='subject')
+    appointment = Event.objects.create(kind='appointment', title='Benoemd tot onderopziener', year=1879, user=user)
+    appointment.content.add(p1879)
+    client = Client()
+    client.force_login(user)
+    page = client.get(almanac.get_absolute_url()).content.decode()
+    self.assertIn('on its pages', page)
+    self.assertEqual(page.count('Benoemd tot onderopziener'), 1)              # once, under its pages
+    self.assertIn('documented by its pages', page)
+    self.assertIn('(subject)', page)
+    self.assertIn('p. 1</a> (subject)', page)                                   # by page number, not its year
+    self.assertNotIn('on its pages', client.get(p1879.get_absolute_url()).content.decode())   # a page doesn't show its siblings'

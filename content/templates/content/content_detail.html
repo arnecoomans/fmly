@@ -273,12 +273,13 @@
       {% include 'cmnsd/section.html' with key='content.parts' title=title|capfirst count=group|length body='content/_parts.html' eager=True empty_body=edit_parts %}
     {% endif %}
 
-    {% if visible_people or edit_relations %}
+    {% if visible_people or page_people or edit_relations %}
       <section>
         <h2 class="section-title">{% translate "people"|capfirst %}</h2>
         <div class="content-detail__people" id="content-people">
           {% for person in visible_people %}{% include 'content/_person_link.html' %}{% endfor %}
         </div>
+        {% if page_people %}{% include 'content/_from_pages.html' with people=page_people %}{% endif %}
         {% if edit_relations %}
           {% translate "add a person" as add_label %}
           {% translate "new person" as new_label %}
@@ -293,12 +294,13 @@
       </section>
     {% endif %}
 
-    {% if events or edit_relations %}
+    {% if events or page_events or edit_relations %}
       <section>
         <h2 class="section-title">{% translate "events"|capfirst %}</h2>
         <ul class="content-detail__events" id="content-events">
           {% for event in events %}{% include 'content/_event_link.html' %}{% endfor %}
         </ul>
+        {% if page_events %}{% include 'content/_from_pages.html' with events=page_events %}{% endif %}
         {% if edit_relations %}
           {% translate "add an event" as add_label %}
           {% translate "new event" as new_label %}

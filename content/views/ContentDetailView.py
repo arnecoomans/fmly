@@ -72,6 +72,10 @@ class ContentDetailView(VisibilityViewMixin, DetailView):
     parts = list(content.parts.visible_to(self.request).order_by('position', 'pk'))
     context['variants'] = [part for part in parts if part.position == 0]
     context['parts'] = [part for part in parts if part.position != 0]
+    # A whole: its pages' people and events, each once with the pages -
+    # "on its pages", apart from its own links (a person on the whole: it's
+    # about them; on a page: they're on that page).
+    context['page_people'], context['page_events'] = self._from_pages(parts, context['events']) if parts else ([], [])
     parent = content.parent
     context['parent'] = parent if parent and Content.objects.visible_to(self.request).filter(pk=parent.pk).exists() else None
 
@@ -170,6 +174,25 @@ class ContentDetailView(VisibilityViewMixin, DetailView):
     # "Make this a part of..." - only for an item that is neither a part nor
     # a whole with parts (one level deep).
     context['can_become_part'] = not content.parent_id and not parts
+
+  def _from_pages(self, parts, own_events):
+    """([{'person', 'pages': [(page, role)]}], [event with .pages]) - the
+    people and events linked to these parts, as this viewer may see them;
+    an event the whole documents itself isn't repeated. Two queries."""
+    from people.models import Person
+    from events.models import Event
+    from ..models import ContentPerson
+    pages = {part.pk: part for part in parts}
+    people = {}
+    links = ContentPerson.objects.filter(content__in=parts, person__in=filter_accessible(Person.objects.all(), self.request)).select_related('person')
+    for link in sorted(links, key=lambda link: (pages[link.content_id].position, link.content_id)):
+      entry = people.setdefault(link.person_id, {'person': link.person, 'pages': []})
+      entry['pages'].append((pages[link.content_id], link.role))
+    own = {event.pk for event in own_events}
+    events = list(filter_accessible(Event.objects.filter(content__in=parts), self.request).exclude(pk__in=own).distinct().prefetch_related('people', 'places', 'content'))
+    for event in events:
+      event.pages = [pages[item.pk] for item in event.content.all() if item.pk in pages]
+    return sorted(people.values(), key=lambda entry: entry['person'].get_full_name()), events
 
   @staticmethod
   def _gallery_item(item):

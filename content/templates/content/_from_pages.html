@@ -1,0 +1,26 @@
+{% load content_tags %}
+{% comment %}
+  On a whole's page: the people or the events linked to its pages
+  (ContentDetailView._from_pages) - each once, with the pages it's on,
+  apart from the whole's own links: "on its pages" / "documented by its
+  pages". A page by its number (its position in the whole), its name
+  and date in the tooltip. Context: people
+  ([{person, pages: [(page, role)]}]) or events (each with .pages).
+{% endcomment %}
+<div class="from-pages">
+  {% if people %}
+    <h3 class="from-pages__title">{% translate "on its pages" %}</h3>
+    <ul class="from-pages__list">
+      {% for entry in people %}
+        <li>{% include 'person/functions/get_full_name.html' with person=entry.person lifespan=True %} <span class="from-pages__where">- {% for page, role in entry.pages %}{% if not forloop.first %}, {% endif %}<a href="{{ page.get_absolute_url }}" title="{{ page }}">{% translate "p." %} {{ page.position }}</a>{% if role %} ({{ role|role_label }}){% endif %}{% endfor %}</span></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <h3 class="from-pages__title">{% translate "documented by its pages" %}</h3>
+    <ul class="content-detail__events from-pages__events">
+      {% for event in events %}
+        <li class="event-row">{% include 'event/_event.html' with others=event.people.all %}<span class="from-pages__where">{% translate "page" %} {% for page in event.pages %}{% if not forloop.first %}, {% endif %}<a href="{{ page.get_absolute_url }}" title="{{ page }}">{{ page.position }}</a>{% endfor %}</span></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
