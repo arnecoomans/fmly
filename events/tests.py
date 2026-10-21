@@ -641,3 +641,71 @@ class SameDayListTests(TestCase):
     client.force_login(user)
     page = client.get('/events/?kind=birth').content.decode()
     self.assertEqual(page.count('same day'), 1)
+
+
+class LifeEventRuleTests(TestCase):
+  """A person has one birth and one death, each one person's
+  (life_event_problem) - on every way in - and Housekeeping lists what's
+  from before the rule."""
+
+  def setUp(self):
+    from django.contrib.auth.models import Permission
+    from django.test import Client
+    self.editor = get_user_model().objects.create(username='life', is_staff=True)
+    for perm in ('add_event', 'change_event', 'change_person', 'delete_content'):
+      self.editor.user_permissions.add(Permission.objects.get(codename=perm))
+    self.editor.save()
+    self.pieter = Person.objects.create(given_name='Pieter', user=self.editor, status='p', visibility='c')
+    self.willem = Person.objects.create(given_name='Willem', user=self.editor, status='p', visibility='c')
+    self.birth = Event.objects.create(kind='birth', year=1875, month=1, day=13, user=self.editor)
+    self.birth.people.add(self.pieter)
+    self.client = Client()
+    self.client.force_login(self.editor)
+
+  def test_the_rule(self):
+    from events.models import life_event_problem
+    self.assertIn('one person', life_event_problem('birth', [self.pieter, self.willem]))
+    self.assertIn('already has a birth', life_event_problem('birth', [self.pieter]))
+    self.assertIsNone(life_event_problem('birth', [self.pieter], event=self.birth))   # itself doesn't count
+    self.assertIsNone(life_event_problem('marriage', [self.pieter, self.willem]))
+    self.birth.status = 'x'
+    self.birth.save()
+    self.assertIsNone(life_event_problem('birth', [self.pieter]))                     # a deleted one doesn't
+
+  def test_linking_a_second_person(self):
+    import json
+    response = self.client.post(f'/api/event/{self.birth.token}/link/', json.dumps({'relation': 'people', 'token': self.willem.token}), content_type='application/json')
+    self.assertEqual(response.status_code, 400)
+    self.assertEqual(list(self.birth.people.all()), [self.pieter])
+
+  def test_dialog_from_a_person_offers_no_birth_or_death(self):
+    from events.forms import EventCreateForm
+    from django.test import RequestFactory
+    request = RequestFactory().get('/', {'person': self.willem.token})
+    request.user = self.editor
+    form = EventCreateForm(initial={'person': self.willem.token})
+    form.request = request
+    form.prepare()
+    kinds = [value for value, _label in form.fields['kind'].choices]
+    self.assertNotIn('birth', kinds)
+    self.assertNotIn('death', kinds)
+    self.assertIn('marriage', kinds)
+
+  def test_changing_the_kind(self):
+    from events.forms import EventWhatForm
+    other = Event.objects.create(kind='other', title='Iets', user=self.editor)
+    other.people.add(self.pieter)
+    form = EventWhatForm({'kind': 'birth', 'title': ''}, instance=other)
+    self.assertFalse(form.is_valid())
+    self.assertIn('kind', form.errors)
+
+  def test_housekeeping_lists_what_breaks_it(self):
+    from dashboard.housekeeping import life_event_conflicts
+    self.assertEqual(life_event_conflicts(), [])
+    Event.objects.create(kind='birth', year=1880, user=self.editor).people.add(self.pieter)         # born twice
+    shared = Event.objects.create(kind='death', year=1900, user=self.editor)
+    shared.people.add(self.willem, Person.objects.create(given_name='Derde', user=self.editor, status='p', visibility='c'))
+    kinds = sorted(row['kind'] for row in life_event_conflicts())
+    self.assertEqual(kinds, ['shared', 'twice'])
+    page = self.client.get('/dashboard/housekeeping/life-events/').content.decode()
+    self.assertIn('Pieter', page)

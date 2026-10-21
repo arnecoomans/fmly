@@ -124,12 +124,18 @@ class Event(MentionableSourceMixin, TimestampMixin, TokenMixin, StatusMixin, Own
     'background': {},
   }
   def _related(self, manager, request, token):
-    """EditableRelationsMixin: the object to link. For `background` (the
-    only relation to events): never this event itself, and only when this
+    """EditableRelationsMixin: the object to link. A person: not a second
+    one on a birth or death, nor someone who has one already
+    (life_event_problem). For `background` (the only relation to events): never this event itself, and only when this
     event has people - background is for the people in it (people/
     timeline.py). Refused before anything is added (see
     not_its_own_background below)."""
     obj = super()._related(manager, request, token)
+    from people.models import Person
+    if isinstance(obj, Person):
+      problem = life_event_problem(self.kind, [*self.people.all(), obj], event=self)
+      if problem:
+        raise ValidationError(problem)
     if isinstance(obj, Event):
       if obj == self:
         raise ValidationError(_("An event can't be background for itself."))
@@ -293,6 +299,33 @@ class Event(MentionableSourceMixin, TimestampMixin, TokenMixin, StatusMixin, Own
       partial_date = date(self.year, self.month, self.day)
       return partial_date
     return None
+
+
+# A birth and a death are one person's, and a person has one of each - every
+# view takes "the" birth; a second one would be invisible (twins: one each).
+LIFE_KINDS = (Event.Kind.BIRTH, Event.Kind.DEATH)
+
+
+def life_event_problem(kind, people, event=None):
+  """Why these people can't be on a birth or death of this kind - None when
+  they can (or it's another kind). `event`: the one being changed, not
+  counted against itself. Used by every way in: the new-event dialog,
+  linking a person (Event._related), changing the kind (EventWhatForm).
+  Deleted events don't count."""
+  from django.utils.translation import gettext
+  if kind not in LIFE_KINDS:
+    return None
+  people = list(people)
+  label = gettext("birth") if kind == Event.Kind.BIRTH else gettext("death")
+  if len(people) > 1:
+    return gettext("A %(kind)s is one person's - make one for each (twins too).") % {'kind': label}
+  for person in people:
+    others = Event.objects.current().filter(kind=kind, people=person)
+    if event is not None and event.pk:
+      others = others.exclude(pk=event.pk)
+    if others.exists():
+      return gettext("%(name)s already has a %(kind)s - change that one, or delete it first.") % {'name': person.get_full_name(), 'kind': label}
+  return None
 
 
 @receiver(m2m_changed, sender=Event.background_for.through)

@@ -303,6 +303,27 @@ def _lazy(label):
   return gettext_lazy(label)
 
 
+def life_event_conflicts():
+  """Births and deaths that break the rule (events.models.life_event_problem):
+  someone with two births or two deaths - the second is invisible, every
+  view takes "the" one - and a birth or death of several people (twins:
+  one each). From before the rule; normally none. Not deleted ones.
+  [{'kind', 'person' or 'event', 'events'}]."""
+  from django.db.models import Count
+  from events.models import Event, LIFE_KINDS
+  from people.models import Person
+  rows = []
+  for kind in LIFE_KINDS:
+    doubled = Person.objects.filter(events__kind=kind, events__status__in=('c', 'p', 'r')).annotate(n=Count('events', distinct=True)).filter(n__gt=1)
+    for person in doubled:
+      events = list(Event.objects.current().filter(kind=kind, people=person).prefetch_related('places'))
+      if len(events) > 1:
+        rows.append({'kind': 'twice', 'label': Event.Kind(kind).label, 'person': person, 'events': events})
+    for event in Event.objects.current().filter(kind=kind).annotate(n=Count('people')).filter(n__gt=1).prefetch_related('people'):
+      rows.append({'kind': 'shared', 'label': Event.Kind(kind).label, 'event': event, 'people': list(event.people.all())})
+  return rows
+
+
 def broken_mentions():
   """Mentions that lead nowhere (cmnsd mention_problems): gone, revoked or
   deleted - remove the link (the words stay), or restore the target."""
@@ -323,6 +344,9 @@ SECTIONS = (
   (_lazy("tags and places"), (
     ('unused-tags', _lazy("unused tags"), 'unused_tags', unused_tags),
     ('unused-places', _lazy("unused places"), 'unused_places', unused_places),
+  )),
+  (_lazy("records"), (
+    ('life-events', _lazy("births and deaths that break the rules"), 'conflicts', life_event_conflicts),
   )),
   (_lazy("texts"), (
     ('mentions', _lazy("mentions that lead nowhere"), 'mentions', broken_mentions),

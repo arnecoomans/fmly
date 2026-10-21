@@ -1,0 +1,23 @@
+{% load content_tags %}
+{% comment %}
+  Housekeeping: births and deaths that break the rules (dashboard/
+  housekeeping.py life_event_conflicts) - someone born or died twice (the
+  second is invisible elsewhere: every view takes "the" one), or a birth or
+  death of several people (twins: one each). Fixed on the person's or the
+  event's page; normally none.
+{% endcomment %}
+<p class="housekeeping__intro">{% translate "A person has one birth and one death, and each is one person's. These break that - from before the rule. Open one to fix it: delete the wrong event, or make one for each." %}</p>
+<div class="housekeeping__list">
+  {% for row in conflicts %}
+    <div class="housekeeping__review">
+      {% if row.kind == 'twice' %}
+        <span class="housekeeping__name"><a href="{{ row.person.page_url }}" target="_blank" rel="noopener">{{ row.person.get_full_name }}</a></span>
+        <span class="housekeeping__meta">{% blocktranslate with kind=row.label count counter=row.events|length %}{{ counter }} {{ kind }}s{% plural %}{{ counter }} {{ kind }}s{% endblocktranslate %}:
+          {% for event in row.events %}{% if not forloop.first %} · {% endif %}<a href="{{ event.get_absolute_url }}" target="_blank" rel="noopener">{{ event|partial_date|default:_("date unknown") }}{% with places=event.places.all %}{% if places %} {{ places.0.name }}{% endif %}{% endwith %}</a>{% endfor %}</span>
+      {% else %}
+        <span class="housekeeping__name"><a href="{{ row.event.get_absolute_url }}" target="_blank" rel="noopener">{{ row.label|capfirst }} {{ row.event|partial_date }}</a></span>
+        <span class="housekeeping__meta">{% translate "of" %} {% for person in row.people %}{% if not forloop.first %}, {% endif %}{{ person.get_full_name }}{% endfor %} - {% translate "one each" %}</span>
+      {% endif %}
+    </div>
+  {% empty %}<p class="housekeeping__meta">{% translate "None - everyone has at most one birth and one death, each their own." %}</p>{% endfor %}
+</div>

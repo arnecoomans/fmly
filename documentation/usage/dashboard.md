@@ -59,6 +59,7 @@ For staff, under *Housekeeping* in the user menu (top right): the archive's stor
 
 - **To review** - *revoked*: people, items, events and notes pulled back by staff, by kind, each with its discussion (the revocation reasons and what was said since - a note has none); open one to republish or delete it. *Deleted items*: to purge for good.
 - **Files** - the same file twice, files without a record, records without a file.
+- **Records** - *births and deaths that break the rules*: someone with two births or two deaths (the second shows nowhere else), or one birth or death of several people - twins get one each. Normally none.
 - **Tags and places** - unused ones: nothing carries them, nothing lies in them, no text mentions them. Old categories and typos can go; keep what's meant for later.
 - **Texts** - *mentions that lead nowhere*: a mention of something deleted for good, or of something revoked or deleted (most readers see only the words). *Remove link* keeps the words and drops the link - or restore what it points to.
 

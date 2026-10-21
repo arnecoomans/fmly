@@ -37,13 +37,22 @@ def _month_choices(form):
 
 
 class EventWhatForm(forms.ModelForm):
-  """What the event is: its kind, and its title."""
+  """What the event is: its kind, and its title. Not a birth or death its
+  people can't have (life_event_problem)."""
   class Meta:
     model = Event
     fields = ['kind', 'title']
     labels = WHAT_LABELS
     help_texts = WHAT_HELP
     widgets = {'title': forms.TextInput(attrs={'autocomplete': 'off'})}
+
+  def clean_kind(self):
+    from .models import life_event_problem
+    kind = self.cleaned_data.get('kind')
+    problem = life_event_problem(kind, self.instance.people.all(), event=self.instance) if self.instance.pk else None
+    if problem:
+      raise forms.ValidationError(problem)
+    return kind
 
 
 class EventDateForm(forms.ModelForm):
@@ -152,6 +161,11 @@ class EventCreateForm(forms.ModelForm):
     token = (self.data.get('person') if self.is_bound else self.initial.get('person')) or ''
     if token:
       self.linked_person = visible.filter(token=token).first()
+    if self.linked_person is not None:
+      # A person's birth and death have their own place on their page (the
+      # birth and death records) - one way in, not two.
+      from .models import LIFE_KINDS
+      self.fields['kind'].choices = [choice for choice in self.fields['kind'].choices if choice[0] not in LIFE_KINDS]
     self.fields['other_person'].queryset = visible
     family = self._family(visible)
     if family:
@@ -195,8 +209,13 @@ class EventCreateForm(forms.ModelForm):
 
   def clean(self):
     from places.places import picked_place
+    from .models import life_event_problem
     data = super().clean()
     picked_place(self)   # a typed new place: made on save
+    people = [*([self.linked_person] if self.linked_person else []), *self.chosen_people()]
+    problem = life_event_problem(data.get('kind'), people)
+    if problem:
+      self.add_error('kind', problem)
     return data
 
   def save(self, commit=True):
