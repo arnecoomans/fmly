@@ -113,3 +113,22 @@ class TimelineTests(TestCase):
     self.assertIn('class="timeline"', html.replace('class=timeline', 'class="timeline"'))
     self.assertIn('father', html)
     self.assertNotIn('Verborgen', html)
+
+
+class SameDayTests(TestCase):
+  """On a timeline, a row on the exact date of the row before says "same
+  day" (people/timeline.py mark_same_day) - not for a year or "ca.", and
+  only within its group."""
+
+  def test_marks(self):
+    from types import SimpleNamespace as Row
+    from people.timeline import mark_same_day
+    def entry(year, month=None, day=None, qualifier='exact', history=False):
+      return Row(event=Row(year=year, month=month, day=day, date_qualifier=qualifier), history=history)
+    rows = mark_same_day([
+      entry(1875, 1, 13), entry(1875, 1, 13),          # twins
+      entry(1888), entry(1888),                        # a year: no
+      entry(1890, 5, 1, 'circa'), entry(1890, 5, 1, 'circa'),
+      entry(1942, 3, 8), entry(1942, 3, 8, history=True),   # history: its own group
+    ])
+    self.assertEqual([row.same_day for row in rows], [False, True, False, False, False, False, False, False])

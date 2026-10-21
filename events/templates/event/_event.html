@@ -16,7 +16,9 @@
   - history: a historical event in a person's lifetime - marked as such, quiet;
   - background + explains: background for the person's own events (issue
     #464) - quiet as history, with what it's background to;
-  - hide_places: on a place's own page.
+  - hide_places: on a place's own page;
+  - same_day: on the exact date of the row before it (a timeline) - "same
+    day" instead of the date, which is in its tooltip.
   People are named as this viewer may see them (get_full_name.html obfuscates);
   at a marriage, each spouse with their age then - only a spouse the viewer
   may see (an age gives away a birth date).
@@ -28,7 +30,7 @@
   <div class="event__body">
     <header class="event__header">
       <span class="event__what"><a class="event__link" href="{{ event.get_absolute_url }}">{% if event.status == 'r' %}<s title="{{ event.get_status_display }}">{{ event.label }}</s><span class="visually-hidden"> ({{ event.get_status_display|lower }})</span>{% else %}{{ event.label }}{% endif %}</a>{% if relative %} <span class="event__relation">· {{ relation }} {% include 'person/functions/get_full_name.html' with person=relative %}</span>{% endif %}{% if history %} <span class="event__relation">· {% translate "history" %}</span>{% endif %}</span>
-      <span class="event__when">{% if event.year %}{{ event|partial_date }}{% else %}<span class="event__undated">{% translate "date unknown" %}</span>{% endif %}{% if age %} <span class="event__age">· {{ age }}</span>{% endif %}</span>
+      <span class="event__when">{% if same_day %}<span class="event__same-day" title="{{ event|partial_date }}">{% translate "same day" %}</span>{% elif event.year %}{{ event|partial_date }}{% else %}<span class="event__undated">{% translate "date unknown" %}</span>{% endif %}{% if age %} <span class="event__age">· {{ age }}</span>{% endif %}</span>
     </header>
     {# Background: a note about the entry, not part of its name - a small line of its own. #}
     {% if background %}<p class="event__background"><i class="bi bi-arrow-return-right" aria-hidden="true"></i> {% translate "background to" %} {% for own in explains %}{% if not forloop.first %}, {% endif %}<a href="{{ own.get_absolute_url }}">{{ own.label }}</a>{% endfor %}</p>{% endif %}

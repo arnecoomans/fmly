@@ -23,7 +23,7 @@
 {% endif %}
 <ol class="timeline" id="timeline-{{ person.token }}">
   {% for entry in entries %}
-    <li class="timeline__entry" data-filter-value="{% if entry.history %}history{% else %}life{% endif %}">{% include 'event/_event.html' with event=entry.event others=entry.others relative=entry.relative relation=entry.relation age=entry.age history=entry.history background=entry.background explains=entry.explains %}</li>
+    <li class="timeline__entry" data-filter-value="{% if entry.history %}history{% else %}life{% endif %}">{% include 'event/_event.html' with event=entry.event others=entry.others relative=entry.relative relation=entry.relation age=entry.age history=entry.history background=entry.background explains=entry.explains same_day=entry.same_day %}</li>
   {% empty %}
     <li class="timeline__empty">{% translate "No events yet." %}</li>
   {% endfor %}

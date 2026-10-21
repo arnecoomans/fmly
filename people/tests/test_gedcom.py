@@ -86,3 +86,4 @@ class GedcomExportTests(TestCase):
       self.export('nope')
     with self.assertRaises(CommandError):
       self.export(self.abraham.token, '--depth=-1')
+

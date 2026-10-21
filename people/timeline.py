@@ -41,6 +41,25 @@ class Entry:
   background: bool = False     # background for one of their own events
   explains: list = field(default_factory=list)  # for background: those own events, by date
   others: list = field(default_factory=list)   # the event's other people (named as the viewer may see them, by the template)
+  same_day: bool = False       # on the exact date of the row before it (mark_same_day)
+
+
+def mark_same_day(entries):
+  """entry.same_day for a row on the very date of the row before it - only
+  a complete, exact date (a year, or "ca.", isn't a moment), and only within
+  its group (history or their own life), so it never points at a row the
+  toggle hides. Twins, a mother dying the day her child is born, a double
+  wedding: connections that take effort to spot when each row repeats the
+  date."""
+  previous = {}
+  for entry in entries:
+    event = entry.event
+    group = entry.history
+    exact = event.year and event.month and event.day and event.date_qualifier == 'exact'
+    key = (event.year, event.month, event.day) if exact else None
+    entry.same_day = key is not None and previous.get(group) == key
+    previous[group] = key
+  return entries
 
 
 def _placed(entry):
@@ -203,4 +222,4 @@ def life_timeline(person, request):
     else:
       spouses.append(p)
   Person._attach_lifespan(spouses)
-  return sorted(entries, key=_entry_key)
+  return mark_same_day(sorted(entries, key=_entry_key))
