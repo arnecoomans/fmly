@@ -14,7 +14,7 @@ from cmnsd.models import MentionableSourceMixin
 from cmnsd.models.mixins import TimestampMixin, TokenMixin, StatusMixin, OwnershipMixin, PartialDateMixin, EditableRelationsMixin
 from core.models import CommentableMixin
 
-from cmnsd.api.registry import api_model, api_field
+from cmnsd.api.registry import api_action, api_model, api_field
 
 
 class EventQuerySet(models.QuerySet):
@@ -244,6 +244,31 @@ class Event(MentionableSourceMixin, TimestampMixin, TokenMixin, StatusMixin, Own
       q |= Q(year=int(term))
     return q
   
+  @api_action(requires_auth=True)
+  def choose_content(self, request, data):
+    """data: {current, chosen} - this event is documented by another step of
+    the same document: a page instead of the whole, another page, or the
+    whole again (event page, edit mode: "choose a page"). Both only as this
+    viewer may see them."""
+    from django.contrib import messages
+    from django.utils.translation import gettext
+    from cmnsd.edit.log import log_change
+    from cmnsd.edit.mode import require_can_edit
+    from content.models import Content
+    require_can_edit(self, request)
+    visible = Content.objects.visible_to(request)
+    current = visible.filter(token=data.get('current') or '', events=self).first()
+    chosen = visible.filter(token=data.get('chosen') or '').first()
+    whole_of = lambda item: item.parent_id or item.pk
+    if current is None or chosen is None or whole_of(current) != whole_of(chosen):
+      raise ValidationError(gettext("That page isn't part of this item."))
+    if chosen != current:
+      self.content.remove(current)
+      self.content.add(chosen)
+      log_change(request, self, f"Documented by: {chosen} instead of {current}")
+      messages.success(request, gettext("Documented by “%(item)s” now.") % {'item': chosen})
+    return {}
+
   def clean(self):
     super().clean()   # the partial date's rules (PartialDateMixin)
     # The fixed kinds name themselves: a title there is a leftover from

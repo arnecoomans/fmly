@@ -29,7 +29,7 @@ class EventDetailView(DetailView):
     from content.models import Content
     event = super().get_object(queryset)
     # The page's lists, as this viewer may see them.
-    event.visible_content = list(Content.objects.visible_to(self.request).filter(events=event))
+    event.visible_content = list(Content.objects.visible_to(self.request).filter(events=event).select_related('parent'))
     return event
 
   def get_context_data(self, **kwargs):

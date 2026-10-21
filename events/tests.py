@@ -577,3 +577,51 @@ class EventExcerptTests(TestCase):
     self.assertNotIn('In Suez schipbreuk.', timeline)
     self.assertIn('read more', timeline)
     self.assertIn('In Suez schipbreuk.', client.get(event.get_absolute_url()).content.decode())
+
+
+class NarrowProofTests(TestCase):
+  """"Choose a page": an event documented by a whole with parts can point
+  to one of its pages instead, another later, or the whole again
+  (Event.choose_content)."""
+
+  def setUp(self):
+    from django.contrib.auth.models import Permission
+    from django.test import Client
+    from content.models import Content
+    self.editor = get_user_model().objects.create(username='narrow', is_staff=True)
+    self.editor.user_permissions.add(Permission.objects.get(codename='change_event'))
+    self.editor.save()
+    self.event = Event.objects.create(kind='other', title='Aanstelling', year=1931, user=self.editor)
+    self.almanac = Content.objects.create(name='Regeeringsalmanak', kind='book', user=self.editor, status='p', visibility='c')
+    self.page = Content.objects.create(name='1931', kind='document', parent=self.almanac, position=1, user=self.editor, status='p', visibility='c')
+    self.other = Content.objects.create(name='Iets anders', kind='document', user=self.editor, status='p', visibility='c')
+    self.event.content.add(self.almanac)
+    self.client = Client()
+    self.client.force_login(self.editor)
+
+  def narrow(self, current, chosen):
+    import json
+    return self.client.post(f'/api/event/{self.event.token}/choose_content/', json.dumps({'current': current.token, 'chosen': chosen.token}), content_type='application/json')
+
+  def test_choose_a_page(self):
+    self.client.post('/ui/edit/', {'on': '1', 'next': '/'})
+    page = self.client.get(self.event.get_absolute_url()).content.decode()
+    self.assertIn('choose a page', page)
+    self.assertEqual(self.narrow(self.almanac, self.page).status_code, 200)
+    self.assertEqual(list(self.event.content.all()), [self.page])
+    page = self.client.get(self.event.get_absolute_url()).content.decode()
+    self.assertIn('Regeeringsalmanak ›', page)                                 # whole › part
+    self.assertIn('choose another page', page)                                 # and changeable again
+    self.assertEqual(self.narrow(self.page, self.almanac).status_code, 200)   # back to the whole
+    self.assertEqual(list(self.event.content.all()), [self.almanac])
+
+  def test_a_freshly_linked_whole_can_choose(self):
+    import json
+    self.event.content.clear()
+    self.client.post('/ui/edit/', {'on': '1', 'next': '/'})
+    html = self.client.post(f'/api/event/{self.event.token}/link/', json.dumps({'relation': 'content', 'token': self.almanac.token}), content_type='application/json').json()['html']
+    self.assertIn('choose a page', html)                                       # without a reload
+
+  def test_only_its_own_pages(self):
+    self.assertEqual(self.narrow(self.almanac, self.other).status_code, 400)
+    self.assertEqual(list(self.event.content.all()), [self.almanac])

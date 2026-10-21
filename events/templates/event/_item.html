@@ -1,11 +1,42 @@
-{% load edit_mode %}{% load content_tags %}
+{% load edit_mode %}{% load content_tags %}{% load events %}
 {% comment %}
   An item documenting an event, on its page: its thumbnail (or its kind's
-  icon) and name, as the dashboard's cards - the evidence at a glance; in
-  edit mode with its "×". Also what the link action returns.
+  icon) and name - a part as "whole › part" - as the dashboard's cards: the
+  evidence at a glance. In edit mode its "×", and for a whole with parts
+  "choose a page" - for a page "choose another page": the document one
+  step at a time, the whole first - the image, its full title, ‹ / ›
+  (cmnsd.js gallery.js) - and "use this one" makes the shown step the proof
+  instead (Event.choose_content; events.page_choice). Also what the link action returns.
   Context: item, event, request.
 {% endcomment %}
-<div class="event-proof__card{% if edit_mode and event|can_edit:request %} chip-edit{% endif %}">
-  <a class="dashboard__thumb" href="{{ item.get_absolute_url }}" title="{{ item }}">{% if item.has_thumbnail %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}<span class="dashboard__thumb-name">{{ item }}</span></a>
-  {% if edit_mode and event|can_edit:request %}{% include 'cmnsd/edit/unlink.html' with model='event' owner=event relation='content' object=item %}{% endif %}
+{% with editing=edit_mode %}
+<div class="event-proof__card{% if editing and event|can_edit:request %} chip-edit{% endif %}">
+  <a class="dashboard__thumb" href="{{ item.get_absolute_url }}" title="{% if item.parent %}{{ item.parent }} › {% endif %}{{ item }}">{% if item.has_thumbnail %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}<span class="dashboard__thumb-name">{% if item.parent %}<span class="event-proof__whole">{{ item.parent }} ›</span> {% endif %}{{ item }}</span></a>
+  {% if editing and event|can_edit:request %}
+    {% include 'cmnsd/edit/unlink.html' with model='event' owner=event relation='content' object=item %}
+    {% with choice=item|page_choice:request %}{% if choice %}
+      <details class="event-proof__pages">
+        <summary>{% if item.parent_id %}{% translate "choose another page" %}{% else %}{% translate "choose a page" %}{% endif %}</summary>
+        {% with shown=choice.pages|slice_at:choice.start %}
+        <div class="event-proof__pager" data-cmnsd-gallery data-gallery-keys="off" data-gallery-start="{{ choice.start }}">
+          <a data-gallery-link href="{{ shown.file }}" target="_blank" rel="noopener"><img data-gallery-image src="{{ shown.src }}" alt="{{ shown.title }}" loading="lazy"></a>
+          <a class="event-proof__pager-title" data-gallery-caption href="{{ shown.page }}" target="_blank" rel="noopener">{{ shown.title }}</a>
+          <div class="event-proof__pager-bar">
+            <span class="event-proof__pager-nav" data-gallery-nav hidden>
+              <button type="button" data-gallery-previous aria-label="{% translate 'previous' %}"><i class="bi bi-chevron-left"></i></button>
+              <span data-gallery-counter>{{ choice.start|add:1 }} / {{ choice.pages|length }}</span>
+              <button type="button" data-gallery-next aria-label="{% translate 'next' %}"><i class="bi bi-chevron-right"></i></button>
+            </span>
+            <form data-cmnsd-action="choose_content" data-model="event" data-object-token="{{ event.token }}" data-cmnsd-insert="reload">
+              <input type="hidden" name="current" value="{{ item.token }}"><input type="hidden" name="chosen" value="{{ shown.token }}" data-gallery-value>
+              <button class="event-proof__use">{% translate "use this one" %}</button>
+            </form>
+          </div>
+          {{ choice.pages|json_script:choice.id }}
+        </div>
+        {% endwith %}
+      </details>
+    {% endif %}{% endwith %}
+  {% endif %}
 </div>
+{% endwith %}
