@@ -16,7 +16,7 @@ Read in this order when you're new; each page stands on its own afterwards.
 | [Architecture](architecture.md) | The apps (core, people, content, events, places, notes, dashboard), how a request flows, where things live | written |
 | [Visibility and access](visibility-and-access.md) | Status and visibility, family, private people, staff, drafts - and `filter_accessible` everywhere | written |
 | [Data model](data-model.md) | People and relations, content and its parts, events, places, notes, tags | written |
-| [Management commands](management-commands.md) | `content_checksums`, `prepare_release`, `create_default_pages`, the importers | written |
+| [Management commands](management-commands.md) | `content_checksums`, `prepare_release`, `create_default_pages`, `gedcom_export`, the importers | written |
 | [Frontend](frontend.md) | Templates, CSS (tokens, components), cmnsd.js on FMLY3's pages | written |
 | [Testing](testing.md) | Running the suite, test data, temporary media - never the real `private/` | written |
 
