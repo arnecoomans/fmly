@@ -33,20 +33,25 @@
   <div class="dashboard__columns">
     <div class="dashboard__main">
       {% comment %}
-        Anniversaries (dashboard/blocks.py on_this_day): the coming week
-        always - the block keeps its shape from day to day - and today's
-        above it, under a heading of its own, when there are any.
+        Anniversaries (dashboard/blocks.py on_this_day): today's, when there
+        are any, and the coming week always - each a block of its own that
+        folds, remembered (dashboard.today, dashboard.week), with its own
+        count: the week can push the rest below the fold, today's can stay.
       {% endcomment %}
-      <section class="dashboard__block">
-        <h2 class="section-title">{% if today_events %}{% translate "on this day"|capfirst %}{% else %}{% translate "this coming week"|capfirst %}{% endif %} <a class="dashboard__more" href="{% url 'events:calendar' %}#day-{% now 'j' %}">{% translate "calendar" %} →</a></h2>
-        {% if today_events %}
+      {% if today_events %}
+        {% section_open 'dashboard.today' as is_open %}
+        <details class="dashboard__block page-section" data-cmnsd-section="dashboard.today"{% if is_open %} open{% endif %}>
+          <summary class="page-section__header"><h2 class="section-title">{% translate "on this day"|capfirst %} <span class="page-section__count">{{ today_events|length }}</span> <a class="dashboard__more" href="{% url 'events:calendar' %}#day-{% now 'j' %}">{% translate "calendar" %} →</a></h2></summary>
           <ol class="events-page__list">
             {% for event in today_events %}
               <li class="event-row dashboard__anniversary">{% include 'event/_event.html' with others=event.people.all %}<span class="dashboard__years-ago">{{ event|years_ago }}</span></li>
             {% endfor %}
           </ol>
-          <h3 class="dashboard__subtitle">{% translate "this coming week"|capfirst %}</h3>
-        {% endif %}
+        </details>
+      {% endif %}
+      {% section_open 'dashboard.week' as is_open %}
+      <details class="dashboard__block page-section" data-cmnsd-section="dashboard.week"{% if is_open %} open{% endif %}>
+        <summary class="page-section__header"><h2 class="section-title">{% translate "this coming week"|capfirst %} <span class="page-section__count">{{ week_events|length }}</span>{% if not today_events %} <a class="dashboard__more" href="{% url 'events:calendar' %}#day-{% now 'j' %}">{% translate "calendar" %} →</a>{% endif %}</h2></summary>
         {% if week_events %}
           <ol class="events-page__list">
             {% for event in week_events %}
@@ -54,10 +59,10 @@
             {% endfor %}
           </ol>
         {% else %}<p class="timeline__empty">{% translate "Nothing in the coming week." %}</p>{% endif %}
-      </section>
+      </details>
 
       {% comment %}
-        Between "on this day" and "from the archive": blocks that fold - a <details> each, open or
+        From "on this day" to "from the archive": blocks that fold - a <details> each, open or
         closed remembered per user (cmnsd.js sections.js, the same as a
         person page's sections; cmnsd/ui/state.py, key dashboard.<name>).
         Folded, a block is still rendered, just closed.

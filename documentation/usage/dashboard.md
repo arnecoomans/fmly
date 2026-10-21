@@ -2,7 +2,7 @@
 
 The dashboard is where you land after signing in, and where you come back to: the logo in the top left always leads here. It shows what's going on in the archive, and - for editors - what's waiting for you.
 
-Between *On this day* and *From the archive*, each block on the left can be **folded**: click its heading. The dashboard remembers which blocks you keep closed.
+From *On this day* to *From the archive*, each block on the left can be **folded**: click its heading. The dashboard remembers which blocks you keep closed.
 
 ## On this day
 

@@ -588,3 +588,9 @@ class PeopleWithoutRoleTests(DashboardTestCase):
     import json
     back = client.post(f'/api/content/{self.photo.token}/set_person_role/', json.dumps({'person': self.ida.token, 'role': 'depicted', 'roles_only': '1'}), content_type='application/json')
     self.assertNotIn('data-cmnsd-action=unlink', back.json()['html'].replace('"', ''))   # and not after a role is set
+
+  def test_anniversaries_fold(self):
+    client = Client()
+    client.force_login(self.editor)
+    html = client.get('/').content.decode().replace('"', '')
+    self.assertIn('data-cmnsd-section=dashboard.week', html)                     # today's: only when there are any
