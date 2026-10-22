@@ -17,8 +17,13 @@ from .models import Tag
 
 
 def attach_content_counts(tags, request):
-  """Set tag.content_count on each of `tags` (a list); returns the list."""
+  """What each of `tags` (a list) holds for this viewer: tag.content_count
+  (items - a whole once, also for a tag on one of its parts), .people_count,
+  .note_count, and .count - all of them: a tag on people only ("Loose end",
+  "Underage wedding") isn't empty. Three queries. Returns the list."""
   from content.models import Content
+  from notes.models import Note
+  from people.models import Person
   tags = list(tags)
   ids = [tag.pk for tag in tags]
   wholes = Content.objects.visible_to(request).listable()
@@ -27,17 +32,25 @@ def attach_content_counts(tags, request):
     items[tag_id].add(content_id)
   for tag_id, content_id in wholes.filter(parts__tags__in=ids).values_list('parts__tags', 'pk'):
     items[tag_id].add(content_id)
+  people, notes = defaultdict(set), defaultdict(set)
+  for tag_id, person_id in filter_accessible(Person.objects.filter(tags__in=ids), request).values_list('tags', 'pk'):
+    people[tag_id].add(person_id)
+  for tag_id, note_id in Note.objects.visible_to(request).filter(tags__in=ids).values_list('tags', 'pk'):
+    notes[tag_id].add(note_id)
   for tag in tags:
     tag.content_count = len(items[tag.pk])
+    tag.people_count = len(people[tag.pk])
+    tag.note_count = len(notes[tag.pk])
+    tag.count = tag.content_count + tag.people_count + tag.note_count
   return tags
 
 
 def by_count(tags):
-  """Most content first, then by name - for a short row of chips (an
+  """Holding most first (items, people and notes), then by name - for a short row of chips (an
   item's, a person's, a tag's children): the important tags lead. Not in
   Tag.Meta.ordering: the count depends on the viewer. The tags overview
   stays alphabetical - it's long, you scan it for a name."""
-  return sorted(tags, key=lambda tag: (-tag.content_count, tag.name.casefold()))
+  return sorted(tags, key=lambda tag: (-tag.count, tag.name.casefold()))
 
 
 def _by_name(tag):
@@ -45,7 +58,8 @@ def _by_name(tag):
 
 
 def tag_overview(request):
-  """The tags this viewer may see that hold content, for /tags/:
+  """The tags this viewer may see that hold something (items, people,
+  notes), for /tags/:
   (groups, loose). groups: root tags with children - e.g. "Collection" -
   each with .listed_children (the non-empty ones); loose: the other root
   tags. A tag with nothing in it for this viewer is left out, and a
@@ -54,7 +68,7 @@ def tag_overview(request):
   tags = attach_content_counts(filter_accessible(Tag.objects.all(), request), request)
   children = defaultdict(list)
   for tag in tags:
-    if tag.parent_id and tag.content_count:
+    if tag.parent_id and tag.count:
       children[tag.parent_id].append(tag)
   groups, loose = [], []
   for tag in tags:
@@ -63,7 +77,7 @@ def tag_overview(request):
     if children[tag.pk]:
       tag.listed_children = sorted(children[tag.pk], key=_by_name)
       groups.append(tag)
-    elif tag.content_count:
+    elif tag.count:
       loose.append(tag)
   return sorted(groups, key=_by_name), sorted(loose, key=_by_name)
 

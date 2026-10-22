@@ -20,7 +20,7 @@
   {% for group in groups %}
     <section class="tag-overview__group">
       <h2 class="section-title tag-overview__heading">
-        <a href="{{ group.get_absolute_url }}">{{ group.name }}</a>{% if group.content_count %} <span class="tag__count">{{ group.content_count }}</span>{% endif %}{% if group.needs_attention %} <span class="badge-status badge-status--draft">{{ group.get_status_display }} · {% translate "not published" %}</span>{% endif %}
+        <a href="{{ group.get_absolute_url }}">{{ group.name }}</a>{% if group.count %} {% include 'tag/_count.html' with tag=group %}{% endif %}{% if group.needs_attention %} <span class="badge-status badge-status--draft">{{ group.get_status_display }} · {% translate "not published" %}</span>{% endif %}
       </h2>
       <div class="tag-list">{% for child in group.listed_children %}{% include 'tag/tag.html' with tag=child hide_parent=True %}{% endfor %}</div>
     </section>

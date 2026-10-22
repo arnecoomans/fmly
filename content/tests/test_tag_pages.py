@@ -73,7 +73,7 @@ class TagListTests(TestCase):
     [group] = response.context['groups']
     self.assertEqual(group.name, 'Collection')
     self.assertEqual([(t.name, t.content_count) for t in group.listed_children], [('Krangan 81', 2)])  # not the private one
-    self.assertRegex(response.content.decode().replace('"', ''), r'Krangan 81 <span class=tag__count>2</span>')
+    self.assertRegex(response.content.decode().replace('"', ''), r'Krangan 81 <span [^>]*class=tag__count>2</span>')
 
   def test_loose_tags_and_empty_tags_left_out(self):
     boek = Tag.objects.create(name='boek', user=self.user, status='p', visibility='c')
@@ -97,15 +97,15 @@ class TagListTests(TestCase):
 
   def test_child_tags_on_a_tag_page_show_counts(self):
     html = self.page(self.collection.get_absolute_url()).content.decode().replace('"', '')
-    self.assertIn('Krangan 81 <span class=tag__count>2</span>', html)
+    self.assertRegex(html, r'Krangan 81 <span [^>]*class=tag__count>2</span>')   # the split in its title
 
   def test_chips_on_an_item_and_a_person_show_counts(self):
     html = self.client.get(self.new.get_absolute_url()).content.decode().replace('"', '')
-    self.assertIn('Krangan 81 <span class=tag__count>2</span>', html)
+    self.assertRegex(html, r'Krangan 81 <span [^>]*class=tag__count>2</span>')   # the split in its title
     eric = Person.objects.create(given_name='Eric', user=self.user, status='p', visibility='c')
     eric.tags.add(self.tag)
     html = self.client.get(eric.get_absolute_url()).content.decode().replace('"', '')
-    self.assertIn('Krangan 81 <span class=tag__count>2</span>', html)
+    self.assertIn('Krangan 81 <span title=2 items · 1 person class=tag__count>3</span>', html)   # the items and Eric himself
 
 
 class DraftTagTests(TestCase):
@@ -286,3 +286,24 @@ class TagEditingTests(TestCase):
     self.assertEqual(self.new_parent(self.tag, 'Iets nieuws').status_code, 400)
     self.assertFalse(Tag.objects.filter(name='Iets nieuws').exists())
 
+
+
+class TagCountsPeopleTests(TestCase):
+  """A tag's count is all it holds for this viewer: items, people, notes -
+  a tag on people only ("Loose end") isn't 0."""
+
+  def test_people_count(self):
+    from django.contrib.auth import get_user_model
+    from core.models import Tag
+    from core.tags import attach_content_counts
+    from people.models import Person
+    user = get_user_model().objects.create(username='counts')
+    user.save()
+    tag = Tag.objects.create(name='Underage wedding', user=user, status='p', visibility='c')
+    for name in ('Ida', 'Winke'):
+      Person.objects.create(given_name=name, user=user, status='p', visibility='c').tags.add(tag)
+    from django.test import RequestFactory
+    request = RequestFactory().get('/')
+    request.user = user
+    counted = attach_content_counts([tag], request)[0]
+    self.assertEqual((counted.content_count, counted.people_count, counted.note_count, counted.count), (0, 2, 0, 2))

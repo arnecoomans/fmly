@@ -48,7 +48,7 @@ class TagEditingTests(TestCase):
     self.assertEqual(response.status_code, 200)
     self.assertEqual(self.tags(), {'boot', 'medan'})
     html = response.json()['html'].replace('"', '')
-    self.assertIn('boot <span class=tag__count>1</span>', html)
+    self.assertRegex(html, r'boot <span [^>]*class=tag__count>1</span>')
     self.assertIn('data-cmnsd-action=unlink', html)
     self.assertTrue(LogEntry.objects.filter(object_id=str(self.item.pk), change_message='Added tags: boot').exists())
 

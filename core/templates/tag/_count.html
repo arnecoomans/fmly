@@ -1,0 +1,6 @@
+{% comment %}
+  What a tag holds for this viewer (core/tags.py attach_content_counts): one
+  number, what it's made of in its tooltip - only what's there ("3 people",
+  "2 items · 1 note"). As a place's (place/_count.html). Context: tag.
+{% endcomment %}
+<span class="tag__count" title="{% if tag.content_count %}{% blocktranslate count counter=tag.content_count %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktranslate %}{% endif %}{% if tag.people_count %}{% if tag.content_count %} · {% endif %}{% blocktranslate count counter=tag.people_count %}{{ counter }} person{% plural %}{{ counter }} people{% endblocktranslate %}{% endif %}{% if tag.note_count %}{% if tag.content_count or tag.people_count %} · {% endif %}{% blocktranslate count counter=tag.note_count %}{{ counter }} note{% plural %}{{ counter }} notes{% endblocktranslate %}{% endif %}">{{ tag.count }}</span>
