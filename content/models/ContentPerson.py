@@ -1,8 +1,10 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from cmnsd.models.mixins import RegionMixin
 
-class ContentPerson(models.Model):
+
+class ContentPerson(RegionMixin, models.Model):
   """A person on an item (Content.people) and how (issue #471): in it
   (or perhaps), made it, received it, it's about them, it was theirs - or unknown (no
   role): linked, without saying how. One role per person per item. Not a
@@ -12,7 +14,12 @@ class ContentPerson(models.Model):
   The table is the one Content.people always had (content_content_people):
   existing links became rows without a role - not a guess from the kind of
   item. A book's authors aren't here but on its detail (BookContent.authors):
-  on a book, creator isn't offered."""
+  on a book, creator isn't offered.
+
+  Where they are on it (issue #480): a frame (RegionMixin - a box as
+  fractions of the image as shown), for who is where on a photo. A portrait
+  (content.Portrait) is a face on a photo too: the frames started from the
+  portrait crops (migration 0007), and a portrait builds on its frame."""
 
   class Role(models.TextChoices):
     # In order of weight: where several fit, the first that does is the one
@@ -27,6 +34,13 @@ class ContentPerson(models.Model):
     # GEDCOM export) leaves it out; readers see the doubt.
     POSSIBLY_DEPICTED = 'possibly_depicted', _("possibly depicted")
     OWNER = 'owner', _("owner")             # it was theirs - a library, a passport, a medal
+
+  # Who can be pointed out on it: who is depicted (or possibly) - or not
+  # known yet (no role: pointing out is a reason to set it). Not a subject -
+  # it's about them, which is another thing than where they are in it - nor
+  # a creator, addressee or owner. A frame kept from before shows again when
+  # the role is one of these.
+  FRAME_ROLES = ('', Role.DEPICTED, Role.POSSIBLY_DEPICTED)
 
   content = models.ForeignKey('content.Content', on_delete=models.CASCADE, related_name='person_links')
   person = models.ForeignKey('people.Person', on_delete=models.CASCADE, related_name='content_links')

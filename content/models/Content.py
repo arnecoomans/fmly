@@ -438,6 +438,21 @@ class Content(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, Sta
     return result
 
   @api_action()
+  def set_person_region(self, request, data):
+    """data: {person: token, region_x, region_y, region_w, region_h} -
+    where that person is on this image (issue #480) - or {person, clear: 1}
+    to remove it (content/roles.py)."""
+    from ..roles import set_person_region
+    return set_person_region(self, data, request)
+
+  @api_action()
+  def frame_as_portrait(self, request, data):
+    """data: {person: token} - that person's frame on this photo becomes
+    their portrait, cropped square around it (content/portraits.py)."""
+    from ..portraits import frame_as_portrait
+    return frame_as_portrait(self, data.get('person'), request)
+
+  @api_action()
   def set_portrait(self, request, data):
     """data: {token} - this photo becomes that person's portrait
     (content/portraits.py)."""

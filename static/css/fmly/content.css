@@ -37,6 +37,23 @@
   border-radius: var(--radius-lg);
   background: var(--color-surface-alt);
 }
+/* The image's box: as large as the image itself, so frames placed in
+   percent over it land where they belong (content/_frames.html). */
+.content-figure { position: relative; display: block; width: fit-content; max-width: 100%; margin: 0 auto; }
+/* Who is where (issue #480): an ellipse in each person's box - soft, face
+   shaped - light with a dark edge, to show on light and dark photos. The
+   name below it, on hover (or their card's: .is-linked, cmnsd.js regions.js). */
+.content-frames { position: absolute; inset: 0; pointer-events: none; }
+.content-frame { position: absolute; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.85); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45); pointer-events: auto; transition: border-color 0.15s, box-shadow 0.15s; }
+.content-frame--point { width: 14px; height: 14px; margin: -7px 0 0 -7px; background: rgba(255, 255, 255, 0.85); }
+.content-frame--doubt { border-style: dashed; }
+.content-frame:hover, .content-frame.is-linked { border-color: var(--color-accent); box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35), 0 0 0 9999px rgba(0, 0, 0, 0.12); z-index: 1; }
+.content-frame__name { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 6px; padding: 2px 8px; border-radius: 999px; background: rgba(0, 0, 0, 0.72); color: #fff; font-size: var(--text-xs); white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+.content-frame:hover .content-frame__name, .content-frame.is-linked .content-frame__name { opacity: 1; }
+/* While the image browser shows another page: its frames aren't this one's. */
+.content-gallery[data-gallery-showing="other"] .content-frames { display: none; }
+.person-row.is-linked { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
 .content-detail__pdf {
   width: 100%;
   height: calc(100vh - 2 * var(--space-6));
@@ -326,3 +343,27 @@ video.content-detail__player { max-height: 80vh; border-radius: var(--radius-lg)
 .transcribe__guess-note:empty { display: none; }
 
 .content-detail__file-info { margin-left: 8px; font-size: var(--text-xs); color: var(--color-ink-3); }
+
+/* Pointing someone out (edit mode, cmnsd.js regions.js): the photo takes a
+   crosshair, the box being dragged shows as it will be stored. */
+.content-figure.is-marking { cursor: crosshair; outline: 2px dashed var(--color-accent); outline-offset: 3px; touch-action: none; user-select: none; }
+.content-figure.is-marking img { pointer-events: none; }
+.cmnsd-region-draft { position: absolute; border-radius: 50%; border: 2px dashed var(--color-accent); background: rgba(255, 255, 255, 0.12); pointer-events: none; z-index: 2; }
+.cmnsd-region-hint { margin: var(--space-2) auto 0; max-width: 40rem; text-align: center; font-size: var(--text-sm); color: var(--color-accent); }
+
+/* Under a photo: the switch, and in edit mode everyone on it - pointed out
+   or to point out, at the photo itself (content/_who_is_where.html). */
+.who-is-where { display: flex; flex-direction: column; gap: var(--space-2); }
+.who-is-where__people { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.who-is-where__person { display: inline-flex; align-items: center; gap: 4px; padding: 2px 4px 2px 10px; border: 1px solid var(--color-border); border-radius: 999px; background: var(--color-surface); font-size: var(--text-sm); }
+.who-is-where__person.has-frame { border-color: var(--color-accent-soft, var(--color-border)); }
+.who-is-where__person.is-linked { border-color: var(--color-accent); }
+.who-is-where__person form { display: inline; }
+.who-is-where__name i { color: var(--color-accent); }
+.who-is-where__button { padding: 1px 8px; border: 0; border-radius: 999px; background: var(--color-surface-alt); color: var(--color-accent); font-size: var(--text-xs); cursor: pointer; }
+.who-is-where__button--quiet { background: none; color: var(--color-ink-3); }
+
+/* A transcript on a photo, an object, a recording: the exception, offered
+   quietly in edit mode (content_detail.html). */
+.content-detail__add-transcript { align-self: flex-start; font-size: var(--text-sm); color: var(--color-ink-3); text-decoration: none; }
+.content-detail__add-transcript:hover { color: var(--color-accent); }

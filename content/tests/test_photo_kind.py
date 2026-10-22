@@ -60,3 +60,27 @@ class TranscribeLinkTests(TestCase):
     done.incomplete = True
     done.save()
     self.assertIn(url, client.get(item.get_absolute_url()).content.decode())      # still work to do
+
+
+class QuietTranscriptTests(TestCase):
+  """On a photo a transcript is the exception: no section until there's
+  one; in edit mode a quiet "+ transcript". A document keeps its section."""
+
+  def test_photo(self):
+    from content.models import Transcript
+    editor = get_user_model().objects.create(username='stil')
+    for codename in ('add_transcript', 'change_content'):
+      editor.user_permissions.add(Permission.objects.get(codename=codename))
+    editor.save()
+    photo = Content.objects.create(name='Achterkant', kind='photo', user=editor, status='p', visibility='c')
+    client = Client()
+    client.force_login(editor)
+    page = client.get(photo.get_absolute_url()).content.decode()
+    self.assertNotIn('No transcript yet.', page)
+    self.assertNotIn('content-detail__transcripts', page)
+    client.post('/ui/edit/', {'on': '1', 'next': '/'})
+    page = client.get(photo.get_absolute_url()).content.decode().replace('"', '')
+    self.assertIn('content-detail__add-transcript', page)
+    Transcript.objects.create(content=photo, kind='original', language='nl', method='manual', text='Krangan, Mei 1938')
+    client.post('/ui/edit/', {'on': '0', 'next': '/'})
+    self.assertIn('Krangan, Mei 1938', client.get(photo.get_absolute_url()).content.decode())   # there is one: shown

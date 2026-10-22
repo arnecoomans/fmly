@@ -34,7 +34,7 @@
       </div>
     {% elif content.media_type == 'image' %}
       {# With image parts: browsable (cmnsd.js gallery.js) - the whole, then its parts in order, from this page's own image (gallery_start) - on the whole's page and on each part's. #}
-      <div class="content-gallery"{% if gallery %} data-cmnsd-gallery data-gallery-start="{{ gallery_start }}"{% endif %}>
+      <div class="content-gallery" id="media-{{ content.token }}"{% if gallery %} data-cmnsd-gallery data-gallery-start="{{ gallery_start }}"{% endif %}>
         {# The lightbox (cmnsd.js lightbox.js): full-screen, zoomable, through the parts; without JS the original file. #}
         <a href="{% url 'content:file' content.token %}" title="{% translate 'view larger'|capfirst %}" data-gallery-link
            data-cmnsd-lightbox data-lightbox-src="{% url 'content:thumbnail' content.token 'large' %}" data-lightbox-zoom="{{ content.zoom_url }}"
@@ -43,8 +43,12 @@
            data-lightbox-text-previous="{% translate 'previous'|capfirst %}" data-lightbox-text-next="{% translate 'next'|capfirst %}"
            data-lightbox-text-zoom-in="{% translate 'zoom in'|capfirst %}" data-lightbox-text-zoom-out="{% translate 'zoom out'|capfirst %}"
            data-lightbox-text-fit="{% translate 'whole image'|capfirst %}" data-lightbox-text-rotate="{% translate 'turn a quarter'|capfirst %}">
-          <img class="content-detail__image" src="{% url 'content:thumbnail' content.token 'large' %}" alt="{{ content.name }}" data-gallery-image>
+          <span class="content-figure" id="figure-{{ content.token }}">
+            <img class="content-detail__image" src="{% url 'content:thumbnail' content.token 'large' %}" alt="{{ content.name }}" data-gallery-image>
+            {% if frames %}{% include 'content/_frames.html' %}{% endif %}
+          </span>
         </a>
+        {% include 'content/_who_is_where.html' %}
         {% if gallery %}
           <div class="content-gallery__nav" hidden>
             <button type="button" class="content-gallery__step" data-gallery-previous aria-label="{% translate 'previous'|capfirst %}"><i class="bi bi-chevron-left"></i></button>
@@ -85,7 +89,12 @@
     {% include 'cmnsd/edit/block.html' with model='content' obj=content block='description' %}
 
     {# What's written on it, and translations: one pill per language, original first. #}
-    {% if edit_mode and perms.content.change_transcript or edit_mode and perms.content.add_transcript %}
+    {% if not transcripts and not transcript_expected %}
+      {# A photo, an object, a recording: a transcript is the exception - offered quietly, in edit mode. #}
+      {% if edit_mode and perms.content.add_transcript %}
+        <a class="content-detail__add-transcript" href="{% url 'content:transcribe' content.token %}"><i class="bi bi-plus-lg"></i> {% translate "transcript" %}</a>
+      {% endif %}
+    {% elif edit_mode and perms.content.change_transcript or edit_mode and perms.content.add_transcript %}
       {# Edit mode: every transcript in full, each editable / removable, and "+ add" (cmnsd object_children). #}
       <section class="content-detail__transcripts">
         <div class="content-detail__transcripts-header">
@@ -284,7 +293,12 @@
           {% translate "add a person" as add_label %}
           {% translate "new person" as new_label %}
           {% url 'cmnsd_api:object_create' 'person' as new_dialog %}
-          {% include 'cmnsd/edit/link_picker.html' with model='content' owner=content relation='people' picker_model='person' target='#content-people' label=add_label|capfirst placeholder=add_label|capfirst exclude=person_tokens new_dialog=new_dialog new_param='given_name' new_label=new_label|capfirst can_new=perms.people.add_person %}
+          {# On a photo: reload after adding someone - they appear under it too, to point out (content/_who_is_where.html). #}
+          {% if can_point %}
+            {% include 'cmnsd/edit/link_picker.html' with model='content' owner=content relation='people' picker_model='person' target='#content-people' label=add_label|capfirst placeholder=add_label|capfirst exclude=person_tokens new_dialog=new_dialog new_param='given_name' new_label=new_label|capfirst can_new=perms.people.add_person insert='reload' %}
+          {% else %}
+            {% include 'cmnsd/edit/link_picker.html' with model='content' owner=content relation='people' picker_model='person' target='#content-people' label=add_label|capfirst placeholder=add_label|capfirst exclude=person_tokens new_dialog=new_dialog new_param='given_name' new_label=new_label|capfirst can_new=perms.people.add_person %}
+          {% endif %}
           {% if content.file and content.media_type == 'image' %}
             {# This photo as someone's portrait (Content.set_portrait) - any person; cropping is on their page. #}
             {% translate "use as portrait of" as portrait_label %}

@@ -53,6 +53,14 @@ class ContentDetailView(VisibilityViewMixin, DetailView):
     # Rows render lifespan + avatar: batch both, not a query per person.
     from ..roles import attach_roles
     context['visible_people'] = attach_roles(content, Person._attach_portraits(Person._attach_lifespan(people)))
+    context['frames'] = self._frames(content, context['visible_people'])
+    context['can_point'] = bool(content.file) and content.media_type == 'image'
+    if context['can_point']:
+      # "Use as portrait" for who has none yet (content/_who_is_where.html).
+      from ..models import Portrait
+      with_portrait = set(Portrait.objects.filter(person__in=context['visible_people'], is_primary=True).values_list('person_id', flat=True))
+      for person in context['visible_people']:
+        person.has_portrait = person.pk in with_portrait
     # With their content counts: how much a tag groups shows how important it is.
     context['visible_tags'] = by_count(attach_content_counts(filter_accessible(content.tags.all(), self.request), self.request))
     context['places'] = list(content.places.select_related('parent__parent'))
@@ -60,6 +68,11 @@ class ContentDetailView(VisibilityViewMixin, DetailView):
     # Transcription still to do - none yet, one incomplete, or an automatic
     # one not checked: then the item page offers the transcribe page also
     # outside edit mode (in edit mode it always does).
+    # Expected on a document or a book - "no transcript yet" says something's
+    # missing. On a photo, an object, a recording it's the exception (the back
+    # of a photo, an inscription): its section only once there is one, and in
+    # edit mode a quiet "+ transcript".
+    context['transcript_expected'] = content.kind in (Content.Kind.DOCUMENT, Content.Kind.BOOK)
     context['transcription_open'] = not context['transcripts'] or any(
       t.incomplete or t.is_unchecked for t in context['transcripts']
     )
@@ -174,6 +187,39 @@ class ContentDetailView(VisibilityViewMixin, DetailView):
     # "Make this a part of..." - only for an item that is neither a part nor
     # a whole with parts (one level deep).
     context['can_become_part'] = not content.parent_id and not parts
+
+  @staticmethod
+  def _frames(content, people):
+    """Who is where on this image (ContentPerson's frame, issue #480): for
+    each person shown that has one, {'person', 'left', 'top', 'width',
+    'height' (percent, as CSS wants them), 'point', 'doubt' (possibly
+    depicted)} - only people this viewer may see (`people` is that list):
+    no frame says what their card hides. Sets person.has_frame for the
+    card's link to its frame."""
+    if not (content.file and content.media_type == 'image'):
+      return []
+    regions = {
+      link.person_id: link for link in content.person_links.exclude(region_x=None)
+      .only('person_id', 'role', 'region_x', 'region_y', 'region_w', 'region_h')
+    }
+    frames = []
+    for person in people:
+      link = regions.get(person.pk)
+      # Depicted, possibly, or not known yet (ContentPerson.FRAME_ROLES) - another role's frame stays hidden.
+      person.has_frame = link is not None and link.has_region and link.role in link.FRAME_ROLES
+      if not person.has_frame:
+        continue
+      person.frame_is_point = link.region_is_point   # a spot, no face: no portrait from it
+      x, y, w, h = link.region
+      frames.append({
+        'person': person,
+        # A point: its spot. As text with a point - a localised float isn't CSS.
+        'left': f'{100 * x:.2f}', 'top': f'{100 * y:.2f}', 'width': f'{100 * w:.2f}', 'height': f'{100 * h:.2f}',
+        'point': link.region_is_point, 'doubt': link.role == 'possibly_depicted', 'area': w * h,
+      })
+    # Largest first: a later frame lies on top, so a smaller one - a face in
+    # front of a larger one, a point - stays reachable for hover.
+    return sorted(frames, key=lambda frame: -frame['area'])
 
   def _from_pages(self, parts, own_events):
     """([{'person', 'pages': [(page, role)]}], [event with .pages]) - the

@@ -23,6 +23,7 @@ In edit mode, on the item's page:
 
 - **Name**, **description** and **date** - a date can be exact, *ca.*, *before* or *after*, or just a year. For a book, the date is when it was published.
 - **Kind** - photo, document, book, object, recording. A photo is *portrait* or *group* (posed), *candid* (not posed), or *historical*; hover over a button for its meaning.
+- **Who is where** on a photo: a frame around each person whose place is known - their name on hover, a question mark when only possibly depicted; hovering their card under People lights up their frame. Off by default - frames cover the photo - *who is where* under it shows them, *the photo only* hides them again (remembered). The frames started from the portrait crops, and a new portrait crop gives the person one. In edit mode, under the photo, everyone depicted, possibly depicted or without a role yet has **point out**: drag a frame around them - or click a spot - and it's saved; *redraw* draws it again, *remove* takes it away. A subject, creator or owner isn't pointed out: make them depicted first. Someone pointed out who has no portrait yet gets **use as portrait**: their face, cropped square with a little room around it - fine-tune it on their page.
 - **People** on it - each with how, if you know: *subject* (it's about them - their record, their request), *creator* (wrote or made it - a photographer too), *addressee*, *depicted* (in it) or *possibly depicted* (you think so - an identification to confirm), or *owner* (it was theirs). In that order of weight: where several fit - a passport request with his photo - choose the first that does (subject). The item's kind **suggests** one, marked in the menu - a portrait: subject; a candid or group photo: depicted; an identity document or civil record: subject - but never sets it; in edit mode a menu next to each person. Without a role they're simply linked. A book's authors have their own field. **Tags**, **places**, and the **events** it documents.
   A tag has a page of its own with everything that carries it; in edit mode its name, description and the tag it sits under can be changed there. Links to the old name keep working.
 - **Source** - where it came from: a person, an archive, a web address.
@@ -47,7 +48,7 @@ Found something you really like? The **heart** on its page makes it one of your 
 
 ## Transcribing
 
-A transcript makes a document readable and searchable. **Transcribe** opens the image beside the text:
+A transcript makes a document readable and searchable. On a document or a book its place is always there; on a photo, an object or a recording a transcript is the exception - the back of a photo, an inscription - so it shows once there is one, and in edit mode a quiet *+ transcript* sits under the description. **Transcribe** opens the image beside the text:
 
 - Type what's written, or let **OCR** read the image first, then correct it.
 - Use a **?** where you can't read something.

@@ -59,3 +59,24 @@ class Portrait(models.Model):
       raise ValidationError(_("Set all four crop values, or none."))
     if self.crop_box and (self.crop_x + self.crop_w > 1 or self.crop_y + self.crop_h > 1):
       raise ValidationError(_("The crop must lie within the image."))
+
+  def save(self, *args, **kwargs):
+    super().save(*args, **kwargs)
+    self.give_frame()
+
+  def give_frame(self):
+    """A crop is a face whose place is known: it gives the person a frame on
+    this photo (ContentPerson, issue #480) when they don't have one yet - on
+    the photo as shown, a turned portrait mapped back. Linked if they
+    weren't (without a role): the portrait says they're on it. A frame
+    already there - perhaps drawn by hand around more than the face - is
+    left alone."""
+    if self.crop_box is None:
+      return
+    from ..crop import upright_box
+    from .ContentPerson import ContentPerson
+    link, _created = ContentPerson.objects.get_or_create(content_id=self.content_id, person_id=self.person_id, defaults={'role': ''})
+    if link.has_region:
+      return
+    link.set_region(upright_box(self.crop_box, self.rotation))
+    link.save(update_fields=['region_x', 'region_y', 'region_w', 'region_h'])

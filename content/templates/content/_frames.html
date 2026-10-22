@@ -1,0 +1,19 @@
+{% comment %}
+  Who is where on a photo (ContentDetailView._frames, issue #480): a frame
+  per person - an ellipse in their box, a dot for a point - placed in
+  percent over the image, so it scales with it. The name shows on hover
+  (and on their card's hover, cmnsd.js regions.js: data-cmnsd-region /
+  data-cmnsd-region-for); possibly depicted with a question mark. Hidden by
+  the "the photo only" switch (filter.js: data-filter-value - on the media
+  block, with the people under it), and while the
+  image browser shows another page (gallery.js data-gallery-showing).
+  Context: frames, content.
+{% endcomment %}
+<span class="content-frames" id="frames-{{ content.token }}">
+  {% for frame in frames %}
+    <span class="content-frame{% if frame.point %} content-frame--point{% endif %}{% if frame.doubt %} content-frame--doubt{% endif %}" data-filter-value="frame" data-cmnsd-region="{{ frame.person.token }}"
+          style="left: {{ frame.left }}%; top: {{ frame.top }}%;{% if not frame.point %} width: {{ frame.width }}%; height: {{ frame.height }}%;{% endif %}">
+      <span class="content-frame__name">{{ frame.person.get_full_name }}{% if frame.doubt %}?{% endif %}</span>
+    </span>
+  {% endfor %}
+</span>

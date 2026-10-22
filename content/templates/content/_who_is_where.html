@@ -1,0 +1,54 @@
+{% load content_tags %}{% load edit_mode %}
+{% comment %}
+  Under a photo: who is where (issue #480). The switch - names on the photo
+  or the photo only, remembered (content.frames) - when there are frames;
+  "the photo only" hides the people here too, in edit mode as well: you
+  browse in edit mode, and the switch decides what you see (it applies to
+  the whole media block, #media-<token>: frames and people alike).
+  In edit mode, for who may change the item, everyone on it as a chip right
+  here, at the photo: hover lights up their frame (cmnsd.js regions.js);
+  "point out" - drag a box on the photo, or click a spot (data-cmnsd-mark) -
+  or "redraw" (there's no adjusting: draw it again) and "remove" when
+  there's one (Content.set_person_region; the
+  page reloads, the photo at the top: the next one is right there).
+  Context: content, frames, visible_people, can_point, request.
+{% endcomment %}
+{% with editing=edit_mode %}{% if frames or editing and can_point and visible_people and content|can_edit:request %}
+<div class="who-is-where">
+  {% if frames %}
+    {% with choice=request|frames_choice %}
+    <div class="content-grid-pills content-frames__switch" data-cmnsd-filter="#media-{{ content.token }}" data-cmnsd-filter-save="content.frames" hidden>
+      <button type="button" class="content-grid-pill{% if choice == 'all' %} is-active{% endif %}" data-filter="" aria-pressed="{% if choice == 'all' %}true{% else %}false{% endif %}"><i class="bi bi-person-bounding-box"></i> {% translate "who is where"|capfirst %}</button>
+      <button type="button" class="content-grid-pill{% if choice == 'none' %} is-active{% endif %}" data-filter="none" aria-pressed="{% if choice == 'none' %}true{% else %}false{% endif %}">{% translate "the photo only"|capfirst %}</button>
+    </div>
+    {% endwith %}
+  {% endif %}
+  {% if editing and can_point and content|can_edit:request %}
+    <ul class="who-is-where__people"{% if frames %} data-filter-value="frame"{% endif %}>
+      {% for person in visible_people %}{% if person.can_frame %}
+        <li class="who-is-where__person{% if person.has_frame %} has-frame{% endif %}"{% if person.has_frame %} data-cmnsd-region-for="{{ person.token }}"{% endif %}>
+          <span class="who-is-where__name">{% if person.has_frame %}<i class="bi bi-person-bounding-box"></i> {% endif %}{{ person.get_short_name }}</span>
+          <form data-cmnsd-action="set_person_region" data-model="content" data-object-token="{{ content.token }}" data-cmnsd-insert="reload">
+            <input type="hidden" name="person" value="{{ person.token }}">
+            <input type="hidden" name="region_x"><input type="hidden" name="region_y"><input type="hidden" name="region_w"><input type="hidden" name="region_h">
+            <button type="button" class="who-is-where__button" data-cmnsd-mark="#figure-{{ content.token }}" data-cmnsd-mark-hint="{% blocktranslate with name=person.get_short_name %}Drag a frame around {{ name }} - or click a spot. Escape cancels.{% endblocktranslate %}">{% if person.has_frame %}{% translate "redraw" %}{% else %}{% translate "point out" %}{% endif %}</button>
+          </form>
+          {% if person.has_frame and not person.has_portrait and not person.frame_is_point %}
+            {# No portrait yet: the frame is their face - one click makes it their portrait, cropped square around it. #}
+            <form data-cmnsd-action="frame_as_portrait" data-model="content" data-object-token="{{ content.token }}" data-cmnsd-insert="reload">
+              <input type="hidden" name="person" value="{{ person.token }}">
+              <button class="who-is-where__button" title="{% blocktranslate with name=person.get_short_name %}{{ name }} has no portrait yet - use this face{% endblocktranslate %}">{% translate "use as portrait" %}</button>
+            </form>
+          {% endif %}
+          {% if person.has_frame %}
+            <form data-cmnsd-action="set_person_region" data-model="content" data-object-token="{{ content.token }}" data-cmnsd-insert="reload">
+              <input type="hidden" name="person" value="{{ person.token }}"><input type="hidden" name="clear" value="1">
+              <button class="who-is-where__button who-is-where__button--quiet" title="{% blocktranslate with name=person.get_short_name %}remove {{ name }}'s frame{% endblocktranslate %}">{% translate "remove" %}</button>
+            </form>
+          {% endif %}
+        </li>
+      {% endif %}{% endfor %}
+    </ul>
+  {% endif %}
+</div>
+{% endif %}{% endwith %}

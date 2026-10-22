@@ -46,6 +46,42 @@ def set_portrait(content, token, request):
   return {'relation': 'portrait', 'object': person}
 
 
+# Room around a face: a portrait shows a bit of hair and shoulders, a frame
+# is drawn around the face itself.
+PORTRAIT_MARGIN = 1.4
+
+
+def square_around(box, width, height, margin=PORTRAIT_MARGIN):
+  """(x, y, w, h) fractions of a square - in pixels - around `box` (a
+  frame, fractions of an image `width` x `height` pixels), `margin` times
+  its larger side, centred on it and kept within the image."""
+  x, y, w, h = box
+  side = min(max(w * width, h * height) * margin, width, height)
+  centre_x, centre_y = (x + w / 2) * width, (y + h / 2) * height
+  left = min(max(centre_x - side / 2, 0), width - side)
+  top = min(max(centre_y - side / 2, 0), height - side)
+  return left / width, top / height, side / width, side / height
+
+
+def frame_as_portrait(content, token, request):
+  """A person pointed out on this photo, without a portrait yet: the frame
+  becomes their portrait - cropped square around it - through set_portrait
+  (its checks, history and message). Fine-tuned on their page, as any."""
+  from .models import ContentPerson
+  link = ContentPerson.objects.filter(content=content, person__token=token or '').first()
+  if link is None or not link.has_region or link.region_is_point:
+    raise ValidationError(_("Point them out with a frame first."))
+  if not (content.width and content.height):
+    raise ValidationError(_("This image's size isn't known yet."))
+  result = set_portrait(content, token, request)
+  portrait = Portrait.objects.get(person_id=link.person_id, content=content)
+  portrait.crop_x, portrait.crop_y, portrait.crop_w, portrait.crop_h = (round(v, 5) for v in square_around(link.region, content.width, content.height))
+  portrait.rotation = 0
+  portrait.full_clean()
+  portrait.save()
+  return result
+
+
 def portrait_candidates(person, request):
   """The images this person's portrait can be chosen from on their page
   (the crop dialog's strip, people.forms.PersonPortraitForm): the current

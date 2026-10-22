@@ -272,3 +272,13 @@ def card_role(item):
     # Related content (Person.get_related_content): through which events.
     return gettext("via %(events)s") % {'events': ', '.join(item.via)}
   return role_label(getattr(item, 'person_role', ''))
+
+
+@register.filter
+def frames_choice(request):
+  """Whether this viewer keeps names on photos ('all') or the bare photo
+  ('none') - remembered (cmnsd ui_state key content.frames, the switch's
+  data-cmnsd-filter-save). The bare photo by default: frames cover what
+  people come to see - the switch itself is always there, to be found."""
+  from cmnsd.ui.state import get_sort
+  return get_sort(request, 'content.frames', 'none', ('all', 'none'))
