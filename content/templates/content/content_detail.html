@@ -43,7 +43,7 @@
            data-lightbox-text-previous="{% translate 'previous'|capfirst %}" data-lightbox-text-next="{% translate 'next'|capfirst %}"
            data-lightbox-text-zoom-in="{% translate 'zoom in'|capfirst %}" data-lightbox-text-zoom-out="{% translate 'zoom out'|capfirst %}"
            data-lightbox-text-fit="{% translate 'whole image'|capfirst %}" data-lightbox-text-rotate="{% translate 'turn a quarter'|capfirst %}">
-          <span class="content-figure" id="figure-{{ content.token }}">
+          <span class="content-figure" id="figure-{{ content.token }}"{% if frames %} data-cmnsd-regions-area{% endif %}>
             <img class="content-detail__image" src="{% url 'content:thumbnail' content.token 'large' %}" alt="{{ content.name }}" data-gallery-image>
             {% if frames %}{% include 'content/_frames.html' %}{% endif %}
           </span>
