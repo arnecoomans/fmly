@@ -105,9 +105,9 @@ class PortraitEditingTests(TestCase):
     self.passport.people.add(other)
     self.set_portrait(self.passport, self.dee)
     html = self.client.get(self.passport.get_absolute_url()).content.decode()
-    self.assertEqual(html.count('person-row__portrait'), 1)                 # Adriane's row, not Eric's
+    self.assertEqual(html.count('bi-person-bounding-box person-row__icon'), 1)                 # Adriane's row, not Eric's
     self.set_portrait(self.group, self.dee)
-    self.assertNotIn('person-row__portrait', self.client.get(self.passport.get_absolute_url()).content.decode())
+    self.assertNotIn('bi-person-bounding-box person-row__icon', self.client.get(self.passport.get_absolute_url()).content.decode())
 
 
   def test_rotation(self):

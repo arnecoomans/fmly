@@ -21,8 +21,10 @@
   it there instead.
 
   `show_visibility` (bool, optional, section 9.2) - renders this person's
-  compact `.badge-visibility` (icon-only, components.css) in the role
-  slot instead of `role` text, for a context with no relationship role to
+  compact `.badge-visibility` (icon-only, components.css) in the line of
+  icons under the name (with the portrait and pointed-out icons - nothing
+  beside the text for a long name to run under), for a context with no
+  relationship role to
   show at all (the People list) rather than one row among a person's
   Parents/Siblings/Partners/Children. Mutually exclusive with `role` -
   pass one or the other, never both; a caller with an actual relationship
@@ -70,7 +72,27 @@
 <div class="person-row{% if derived %} person-row--derived{% endif %}{% if related.needs_attention %} person-row--needs-attention{% endif %}"{% if related.has_frame %} data-cmnsd-region-for="{{ related.token }}"{% endif %} data-cmnsd-via="person:{{ related.token }}" data-cmnsd-via-title="{% translate "you came here through this person" %}">
   {% include 'person/avatar.html' with person=related size='md' %}
   <span class="person-row__body">
-    <span class="person-row__name">{% highlight_search search_query %}{% include 'person/functions/get_full_name.html' with person=related lifespan=True lifespan_places=True %}{% endhighlight_search %}{% if portrait_here %} <i class="bi bi-person-bounding-box person-row__portrait" title="{% translate 'Their portrait is from this photo' %}" aria-label="{% translate 'Their portrait is from this photo' %}"></i>{% endif %}{% if related.has_frame %} <i class="bi bi-crosshair person-row__portrait" title="{% translate 'Pointed out on this photo' %}" aria-label="{% translate 'Pointed out on this photo' %}"></i>{% endif %}</span>
+    <span class="person-row__name">{% highlight_search search_query %}{% include 'person/functions/get_full_name.html' with person=related lifespan=True lifespan_places=True %}{% endhighlight_search %}</span>
+    {% if show_visibility and request.user.is_staff or portrait_here or related.has_frame %}
+      {# Facts about this person here, in one line under the name - nothing beside the text for it to run under. #}
+      <span class="person-row__icons">
+        {% if show_visibility and request.user.is_staff %}
+          <span class="badge-visibility badge-visibility--{{ related.get_visibility_display|lower }}" title="{{ related.get_visibility_display }}">
+            {% if related.is_private %}
+              <i class="bi bi-lock-fill"></i>
+            {% elif related.is_family %}
+              <i class="bi bi-people-fill"></i>
+            {% elif related.is_community %}
+              <i class="bi bi-diagram-3-fill"></i>
+            {% else %}
+              <i class="bi bi-globe"></i>
+            {% endif %}
+          </span>
+        {% endif %}
+        {% if portrait_here %}<i class="bi bi-person-bounding-box person-row__icon" title="{% translate 'Their portrait is from this photo' %}" aria-label="{% translate 'Their portrait is from this photo' %}"></i>{% endif %}
+        {% if related.has_frame %}<i class="bi bi-crosshair person-row__icon" title="{% translate 'Pointed out on this photo' %}" aria-label="{% translate 'Pointed out on this photo' %}"></i>{% endif %}
+      </span>
+    {% endif %}
     {% if link_role %}<span class="person-row__meta person-row__link-role">{{ link_role }}</span>{% endif %}
     {% if role_form %}{% include role_form %}{% endif %}
     {% if meta_with and meta_with|status_visible_to:request.user %}
@@ -80,19 +102,8 @@
       <span class="person-row__meta"><span class="badge-status badge-status--draft">{{ related.get_status_display }} · {% translate "not published" %}</span></span>
     {% endif %}
   </span>
-  {% if show_visibility and request.user.is_staff %}
-    <span class="badge-visibility badge-visibility--{{ related.get_visibility_display|lower }}" title="{{ related.get_visibility_display }}">
-      {% if related.is_private %}
-        <i class="bi bi-lock-fill"></i>
-      {% elif related.is_family %}
-        <i class="bi bi-people-fill"></i>
-      {% elif related.is_community %}
-        <i class="bi bi-diagram-3-fill"></i>
-      {% else %}
-        <i class="bi bi-globe"></i>
-      {% endif %}
-    </span>
-  {% elif role %}
+  {# Not with show_visibility: a caller showing visibility has no relationship role - and a `role` from around it (an item's page: the person's role on the item) isn't one. #}
+  {% if role and not show_visibility %}
     <span class="person-row__role">{{ role }}</span>
   {% endif %}
   {% if unlink_owner and edit_mode and unlink_owner|can_edit:request %}

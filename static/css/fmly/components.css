@@ -180,6 +180,33 @@
    a line, and a break inside it reads badly: "(*" / "2021)" or "(1913–" /
    "1994)". It still wraps as a whole after the name. */
 .person-lifespan { white-space: nowrap; }
+
+/* (From person.css: the row is shared - an item's page doesn't load that file.) */
+/* A person row's lifespan (get_full_name.html, lifespan_places): its own
+   line under the name, quieter - "(1880 Soerabaja – 1918 Bandoeng)", where
+   a family moved shows down a list of children. It may break before the
+   dash, never inside the birth or death part. The places go when the row's
+   text is narrow - by the text column's own width (a container), not the
+   screen's: the relationships are two columns on a wide screen. */
+.person-row .person-lifespan--places { display: block; margin-top: 2px; white-space: normal; font-size: var(--text-sm); font-weight: 400; color: var(--color-ink-3); }
+/* A part moves to the next line whole ("1921 Bandung"), and wraps inside only
+   when it alone is wider than the row - it never runs under what's beside it. */
+.person-lifespan__part { display: inline-block; max-width: 100%; }
+.person-row__body { container: person-row-text / inline-size; }
+/* Only when truly tiny: a part wraps whole to the next line (above), so a
+   card two to a row keeps its places - "(1890 Poerworedjo / – 1962 Den Haag)". */
+@container person-row-text (max-width: 12rem) {
+  .person-lifespan__place { display: none; }
+  .person-row__meta .person-short-name__surname { display: none; }   /* "With Abraham" - the surname is above */
+}
+/* A narrow row (two columns, a card, a phone): the relation badge goes to its
+   own line under the text, indented to it (avatar 34px + gap 12px), so the
+   name gets the width instead of sharing it with "Half-sibling". */
+.person-row { container: person-row / inline-size; flex-wrap: wrap; }
+@container person-row (max-width: 32rem) {
+  .person-row__role { margin-left: 46px; }
+  .person-row__body { flex-basis: calc(100% - 46px); }
+}
 /* Surnames within a rendered name (get_full_name.html) - bold, so a list
    of people scans by family name. Two classes with one style for now:
    last name (at birth) and married name are different facts, and may
@@ -1575,7 +1602,10 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .person-profile-card__portrait.edit-block--editable { padding-right: 0; }
 .person-profile-card__portrait .edit-block__open { top: auto; bottom: 6px; right: 6px; }
 /* On a photo's page: this photo is the person's portrait (people/_person_row.html). */
-.person-row__portrait { margin-left: 4px; font-size: 0.85em; color: var(--color-accent); }
+/* Facts about the person here, in one line under the name (people/
+   _person_row.html): visibility, portrait from this photo, pointed out. */
+.person-row__icons { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 4px; }
+.person-row__icon { font-size: 0.85em; color: var(--color-accent); }
 /* The photos a portrait can be chosen from: a strip of small squares,
    the chosen one outlined (person/forms/portrait.html). */
 .portrait-crop__photos { display: flex; gap: 6px; overflow-x: auto; padding: 2px 2px var(--space-2); margin-bottom: var(--space-2); }
