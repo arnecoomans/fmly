@@ -57,6 +57,33 @@ environment=LANG=en_US.UTF-8,LC_ALL=en_US.UTF-8
 
 Starting it the first time: [Deploying](deploying.md#the-first-start).
 
+### Memory
+
+The production server has 2 GB. Most requests are small, but a large scan is not: thumbnails of a JPEG are read in a reduced mode (cheap), while a PNG, TIFF or HEIC of ~260 megapixels - the largest scans in the archive - is decoded in full, about 780 MB, and so are OCR and the zoom view of one. Two at once on two workers can exhaust memory; the kernel then kills a process - a gunicorn worker, or supervisord itself.
+
+**Swap** (in place since October 2026): a 2 GB swap file, so a spike makes the server slow for a moment instead of killing something.
+
+```
+swapon --show                  # /swapfile  file  2G
+free -h                        # the Swap line: how much is in use
+```
+
+Set up with `fallocate -l 2G /swapfile`, `chmod 600`, `mkswap`, `swapon`, and `/swapfile none swap sw 0 0` in `/etc/fstab` (on again after a reboot; check with `sudo swapoff /swapfile && sudo swapon -a`).
+
+**Was it memory?** After a crash:
+
+```
+journalctl -k --since "2 days ago" | grep -i -E "out of memory|killed process"
+sudo tail -n 50 /var/log/supervisor/supervisord.log
+```
+
+**Next steps, if it crashes again or `free -h` shows swap in use most of the time** - both at once, they do the same thing (less memory at once, and over time):
+
+- **2 workers** instead of 3 (`NUM_WORKERS=2` in the start script) - plenty for a handful of users; fewer full decodes at the same time.
+- **Recycle workers:** add `--max-requests 500 --max-requests-jitter 50` to the gunicorn command - a worker grown by decoding a big scan is replaced after a while, so memory doesn't creep up.
+
+Then `sudo supervisorctl restart fmly`. Optionally `vm.swappiness=10` (`/etc/sysctl.d/99-swappiness.conf`): swap only when memory is nearly full. supervisord itself is restarted by systemd if it's killed (`systemctl cat supervisor | grep Restart` - `on-failure`).
+
 ## Nginx
 
 ```nginx
