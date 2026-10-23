@@ -97,6 +97,7 @@ class FramesShownTests(TestCase):
     self.assertIn('>Winke?</span>', html)                                      # possibly depicted: the doubt
     self.assertLess(html.index('>Ida</span>'), html.index('>Winke?</span>'))  # largest first: the smaller on top
     self.assertIn(f'data-cmnsd-region-for={self.ida.token}', html)            # the card, linked to its frame
+    self.assertIn('bi-crosshair person-row__portrait', html)                   # and marked: pointed out here
     self.assertIn('data-cmnsd-filter-save=content.frames', html)              # the switch
     self.assertIn('data-cmnsd-regions-area', html)                             # clicks are for the frames, not full screen
 

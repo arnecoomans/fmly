@@ -18,7 +18,7 @@
   {% if frames %}
     {% with choice=request|frames_choice %}
     <div class="content-grid-pills content-frames__switch" data-cmnsd-filter="#media-{{ content.token }}" data-cmnsd-filter-save="content.frames" hidden>
-      <button type="button" class="content-grid-pill{% if choice == 'all' %} is-active{% endif %}" data-filter="" aria-pressed="{% if choice == 'all' %}true{% else %}false{% endif %}"><i class="bi bi-person-bounding-box"></i> {% translate "who is where"|capfirst %}</button>
+      <button type="button" class="content-grid-pill{% if choice == 'all' %} is-active{% endif %}" data-filter="" aria-pressed="{% if choice == 'all' %}true{% else %}false{% endif %}"><i class="bi bi-crosshair"></i> {% translate "who is where"|capfirst %}</button>
       <button type="button" class="content-grid-pill{% if choice == 'none' %} is-active{% endif %}" data-filter="none" aria-pressed="{% if choice == 'none' %}true{% else %}false{% endif %}">{% translate "the photo only"|capfirst %}</button>
     </div>
     {% endwith %}
@@ -27,7 +27,7 @@
     <ul class="who-is-where__people"{% if frames %} data-filter-value="frame"{% endif %}>
       {% for person in visible_people %}{% if person.can_frame %}
         <li class="who-is-where__person{% if person.has_frame %} has-frame{% endif %}"{% if person.has_frame %} data-cmnsd-region-for="{{ person.token }}"{% endif %}>
-          <span class="who-is-where__name">{% if person.has_frame %}<i class="bi bi-person-bounding-box"></i> {% endif %}{{ person.get_short_name }}</span>
+          <span class="who-is-where__name">{% if person.has_frame %}<i class="bi bi-crosshair" title="{% translate 'Pointed out on this photo' %}"></i> {% endif %}{{ person.get_short_name }}</span>
           <form data-cmnsd-action="set_person_region" data-model="content" data-object-token="{{ content.token }}" data-cmnsd-insert="reload">
             <input type="hidden" name="person" value="{{ person.token }}">
             <input type="hidden" name="region_x"><input type="hidden" name="region_y"><input type="hidden" name="region_w"><input type="hidden" name="region_h">

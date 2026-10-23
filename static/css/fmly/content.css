@@ -49,7 +49,11 @@
 .content-frame--doubt { border-style: dashed; }
 .content-frame:hover, .content-frame.is-linked { border-color: var(--color-accent); box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35), 0 0 0 9999px rgba(0, 0, 0, 0.12); z-index: 1; }
 .content-frame__name { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 6px; padding: 2px 8px; border-radius: 999px; background: rgba(0, 0, 0, 0.72); color: #fff; font-size: var(--text-xs); white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; }
-.content-frame:hover .content-frame__name, .content-frame.is-linked .content-frame__name { opacity: 1; }
+.content-frame:hover .content-frame__name, .content-frame.is-linked .content-frame__name, .content-frame.is-tapped .content-frame__name { opacity: 1; }
+.content-frame.is-tapped { border-color: var(--color-accent); z-index: 1; }
+.person-row.is-tapped, .who-is-where__person.is-tapped { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+/* While frames show, a long press is no link (Safari's "open in new tab"): the photo is for the frames. */
+.content-figure:has(.content-frame:not([hidden])) { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 /* While the image browser shows another page: its frames aren't this one's. */
 .content-gallery[data-gallery-showing="other"] .content-frames { display: none; }
 .person-row.is-linked { outline: 2px solid var(--color-accent); outline-offset: 2px; }

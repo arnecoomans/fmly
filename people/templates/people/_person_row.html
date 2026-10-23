@@ -42,9 +42,10 @@
   `link_role` (text, optional - an item's page): how this person is on
   the item ("depicted", "creator" - content.ContentPerson), under the name.
 
-  related.has_frame (set on an item's page, ContentDetailView._frames):
-  the row and their frame on the photo light up together (cmnsd.js
-  regions.js).
+  related.has_frame (set on an item's page, ContentDetailView._frames): a
+  crosshair after the name - pointed out on this photo (the portrait icon
+  is another thing: their portrait is from it) - and the row and their
+  frame light up together (cmnsd.js regions.js).
 
   `role_form` (template name, optional - an item's page in edit mode):
   the menu to change that role, in the same place.
@@ -69,7 +70,7 @@
 <div class="person-row{% if derived %} person-row--derived{% endif %}{% if related.needs_attention %} person-row--needs-attention{% endif %}"{% if related.has_frame %} data-cmnsd-region-for="{{ related.token }}"{% endif %} data-cmnsd-via="person:{{ related.token }}" data-cmnsd-via-title="{% translate "you came here through this person" %}">
   {% include 'person/avatar.html' with person=related size='md' %}
   <span class="person-row__body">
-    <span class="person-row__name">{% highlight_search search_query %}{% include 'person/functions/get_full_name.html' with person=related lifespan=True lifespan_places=True %}{% endhighlight_search %}{% if portrait_here %} <i class="bi bi-person-bounding-box person-row__portrait" title="{% translate 'Their portrait is from this photo' %}" aria-label="{% translate 'Their portrait is from this photo' %}"></i>{% endif %}</span>
+    <span class="person-row__name">{% highlight_search search_query %}{% include 'person/functions/get_full_name.html' with person=related lifespan=True lifespan_places=True %}{% endhighlight_search %}{% if portrait_here %} <i class="bi bi-person-bounding-box person-row__portrait" title="{% translate 'Their portrait is from this photo' %}" aria-label="{% translate 'Their portrait is from this photo' %}"></i>{% endif %}{% if related.has_frame %} <i class="bi bi-crosshair person-row__portrait" title="{% translate 'Pointed out on this photo' %}" aria-label="{% translate 'Pointed out on this photo' %}"></i>{% endif %}</span>
     {% if link_role %}<span class="person-row__meta person-row__link-role">{{ link_role }}</span>{% endif %}
     {% if role_form %}{% include role_form %}{% endif %}
     {% if meta_with and meta_with|status_visible_to:request.user %}
