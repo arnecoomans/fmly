@@ -4,7 +4,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ngettext
 
 from cmnsd.api.registry import api_action, api_model
 from cmnsd.models.access import filter_accessible
@@ -74,6 +74,39 @@ class Tag(TimestampMixin, StatusMixin, VisibilityMixin, SearchableMixin, BaseTag
     pass
 
 COMMENT_MAX_LENGTH = 5000
+
+# Visibility from narrow to wide (VisibilityMixin): a comment is never wider
+# than what it's on (issue #481).
+VISIBILITY_ORDER = ('q', 'f', 'c', 'p')
+
+
+def narrowest(*levels):
+  """The narrowest of these visibility levels (None ignored)."""
+  levels = [level for level in levels if level in VISIBILITY_ORDER]
+  return min(levels, key=VISIBILITY_ORDER.index) if levels else None
+
+
+def comment_visibility_for(target):
+  """(default, choices) for a comment on `target`: its visibility and every
+  level up to it - never wider. A target without a visibility of its own
+  (an event: visible through its people): the site default, every level."""
+  levels = VisibilityMixin.Visibility.choices
+  cap = getattr(target, 'visibility', None)
+  if cap not in VISIBILITY_ORDER:
+    return Comment._meta.get_field('visibility').default, levels
+  allowed = VISIBILITY_ORDER[:VISIBILITY_ORDER.index(cap) + 1]
+  return cap, [(value, label) for value, label in levels if value in allowed]
+
+
+def clean_comment_visibility(value, target):
+  """The visibility asked for, if the target allows it - '' or None: its
+  default. Refused when wider than the target."""
+  default, choices = comment_visibility_for(target)
+  if not value:
+    return default
+  if value not in dict(choices):
+    raise ValidationError(_("A comment can't be more visible than what it's on."))
+  return value
 
 
 @api_model()
@@ -162,6 +195,21 @@ class Comment(MentionableSourceMixin, VisibilityMixin, BaseComment):
     return {'comment': self}
 
   @api_action(requires_auth=True)
+  def set_visibility(self, request, data):
+    """data: {visibility} - who may read this comment: its author or staff,
+    never wider than its target (issue #481)."""
+    if not (request.user.pk == self.user_id or request.user.is_staff):
+      raise PermissionDenied(_("Only the author or staff can change who sees this comment."))
+    value = data.get('visibility')
+    if value != self.visibility:   # keeping a level wider than the item now is allowed - only a change is capped
+      value = clean_comment_visibility(value, self.target)
+    if value != self.visibility:
+      self.visibility = value
+      self.save()
+      messages.success(request, _("Visible to: %(level)s.") % {'level': self.get_visibility_display().lower()})
+    return {'comment': self}
+
+  @api_action(requires_auth=True)
   def toggle_hidden(self, request, data):
     """Staff: hide (revoked) or unhide (published) any comment."""
     if not request.user.is_staff:
@@ -191,6 +239,55 @@ class CommentableMixin(models.Model):
   class Meta:
     abstract = True
 
+  def wider_comments(self, request):
+    """Its comments more visible than it (issue #481) - after it was made
+    narrower - as this viewer may see them; not deleted ones."""
+    level = getattr(self, 'visibility', None)
+    if level not in VISIBILITY_ORDER:
+      return Comment.objects.none()
+    wider = VISIBILITY_ORDER[VISIBILITY_ORDER.index(level) + 1:]
+    return Comment.filter_own(self.comments.exclude(status=Comment.Status.DELETED).filter(visibility__in=wider), request)
+
+  @api_action(requires_auth=True)
+  def narrow_comments(self, request, data):
+    """Its comments more visible than it, narrowed to its visibility - the
+    notice under its visibility choice, after narrowing it (#481). Only
+    for who may change it; only the comments they may see."""
+    from cmnsd.edit.log import log_change
+    from cmnsd.edit.mode import require_can_edit
+    require_can_edit(self, request)
+    count = self.wider_comments(request).update(visibility=self.visibility)
+    if count:
+      log_change(request, self, f"{count} comment(s) narrowed to {self.get_visibility_display()}")
+      messages.success(request, ngettext("%(count)s comment narrowed to %(level)s.", "%(count)s comments narrowed to %(level)s.", count) % {'count': count, 'level': self.get_visibility_display().lower()})
+    return {}
+
+  def narrower_comments(self, request):
+    """Its comments less visible than it (issue #481) - after it was made
+    wider - that this viewer may widen: staff all they may see, anyone else
+    only their own (widening overrides an author's choice of audience).
+    Not deleted ones."""
+    level = getattr(self, 'visibility', None)
+    if level not in VISIBILITY_ORDER or not request.user.is_authenticated:
+      return Comment.objects.none()
+    narrower = VISIBILITY_ORDER[:VISIBILITY_ORDER.index(level)]
+    comments = Comment.filter_own(self.comments.exclude(status=Comment.Status.DELETED).filter(visibility__in=narrower), request)
+    return comments if request.user.is_staff else comments.filter(user=request.user)
+
+  @api_action(requires_auth=True)
+  def widen_comments(self, request, data):
+    """Its comments less visible than it, widened to its visibility - the
+    notice under its visibility choice, after widening it (#481): for staff
+    all they may see, for anyone else their own."""
+    from cmnsd.edit.log import log_change
+    from cmnsd.edit.mode import require_can_edit
+    require_can_edit(self, request)
+    count = self.narrower_comments(request).update(visibility=self.visibility)
+    if count:
+      log_change(request, self, f"{count} comment(s) widened to {self.get_visibility_display()}")
+      messages.success(request, ngettext("%(count)s comment widened to %(level)s.", "%(count)s comments widened to %(level)s.", count) % {'count': count, 'level': self.get_visibility_display().lower()})
+    return {}
+
   @classmethod
   def comment_targets(cls, queryset):
     """Which of these objects may appear as a comment's target in the
@@ -215,6 +312,7 @@ class CommentableMixin(models.Model):
     comment = Comment(
       target=self, user=request.user, content=clean_comment_text(data.get('content')),
       status=Comment.Status.PUBLISHED,
+      visibility=clean_comment_visibility(data.get('visibility'), self),   # its target's, or narrower (#481)
     )
     comment.save()
     messages.success(request, _("Comment posted."))

@@ -1,4 +1,4 @@
-{% load markdown %}
+{% load markdown %}{% load comments %}
 {% comment %}
   One comment (core.Comment) as a .comment-row. Rendered in the thread
   (comment/comments.html) and returned by the API after an action
@@ -7,6 +7,9 @@
   A comment's title (`name`) is shown after its author and date when it has one - e.g.
   "Revocation reason", made when staff revoke an item (core.forms
   StatusActionsForm); comments written on the page have none.
+
+  Its visibility (issue #481): a badge; in edit mode, for its author or
+  staff, a choice up to what it's on (set_visibility).
 
   Controls, signed-in only: the author edits (inline form) and deletes;
   staff hide/unhide. The actions check this again server-side
@@ -26,6 +29,18 @@
       <time class="comment-row__timestamp" datetime="{{ comment.date_created|date:'c' }}">{{ comment.date_created|date:"j M Y, H:i" }}{% if comment.is_edited %} · {% translate "edited" %}{% endif %}</time>
       {% if comment.name %}<span class="comment-row__title">{{ comment.name }}</span>{% endif %}
       {% if comment.status == 'r' %}<span class="badge-status badge-status--draft">{% translate "hidden" %}</span>{% endif %}
+      {# Who may read it (#481): in edit mode, for its author or staff, a choice up to what it's on; else the badge. #}
+      {% if edit_mode and request.user.pk == comment.user_id or edit_mode and request.user.is_staff %}
+        {% with choices=comment|comment_visibility_choices %}
+          <form class="comment-row__visibility" data-cmnsd-action="set_visibility" data-model="comment" data-object-token="{{ comment.token }}" data-cmnsd-target="closest:.comment-row" data-cmnsd-insert="replace">
+            <select name="visibility" data-cmnsd-autosubmit aria-label="{% translate 'visible to' %}" title="{% translate 'visible to'|capfirst %}">{% for value, label in choices %}<option value="{{ value }}"{% if value == comment.visibility %} selected{% endif %}>{{ label|lower }}</option>{% endfor %}</select>
+          </form>
+        {% endwith %}
+      {% else %}
+        <span class="badge-visibility badge-visibility--{{ comment.get_visibility_display|lower }}" title="{% translate 'visible to'|capfirst %}: {{ comment.get_visibility_display|lower }}">
+          {% if comment.visibility == 'q' %}<i class="bi bi-lock-fill"></i>{% elif comment.visibility == 'f' %}<i class="bi bi-people-fill"></i>{% elif comment.visibility == 'c' %}<i class="bi bi-diagram-3-fill"></i>{% else %}<i class="bi bi-globe"></i>{% endif %}
+        </span>
+      {% endif %}
     </div>
     <div class="comment-row__text">{{ comment.content|markdown:request }}</div>
 

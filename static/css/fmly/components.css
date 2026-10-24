@@ -2116,3 +2116,17 @@ a.mention:hover { text-decoration-color: currentColor; }
 .mentioned-in__unlink { display: inline; margin: 0 0 0 var(--space-2); }
 .mentioned-in__unlink-button { padding: 0; border: 0; background: none; font: inherit; font-size: var(--text-xs); color: var(--color-ink-3); cursor: pointer; }
 .mentioned-in__unlink-button:hover { color: var(--color-draft-text); text-decoration: underline; }
+
+/* A comment's visibility (issue #481): who may read it - in the form, and per
+   comment in edit mode; never wider than what it's on. */
+.comment-form__footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.comment-form__visibility { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--color-ink-3); }
+.comment-form__visibility select, .comment-row__visibility select { font-size: var(--text-xs); padding: 2px 6px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-ink-2); }
+.comment-row__visibility { display: inline; }
+.comment-row__meta .badge-visibility { width: 18px; height: 18px; }
+.loose-end__comments { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-4); }
+.loose-end__comment-text { margin: 2px 0; }
+/* After narrowing an item: its comments still wider (core comment/_wider_notice.html). */
+.comments-wider-notice { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-top: var(--space-2); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--color-surface-alt); font-size: var(--text-sm); }
+.comments-wider-notice p { margin: 0; }
+.comments-wider-notice__hint { flex-basis: 100%; font-size: var(--text-xs); color: var(--color-ink-3); }

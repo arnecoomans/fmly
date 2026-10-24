@@ -1,0 +1,31 @@
+{% load comments %}
+{% comment %}
+  Under an item's (or person's) visibility choice, edit mode (issue #481),
+  after its visibility changed - nothing changes by itself:
+  - made narrower: its comments more visible than it now - one click
+    narrows them (narrow_comments); left alone, they're listed under loose
+    ends ("comments wider than their item"). Always safe.
+  - made wider: its comments less visible than it - one click widens them
+    (widen_comments): for staff all they may see (or one by one on the
+    comments), for anyone else their own - widening overrides an author's
+    choice of audience.
+  Context: obj, model, request.
+{% endcomment %}
+{% with wider=obj|wider_comments:request %}{% if wider %}
+  <div class="comments-wider-notice">
+    <p>{% blocktranslate count counter=wider|length with level=obj.get_visibility_display|lower %}{{ counter }} comment is more visible than this now.{% plural %}{{ counter }} comments are more visible than this now.{% endblocktranslate %}</p>
+    <form data-cmnsd-action="narrow_comments" data-model="{{ model }}" data-object-token="{{ obj.token }}" data-cmnsd-insert="reload">
+      <button class="loose-end__suggest">{% blocktranslate with level=obj.get_visibility_display|lower %}Narrow them to {{ level }}{% endblocktranslate %}</button>
+    </form>
+    <p class="comments-wider-notice__hint">{% translate "Or leave them - they're listed under loose ends, and shown no wider than this anyway." %}</p>
+  </div>
+{% endif %}{% endwith %}
+{% with narrower=obj|narrower_comments:request %}{% if narrower %}
+  <div class="comments-wider-notice">
+    <p>{% if request.user.is_staff %}{% blocktranslate count counter=narrower|length %}{{ counter }} comment is less visible than this now.{% plural %}{{ counter }} comments are less visible than this now.{% endblocktranslate %}{% else %}{% blocktranslate count counter=narrower|length %}{{ counter }} of your comments is less visible than this now.{% plural %}{{ counter }} of your comments are less visible than this now.{% endblocktranslate %}{% endif %}</p>
+    <form data-cmnsd-action="widen_comments" data-model="{{ model }}" data-object-token="{{ obj.token }}" data-cmnsd-insert="reload">
+      <button class="loose-end__suggest">{% blocktranslate with level=obj.get_visibility_display|lower %}Widen them to {{ level }}{% endblocktranslate %}</button>
+    </form>
+    <p class="comments-wider-notice__hint">{% if request.user.is_staff %}{% translate "Or one by one, on the comments - a narrower one may be meant for fewer readers." %}{% else %}{% translate "Or leave them - who reads your comment is your choice." %}{% endif %}</p>
+  </div>
+{% endif %}{% endwith %}

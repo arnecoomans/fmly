@@ -23,3 +23,4 @@ def years_ago(event):
   if qualifier == 'after':
     return ngettext("at most %(n)s year ago", "at most %(n)s years ago", years) % {'n': years}
   return ngettext("%(n)s year ago", "%(n)s years ago", years) % {'n': years}
+

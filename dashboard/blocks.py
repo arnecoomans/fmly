@@ -113,6 +113,7 @@ LOOSE_ENDS = {
   'no-parents': _("people without parents"),
   'photos-without-people': _("photos without people"),
   'people-without-role': _("people on items without a role"),
+  'wider-comments': _("comments wider than their item"),
   'undated-events': _("events without a date"),
   'other-events': _("events of kind 'other' - does a kind fit?"),
   'undocumented-events': _("events without documentation"),
@@ -168,6 +169,32 @@ def loose_end_items(name, request, dismissed=False):
   return items.filter(pk__in=ids) if dismissed else items.exclude(pk__in=ids)
 
 
+def wider_comments(request):
+  """Comments more visible than what they're on (issue #481): the item was
+  made narrower after them. Not a leak - a comment shows only to who may see
+  its item too - but was the item narrowed on purpose? Nothing changes by
+  itself (a mistake would hide comments for good): staff restore the item,
+  or narrow the comment, or leave it ("fine as it is").
+  Not the other way: a comment narrower than its item is its author's
+  choice - an aside - not something to review. Only on items with a
+  visibility of their own (an event has none); not deleted ones; as this
+  viewer may see them."""
+  from django.contrib.contenttypes.models import ContentType
+  from content.models import Content
+  from core.models import Comment, VISIBILITY_ORDER
+  from people.models import Person
+  wider = models.Q(pk__in=[])
+  for model in (Content, Person):
+    kind = ContentType.objects.get_for_model(model)
+    for index, level in enumerate(VISIBILITY_ORDER):
+      wider |= models.Q(
+        target_content_type=kind, target_id__in=model.objects.filter(visibility=level).values('pk'),
+        visibility__in=VISIBILITY_ORDER[index + 1:],
+      )
+  comments = Comment.objects.exclude(status=Comment.Status.DELETED).filter(wider)
+  return Comment.filter_own(comments, request).select_related('user').order_by('-date_created')
+
+
 def role_items(request):
   """The items with someone on them this viewer may see - the whole of the
   "without a role" loose end (its bar, dashboard/progress.py)."""
@@ -207,6 +234,8 @@ def _loose_end_queryset(name, request):
     # count, nor leak. Not history: its source goes in its description.
     from content.models import Content
     return documentable_events(events).exclude(content__in=Content.objects.visible_to(request)).distinct()
+  if name == 'wider-comments':
+    return wider_comments(request)
   if name == 'people-without-role':
     # An item with someone on it whose role isn't set (ContentPerson, issue
     # #471) - only people this viewer may see: they can't set the role of

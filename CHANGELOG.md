@@ -1,5 +1,19 @@
 # Changelog
 
+## [26.10.1] (unreleased)
+
+### New
+- **Who is where on a photo** - a frame around each person whose place is known: their name on hover (or a tap), a question mark for possibly depicted, linked with their card; *the photo only* or *who is where* under the photo, remembered. In edit mode: point out, redraw, remove, and *use as portrait* for someone without one. The frames started from the portrait crops ([#480](https://github.com/arnecoomans/fmly/issues/480))
+- **Comment visibility** - each comment shows who may read it; a new comment takes its item's visibility, may be narrower, never wider; changeable by its author or staff in edit mode. Changing an item's visibility changes no comment by itself: a notice offers to narrow the wider ones (or, made wider, to widen the narrower ones: your own, or as staff all of them), and the loose end *comments wider than their item* shows where an item was narrowed after them - on purpose, or by mistake ([#481](https://github.com/arnecoomans/fmly/issues/481))
+- **A document's pages, gathered** - the whole's page shows the people and events of its pages: *on its pages*, *documented by its pages*, each with the page number
+- **Tag counts** - a tag counts the people and notes it holds too, not only items: *Loose end* on three people no longer says 0
+- **Quiet transcripts on photos** - on a photo, an object or a recording the transcript shows once there is one; in edit mode a small *+ transcript*
+
+### Under the hood
+- cmnsd: `RegionMixin` (a box on an image as fractions), `regions.js` (linked regions, marking on an image), `gallery.js` (which item shows)
+- Person rows: their visibility, portrait and pointed-out icons in one line under the name; the row's styles in `components.css` (also loaded on an item's page)
+- Web hosting: a Memory section - swap, and the next steps if a large scan still runs the server out of memory
+
 ## [26.10] - 2026-10-21 - FMLY 3.0
 
 A ground-up rebuild: a new content design, centred on content and people instead of on separate records. FMLY 3.0 shares no code with FMLY 2 and starts from a new database, filled from the old one by the legacy import. What it does: [README.md](README.md); how to use it: [documentation/usage/](documentation/usage/readme.md).

@@ -36,6 +36,25 @@
         <div class="loose-end__cell"><a class="dashboard__thumb" href="{% if name == 'open-transcripts' or name == 'no-transcript' %}{% url 'content:transcribe' item.token %}{% else %}{{ item.get_absolute_url }}{% endif %}" title="{{ item }}">{% if item.has_thumbnail %}<img src="{{ item|thumb_url:'card' }}" alt="{{ item }}" loading="lazy">{% else %}<span class="dashboard__thumb-icon"><i class="bi bi-{{ item|kind_icon }}"></i></span>{% endif %}<span class="dashboard__thumb-name">{{ item }}{% if name == 'low-resolution' %} <span class="dashboard__thumb-meta">{{ item.width }} × {{ item.height }}</span>{% elif name == 'people-without-role' %} <span class="dashboard__thumb-meta">{% blocktranslate count counter=item.without_role %}{{ counter }} without a role{% plural %}{{ counter }} without a role{% endblocktranslate %}</span>{% elif name == 'open-transcripts' %} <span class="dashboard__thumb-meta">{% if item.open_incomplete %}{% translate "incomplete" %}{% endif %}{% if item.open_incomplete and item.open_unchecked %} · {% endif %}{% if item.open_unchecked %}{% translate "not checked" %}{% endif %}</span>{% endif %}</span></a>{% include 'dashboard/_dismiss.html' with item=item %}</div>
       {% endfor %}
     </div>
+  {% elif name == 'wider-comments' %}
+    {# More visible than their item (#481): the item was narrowed after them - on purpose? Never changed by itself. #}
+    <ul class="loose-end__comments">
+      {% for comment in items %}{% with target=comment.target %}
+        <li class="loose-end__comment">
+          <p class="housekeeping__meta"><a href="{{ comment.get_absolute_url }}">{{ target }}</a> · {{ comment.user.get_full_name|default:comment.user.username }} · {{ comment.date_created|date:"j M Y" }}</p>
+          <p class="loose-end__comment-text">{{ comment.content|truncatewords:30 }}</p>
+          <p class="housekeeping__meta">{% blocktranslate with comment_level=comment.get_visibility_display|lower item_level=target.get_visibility_display|lower %}comment: {{ comment_level }} - item: {{ item_level }}. The item was made narrower after it: on purpose? If not, restore the item.{% endblocktranslate %}</p>
+          <div class="loose-end__role-actions">
+            <a class="loose-end__suggest" href="{{ target.get_absolute_url }}">{% translate "Open the item" %}</a>
+            <form data-cmnsd-action="set_visibility" data-model="comment" data-object-token="{{ comment.token }}" data-cmnsd-insert="reload">
+              <input type="hidden" name="visibility" value="{{ target.visibility }}">
+              <button class="loose-end__suggest">{% blocktranslate with level=target.get_visibility_display|lower %}Narrow to {{ level }}{% endblocktranslate %}</button>
+            </form>
+            {% include 'dashboard/_dismiss.html' with item=comment %}
+          </div>
+        </li>
+      {% endwith %}{% endfor %}
+    </ul>
   {% elif name == 'people-without-role' %}
     {# Each item with the people on it whose role isn't set - set it here (the item page's own menu, content/_person_link.html roles_here). #}
     <div class="loose-end__roles">

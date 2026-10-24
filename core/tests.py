@@ -416,3 +416,156 @@ class ErrorPageTests(TestCase):
     page = (Path(settings.BASE_DIR) / 'static' / 'errorpages' / '50x.html').read_text()
     self.assertIn('http-equiv="refresh"', page)
     self.assertNotIn('{%', page)                                                  # plain HTML: nginx serves it as is
+
+
+class CommentVisibilityTests(TestCase):
+  """A comment is never more visible than what it's on when written (issue
+  #481): it takes its item's visibility and may be narrower. A later change
+  of the item changes no comment - a loose end lists what doesn't fit."""
+
+  def setUp(self):
+    import json
+    from django.contrib.auth.models import Permission
+    from content.models import Content
+    from core.models import Comment
+    self.Comment = Comment
+    self.json = json
+    User = get_user_model()
+    self.author = User.objects.create(username='schrijver')
+    self.author.user_permissions.add(Permission.objects.get(codename='add_comment'))
+    self.author.save()
+    self.other = User.objects.create(username='ander2')
+    self.other.save()
+    self.staff = User.objects.create(username='beheer2', is_staff=True)
+    self.staff.user_permissions.add(Permission.objects.get(codename='change_content'))
+    self.staff.save()
+    self.item = Content.objects.create(name='Familiefoto', kind='photo', user=self.author, status='p', visibility='f')   # family: the author's own
+    self.client = Client()
+    self.client.force_login(self.author)
+
+  def post(self, **data):
+    return self.client.post(f'/api/content/{self.item.token}/add_comment/', self.json.dumps({'content': 'Dat is oom Willem', **data}), content_type='application/json')
+
+  def last(self):
+    return self.Comment.objects.order_by('-pk').first()
+
+  def test_takes_its_items_visibility(self):
+    self.assertEqual(self.post().status_code, 200)
+    self.assertEqual(self.last().visibility, 'f')                              # not the site default (community)
+
+  def test_narrower_allowed_wider_refused(self):
+    self.assertEqual(self.post(visibility='q').status_code, 200)
+    self.assertEqual(self.last().visibility, 'q')
+    self.assertEqual(self.post(visibility='c').status_code, 400)               # wider than the item
+
+  def test_who_may_change_it(self):
+    """Its author, or staff - who must be able to see it, as anywhere."""
+    from content.models import Content
+    self.item.visibility = 'c'
+    self.item.save()
+    self.post()
+    comment = self.last()
+    def change(user, level):
+      client = Client()
+      client.force_login(user)
+      return client.post(f'/api/comment/{comment.token}/set_visibility/', self.json.dumps({'visibility': level}), content_type='application/json')
+    self.assertEqual(change(self.author, 'p').status_code, 400)                # never wider than the item
+    self.assertEqual(change(self.other, 'f').status_code, 403)                 # not theirs
+    self.assertEqual(change(self.staff, 'f').status_code, 200)
+    comment.refresh_from_db()
+    self.assertEqual(comment.visibility, 'f')
+
+  def test_an_item_narrowed_leaves_its_comments(self):
+    """No automatic narrowing: a mistake would hide comments for good -
+    a loose end shows it instead, for staff to decide."""
+    from content.models import Content
+    self.item.visibility = 'c'
+    self.item.save()
+    self.post()
+    item = Content.objects.get(pk=self.item.pk)
+    item.visibility = 'f'
+    item.save()
+    self.assertEqual(self.last().visibility, 'c')                              # untouched
+    client = Client()
+    client.force_login(self.author)
+    comment = self.last()
+    keep = client.post(f'/api/comment/{comment.token}/set_visibility/', self.json.dumps({'visibility': 'c'}), content_type='application/json')
+    self.assertEqual(keep.status_code, 200)                                    # keeping its own level isn't refused
+
+  def test_an_event_has_no_cap(self):
+    from core.models import comment_visibility_for
+    from events.models import Event
+    default, choices = comment_visibility_for(Event(kind='other', title='Feest'))
+    self.assertEqual(default, 'c')
+    self.assertEqual(len(choices), 4)
+
+  def test_loose_end_wider_only(self):
+    """Wider than its item (narrowed after it): listed for staff. Narrower:
+    its author's choice, not listed."""
+    from content.models import Content
+    from dashboard import blocks
+    from django.contrib.auth.models import Permission
+    from django.test import RequestFactory
+    self.item.visibility = 'c'
+    self.item.save()
+    self.post()
+    wide = self.last()
+    self.post(visibility='q')                                                  # an aside: not for review
+    item = Content.objects.get(pk=self.item.pk)
+    item.visibility = 'f'
+    item.save()
+    self.author.user_permissions.add(Permission.objects.get(codename='change_content'))   # an editor, who may see them
+    request = RequestFactory().get('/')
+    request.user = self.author
+    self.assertEqual([c.pk for c in blocks.loose_end_items('wider-comments', request)], [wide.pk])
+    page = self.client.get('/dashboard/loose-ends/wider-comments/').content.decode()
+    self.assertIn('Narrow to family', page)
+
+  def test_notice_after_narrowing(self):
+    """Narrowed: a notice under the visibility choice, one click narrows
+    its wider comments."""
+    from content.models import Content
+    from django.contrib.auth.models import Permission
+    self.author.user_permissions.add(Permission.objects.get(codename='change_content'))
+    self.item.visibility = 'c'
+    self.item.save()
+    self.post()
+    self.post(visibility='q')
+    item = Content.objects.get(pk=self.item.pk)
+    item.visibility = 'f'
+    item.save()
+    self.client.post('/ui/edit/', {'on': '1', 'next': '/'})
+    page = self.client.get(item.get_absolute_url()).content.decode()
+    self.assertIn('1 comment is more visible than this now.', page)            # the aside isn't counted
+    response = self.client.post(f'/api/content/{item.token}/narrow_comments/', '{}', content_type='application/json')
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(sorted(self.Comment.objects.filter(target_id=item.pk).values_list('visibility', flat=True)), ['f', 'q'])
+    self.assertNotIn('more visible than this now', self.client.get(item.get_absolute_url()).content.decode())
+
+
+  def test_widening_staff_all_others_their_own(self):
+    """Made wider: staff widen all they may see; anyone else only their own."""
+    from content.models import Content
+    from django.contrib.auth.models import Permission
+    self.item.visibility = 'f'
+    self.item.save()
+    self.post()                                                                # the author's, family
+    staff_client = Client()
+    staff_client.force_login(self.staff)
+    item = Content.objects.get(pk=self.item.pk)
+    item.visibility = 'c'
+    item.save()
+    staff_comment = self.Comment.objects.create(target=item, user=self.staff, content='Van beheer', status='p', visibility='f')
+    self.author.user_permissions.add(Permission.objects.get(codename='change_content'))
+    request = __import__('django.test', fromlist=['RequestFactory']).RequestFactory().get('/')
+    request.user = self.author
+    self.assertEqual([c.user_id for c in item.narrower_comments(request)], [self.author.pk])   # not the staff member's
+    self.client.post(f'/api/content/{item.token}/widen_comments/', '{}', content_type='application/json')
+    staff_comment.refresh_from_db()
+    self.assertEqual(staff_comment.visibility, 'f')                            # not theirs to widen
+    self.assertEqual(self.Comment.objects.get(user=self.author, target_id=item.pk).visibility, 'c')
+    staff_comment.visibility = 'f'
+    staff_comment.save()
+    staff_client.post(f'/api/content/{item.token}/widen_comments/', '{}', content_type='application/json')
+    staff_comment.refresh_from_db()
+    self.assertEqual(staff_comment.visibility, 'c')                            # staff: all they may see

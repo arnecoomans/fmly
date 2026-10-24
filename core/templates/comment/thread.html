@@ -20,7 +20,15 @@
           data-cmnsd-target="#comments-{{ target.token }}" data-cmnsd-insert="append">
       <textarea name="content" rows="3" {% mentions_attrs %} required maxlength="5000" placeholder="{% translate 'Write a comment…' %}" aria-label="{% translate 'comment'|capfirst %}"></textarea>
       <p class="comment-form__error" data-cmnsd-error hidden></p>
-      <button class="btn" type="submit">{% translate "post comment"|capfirst %}</button>
+      <div class="comment-form__footer">
+        {# Who may read it: what it's on, or narrower - never wider (#481). #}
+        {% with visibility=target|comment_visibility %}
+          <label class="comment-form__visibility">{% translate "visible to" %}
+            <select name="visibility">{% for value, label in visibility.choices %}<option value="{{ value }}"{% if value == visibility.default %} selected{% endif %}>{{ label|lower }}</option>{% endfor %}</select>
+          </label>
+        {% endwith %}
+        <button class="btn" type="submit">{% translate "post comment"|capfirst %}</button>
+      </div>
     </form>
   {% endif %}
 {% endwith %}
