@@ -501,8 +501,15 @@ class Content(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, Sta
     # Before the slug is generated (SlugMixin) and before upload_to runs, so
     # an unnamed upload's slug can come from its (meaningful) filename.
     new_file = bool(self.file) and not self.file._committed
-    if new_file and not self.original_filename:
+    replaced = new_file and self.pk is not None   # another file for an existing item (the admin): a better scan
+    if new_file and (replaced or not self.original_filename):
       self.original_filename = os.path.basename(self.file.name)
+    if new_file and (replaced or not self.checksum):
+      # Its own fingerprint, whichever way the file came: a replaced file is
+      # recognised as in the archive, the old one's no longer points here.
+      # An upload brings it along already (content/uploads.py) - not hashed twice.
+      from ..uploads import checksum_of
+      self.checksum = checksum_of(self.file)
     super().save(*args, **kwargs)
     self.ensure_detail()
     self.sync_filename()
