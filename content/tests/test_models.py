@@ -48,6 +48,11 @@ class MeaninglessFilenameTests(TestCase):
       self.assertTrue(is_meaningless_filename(name), name)
     self.assertFalse(is_meaningless_filename('Scan van het paspoort van Johan.jpg'))   # words: kept
 
+  def test_facebook_downloads(self):
+    for name in ['868916360_937493495867917_7822354483824308125_n.jpg', '12345678_10153_n.jpg', '1234_5678_o.jpg', '1234-5678.jpg']:
+      self.assertTrue(is_meaningless_filename(name), name)
+    self.assertFalse(is_meaningless_filename('1938_Krangan.jpg'))                # a year and a word: kept
+
   def test_meaningless_after_a_date(self):
     for name in ['2023-12-10-IMG_1234.jpg', '2023-12-10_IMG_1234.JPG', '20231210_123456.jpg',
                  '2023-12-10-Screenshot 2023-12-10.png', '2023-12-10.jpg']:

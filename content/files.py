@@ -23,6 +23,10 @@ DEFAULT_MEANINGLESS_FILENAME_PATTERNS = [
   r'whatsapp (image|video|audio)\b.*',
   r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',  # UUID
   r'\d+',
+  # Facebook / Instagram downloads: groups of digits joined by underscores,
+  # often a size letter last - 868916360_937493495867917_7822354483824308125_n.
+  # (One group too: an 8-digit first group reads as a date prefix, stripped first.)
+  r'\d+([_-]\d+)*([_-][a-z])?',
   r'(image|photo|foto|scan|document|untitled|naamloos)[ _-]?\d*',
   # A scanner's own names: "Scan 2 Oct 2026 at 16.11 page 15" (Apple, also
   # "Scan 2 okt. 2026 om 16.11 pagina 15"), "Scannen0009" (and a variant
