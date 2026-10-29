@@ -1,6 +1,6 @@
 # Web hosting
 
-Production runs FMLY3 under gunicorn, kept running by supervisord, behind nginx. Part of [Installation](installation.md); the settings these refer to are in [Configuration](configuration.md).
+Production runs FMLY3 under gunicorn, kept running by supervisord, behind nginx. Part of [Installation](installation.md); the settings these refer to are in [Configuration](configuration.md). Which user it runs as, and what it may write: [Web hosting: permissions](webhosting_permissions.md).
 
 ## Gunicorn and Supervisord
 

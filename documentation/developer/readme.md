@@ -11,6 +11,7 @@ Read in this order when you're new; each page stands on its own afterwards.
 | [Installation](installation.md) | From a fresh clone to a running archive: code, requirements, data | written |
 | [Configuration](configuration.md) | The `.env` settings | written |
 | [Web hosting](webhosting.md) | gunicorn, supervisord and nginx | written |
+| [Web hosting: permissions](webhosting_permissions.md) | running as its own user, what it may write | written |
 | [Deploying](deploying.md) | `update.sh` and `.post_update.sh` for every update, the checks | written |
 | [cmnsd](cmnsd-dependency.md) | The shared foundation: what it provides, what stays in FMLY3, working on the submodule | written |
 | [Architecture](architecture.md) | The apps (core, people, content, events, places, notes, dashboard), how a request flows, where things live | written |
