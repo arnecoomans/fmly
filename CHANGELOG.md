@@ -3,7 +3,7 @@
 ## [26.10.1] (unreleased)
 
 ### New
-- **Nederlands** - the whole site in Dutch (je, stuk, leden), chosen per user in the preferences: FMLY3's strings and cmnsd's, which cmnsd now carries itself
+- **Nederlands** - the whole site in Dutch (je, stuk, leden): the browser's language by default - also before signing in - or a choice in the preferences; FMLY3's strings and cmnsd's, which cmnsd now carries itself. Pages say which language they're in (`<html lang>`), for screen readers and browsers
 - **Who is where on a photo** - a frame around each person whose place is known: their name on hover (or a tap), a question mark for possibly depicted, linked with their card; *the photo only* or *who is where* under the photo, remembered. In edit mode: point out, redraw, remove, and *use as portrait* for someone without one. The frames started from the portrait crops ([#480](https://github.com/arnecoomans/fmly/issues/480))
 - **Comment visibility** - each comment shows who may read it; a new comment takes its item's visibility, may be narrower, never wider; changeable by its author or staff in edit mode. Changing an item's visibility changes no comment by itself: a notice offers to narrow the wider ones (or, made wider, to widen the narrower ones: your own, or as staff all of them), and the loose end *comments wider than their item* shows where an item was narrowed after them - on purpose, or by mistake ([#481](https://github.com/arnecoomans/fmly/issues/481))
 - **A document's pages, gathered** - the whole's page shows the people and events of its pages: *on its pages*, *documented by its pages*, each with the page number

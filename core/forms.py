@@ -269,7 +269,7 @@ class PreferencesForm(forms.ModelForm):
     fields = ['language', 'superstitious', 'family']
     labels = {'language': _("language"), 'superstitious': _("superstitious"), 'family': _("family")}
     help_texts = {
-      'language': _("Empty: the site's language (English)."),
+      'language': _("Your browser's language decides: Dutch for a Dutch browser, otherwise English. Choose one to use it everywhere you sign in."),
       'superstitious': _("Show the star sign of people whose exact birth date is known, on their page."),
       'family': _("They see what you mark visible to 'family'. It works one way: adding someone doesn't make you their family."),
     }
@@ -287,4 +287,4 @@ class PreferencesForm(forms.ModelForm):
     field.queryset = field.queryset.filter(pk__in=[account.pk for account in accounts])
     names = {account.pk: account_name(account) for account in accounts}
     field.choices = [(account.pk, names[account.pk]) for account in accounts]
-    self.fields['language'].choices = [('', _("site default"))] + [c for c in self.fields['language'].choices if c[0]]
+    self.fields['language'].choices = [('', _("your browser's language"))] + [c for c in self.fields['language'].choices if c[0]]

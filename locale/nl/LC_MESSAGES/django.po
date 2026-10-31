@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-31 16:22+0100\n"
+"POT-Creation-Date: 2026-10-31 16:38+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -156,11 +156,11 @@ msgstr "tekst"
 msgid "@ mention"
 msgstr "@ noemen"
 
-#: content/languages.py:10 fmly/settings.py:134
+#: content/languages.py:10 fmly/settings.py:138
 msgid "Dutch"
 msgstr "Nederlands"
 
-#: content/languages.py:11 fmly/settings.py:133
+#: content/languages.py:11 fmly/settings.py:137
 msgid "English"
 msgstr "Engels"
 
@@ -1708,8 +1708,12 @@ msgid "family"
 msgstr "familie"
 
 #: core/forms.py:272
-msgid "Empty: the site's language (English)."
-msgstr "Leeg: de taal van de site (Engels)."
+msgid ""
+"Your browser's language decides: Dutch for a Dutch browser, otherwise "
+"English. Choose one to use it everywhere you sign in."
+msgstr ""
+"De taal van je browser bepaalt het: Nederlands bij een Nederlandse browser, "
+"anders Engels. Kies er een om die overal te gebruiken waar je inlogt."
 
 #: core/forms.py:273
 msgid ""
@@ -1727,8 +1731,8 @@ msgstr ""
 "iemand toevoegen maakt jou niet hun familie."
 
 #: core/forms.py:290
-msgid "site default"
-msgstr "standaard van de site"
+msgid "your browser's language"
+msgstr "de taal van je browser"
 
 #: core/models.py:108
 msgid "A comment can't be more visible than what it's on."

@@ -56,6 +56,10 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # The browser's language (Accept-Language), for everyone without a choice of
+    # their own - signed out too; English for a language the site doesn't have.
+    # A user's own choice wins (UserLanguageMiddleware, below).
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

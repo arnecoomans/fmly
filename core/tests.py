@@ -569,3 +569,33 @@ class CommentVisibilityTests(TestCase):
     staff_client.post(f'/api/content/{item.token}/widen_comments/', '{}', content_type='application/json')
     staff_comment.refresh_from_db()
     self.assertEqual(staff_comment.visibility, 'c')                            # staff: all they may see
+
+
+class BrowserLanguageTests(TestCase):
+  """Without a choice of your own, the browser's language (LocaleMiddleware):
+  signed out too; a language the site doesn't have gets English; a choice
+  in your preferences wins."""
+
+  def page(self, client, path, language):
+    return client.get(path, HTTP_ACCEPT_LANGUAGE=language).content.decode()
+
+  def test_signed_out_follows_the_browser(self):
+    client = Client()
+    dutch = self.page(client, '/accounts/login/', 'nl-NL,nl;q=0.9')
+    self.assertIn('wachtwoord vergeten?', dutch.lower())
+    self.assertIn('<html lang=nl>', dutch.replace('"', ''))                      # said so, for screen readers and browsers
+    english = self.page(client, '/accounts/login/', 'es-AR,es;q=0.9')           # not on the site: English
+    self.assertIn('forgot password?', english.lower())
+    self.assertIn('<html lang=en', english.replace('"', ''))
+
+  def test_a_choice_wins(self):
+    from core.models import Preferences
+    user = get_user_model().objects.create(username='taalkeuze')
+    user.save()
+    client = Client()
+    client.force_login(user)
+    self.assertIn('Voorkeuren', self.page(client, '/preferences/', 'nl'))      # no choice: the browser's
+    preferences, _created = Preferences.objects.get_or_create(user=user)
+    preferences.language = 'en'
+    preferences.save()
+    self.assertNotIn('Voorkeuren', self.page(client, '/preferences/', 'nl'))   # chosen: English, whatever the browser
