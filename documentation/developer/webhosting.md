@@ -12,9 +12,9 @@ Gunicorn start script:
 NAME="fmly"
 DJANGODIR=/data/www/fmly.cmns.nl
 VENVDIR=$DJANGODIR/.venv
-SOCKFILE=/data/www/cmns.nl/run/fmly.sock
-USER=[USER]
-GROUP=[USER]
+SOCKFILE=/data/run/fmly.sock
+USER=fmly          # its own user - see Web hosting: permissions
+GROUP=fmly
 NUM_WORKERS=3
 DJANGO_SETTINGS_MODULE=fmly.settings
 DJANGO_WSGI_MODULE=fmly.wsgi
@@ -39,6 +39,7 @@ exec $VENVDIR/bin/gunicorn ${DJANGO_WSGI_MODULE}:application \
   --workers $NUM_WORKERS \
   --timeout 300 \
   --user=$USER --group=$GROUP \
+  --umask 0o007 \
   --bind=unix:$SOCKFILE \
   --log-level=info \
   --log-file=-
@@ -48,8 +49,8 @@ Supervisord config:
 
 ```ini
 [program:fmly]
-command = /data/www/cmns.nl/gunicorn/fmly_start
-user = [USER]
+command = /data/gunicorn/fmly_start
+user = fmly
 stdout_logfile = /var/logs/gunicorn/fmly.log
 redirect_stderr = true
 environment=LANG=en_US.UTF-8,LC_ALL=en_US.UTF-8
@@ -123,7 +124,7 @@ server {
   }
 
   location / {
-    proxy_pass http://unix:/data/www/cmns.nl/run/fmly.sock;
+    proxy_pass http://unix:/data/run/fmly.sock;
     proxy_set_header Host $host;
     proxy_set_header X-Forwarded-Proto $scheme;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

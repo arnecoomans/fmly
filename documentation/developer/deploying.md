@@ -7,7 +7,7 @@ Part of [Installation](installation.md): starting the site the first time, then 
 With the supervisord config in place (see [Web hosting](webhosting.md)):
 
 ```sh
-sudo chmod +x /data/www/cmns.nl/gunicorn/fmly_start   # the start script must be executable
+sudo chmod +x /data/gunicorn/fmly_start   # the start script must be executable
 sudo mkdir -p /var/logs/gunicorn                        # supervisord won't start a program without its log folder
 
 sudo supervisorctl reread           # shows "fmly: available"

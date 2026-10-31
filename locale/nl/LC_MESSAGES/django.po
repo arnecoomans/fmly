@@ -1,0 +1,4138 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: FMLY\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-31 16:22+0100\n"
+"PO-Revision-Date: 2026-10-31 12:00+0100\n"
+"Last-Translator: Arne Coomans\n"
+"Language-Team: Dutch\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: content/forms.py:21 core/forms.py:20 places/forms.py:20
+msgid "name"
+msgstr "naam"
+
+#: content/forms.py:29 content/templates/content/blocks/description.html:10
+#: content/templates/content/blocks/description.html:15 core/forms.py:135
+#: events/forms.py:76 events/forms.py:147 places/forms.py:37
+msgid "description"
+msgstr "beschrijving"
+
+#: content/forms.py:30
+msgid "What you see - Markdown: *italic*, **bold**, [link](https://...)."
+msgstr "Wat je ziet - Markdown: *cursief*, **vet**, [link](https://...)."
+
+#: content/forms.py:42 events/forms.py:20 notes/forms.py:41 people/forms.py:70
+msgid "how sure"
+msgstr "hoe zeker"
+
+#: content/forms.py:42 events/forms.py:20 notes/forms.py:41 people/forms.py:70
+msgid "day"
+msgstr "dag"
+
+#: content/forms.py:42 events/forms.py:20
+#: events/templates/event/event_calendar.html:26 notes/forms.py:41
+#: people/forms.py:70
+msgid "month"
+msgstr "maand"
+
+#: content/forms.py:42 events/forms.py:20 notes/forms.py:41 people/forms.py:70
+msgid "year"
+msgstr "jaar"
+
+#: content/forms.py:61 content/templates/content/blocks/source.html:6
+msgid "source"
+msgstr "bron"
+
+#: content/forms.py:74 content/templates/content/blocks/publication.html:6
+msgid "publisher"
+msgstr "uitgever"
+
+#: content/forms.py:107
+msgid "Thumbnail"
+msgstr "Miniatuur"
+
+#: content/forms.py:142 core/templates/comment/comment.html:36
+#: core/templates/comment/comment.html:40
+#: core/templates/comment/thread.html:26 notes/forms.py:87 people/forms.py:269
+#: people/forms.py:292
+msgid "visible to"
+msgstr "zichtbaar voor"
+
+#: content/forms.py:150
+msgid ""
+"Delete this item? It will be hidden from everyone - it can be recovered in "
+"the admin."
+msgstr ""
+"Dit stuk verwijderen? Het wordt voor iedereen verborgen - het kan in de "
+"beheeromgeving worden hersteld."
+
+#: content/forms.py:153
+msgid ""
+"Why is this item revoked? Only staff will see it until it's restored; your "
+"reason is kept as a comment on it."
+msgstr ""
+"Waarom wordt dit stuk ingetrokken? Alleen beheerders zien het tot het "
+"hersteld is; je reden blijft erbij als opmerking."
+
+#: content/forms.py:171 events/forms.py:25
+#: events/templates/event/event_overview.html:25 notes/forms.py:63
+msgid "kind"
+msgstr "soort"
+
+#: content/forms.py:186
+msgid ""
+"Posed, one person - head and shoulders up to full length; a passport photo "
+"too."
+msgstr ""
+"Geposeerd, één persoon - van hoofd en schouders tot ten voeten uit; ook een "
+"pasfoto."
+
+#: content/forms.py:187
+msgid "Posed, two or more people - a couple, a family, a class, a team."
+msgstr ""
+"Geposeerd, twee of meer mensen - een stel, een gezin, een klas, een team."
+
+#: content/forms.py:188
+msgid ""
+"Not posed, however many people - caught in a moment: a party, a holiday, at "
+"home."
+msgstr ""
+"Niet geposeerd, met hoeveel mensen ook - een moment: een feest, een "
+"vakantie, thuis."
+
+#: content/forms.py:189
+msgid ""
+"No family as the subject: the setting or the time - a street, a ship, a "
+"building."
+msgstr ""
+"Geen familie als onderwerp: de plek of de tijd - een straat, een schip, een "
+"gebouw."
+
+#: content/forms.py:190
+msgid "Not classified yet, or none of these."
+msgstr "Nog niet ingedeeld, of geen van deze."
+
+#: content/forms.py:196
+msgid "kind of photo"
+msgstr "soort foto"
+
+#: content/forms.py:210
+msgid "kind of document"
+msgstr "soort document"
+
+#: content/forms.py:224 content/forms.py:243
+#: content/templates/content/content_detail.html:206 core/forms.py:270
+msgid "language"
+msgstr "taal"
+
+#: content/forms.py:243
+msgid "original or translation"
+msgstr "origineel of vertaling"
+
+#: content/forms.py:243
+msgid "how it was made"
+msgstr "hoe het gemaakt is"
+
+#: content/forms.py:244
+msgid "transcription incomplete"
+msgstr "transcriptie onvolledig"
+
+#: content/forms.py:244 content/templates/content/transcribe.html:105
+#: notes/forms.py:29
+msgid "text"
+msgstr "tekst"
+
+#: content/forms.py:246 content/templates/content/transcribe.html:105
+msgid "@ mention"
+msgstr "@ noemen"
+
+#: content/languages.py:10 fmly/settings.py:134
+msgid "Dutch"
+msgstr "Nederlands"
+
+#: content/languages.py:11 fmly/settings.py:133
+msgid "English"
+msgstr "Engels"
+
+#: content/languages.py:12
+msgid "Indonesian"
+msgstr "Indonesisch"
+
+#: content/languages.py:13
+msgid "Malay"
+msgstr "Maleis"
+
+#: content/languages.py:14
+msgid "Javanese"
+msgstr "Javaans"
+
+#: content/languages.py:15
+msgid "German"
+msgstr "Duits"
+
+#: content/languages.py:16
+msgid "French"
+msgstr "Frans"
+
+#: content/languages.py:17
+msgid "Portuguese"
+msgstr "Portugees"
+
+#: content/languages.py:18
+msgid "Latin"
+msgstr "Latijn"
+
+#: content/languages.py:19
+msgid "Japanese"
+msgstr "Japans"
+
+#: content/languages.py:20
+msgid "Chinese"
+msgstr "Chinees"
+
+#: content/languages.py:21 content/models/details.py:16
+#: content/models/details.py:36 events/models.py:55
+#: events/views/EventListView.py:25 people/models/Person.py:33
+#: people/models/PersonRelations.py:9
+msgid "other"
+msgstr "anders"
+
+#: content/models/Content.py:87 content/templates/content/blocks/date.html:10
+#: content/templates/content/blocks/isbn.html:6
+#: content/templates/content/blocks/publication.html:7
+#: content/templates/content/blocks/source.html:7 events/forms.py:113
+#: events/templates/event/blocks/date.html:7
+#: notes/templates/note/blocks/date.html:8 people/forms.py:62
+#: people/models/Person.py:34
+msgid "unknown"
+msgstr "onbekend"
+
+#: content/models/Content.py:88 people/forms.py:187
+#: people/templates/person/forms/portrait.html:20
+msgid "photo"
+msgstr "foto"
+
+#: content/models/Content.py:89
+msgid "document"
+msgstr "document"
+
+#: content/models/Content.py:90
+msgid "book"
+msgstr "boek"
+
+#: content/models/Content.py:91
+msgid "object"
+msgstr "voorwerp"
+
+#: content/models/Content.py:92
+msgid "recording"
+msgstr "opname"
+
+#: content/models/Content.py:137
+msgid "add a transcript or translation"
+msgstr "transcriptie of vertaling toevoegen"
+
+#: content/models/Content.py:161
+msgid "The name the file arrived with"
+msgstr "De naam waarmee het bestand binnenkwam"
+
+#: content/models/Content.py:169
+msgid "Where this came from: a person, archive or URL"
+msgstr "Waar dit vandaan komt: een persoon, archief of webadres"
+
+#: content/models/Content.py:214 content/models/Content.py:215
+#: content/templates/content/favorites.html:18
+#: content/templates/content/inbox.html:18
+#: content/templates/content/upload.html:15 core/search.py:50
+#: core/templates/tag/tag_detail.html:56
+#: dashboard/templates/dashboard/loose_end.html:26
+#: notes/templates/note/_links.html:11
+#: people/templates/people/person_detail.html:112
+#: places/templates/place/place_detail.html:68
+msgid "content"
+msgstr "stuk"
+
+#: content/models/Content.py:370 content/models/Portrait.py:59
+msgid "Set all four crop values, or none."
+msgstr "Vul alle vier de uitsnedewaarden in, of geen."
+
+#: content/models/Content.py:373 content/models/Portrait.py:61
+msgid "The crop must lie within the image."
+msgstr "De uitsnede moet binnen de afbeelding liggen."
+
+#: content/models/Content.py:376 content/parts.py:74
+msgid "An item can't be a part of itself."
+msgstr "Een stuk kan geen deel van zichzelf zijn."
+
+#: content/models/Content.py:378
+msgid "That item is itself a part - choose its whole instead."
+msgstr "Dat stuk is zelf een deel - kies het geheel."
+
+#: content/models/Content.py:380
+msgid "This item has parts of its own, so it can't become a part."
+msgstr "Dit stuk heeft zelf delen, dus het kan geen deel worden."
+
+#: content/models/Content.py:390
+#, python-format
+msgid "%(item)s is itself a part - choose its whole instead."
+msgstr "%(item)s is zelf een deel - kies het geheel."
+
+#: content/models/Content.py:406
+msgid "That item wasn't found."
+msgstr "Dat stuk is niet gevonden."
+
+#: content/models/ContentPerson.py:28
+msgid "subject"
+msgstr "onderwerp"
+
+#: content/models/ContentPerson.py:29
+msgid "creator"
+msgstr "maker"
+
+#: content/models/ContentPerson.py:30
+msgid "addressee"
+msgstr "geadresseerde"
+
+#: content/models/ContentPerson.py:31
+msgid "depicted"
+msgstr "afgebeeld"
+
+#: content/models/ContentPerson.py:35
+msgid "possibly depicted"
+msgstr "mogelijk afgebeeld"
+
+#: content/models/ContentPerson.py:36
+msgid "owner"
+msgstr "eigenaar"
+
+#: content/models/Transcript.py:25
+#: content/templates/content/transcribe.html:61
+msgid "original"
+msgstr "origineel"
+
+#: content/models/Transcript.py:26
+#: content/templates/content/content_detail.html:119
+#: content/templates/content/transcribe.html:28
+msgid "translation"
+msgstr "vertaling"
+
+#: content/models/Transcript.py:29
+msgid "manual"
+msgstr "handmatig"
+
+#: content/models/Transcript.py:30
+msgid "automatic, not checked"
+msgstr "automatisch, niet gecontroleerd"
+
+#: content/models/Transcript.py:31
+msgid "automatic, checked"
+msgstr "automatisch, gecontroleerd"
+
+#: content/models/Transcript.py:71
+msgid "Only part of the text is transcribed so far"
+msgstr "Pas een deel van de tekst is getranscribeerd"
+
+#: content/models/Transcript.py:79
+msgid "This item already has a transcript in that language."
+msgstr "Dit stuk heeft al een transcriptie in die taal."
+
+#: content/models/Transcript.py:83
+msgid "This item already has an original - add this as a translation."
+msgstr "Dit stuk heeft al een origineel - voeg dit toe als vertaling."
+
+#: content/models/Transcript.py:96
+msgid "A transcript can't be empty."
+msgstr "Een transcriptie mag niet leeg zijn."
+
+#: content/models/details.py:12 people/templates/people/person_detail.html:19
+msgid "portrait"
+msgstr "portret"
+
+#: content/models/details.py:13
+msgid "group"
+msgstr "groep"
+
+#: content/models/details.py:14
+msgid "candid"
+msgstr "spontaan"
+
+#: content/models/details.py:15 events/models.py:54
+#: events/views/EventListView.py:14
+msgid "historical"
+msgstr "historisch"
+
+#: content/models/details.py:27
+msgid "civil record"
+msgstr "burgerlijke stand"
+
+#: content/models/details.py:28
+msgid "identity document"
+msgstr "identiteitsbewijs"
+
+#: content/models/details.py:29
+msgid "service record"
+msgstr "dienstrecord"
+
+#: content/models/details.py:30
+msgid "war record"
+msgstr "oorlogsdocument"
+
+#: content/models/details.py:31
+msgid "newspaper"
+msgstr "krant"
+
+#: content/models/details.py:32
+msgid "advertisement"
+msgstr "advertentie"
+
+#: content/models/details.py:33
+msgid "publication excerpt"
+msgstr "fragment uit een publicatie"
+
+#: content/models/details.py:34
+msgid "personal paper"
+msgstr "persoonlijk document"
+
+#: content/models/details.py:35
+msgid "research"
+msgstr "onderzoek"
+
+#: content/parts.py:62
+msgid "This item isn't a part of anything."
+msgstr "Dit stuk is geen deel van iets."
+
+#: content/parts.py:76
+#, python-format
+msgid "%(item)s is itself a part - add to its whole instead."
+msgstr "%(item)s is zelf een deel - voeg het toe aan het geheel."
+
+#: content/parts.py:78
+#, python-format
+msgid "%(item)s is already a part of this item."
+msgstr "%(item)s is al een deel van dit stuk."
+
+#: content/parts.py:80
+#, python-format
+msgid "%(item)s is already a part of %(whole)s - remove it there first."
+msgstr "%(item)s is al een deel van %(whole)s - haal het daar eerst weg."
+
+#: content/parts.py:82
+#, python-format
+msgid "%(item)s has parts of its own, so it can't become a part."
+msgstr "%(item)s heeft zelf delen, dus het kan geen deel worden."
+
+#: content/parts.py:87
+#, python-format
+msgid "“%(item)s” is now part %(number)s."
+msgstr "“%(item)s” is nu deel %(number)s."
+
+#: content/parts.py:96
+msgid "Unknown direction."
+msgstr "Onbekende richting."
+
+#: content/parts.py:98
+msgid ""
+"A variant of the whole has no place in the order - make it a part first."
+msgstr ""
+"Een variant van het geheel heeft geen plaats in de volgorde - maak er eerst "
+"een deel van."
+
+#: content/parts.py:111
+#, python-format
+msgid "Part %(old)s moved to %(new)s."
+msgstr "Deel %(old)s verplaatst naar %(new)s."
+
+#: content/parts.py:127
+#, python-format
+msgid "“%(item)s” is now a variant of the whole."
+msgstr "“%(item)s” is nu een variant van het geheel."
+
+#: content/parts.py:129
+#, python-format
+msgid "“%(item)s” is a part again."
+msgstr "“%(item)s” is weer een deel."
+
+#: content/parts.py:137
+msgid "There is no previous part to join."
+msgstr "Er is geen vorig deel om bij aan te sluiten."
+
+#: content/parts.py:142
+#, python-format
+msgid "“%(item)s” now shares number %(number)s."
+msgstr "“%(item)s” deelt nu nummer %(number)s."
+
+#: content/parts.py:150
+msgid "This part doesn't share its number."
+msgstr "Dit deel deelt zijn nummer niet."
+
+#: content/parts.py:155
+#, python-format
+msgid "“%(item)s” has its own number again."
+msgstr "“%(item)s” heeft weer een eigen nummer."
+
+#: content/parts.py:165
+#, python-format
+msgid "“%(item)s” is a separate item again."
+msgstr "“%(item)s” is weer een los stuk."
+
+#: content/portraits.py:31
+msgid "Only a photo can be a portrait."
+msgstr "Alleen een foto kan een portret zijn."
+
+#: content/portraits.py:34 content/views/upload.py:56 people/relatives.py:36
+msgid "That person wasn't found."
+msgstr "Die persoon is niet gevonden."
+
+#: content/portraits.py:45
+#, python-format
+msgid "This photo is now the portrait of %(name)s - crop it on their page."
+msgstr ""
+"Deze foto is nu het portret van %(name)s - snijd het bij op hun pagina."
+
+#: content/portraits.py:73
+msgid "Point them out with a frame first."
+msgstr "Wijs ze eerst aan met een kader."
+
+#: content/portraits.py:75
+msgid "This image's size isn't known yet."
+msgstr "De afmetingen van deze afbeelding zijn nog niet bekend."
+
+#: content/roles.py:20 content/roles.py:91
+msgid "That person isn't on this item."
+msgstr "Die persoon staat niet bij dit stuk."
+
+#: content/roles.py:23
+msgid "That role doesn't fit this item."
+msgstr "Die rol past niet bij dit stuk."
+
+#: content/roles.py:28
+msgid "Role saved."
+msgstr "Rol opgeslagen."
+
+#: content/roles.py:71
+msgid "This item's kind suggests no role - choose one per person."
+msgstr ""
+"Bij dit soort stuk hoort geen voorgestelde rol - kies er een per persoon."
+
+#: content/roles.py:78
+#, python-format
+msgid "%(count)s person is now %(role)s."
+msgid_plural "%(count)s people are now %(role)s."
+msgstr[0] "%(count)s persoon is nu %(role)s."
+msgstr[1] "%(count)s personen zijn nu %(role)s."
+
+#: content/roles.py:88
+msgid "Only a photo or a scan has places to point out."
+msgstr "Alleen een foto of scan heeft plekken om aan te wijzen."
+
+#: content/roles.py:93
+#, python-format
+msgid "%(name)s is %(role)s here - to point them out, make them depicted."
+msgstr "%(name)s is hier %(role)s - maak ze afgebeeld om ze aan te wijzen."
+
+#: content/roles.py:97
+msgid "Frame removed."
+msgstr "Kader verwijderd."
+
+#: content/roles.py:102
+msgid "Point out where they are on the photo."
+msgstr "Wijs aan waar ze op de foto staan."
+
+#: content/roles.py:106
+#, python-format
+msgid "%(name)s is pointed out."
+msgstr "%(name)s is aangewezen."
+
+#: content/templates/content/_content_card.html:56
+msgid "file not available yet"
+msgstr "bestand nog niet beschikbaar"
+
+#: content/templates/content/_content_grid.html:21
+#: content/templates/content/_content_grid.html:28 core/views.py:28
+#: dashboard/templates/dashboard/dashboard.html:172
+#: events/views/EventListView.py:15 notes/templates/note/note_overview.html:24
+#: people/views/PersonListView.py:25
+msgid "all"
+msgstr "alle"
+
+#: content/templates/content/_content_grid.html:38
+msgid "any role"
+msgstr "elke rol"
+
+#: content/templates/content/_content_grid.html:46
+#: dashboard/templates/dashboard/dashboard.html:75
+msgid "recently added"
+msgstr "onlangs toegevoegd"
+
+#: content/templates/content/_content_grid.html:47
+msgid "chronologically"
+msgstr "chronologisch"
+
+#: content/templates/content/_content_grid.html:48
+msgid "most favorited first"
+msgstr "meeste favorieten eerst"
+
+#: content/templates/content/_content_grid.html:48
+#: core/templates/favorite/heart.html:19
+msgid "favorites"
+msgstr "favorieten"
+
+#: content/templates/content/_from_pages.html:12
+msgid "on its pages"
+msgstr "op de pagina's"
+
+#: content/templates/content/_from_pages.html:15
+msgid "p."
+msgstr "p."
+
+#: content/templates/content/_from_pages.html:19
+msgid "documented by its pages"
+msgstr "bewezen door de pagina's"
+
+#: content/templates/content/_from_pages.html:22
+msgid "page"
+msgstr "pagina"
+
+#: content/templates/content/_parts_badge.html:5
+#, python-format
+msgid "%(counter)s file: the item and its parts"
+msgid_plural "%(counter)s files: the item and its parts"
+msgstr[0] "%(counter)s bestand: het stuk en zijn delen"
+msgstr[1] "%(counter)s bestanden: het stuk en zijn delen"
+
+#: content/templates/content/_parts_edit.html:25
+#: content/templates/content/_parts_edit.html:27
+msgid "variant of the whole"
+msgstr "variant van het geheel"
+
+#: content/templates/content/_parts_edit.html:25
+#: dashboard/templates/dashboard/housekeeping_confirm.html:27
+msgid "part"
+msgstr "deel"
+
+#: content/templates/content/_parts_edit.html:27
+msgid "variant - shares its number"
+msgstr "variant - deelt zijn nummer"
+
+#: content/templates/content/_parts_edit.html:30
+msgid "earlier"
+msgstr "eerder"
+
+#: content/templates/content/_parts_edit.html:31
+msgid "later"
+msgstr "later"
+
+#: content/templates/content/_parts_edit.html:33
+msgid "give it its own number"
+msgstr "geef het een eigen nummer"
+
+#: content/templates/content/_parts_edit.html:35
+msgid "same number as the previous part (variants of each other)"
+msgstr "zelfde nummer als het vorige deel (varianten van elkaar)"
+
+#: content/templates/content/_parts_edit.html:37
+msgid "make it a part again"
+msgstr "maak er weer een deel van"
+
+#: content/templates/content/_parts_edit.html:37
+msgid "variant of the whole (e.g. a colorized version)"
+msgstr "variant van het geheel (bijv. een ingekleurde versie)"
+
+#: content/templates/content/_parts_edit.html:38
+#, python-format
+msgid ""
+"Remove “%(item)s” from this item? It becomes a separate item again; nothing "
+"is deleted."
+msgstr ""
+"“%(item)s” uit dit stuk halen? Het wordt weer een los stuk; er wordt niets "
+"verwijderd."
+
+#: content/templates/content/_parts_edit.html:38
+msgid "remove from this item"
+msgstr "uit dit stuk halen"
+
+#: content/templates/content/_parts_edit.html:48
+msgid "add a part"
+msgstr "deel toevoegen"
+
+#: content/templates/content/_parts_edit.html:48
+#, python-format
+msgid "add a part to “%(whole)s”"
+msgstr "deel toevoegen aan “%(whole)s”"
+
+#: content/templates/content/_parts_edit.html:49
+msgid "search content by name"
+msgstr "zoek stukken op naam"
+
+#: content/templates/content/_parts_edit.html:59
+msgid "make this item a part of…"
+msgstr "maak dit stuk een deel van…"
+
+#: content/templates/content/_parts_edit.html:60
+msgid "search for the whole"
+msgstr "zoek het geheel"
+
+#: content/templates/content/_person_role_form.html:11
+msgid "role"
+msgstr "rol"
+
+#: content/templates/content/_person_role_form.html:11
+msgid "How they are on this item"
+msgstr "Hoe ze bij dit stuk horen"
+
+#: content/templates/content/_person_role_form.html:12
+msgid "no role"
+msgstr "geen rol"
+
+#: content/templates/content/_person_role_form.html:13
+#: people/templates/person/_relative_picker.html:21
+msgid "suggested"
+msgstr "voorgesteld"
+
+#: content/templates/content/_transcript_badge.html:9
+#, python-format
+msgid "transcribed on %(counter)s page"
+msgid_plural "transcribed on %(counter)s pages"
+msgstr[0] "getranscribeerd op %(counter)s pagina"
+msgstr[1] "getranscribeerd op %(counter)s pagina's"
+
+#: content/templates/content/_transcript_badge.html:10
+#: content/templates/content/content_detail.html:95
+#: content/templates/content/content_detail.html:101
+#: content/templates/content/content_detail.html:111
+msgid "transcript"
+msgstr "transcriptie"
+
+#: content/templates/content/_transcript_badge.html:10
+#: content/templates/content/children/transcripts.html:12
+#: content/templates/content/content_detail.html:130
+#: content/templates/content/transcribe.html:28
+#: content/templates/content/transcribe.html:61
+#: dashboard/templates/dashboard/loose_end.html:36
+msgid "incomplete"
+msgstr "onvolledig"
+
+#: content/templates/content/_transcript_badge.html:10
+msgid "has a transcript"
+msgstr "heeft een transcriptie"
+
+#: content/templates/content/_upload_for.html:16
+#: content/templates/content/upload.html:23
+#: dashboard/templates/dashboard/dashboard.html:147
+msgid "Sending…"
+msgstr "Versturen…"
+
+#: content/templates/content/_upload_for.html:16
+msgid "Open"
+msgstr "Openen"
+
+#: content/templates/content/_upload_for.html:17
+#: content/templates/content/upload.html:24
+#: dashboard/templates/dashboard/dashboard.html:148
+msgid "Already in the archive:"
+msgstr "Al in het archief:"
+
+#: content/templates/content/_upload_for.html:18
+msgid "Already in the archive - linked:"
+msgstr "Al in het archief - gekoppeld:"
+
+#: content/templates/content/_upload_for.html:19
+#: dashboard/templates/dashboard/dashboard.html:149
+msgid "Already in the archive (deleted)."
+msgstr "Al in het archief (verwijderd)."
+
+#: content/templates/content/_upload_for.html:20
+#: content/templates/content/upload.html:26
+#: dashboard/templates/dashboard/dashboard.html:150
+msgid "Too large for the server."
+msgstr "Te groot voor de server."
+
+#: content/templates/content/_upload_for.html:20
+#: content/templates/content/upload.html:26
+#: dashboard/templates/dashboard/dashboard.html:150
+msgid "Not added"
+msgstr "Niet toegevoegd"
+
+#: content/templates/content/_upload_for.html:22
+#, python-format
+msgid "Add content for %(name)s: drop files here, or"
+msgstr "Stukken toevoegen voor %(name)s: sleep bestanden hierheen, of"
+
+#: content/templates/content/_upload_for.html:23
+#: content/templates/content/upload.html:30
+#: dashboard/templates/dashboard/dashboard.html:152
+msgid "choose files"
+msgstr "kies bestanden"
+
+#: content/templates/content/_upload_for.html:27
+#, python-format
+msgid "Added as drafts in your inbox, linked to %(name)s."
+msgstr "Als concept in je inbox gezet, gekoppeld aan %(name)s."
+
+#: content/templates/content/_upload_for.html:28
+msgid "Open one above to describe it, or"
+msgstr "Open er hierboven een om te beschrijven, of"
+
+#: content/templates/content/_upload_for.html:28
+msgid "open the inbox"
+msgstr "open de inbox"
+
+#: content/templates/content/_who_is_where.html:21
+msgid "who is where"
+msgstr "wie is wie"
+
+#: content/templates/content/_who_is_where.html:22
+msgid "the photo only"
+msgstr "alleen de foto"
+
+#: content/templates/content/_who_is_where.html:30
+#: people/templates/people/_person_row.html:93
+msgid "Pointed out on this photo"
+msgstr "Aangewezen op deze foto"
+
+#: content/templates/content/_who_is_where.html:34
+#, python-format
+msgid "Drag a frame around %(name)s - or click a spot. Escape cancels."
+msgstr ""
+"Trek een kader rond %(name)s - of klik een plek aan. Escape annuleert."
+
+#: content/templates/content/_who_is_where.html:34
+msgid "redraw"
+msgstr "opnieuw tekenen"
+
+#: content/templates/content/_who_is_where.html:34
+msgid "point out"
+msgstr "aanwijzen"
+
+#: content/templates/content/_who_is_where.html:40
+#, python-format
+msgid "%(name)s has no portrait yet - use this face"
+msgstr "%(name)s heeft nog geen portret - gebruik dit gezicht"
+
+#: content/templates/content/_who_is_where.html:40
+msgid "use as portrait"
+msgstr "als portret gebruiken"
+
+#: content/templates/content/_who_is_where.html:46
+#, python-format
+msgid "remove %(name)s's frame"
+msgstr "kader van %(name)s verwijderen"
+
+#: content/templates/content/_who_is_where.html:46 core/forms.py:50
+#: events/forms.py:113 events/forms.py:122 events/forms.py:133
+#: people/forms.py:62 places/forms.py:52
+msgid "remove"
+msgstr "verwijderen"
+
+#: content/templates/content/blocks/date.html:9
+msgid "published"
+msgstr "gepubliceerd"
+
+#: content/templates/content/blocks/date.html:9
+#: events/templates/event/blocks/date.html:6
+#: notes/templates/note/blocks/date.html:7
+msgid "date"
+msgstr "datum"
+
+#: content/templates/content/blocks/description.html:16
+#: core/templates/tag/blocks/description.html:8
+#: events/templates/event/blocks/description.html:12
+#: places/templates/place/blocks/description.html:9
+msgid "No description yet."
+msgstr "Nog geen beschrijving."
+
+#: content/templates/content/blocks/thumbnail.html:7
+#: content/templates/content/content_detail.html:246
+msgid "thumbnail"
+msgstr "miniatuur"
+
+#: content/templates/content/blocks/thumbnail.html:8
+#: content/templates/content/forms/thumbnail.html:31
+msgid "automatic"
+msgstr "automatisch"
+
+#: content/templates/content/content_detail.html:32
+msgid "the file for this item is not available yet"
+msgstr "het bestand van dit stuk is nog niet beschikbaar"
+
+#: content/templates/content/content_detail.html:39
+msgid "view larger"
+msgstr "groter bekijken"
+
+#: content/templates/content/content_detail.html:42
+#: content/templates/content/transcribe.html:87
+msgid "close"
+msgstr "sluiten"
+
+#: content/templates/content/content_detail.html:42
+#: content/templates/content/content_detail.html:271
+msgid "open original"
+msgstr "origineel openen"
+
+#: content/templates/content/content_detail.html:43
+#: content/templates/content/content_detail.html:54
+#: content/templates/content/content_detail.html:193
+#: events/templates/event/_item.html:26
+msgid "previous"
+msgstr "vorige"
+
+#: content/templates/content/content_detail.html:43
+#: content/templates/content/content_detail.html:60
+#: content/templates/content/content_detail.html:194
+#: events/templates/event/_item.html:28
+msgid "next"
+msgstr "volgende"
+
+#: content/templates/content/content_detail.html:44
+#: content/templates/content/forms/thumbnail.html:21
+#: content/templates/content/transcribe.html:68
+#: people/templates/person/forms/portrait.html:37
+msgid "zoom in"
+msgstr "inzoomen"
+
+#: content/templates/content/content_detail.html:44
+#: content/templates/content/forms/thumbnail.html:22
+#: content/templates/content/transcribe.html:69
+#: people/templates/person/forms/portrait.html:38
+msgid "zoom out"
+msgstr "uitzoomen"
+
+#: content/templates/content/content_detail.html:45
+#: content/templates/content/forms/thumbnail.html:23
+msgid "whole image"
+msgstr "hele afbeelding"
+
+#: content/templates/content/content_detail.html:45
+#: content/templates/content/forms/thumbnail.html:24
+#: people/templates/person/forms/portrait.html:40
+msgid "turn a quarter"
+msgstr "kwartslag draaien"
+
+#: content/templates/content/content_detail.html:58
+msgid "open page"
+msgstr "pagina openen"
+
+#: content/templates/content/content_detail.html:74
+msgid "download"
+msgstr "downloaden"
+
+#: content/templates/content/content_detail.html:103
+#: content/templates/content/content_detail.html:114
+#: content/templates/content/transcribe.html:15
+msgid "transcribe"
+msgstr "transcriberen"
+
+#: content/templates/content/content_detail.html:134
+#: events/templates/event/_event.html:45
+#: people/templates/person/fields/biography.html:9
+msgid "read more"
+msgstr "lees meer"
+
+#: content/templates/content/content_detail.html:134
+#: people/templates/person/fields/biography.html:10
+msgid "read less"
+msgstr "lees minder"
+
+#: content/templates/content/content_detail.html:137
+msgid "No transcript yet."
+msgstr "Nog geen transcriptie."
+
+#: content/templates/content/content_detail.html:158
+#: core/templates/tag/tag.html:11 core/templates/tag/tag_detail.html:27
+#: core/templates/tag/tag_overview.html:23
+#: notes/templates/note/note_detail.html:21
+#: people/templates/people/_person_row.html:102
+#: people/templates/people/person_detail.html:48
+msgid "not published"
+msgstr "niet gepubliceerd"
+
+#: content/templates/content/content_detail.html:164
+#: dashboard/templates/dashboard/housekeeping/mentions.html:14
+msgid "deleted"
+msgstr "verwijderd"
+
+#: content/templates/content/content_detail.html:164
+msgid ""
+"Hidden from everyone; staff can see it. Purge it in housekeeping, or restore"
+" its status."
+msgstr ""
+"Voor iedereen verborgen; beheerders zien het. Verwijder het definitief bij "
+"onderhoud, of herstel de status."
+
+#: content/templates/content/content_detail.html:168
+msgid "A draft in your inbox - publish it when it's described."
+msgstr "Een concept in je inbox - publiceer het als het beschreven is."
+
+#: content/templates/content/content_detail.html:169
+#: content/templates/content/inbox.html:12
+#: content/templates/content/inbox.html:19
+#: content/templates/content/upload.html:19 templates/navigation.html:46
+msgid "inbox"
+msgstr "inbox"
+
+#: content/templates/content/content_detail.html:170
+msgid "next in inbox"
+msgstr "volgende in inbox"
+
+#: content/templates/content/content_detail.html:190
+#, python-format
+msgid "Part %(index)s of %(count)s"
+msgstr "Deel %(index)s van %(count)s"
+
+#: content/templates/content/content_detail.html:190
+#: content/templates/content/inbox.html:38
+msgid "part of"
+msgstr "deel van"
+
+#: content/templates/content/content_detail.html:214
+#: content/templates/content/content_detail.html:222
+#: content/templatetags/content_tags.py:270
+msgid "author"
+msgstr "auteur"
+
+#: content/templates/content/content_detail.html:216
+msgid "link an author"
+msgstr "auteur koppelen"
+
+#: content/templates/content/content_detail.html:217
+#: content/templates/content/content_detail.html:294
+#: events/templates/event/event_detail.html:37
+#: notes/templates/note/_links.html:8
+#: people/templates/people/person_create.html:8
+#: people/templates/people/person_create.html:15
+#: people/templates/person/_relative_picker.html:32
+msgid "new person"
+msgstr "nieuwe persoon"
+
+#: content/templates/content/content_detail.html:231 core/search.py:53
+#: dashboard/templates/dashboard/dashboard.html:195
+#: events/templates/event/event_detail.html:46
+#: notes/templates/note/_links.html:15
+#: places/templates/place/blocks/parent.html:9
+#: places/templates/place/place_overview.html:11
+#: places/templates/place/place_overview.html:17 templates/navigation.html:36
+msgid "places"
+msgstr "plaatsen"
+
+#: content/templates/content/content_detail.html:235
+#: events/templates/event/event_detail.html:49
+#: notes/templates/note/_links.html:14
+msgid "add a place"
+msgstr "plaats toevoegen"
+
+#: content/templates/content/content_detail.html:252
+#: content/templates/content/inbox.html:39
+msgid "added"
+msgstr "toegevoegd"
+
+#: content/templates/content/content_detail.html:264
+#: notes/templates/note/_links.html:16
+#: people/templates/person/functions/get_tags.html:15
+msgid "add a tag"
+msgstr "tag toevoegen"
+
+#: content/templates/content/content_detail.html:279
+msgid "parts"
+msgstr "delen"
+
+#: content/templates/content/content_detail.html:287
+#: content/templates/content/inbox.html:55 core/search.py:49
+#: core/templates/tag/tag_detail.html:45
+#: dashboard/templates/dashboard/dashboard.html:192
+#: dashboard/templates/dashboard/loose_end.html:25
+#: events/templates/event/event_detail.html:32
+#: notes/templates/note/_links.html:9
+#: people/templates/people/person_create.html:14
+#: people/templates/people/person_list.html:3
+#: people/templates/people/person_list.html:19 templates/navigation.html:27
+msgid "people"
+msgstr "personen"
+
+#: content/templates/content/content_detail.html:293
+#: events/templates/event/event_detail.html:37
+#: notes/templates/note/_links.html:8
+msgid "add a person"
+msgstr "persoon toevoegen"
+
+#: content/templates/content/content_detail.html:304
+msgid "use as portrait of"
+msgstr "als portret gebruiken van"
+
+#: content/templates/content/content_detail.html:313
+#: content/templates/content/inbox.html:62 core/search.py:51
+#: dashboard/templates/dashboard/dashboard.html:194
+#: events/templates/event/event_calendar.html:16
+#: events/templates/event/event_detail.html:17
+#: events/templates/event/event_overview.html:9
+#: events/templates/event/event_overview.html:15
+#: notes/templates/note/_links.html:13
+#: people/templates/people/person_detail.html:118
+#: places/templates/place/place_detail.html:58 templates/navigation.html:33
+msgid "events"
+msgstr "gebeurtenissen"
+
+#: content/templates/content/content_detail.html:319
+#: notes/templates/note/_links.html:12
+#: people/templates/person/functions/get_visible_events.html:34
+msgid "add an event"
+msgstr "gebeurtenis toevoegen"
+
+#: content/templates/content/content_detail.html:320
+#: events/templates/event/event_overview.html:21
+#: notes/templates/note/_links.html:12
+#: people/templates/person/functions/get_visible_events.html:34
+msgid "new event"
+msgstr "nieuwe gebeurtenis"
+
+#: content/templates/content/content_list.html:14
+#: core/templates/tag/_count.html:6 core/templates/tag/tag_detail.html:31
+#: events/templates/event/_event.html:49 places/templates/place/_count.html:5
+#: places/templates/place/place_detail.html:31
+#, python-format
+msgid "%(counter)s item"
+msgid_plural "%(counter)s items"
+msgstr[0] "%(counter)s stuk"
+msgstr[1] "%(counter)s stukken"
+
+#: content/templates/content/content_list.html:19
+#: core/templates/search/_results.html:27
+msgid "nothing matches"
+msgstr "niets gevonden"
+
+#: content/templates/content/content_list.html:24
+msgid "nothing to show yet"
+msgstr "nog niets te zien"
+
+#: content/templates/content/content_list.html:25
+msgid ""
+"Most of this archive is visible to signed-in family and community members. "
+"Sign in to see it."
+msgstr ""
+"Het meeste in dit archief is zichtbaar voor ingelogde familie en leden. Log "
+"in om het te zien."
+
+#: content/templates/content/content_list.html:26
+#: dashboard/templates/dashboard/dashboard.html:26
+#: people/templates/person/person_list.html:56 templates/header.html:100
+msgid "sign in"
+msgstr "inloggen"
+
+#: content/templates/content/content_list.html:31
+msgid "no content yet"
+msgstr "nog geen stukken"
+
+#: content/templates/content/content_list_page.html:3
+#: content/templates/content/content_list_page.html:18
+#: templates/navigation.html:28
+msgid "photos & documents"
+msgstr "foto's & documenten"
+
+#: content/templates/content/content_list_page.html:19
+#: content/templates/content/inbox.html:22
+#: content/templates/content/upload.html:9
+#: content/templates/content/upload.html:16
+#: events/templates/event/event_detail.html:105
+#: notes/templates/note/_links.html:10 templates/navigation.html:44
+msgid "add content"
+msgstr "stukken toevoegen"
+
+#: content/templates/content/content_list_page.html:24
+#: content/templates/content/content_list_page.html:25
+msgid "search by name or description"
+msgstr "zoek op naam of beschrijving"
+
+#: content/templates/content/content_picker.html:23
+#, python-format
+msgid "%(counter)s part"
+msgid_plural "%(counter)s parts"
+msgstr[0] "%(counter)s deel"
+msgstr[1] "%(counter)s delen"
+
+#: content/templates/content/content_picker.html:28
+msgid "more results - type more to narrow down"
+msgstr "meer resultaten - typ meer om te verfijnen"
+
+#: content/templates/content/content_picker.html:30
+msgid "nothing found"
+msgstr "niets gevonden"
+
+#: content/templates/content/favorites.html:8
+#: content/templates/content/favorites.html:19
+#: dashboard/templates/dashboard/dashboard.html:91
+#: templates/navigation.html:38
+msgid "your favorites"
+msgstr "je favorieten"
+
+#: content/templates/content/favorites.html:20
+#, python-format
+msgid "%(counter)s item, the most recently favorited first."
+msgid_plural "%(counter)s items, the most recently favorited first."
+msgstr[0] "%(counter)s stuk, de laatste favoriet eerst."
+msgstr[1] "%(counter)s stukken, de laatste favoriet eerst."
+
+#: content/templates/content/favorites.html:26
+msgid "Nothing yet - the heart on an item's page adds it here."
+msgstr "Nog niets - het hartje op de pagina van een stuk zet het hier."
+
+#: content/templates/content/forms/date.html:22
+#: content/templates/content/forms/thumbnail.html:30
+#: core/templates/comment/comment.html:57
+#: core/templates/preferences/preferences.html:54
+#: people/templates/person/forms/_life_event.html:25
+#: people/templates/person/forms/portrait.html:48
+msgid "save"
+msgstr "opslaan"
+
+#: content/templates/content/forms/date.html:23
+#: content/templates/content/forms/thumbnail.html:32
+#: dashboard/templates/dashboard/housekeeping_confirm.html:49
+#: events/templates/event/forms/new.html:66
+#: people/templates/person/forms/_life_event.html:27
+#: people/templates/person/forms/new.html:12
+#: people/templates/person/forms/portrait.html:50
+msgid "cancel"
+msgstr "annuleren"
+
+#: content/templates/content/forms/date.html:24
+#: people/templates/person/forms/_life_event.html:28
+msgid "Leave unknown parts empty"
+msgstr "Laat onbekende delen leeg"
+
+#: content/templates/content/forms/thumbnail.html:17
+msgid "phone"
+msgstr "telefoon"
+
+#: content/templates/content/forms/thumbnail.html:18
+msgid "square"
+msgstr "vierkant"
+
+#: content/templates/content/forms/thumbnail.html:33
+msgid ""
+"Drag or scroll to move, pinch or Ctrl + scroll to zoom. The frame is the "
+"card on a computer; keep what matters inside the phone band and the square "
+"too."
+msgstr ""
+"Sleep of scroll om te verplaatsen, knijp of Ctrl + scroll om te zoomen. Het "
+"kader is de kaart op een computer; houd wat ertoe doet ook binnen de "
+"telefoonband en het vierkant."
+
+#: content/templates/content/inbox.html:20
+#, python-format
+msgid "%(counter)s draft, visible only to you until published."
+msgid_plural "%(counter)s drafts, visible only to you until published."
+msgstr[0] ""
+"%(counter)s concept, alleen voor jou zichtbaar tot het gepubliceerd is."
+msgstr[1] ""
+"%(counter)s concepten, alleen voor jou zichtbaar tot ze gepubliceerd zijn."
+
+#: content/templates/content/inbox.html:31
+msgid "select"
+msgstr "selecteren"
+
+#: content/templates/content/inbox.html:40
+msgid "The date stored in the file - for a scan, when the copy was made."
+msgstr "De datum in het bestand - bij een scan: wanneer de kopie gemaakt is."
+
+#: content/templates/content/inbox.html:40
+msgid "file date"
+msgstr "bestandsdatum"
+
+#: content/templates/content/inbox.html:47
+msgid "make these one item"
+msgstr "maak hier één stuk van"
+
+#: content/templates/content/inbox.html:48
+msgid ""
+"The first selected becomes the whole, the others its pages, in this order."
+msgstr ""
+"De eerste die je selecteert wordt het geheel, de andere de pagina's, in deze"
+" volgorde."
+
+#: content/templates/content/inbox.html:70
+msgid "your inbox is empty"
+msgstr "je inbox is leeg"
+
+#: content/templates/content/inbox.html:76
+msgid "other people's drafts"
+msgstr "concepten van anderen"
+
+#: content/templates/content/inbox.html:80
+#, python-format
+msgid "%(counter)s draft"
+msgid_plural "%(counter)s drafts"
+msgstr[0] "%(counter)s concept"
+msgstr[1] "%(counter)s concepten"
+
+#: content/templates/content/inbox.html:80
+#, python-format
+msgid "the oldest %(when)s ago"
+msgstr "het oudste %(when)s geleden"
+
+#: content/templates/content/transcribe.html:26
+msgid "transcripts"
+msgstr "transcripties"
+
+#: content/templates/content/transcribe.html:30
+msgid "new"
+msgstr "nieuw"
+
+#: content/templates/content/transcribe.html:33
+msgid "show on the left"
+msgstr "links tonen"
+
+#: content/templates/content/transcribe.html:34
+msgid "image"
+msgstr "afbeelding"
+
+#: content/templates/content/transcribe.html:35
+msgid "original text"
+msgstr "oorspronkelijke tekst"
+
+#: content/templates/content/transcribe.html:36
+msgid "Delpher text"
+msgstr "Delpher-tekst"
+
+#: content/templates/content/transcribe.html:40
+#: core/templates/comment/comment_overview.html:39
+msgid "pages"
+msgstr "pagina's"
+
+#: content/templates/content/transcribe.html:41
+msgid "previous page"
+msgstr "vorige pagina"
+
+#: content/templates/content/transcribe.html:42
+#, python-format
+msgid "page %(number)s of %(count)s"
+msgstr "pagina %(number)s van %(count)s"
+
+#: content/templates/content/transcribe.html:43
+msgid "next page"
+msgstr "volgende pagina"
+
+#: content/templates/content/transcribe.html:52
+msgid "Delpher - the article's text"
+msgstr "Delpher - de tekst van het artikel"
+
+#: content/templates/content/transcribe.html:70
+msgid "fit"
+msgstr "passend"
+
+#: content/templates/content/transcribe.html:71
+msgid "rotate"
+msgstr "draaien"
+
+#: content/templates/content/transcribe.html:76
+msgid "This item has no image to show here."
+msgstr "Dit stuk heeft geen afbeelding om hier te tonen."
+
+#: content/templates/content/transcribe.html:76
+msgid "open the original"
+msgstr "het origineel openen"
+
+#: content/templates/content/transcribe.html:89
+msgid "saving…"
+msgstr "opslaan…"
+
+#: content/templates/content/transcribe.html:89
+msgid "saved"
+msgstr "opgeslagen"
+
+#: content/templates/content/transcribe.html:90
+msgid "not saved yet"
+msgstr "nog niet opgeslagen"
+
+#: content/templates/content/transcribe.html:90
+msgid "not saved"
+msgstr "niet opgeslagen"
+
+#: content/templates/content/transcribe.html:105
+msgid "Type what is written - a ? where you can’t read it."
+msgstr "Typ wat er staat - een ? waar je het niet kunt lezen."
+
+#: content/templates/content/transcribe.html:107
+msgid ""
+"Saves itself · Ctrl+S saves now · Alt + arrows / plus / minus moves the "
+"image"
+msgstr ""
+"Slaat zichzelf op · Ctrl+S slaat nu op · Alt + pijlen / plus / min "
+"verplaatst de afbeelding"
+
+#: content/templates/content/transcribe.html:122
+msgid "Replace your text with this?"
+msgstr "Je tekst hierdoor vervangen?"
+
+#: content/templates/content/transcribe.html:124
+msgid "Fetching…"
+msgstr "Ophalen…"
+
+#: content/templates/content/upload.html:17
+msgid ""
+"Each file becomes a draft in your inbox, visible only to you until you "
+"publish it. Describe it there - pages of one letter or album can be made one"
+" item."
+msgstr ""
+"Elk bestand wordt een concept in je inbox, alleen voor jou zichtbaar tot je "
+"het publiceert. Beschrijf het daar - pagina's van één brief of album kun je "
+"één stuk maken."
+
+#: content/templates/content/upload.html:23
+msgid "Added - open"
+msgstr "Toegevoegd - openen"
+
+#: content/templates/content/upload.html:25
+msgid "Already in the archive (deleted - it can be restored in the admin)."
+msgstr ""
+"Al in het archief (verwijderd - het kan in de beheeromgeving worden "
+"hersteld)."
+
+#: content/templates/content/upload.html:28
+#: dashboard/templates/dashboard/dashboard.html:151
+msgid "Drop files here, or"
+msgstr "Sleep bestanden hierheen, of"
+
+#: content/templates/content/upload.html:35
+msgid "to your inbox"
+msgstr "naar je inbox"
+
+#: content/templatetags/content_tags.py:273
+#, python-format
+msgid "via %(events)s"
+msgstr "via %(events)s"
+
+#: content/transcription/__init__.py:49
+#, python-format
+msgid "%(source)s found no text."
+msgstr "%(source)s vond geen tekst."
+
+#: content/transcription/__init__.py:52
+#, python-format
+msgid "%(source)s isn't possible here: %(reason)s."
+msgstr "%(source)s kan hier niet: %(reason)s."
+
+#: content/transcription/__init__.py:53
+msgid "No source could provide a text."
+msgstr "Geen enkele bron kon een tekst leveren."
+
+#: content/transcription/delpher.py:77
+#, python-format
+msgid "Delpher didn't answer (%(error)s)."
+msgstr "Delpher antwoordde niet (%(error)s)."
+
+#: content/transcription/delpher.py:81
+msgid "Delpher's answer couldn't be read."
+msgstr "Het antwoord van Delpher kon niet worden gelezen."
+
+#: content/transcription/delpher.py:113
+msgid "Fetch text from Delpher"
+msgstr "Tekst ophalen bij Delpher"
+
+#: content/transcription/delpher.py:114
+msgid "Delpher"
+msgstr "Delpher"
+
+#: content/transcription/delpher.py:116
+msgid ""
+"The article's own text from the KB - only the article number from the source"
+" link is sent."
+msgstr ""
+"De eigen tekst van het artikel bij de KB - alleen het artikelnummer uit de "
+"bronlink wordt verstuurd."
+
+#: content/transcription/delpher.py:120
+msgid "no Delpher article link in the source"
+msgstr "geen Delpher-artikellink in de bron"
+
+#: content/transcription/delpher.py:132
+msgid ""
+"From Delpher - check it: their OCR may contain errors, and the end can "
+"belong to the next piece."
+msgstr ""
+"Van Delpher - controleer het: hun OCR kan fouten bevatten, en het eind kan "
+"bij het volgende stuk horen."
+
+#: content/transcription/delpher.py:134
+msgid ""
+"From Delpher - this article holds more than your clipping probably shows: "
+"remove what isn't yours, and check the rest."
+msgstr ""
+"Van Delpher - dit artikel bevat waarschijnlijk meer dan je knipsel laat "
+"zien: haal weg wat niet van jou is, en controleer de rest."
+
+#: content/transcription/delpher.py:136
+#, python-format
+msgid ""
+"From Delpher: %(n)s of %(total)s pieces of the article (those with your "
+"search terms) - check it."
+msgstr ""
+"Van Delpher: %(n)s van %(total)s stukken van het artikel (die met je "
+"zoektermen) - controleer het."
+
+#: content/transcription/delpher.py:159
+msgid ""
+"From Delpher: the part of the article that matches the image (found by "
+"comparing it with OCR of the image) - check the beginning and end."
+msgstr ""
+"Van Delpher: het deel van het artikel dat bij de afbeelding past (gevonden "
+"door het te vergelijken met OCR van de afbeelding) - controleer begin en "
+"eind."
+
+#: content/transcription/tesseract.py:46
+msgid ""
+"The language data for this text isn't installed (see "
+"documentation/developer/installation.md)."
+msgstr ""
+"De taalgegevens voor deze tekst zijn niet geïnstalleerd (zie "
+"documentation/developer/installation.md)."
+
+#: content/transcription/tesseract.py:66
+msgid "The image couldn't be opened."
+msgstr "De afbeelding kon niet worden geopend."
+
+#: content/transcription/tesseract.py:93
+msgid "Reading the image took too long."
+msgstr "Het lezen van de afbeelding duurde te lang."
+
+#: content/transcription/tesseract.py:95
+#, python-format
+msgid "Tesseract couldn't read the image (%(error)s)."
+msgstr "Tesseract kon de afbeelding niet lezen (%(error)s)."
+
+#: content/transcription/tesseract.py:101
+msgid "Read the image with OCR"
+msgstr "De afbeelding lezen met OCR"
+
+#: content/transcription/tesseract.py:102
+msgid "OCR"
+msgstr "OCR"
+
+#: content/transcription/tesseract.py:104
+msgid "Tesseract, on this server - the image doesn't leave it."
+msgstr "Tesseract, op deze server - de afbeelding gaat de server niet uit."
+
+#: content/transcription/tesseract.py:109
+msgid "no image to read"
+msgstr "geen afbeelding om te lezen"
+
+#: content/transcription/tesseract.py:114
+msgid "not installed on this server"
+msgstr "niet geïnstalleerd op deze server"
+
+#: content/transcription/tesseract.py:123
+msgid ""
+"Read by OCR (Tesseract) - check it carefully: it misreads old print and "
+"handwriting."
+msgstr ""
+"Gelezen met OCR (Tesseract) - controleer het goed: oud drukwerk en "
+"handschrift leest het vaak verkeerd."
+
+#: content/views/transcribe_guess.py:26
+msgid "Sign in to do this."
+msgstr "Log in om dit te doen."
+
+#: content/views/transcribe_guess.py:29
+msgid "Not found."
+msgstr "Niet gevonden."
+
+#: content/views/transcribe_guess.py:32
+msgid "You may not transcribe."
+msgstr "Je mag niet transcriberen."
+
+#: content/views/transcribe_guess.py:36
+msgid "Choose where the text should come from."
+msgstr "Kies waar de tekst vandaan moet komen."
+
+#: content/views/upload.py:47
+msgid "You may not add content."
+msgstr "Je mag geen stukken toevoegen."
+
+#: content/views/upload.py:50
+msgid "No file sent."
+msgstr "Geen bestand verstuurd."
+
+#: content/views/upload.py:185
+msgid "Choose at least two to make one item."
+msgstr "Kies er minstens twee om er één stuk van te maken."
+
+#: content/views/upload.py:194
+#, python-format
+msgid "“%(whole)s” now has %(count)s parts."
+msgstr "“%(whole)s” heeft nu %(count)s delen."
+
+#: core/forms.py:30
+msgid "There's already a tag with this name here."
+msgstr "Er is hier al een tag met deze naam."
+
+#: core/forms.py:47
+msgid "under"
+msgstr "valt onder"
+
+#: core/forms.py:49
+msgid "search a tag"
+msgstr "zoek een tag"
+
+#: core/forms.py:50
+msgid "nothing - a tag of its own"
+msgstr "niets - een losse tag"
+
+#: core/forms.py:50
+msgid "+ new tag"
+msgstr "+ nieuwe tag"
+
+#: core/forms.py:78 core/forms.py:81
+msgid "The Loose end tag stays a tag of its own."
+msgstr "De tag 'Los eindje' blijft een losse tag."
+
+#: core/forms.py:84
+msgid "There's already a tag with this name there."
+msgstr "Daar is al een tag met deze naam."
+
+#: core/forms.py:103
+msgid "You may not add tags - choose an existing one."
+msgstr "Je mag geen tags toevoegen - kies een bestaande."
+
+#: core/forms.py:163
+msgid ""
+"Delete this? It will be hidden from everyone - it can be recovered in the "
+"admin."
+msgstr ""
+"Dit verwijderen? Het wordt voor iedereen verborgen - het kan in de "
+"beheeromgeving worden hersteld."
+
+#: core/forms.py:164
+msgid "Revoke this? Only staff will see it until it's restored."
+msgstr "Dit intrekken? Alleen beheerders zien het tot het hersteld is."
+
+#: core/forms.py:172
+msgid "status"
+msgstr "status"
+
+#: core/forms.py:181
+msgid "revoke"
+msgstr "intrekken"
+
+#: core/forms.py:181 core/forms.py:187 core/templates/comment/comment.html:61
+msgid "delete"
+msgstr "verwijderen"
+
+#: core/forms.py:183
+msgid "publish"
+msgstr "publiceren"
+
+#: core/forms.py:185
+msgid "back to draft"
+msgstr "terug naar concept"
+
+#: core/forms.py:187
+msgid "republish"
+msgstr "opnieuw publiceren"
+
+#: core/forms.py:194
+msgid "That isn't possible for you from here."
+msgstr "Dat kan voor jou hier niet."
+
+#: core/forms.py:201
+msgid "Say why it's revoked."
+msgstr "Zeg waarom het wordt ingetrokken."
+
+#: core/forms.py:211
+msgid "Revocation reason"
+msgstr "Reden van intrekken"
+
+#: core/forms.py:236
+#, python-format
+msgid ""
+"It's mentioned in %(n)s text - that link will lead nowhere for most readers."
+msgid_plural ""
+"It's mentioned in %(n)s texts - those links will lead nowhere for most "
+"readers."
+msgstr[0] ""
+"Het wordt genoemd in %(n)s tekst - voor de meeste lezers leidt die link "
+"nergens meer heen."
+msgstr[1] ""
+"Het wordt genoemd in %(n)s teksten - voor de meeste lezers leiden die links "
+"nergens meer heen."
+
+#: core/forms.py:243
+#, python-format
+msgid "“%(item)s” deleted - it can be recovered in the admin."
+msgstr "“%(item)s” verwijderd - het kan in de beheeromgeving worden hersteld."
+
+#: core/forms.py:244
+#, python-format
+msgid "“%(item)s” revoked - only staff see it now."
+msgstr "“%(item)s” ingetrokken - alleen beheerders zien het nu."
+
+#: core/forms.py:245
+#, python-format
+msgid "“%(item)s” published."
+msgstr "“%(item)s” gepubliceerd."
+
+#: core/forms.py:246
+#, python-format
+msgid "“%(item)s” is a draft again."
+msgstr "“%(item)s” is weer een concept."
+
+#: core/forms.py:254
+#, python-format
+msgid ""
+"It's mentioned in %(n)s text: remove the link there, or see Housekeeping → "
+"mentions that lead nowhere."
+msgid_plural ""
+"It's mentioned in %(n)s texts: remove the links there, or see Housekeeping →"
+" mentions that lead nowhere."
+msgstr[0] ""
+"Het wordt genoemd in %(n)s tekst: haal de link daar weg, of zie Onderhoud → "
+"vermeldingen die nergens heen leiden."
+msgstr[1] ""
+"Het wordt genoemd in %(n)s teksten: haal de links daar weg, of zie Onderhoud"
+" → vermeldingen die nergens heen leiden."
+
+#: core/forms.py:270
+msgid "superstitious"
+msgstr "bijgelovig"
+
+#: core/forms.py:270 people/forms.py:260 people/forms.py:292
+#: people/models/Person.py:43 people/views/PersonListView.py:24
+msgid "family"
+msgstr "familie"
+
+#: core/forms.py:272
+msgid "Empty: the site's language (English)."
+msgstr "Leeg: de taal van de site (Engels)."
+
+#: core/forms.py:273
+msgid ""
+"Show the star sign of people whose exact birth date is known, on their page."
+msgstr ""
+"Toon het sterrenbeeld van mensen van wie de exacte geboortedatum bekend is, "
+"op hun pagina."
+
+#: core/forms.py:274
+msgid ""
+"They see what you mark visible to 'family'. It works one way: adding someone"
+" doesn't make you their family."
+msgstr ""
+"Zij zien wat jij zichtbaar maakt voor 'familie'. Het werkt één kant op: "
+"iemand toevoegen maakt jou niet hun familie."
+
+#: core/forms.py:290
+msgid "site default"
+msgstr "standaard van de site"
+
+#: core/models.py:108
+msgid "A comment can't be more visible than what it's on."
+msgstr "Een opmerking kan niet zichtbaarder zijn dan waar ze bij hoort."
+
+#: core/models.py:179
+msgid "Only the author can change this comment."
+msgstr "Alleen de schrijver kan deze opmerking wijzigen."
+
+#: core/models.py:186
+msgid "Comment saved."
+msgstr "Opmerking opgeslagen."
+
+#: core/models.py:194
+msgid "Comment deleted."
+msgstr "Opmerking verwijderd."
+
+#: core/models.py:202
+msgid "Only the author or staff can change who sees this comment."
+msgstr ""
+"Alleen de schrijver of een beheerder kan wijzigen wie deze opmerking ziet."
+
+#: core/models.py:209
+#, python-format
+msgid "Visible to: %(level)s."
+msgstr "Zichtbaar voor: %(level)s."
+
+#: core/models.py:216
+msgid "Only staff can hide comments."
+msgstr "Alleen beheerders kunnen opmerkingen verbergen."
+
+#: core/models.py:219
+msgid "Comment hidden."
+msgstr "Opmerking verborgen."
+
+#: core/models.py:219
+msgid "Comment visible again."
+msgstr "Opmerking weer zichtbaar."
+
+#: core/models.py:226
+msgid "A comment can't be empty."
+msgstr "Een opmerking mag niet leeg zijn."
+
+#: core/models.py:228
+#, python-format
+msgid "A comment can be at most %(max)s characters."
+msgstr "Een opmerking mag hooguit %(max)s tekens hebben."
+
+#: core/models.py:262
+#, python-format
+msgid "%(count)s comment narrowed to %(level)s."
+msgid_plural "%(count)s comments narrowed to %(level)s."
+msgstr[0] "%(count)s opmerking beperkt tot %(level)s."
+msgstr[1] "%(count)s opmerkingen beperkt tot %(level)s."
+
+#: core/models.py:288
+#, python-format
+msgid "%(count)s comment widened to %(level)s."
+msgid_plural "%(count)s comments widened to %(level)s."
+msgstr[0] "%(count)s opmerking verruimd tot %(level)s."
+msgstr[1] "%(count)s opmerkingen verruimd tot %(level)s."
+
+#: core/models.py:311
+msgid "You can't comment."
+msgstr "Je kunt geen opmerkingen plaatsen."
+
+#: core/models.py:318
+msgid "Comment posted."
+msgstr "Opmerking geplaatst."
+
+#: core/models.py:368
+msgid "Only a published item can be a favorite."
+msgstr "Alleen een gepubliceerd stuk kan een favoriet zijn."
+
+#: core/models.py:385
+msgid "Users to treat as family for 'family'-visibility content"
+msgstr ""
+"Gebruikers die als familie gelden voor stukken die zichtbaar zijn voor "
+"'familie'"
+
+#: core/models.py:388
+msgid "Show star signs on people's pages"
+msgstr "Sterrenbeelden tonen op de pagina's van personen"
+
+#: core/search.py:52 dashboard/templates/dashboard/dashboard.html:121
+#: dashboard/templates/dashboard/dashboard.html:197
+#: dashboard/templates/dashboard/loose_end.html:27 notes/apps.py:7
+#: notes/models.py:117 notes/templates/note/_notes_section.html:11
+#: notes/templates/note/note_detail.html:17
+#: notes/templates/note/note_overview.html:9
+#: notes/templates/note/note_overview.html:15 templates/navigation.html:37
+msgid "notes"
+msgstr "notities"
+
+#: core/search.py:54 core/templates/tag/blocks/parent.html:8
+#: core/templates/tag/tag_overview.html:10
+#: core/templates/tag/tag_overview.html:16
+#: dashboard/templates/dashboard/dashboard.html:198
+#: notes/templates/note/_links.html:17
+#: people/templates/person/functions/get_tags.html:11
+#: people/templates/person/functions/get_tags.html:20
+#: templates/navigation.html:35
+msgid "tags"
+msgstr "tags"
+
+#: core/templates/comment/_target.html:27 people/models/Person.py:175
+#: people/models/Person.py:207
+#: people/templates/person/functions/get_full_name.html:58
+msgid "person"
+msgstr "persoon"
+
+#: core/templates/comment/_target.html:33
+msgid "event"
+msgstr "gebeurtenis"
+
+#: core/templates/comment/_wider_notice.html:16
+#, python-format
+msgid "%(counter)s comment is more visible than this now."
+msgid_plural "%(counter)s comments are more visible than this now."
+msgstr[0] "%(counter)s opmerking is nu zichtbaarder dan dit."
+msgstr[1] "%(counter)s opmerkingen zijn nu zichtbaarder dan dit."
+
+#: core/templates/comment/_wider_notice.html:18
+#, python-format
+msgid "Narrow them to %(level)s"
+msgstr "Beperk ze tot %(level)s"
+
+#: core/templates/comment/_wider_notice.html:20
+msgid ""
+"Or leave them - they're listed under loose ends, and shown no wider than "
+"this anyway."
+msgstr ""
+"Of laat ze - ze staan bij de losse eindjes, en worden toch niet breder "
+"getoond dan dit."
+
+#: core/templates/comment/_wider_notice.html:25
+#, python-format
+msgid "%(counter)s comment is less visible than this now."
+msgid_plural "%(counter)s comments are less visible than this now."
+msgstr[0] "%(counter)s opmerking is nu minder zichtbaar dan dit."
+msgstr[1] "%(counter)s opmerkingen zijn nu minder zichtbaar dan dit."
+
+#: core/templates/comment/_wider_notice.html:25
+#, python-format
+msgid "%(counter)s of your comments is less visible than this now."
+msgid_plural "%(counter)s of your comments are less visible than this now."
+msgstr[0] "%(counter)s van je opmerkingen is nu minder zichtbaar dan dit."
+msgstr[1] "%(counter)s van je opmerkingen zijn nu minder zichtbaar dan dit."
+
+#: core/templates/comment/_wider_notice.html:27
+#, python-format
+msgid "Widen them to %(level)s"
+msgstr "Verruim ze tot %(level)s"
+
+#: core/templates/comment/_wider_notice.html:29
+msgid ""
+"Or one by one, on the comments - a narrower one may be meant for fewer "
+"readers."
+msgstr ""
+"Of één voor één, bij de opmerkingen - een beperktere kan voor minder lezers "
+"bedoeld zijn."
+
+#: core/templates/comment/_wider_notice.html:29
+msgid "Or leave them - who reads your comment is your choice."
+msgstr "Of laat ze - wie je opmerking leest is jouw keuze."
+
+#: core/templates/comment/comment.html:29
+msgid "edited"
+msgstr "bewerkt"
+
+#: core/templates/comment/comment.html:31
+#: dashboard/templates/dashboard/housekeeping/revoked.html:31
+msgid "hidden"
+msgstr "verborgen"
+
+#: core/templates/comment/comment.html:52 templates/header.html:35
+msgid "edit"
+msgstr "bewerken"
+
+#: core/templates/comment/comment.html:61
+msgid "Delete this comment?"
+msgstr "Deze opmerking verwijderen?"
+
+#: core/templates/comment/comment.html:65
+msgid "unhide"
+msgstr "tonen"
+
+#: core/templates/comment/comment.html:65
+msgid "hide"
+msgstr "verbergen"
+
+#: core/templates/comment/comment_overview.html:11
+#: core/templates/comment/comment_overview.html:16
+#: core/templates/comment/comments.html:11
+#: dashboard/templates/dashboard/dashboard.html:196
+#: people/templates/people/person_detail.html:115 templates/navigation.html:34
+msgid "comments"
+msgstr "opmerkingen"
+
+#: core/templates/comment/comment_overview.html:17
+msgid "filter comments"
+msgstr "opmerkingen filteren"
+
+#: core/templates/comment/comment_overview.html:40
+msgid "newer"
+msgstr "nieuwer"
+
+#: core/templates/comment/comment_overview.html:42
+msgid "older"
+msgstr "ouder"
+
+#: core/templates/comment/comment_overview.html:48
+#: core/templates/comment/thread.html:16
+msgid "no comments yet"
+msgstr "nog geen opmerkingen"
+
+#: core/templates/comment/thread.html:21
+msgid "Write a comment…"
+msgstr "Schrijf een opmerking…"
+
+#: core/templates/comment/thread.html:21
+msgid "comment"
+msgstr "opmerking"
+
+#: core/templates/comment/thread.html:30
+msgid "post comment"
+msgstr "opmerking plaatsen"
+
+#: core/templates/favorite/_badge.html:6
+#, python-format
+msgid "%(counter)s favorite"
+msgid_plural "%(counter)s favorites"
+msgstr[0] "%(counter)s favoriet"
+msgstr[1] "%(counter)s favorieten"
+
+#: core/templates/favorite/heart.html:14
+msgid "Remove from your favorites"
+msgstr "Uit je favorieten halen"
+
+#: core/templates/favorite/heart.html:14
+msgid "Add to your favorites"
+msgstr "Aan je favorieten toevoegen"
+
+#: core/templates/mention/_list.html:12
+msgid "biography of"
+msgstr "levensverhaal van"
+
+#: core/templates/mention/_list.html:14 notes/models.py:116
+msgid "note"
+msgstr "notitie"
+
+#: core/templates/mention/_list.html:14
+msgid "untitled"
+msgstr "zonder titel"
+
+#: core/templates/mention/_list.html:16
+msgid "transcript of"
+msgstr "transcriptie van"
+
+#: core/templates/mention/_list.html:18
+msgid "comment by"
+msgstr "opmerking van"
+
+#: core/templates/mention/_list.html:18
+msgid "on"
+msgstr "bij"
+
+#: core/templates/mention/_list.html:20
+msgid "description of"
+msgstr "beschrijving van"
+
+#: core/templates/mention/_list.html:29
+msgid "Remove the link from this text - its words stay"
+msgstr "Haal de link uit deze tekst - de woorden blijven"
+
+#: core/templates/mention/_list.html:29
+#: dashboard/templates/dashboard/housekeeping/mentions.html:23
+msgid "remove link"
+msgstr "link weghalen"
+
+#: core/templates/mention/_list.html:33
+#, python-format
+msgid "and %(counter)s more mention in this text"
+msgid_plural "and %(counter)s more mentions in this text"
+msgstr[0] "en nog %(counter)s vermelding in deze tekst"
+msgstr[1] "en nog %(counter)s vermeldingen in deze tekst"
+
+#: core/templates/mention/_section.html:12
+msgid "mentioned in"
+msgstr "genoemd in"
+
+#: core/templates/preferences/preferences.html:10
+#: core/templates/preferences/preferences.html:16 templates/header.html:55
+msgid "preferences"
+msgstr "voorkeuren"
+
+#: core/templates/preferences/preferences.html:22
+msgid "Saving…"
+msgstr "Opslaan…"
+
+#: core/templates/preferences/preferences.html:22
+msgid "Saved"
+msgstr "Opgeslagen"
+
+#: core/templates/preferences/preferences.html:22
+msgid "Not saved yet"
+msgstr "Nog niet opgeslagen"
+
+#: core/templates/preferences/preferences.html:22
+msgid "Not saved"
+msgstr "Niet opgeslagen"
+
+#: core/templates/preferences/preferences.html:41
+msgid "in your family tree"
+msgstr "in je stamboom"
+
+#: core/templates/preferences/preferences.html:45
+msgid "other accounts"
+msgstr "andere accounts"
+
+#: core/templates/search/_results.html:18
+#, python-format
+msgid "show all %(counter)s"
+msgid_plural "show all %(counter)s"
+msgstr[0] "toon alle %(counter)s"
+msgstr[1] "toon alle %(counter)s"
+
+#: core/templates/search/_results.html:23
+msgid "type at least two letters"
+msgstr "typ minstens twee letters"
+
+#: core/templates/search/_results.html:30
+msgid ""
+"Names, titles and descriptions - and the text of transcripts, biographies "
+"and notes."
+msgstr ""
+"Namen, titels en beschrijvingen - en de tekst van transcripties, "
+"levensverhalen en notities."
+
+#: core/templates/search/search.html:3 core/templates/search/search.html:14
+#: core/templates/search/search.html:20 templates/header.html:18
+#: templates/header.html:20
+msgid "search"
+msgstr "zoeken"
+
+#: core/templates/search/search.html:19
+msgid "people, content, events, notes, places, tags"
+msgstr "personen, stukken, gebeurtenissen, notities, plaatsen, tags"
+
+#: core/templates/search/search.html:24
+#, python-format
+msgid "Only %(label)s"
+msgstr "Alleen %(label)s"
+
+#: core/templates/search/search.html:24
+msgid "search everything"
+msgstr "alles doorzoeken"
+
+#: core/templates/tag/_count.html:6 core/templates/tag/tag_detail.html:31
+#: people/templates/person/person_list.html:30
+#, python-format
+msgid "%(counter)s person"
+msgid_plural "%(counter)s people"
+msgstr[0] "%(counter)s persoon"
+msgstr[1] "%(counter)s personen"
+
+#: core/templates/tag/_count.html:6
+#, python-format
+msgid "%(counter)s note"
+msgid_plural "%(counter)s notes"
+msgstr[0] "%(counter)s notitie"
+msgstr[1] "%(counter)s notities"
+
+#: core/templates/tag/blocks/parent.html:9 core/templates/tag/tag.html:11
+msgid "you came here through this tag"
+msgstr "je kwam hier via deze tag"
+
+#: core/templates/tag/blocks/parent.html:10
+msgid "a tag of its own"
+msgstr "een losse tag"
+
+#: core/templates/tag/tag_detail.html:64
+msgid "nothing with this tag yet"
+msgstr "nog niets met deze tag"
+
+#: core/templates/tag/tag_overview.html:31
+msgid "other tags"
+msgstr "andere tags"
+
+#: core/templates/tag/tag_overview.html:39
+msgid "no tags yet"
+msgstr "nog geen tags"
+
+#: core/views.py:28
+msgid "on content"
+msgstr "bij stukken"
+
+#: core/views.py:28
+msgid "on people"
+msgstr "bij personen"
+
+#: core/views.py:171
+msgid "Please correct the errors in the form."
+msgstr "Verbeter de fouten in het formulier."
+
+#: core/views.py:178 core/views.py:183
+msgid "Preferences saved."
+msgstr "Voorkeuren opgeslagen."
+
+#: core/views.py:216
+msgid "Link removed - the words stay."
+msgstr "Link weggehaald - de woorden blijven."
+
+#: dashboard/blocks.py:110
+msgid "marked as a loose end"
+msgstr "gemarkeerd als los eindje"
+
+#: dashboard/blocks.py:111
+msgid "people without a birth"
+msgstr "personen zonder geboorte"
+
+#: dashboard/blocks.py:112
+msgid "people born over 100 years ago without a death"
+msgstr "personen meer dan 100 jaar geleden geboren, zonder overlijden"
+
+#: dashboard/blocks.py:113
+msgid "people without parents"
+msgstr "personen zonder ouders"
+
+#: dashboard/blocks.py:114
+msgid "photos without people"
+msgstr "foto's zonder personen"
+
+#: dashboard/blocks.py:115
+msgid "people on items without a role"
+msgstr "personen bij stukken zonder rol"
+
+#: dashboard/blocks.py:116
+msgid "comments wider than their item"
+msgstr "opmerkingen zichtbaarder dan hun stuk"
+
+#: dashboard/blocks.py:117
+msgid "events without a date"
+msgstr "gebeurtenissen zonder datum"
+
+#: dashboard/blocks.py:118
+msgid "events of kind 'other' - does a kind fit?"
+msgstr "gebeurtenissen van de soort 'anders' - past een soort?"
+
+#: dashboard/blocks.py:119
+msgid "events without documentation"
+msgstr "gebeurtenissen zonder bewijs"
+
+#: dashboard/blocks.py:120
+msgid "transcripts to finish or check"
+msgstr "transcripties om af te maken of te controleren"
+
+#: dashboard/blocks.py:121
+msgid "documents without a transcript"
+msgstr "documenten zonder transcriptie"
+
+#: dashboard/blocks.py:122
+msgid "images in low resolution"
+msgstr "afbeeldingen in lage resolutie"
+
+#: dashboard/blocks.py:123
+msgid "places on their own (no parent, nothing under them)"
+msgstr "losse plaatsen (nergens onder, niets eronder)"
+
+#: dashboard/models.py:18
+msgid "The loose end (dashboard/blocks.py LOOSE_ENDS)"
+msgstr "Het losse eindje (dashboard/blocks.py LOOSE_ENDS)"
+
+#: dashboard/progress.py:63
+#, python-format
+msgid "%(done)s of %(total)s done (%(percent)s%%)"
+msgstr "%(done)s van %(total)s klaar (%(percent)s%%)"
+
+#: dashboard/progress.py:79
+msgid "birth and death"
+msgstr "geboorte en overlijden"
+
+#: dashboard/progress.py:80
+msgid "birth only"
+msgstr "alleen geboorte"
+
+#: dashboard/progress.py:81
+msgid "death only"
+msgstr "alleen overlijden"
+
+#: dashboard/progress.py:82
+msgid "neither"
+msgstr "geen van beide"
+
+#: dashboard/progress.py:99
+msgid "transcribed"
+msgstr "getranscribeerd"
+
+#: dashboard/progress.py:100
+msgid "to finish or check"
+msgstr "af te maken of te controleren"
+
+#: dashboard/progress.py:101
+msgid "no transcript"
+msgstr "geen transcriptie"
+
+#: dashboard/progress.py:120
+msgid "done"
+msgstr "klaar"
+
+#: dashboard/progress.py:120 notes/models.py:52
+msgid "to do"
+msgstr "te doen"
+
+#: dashboard/templates/dashboard/_account_row.html:11
+#, python-format
+msgid "signed in %(when)s ago"
+msgstr "%(when)s geleden ingelogd"
+
+#: dashboard/templates/dashboard/_account_row.html:11
+msgid "never signed in"
+msgstr "nooit ingelogd"
+
+#: dashboard/templates/dashboard/_account_row.html:12
+#, python-format
+msgid "last %(what)s %(when)s ago"
+msgstr "laatste %(what)s %(when)s geleden"
+
+#: dashboard/templates/dashboard/_dismiss.html:11
+msgid "back on the list"
+msgstr "terug op de lijst"
+
+#: dashboard/templates/dashboard/_dismiss.html:15
+#: dashboard/templates/dashboard/loose_end.html:17
+msgid "fine as it is"
+msgstr "prima zo"
+
+#: dashboard/templates/dashboard/_dismiss.html:18
+msgid "why (optional)"
+msgstr "waarom (optioneel)"
+
+#: dashboard/templates/dashboard/_dismiss.html:19
+msgid "off the list"
+msgstr "van de lijst"
+
+#: dashboard/templates/dashboard/_housekeeping_item.html:22
+msgid "has parts that aren't deleted - not purged"
+msgstr "heeft delen die niet verwijderd zijn - niet definitief verwijderd"
+
+#: dashboard/templates/dashboard/_housekeeping_item.html:23
+msgid "file kept: used by another item"
+msgstr "bestand behouden: gebruikt door een ander stuk"
+
+#: dashboard/templates/dashboard/accounts.html:8
+#: dashboard/templates/dashboard/accounts.html:15
+#: dashboard/templates/dashboard/dashboard.html:172 templates/header.html:63
+msgid "accounts"
+msgstr "accounts"
+
+#: dashboard/templates/dashboard/accounts.html:14
+#: dashboard/templates/dashboard/dashboard.html:13
+#: dashboard/templates/dashboard/housekeeping.html:16
+#: dashboard/templates/dashboard/loose_end.html:14
+#: templates/navigation.html:26
+msgid "dashboard"
+msgstr "dashboard"
+
+#: dashboard/templates/dashboard/accounts.html:20
+msgid "waiting for approval"
+msgstr "wacht op goedkeuring"
+
+#: dashboard/templates/dashboard/accounts.html:26
+#, python-format
+msgid "registered %(when)s ago"
+msgstr "%(when)s geleden aangemeld"
+
+#: dashboard/templates/dashboard/accounts.html:29
+msgid "approve"
+msgstr "goedkeuren"
+
+#: dashboard/templates/dashboard/accounts.html:30
+msgid "Decline and remove this account?"
+msgstr "Afwijzen en dit account verwijderen?"
+
+#: dashboard/templates/dashboard/accounts.html:30
+msgid "decline"
+msgstr "afwijzen"
+
+#: dashboard/templates/dashboard/accounts.html:36
+msgid "No one is waiting."
+msgstr "Er wacht niemand."
+
+#: dashboard/templates/dashboard/accounts.html:41
+msgid "activity"
+msgstr "activiteit"
+
+#: dashboard/templates/dashboard/dashboard.html:18
+#, python-format
+msgid "Welcome, %(name)s"
+msgstr "Welkom, %(name)s"
+
+#: dashboard/templates/dashboard/dashboard.html:18
+msgid "family archive"
+msgstr "familiearchief"
+
+#: dashboard/templates/dashboard/dashboard.html:24
+msgid "Photos, documents and the stories of the family - for family members."
+msgstr "Foto's, documenten en de verhalen van de familie - voor familieleden."
+
+#: dashboard/templates/dashboard/dashboard.html:27
+msgid "request an account"
+msgstr "account aanvragen"
+
+#: dashboard/templates/dashboard/dashboard.html:29
+msgid "A new account is checked before it can be used."
+msgstr "Een nieuw account wordt gecontroleerd voordat je het kunt gebruiken."
+
+#: dashboard/templates/dashboard/dashboard.html:45
+msgid "on this day"
+msgstr "op deze dag"
+
+#: dashboard/templates/dashboard/dashboard.html:45
+#: dashboard/templates/dashboard/dashboard.html:55
+#: events/templates/event/event_calendar.html:10
+#: events/templates/event/event_overview.html:18
+msgid "calendar"
+msgstr "kalender"
+
+#: dashboard/templates/dashboard/dashboard.html:55
+msgid "this coming week"
+msgstr "de komende week"
+
+#: dashboard/templates/dashboard/dashboard.html:62
+msgid "Nothing in the coming week."
+msgstr "Niets in de komende week."
+
+#: dashboard/templates/dashboard/dashboard.html:75
+msgid "all content"
+msgstr "alle stukken"
+
+#: dashboard/templates/dashboard/dashboard.html:91
+msgid "family favorites"
+msgstr "favorieten van de familie"
+
+#: dashboard/templates/dashboard/dashboard.html:106
+msgid "conversation"
+msgstr "gesprek"
+
+#: dashboard/templates/dashboard/dashboard.html:106
+msgid "all comments"
+msgstr "alle opmerkingen"
+
+#: dashboard/templates/dashboard/dashboard.html:121
+msgid "your open notes"
+msgstr "je open notities"
+
+#: dashboard/templates/dashboard/dashboard.html:129
+msgid "from the archive"
+msgstr "uit het archief"
+
+#: dashboard/templates/dashboard/dashboard.html:131
+msgid "another"
+msgstr "nog een"
+
+#: dashboard/templates/dashboard/dashboard.html:142
+msgid "your inbox"
+msgstr "je inbox"
+
+#: dashboard/templates/dashboard/dashboard.html:142
+msgid "open"
+msgstr "openen"
+
+#: dashboard/templates/dashboard/dashboard.html:143
+#, python-format
+msgid "%(counter)s draft by others"
+msgid_plural "%(counter)s drafts by others"
+msgstr[0] "%(counter)s concept van anderen"
+msgstr[1] "%(counter)s concepten van anderen"
+
+#: dashboard/templates/dashboard/dashboard.html:147
+msgid "Added"
+msgstr "Toegevoegd"
+
+#: dashboard/templates/dashboard/dashboard.html:160
+msgid "loose ends"
+msgstr "losse eindjes"
+
+#: dashboard/templates/dashboard/dashboard.html:172
+msgid "waiting"
+msgstr "wachtend"
+
+#: dashboard/templates/dashboard/dashboard.html:173
+msgid "approve or decline"
+msgstr "goedkeuren of afwijzen"
+
+#: dashboard/templates/dashboard/dashboard.html:180
+msgid "you in the archive"
+msgstr "jij in het archief"
+
+#: dashboard/templates/dashboard/dashboard.html:183
+msgid "your record"
+msgstr "jouw gegevens"
+
+#: dashboard/templates/dashboard/dashboard.html:184
+#, python-format
+msgid "in %(counter)s item"
+msgid_plural "in %(counter)s items"
+msgstr[0] "in %(counter)s stuk"
+msgstr[1] "in %(counter)s stukken"
+
+#: dashboard/templates/dashboard/dashboard.html:190
+msgid "the archive"
+msgstr "het archief"
+
+#: dashboard/templates/dashboard/dashboard.html:193
+msgid "items"
+msgstr "stukken"
+
+#: dashboard/templates/dashboard/housekeeping.html:10
+#: dashboard/templates/dashboard/housekeeping.html:17
+#: dashboard/templates/dashboard/housekeeping_confirm.html:9
+#: dashboard/templates/dashboard/housekeeping_confirm.html:15
+#: dashboard/templates/dashboard/housekeeping_section.html:11
+#: dashboard/templates/dashboard/housekeeping_section.html:28
+#: templates/header.html:67
+msgid "housekeeping"
+msgstr "onderhoud"
+
+#: dashboard/templates/dashboard/housekeeping.html:18
+msgid ""
+"Storage, checked by eye. Deleting here is for good - only a backup brings it"
+" back."
+msgstr ""
+"Opslag, met het oog gecontroleerd. Verwijderen gebeurt hier definitief - "
+"alleen een back-up brengt het terug."
+
+#: dashboard/templates/dashboard/housekeeping/deleted.html:5
+msgid ""
+"Hidden from everyone, but the record and the file are still there. Purge "
+"removes the record, its file and its thumbnails - and its parts."
+msgstr ""
+"Voor iedereen verborgen, maar het record en het bestand zijn er nog. "
+"Definitief verwijderen haalt het record, het bestand en de miniaturen weg - "
+"en de delen."
+
+#: dashboard/templates/dashboard/housekeeping/deleted.html:9
+#: dashboard/templates/dashboard/housekeeping/orphans.html:9
+#: dashboard/templates/dashboard/housekeeping/unused-places.html:9
+#: dashboard/templates/dashboard/housekeeping/unused-tags.html:9
+msgid "select all"
+msgstr "alles selecteren"
+
+#: dashboard/templates/dashboard/housekeeping/deleted.html:11
+#: dashboard/templates/dashboard/housekeeping/duplicates.html:12
+msgid "purge selected…"
+msgstr "selectie definitief verwijderen…"
+
+#: dashboard/templates/dashboard/housekeeping/duplicates.html:5
+msgid ""
+"Items with the same file. Delete the one you don't want on its page; here it"
+" can then be purged - the record and its file."
+msgstr ""
+"Stukken met hetzelfde bestand. Verwijder het stuk dat je niet wilt op zijn "
+"pagina; hier kan het dan definitief weg - het record en het bestand."
+
+#: dashboard/templates/dashboard/housekeeping/life-events.html:9
+msgid ""
+"A person has one birth and one death, and each is one person's. These break "
+"that - from before the rule. Open one to fix it: delete the wrong event, or "
+"make one for each."
+msgstr ""
+"Iemand heeft één geboorte en één overlijden, en die horen elk bij één "
+"persoon. Deze houden zich daar niet aan - van voor de regel. Open er een om "
+"het te herstellen: verwijder de verkeerde gebeurtenis, of maak er een per "
+"persoon."
+
+#: dashboard/templates/dashboard/housekeeping/life-events.html:15
+#, python-format
+msgid "%(counter)s %(kind)ss"
+msgid_plural "%(counter)s %(kind)ss"
+msgstr[0] "%(counter)s × %(kind)s"
+msgstr[1] "%(counter)s × %(kind)s"
+
+#: dashboard/templates/dashboard/housekeeping/life-events.html:16
+#: events/templates/event/_event.html:33
+#: events/templates/event/event_overview.html:44
+#: people/templates/person/blocks/birth.html:14
+#: people/templates/person/blocks/death.html:16
+msgid "date unknown"
+msgstr "datum onbekend"
+
+#: dashboard/templates/dashboard/housekeeping/life-events.html:19
+msgid "of"
+msgstr "van"
+
+#: dashboard/templates/dashboard/housekeeping/life-events.html:19
+msgid "one each"
+msgstr "een per persoon"
+
+#: dashboard/templates/dashboard/housekeeping/life-events.html:22
+msgid "None - everyone has at most one birth and one death, each their own."
+msgstr ""
+"Geen - iedereen heeft hooguit één geboorte en één overlijden, elk van "
+"zichzelf."
+
+#: dashboard/templates/dashboard/housekeeping/mentions.html:10
+msgid ""
+"Links in texts to something that's gone, revoked or deleted - readers see "
+"only the words. Remove the link (the words stay), or restore what it points "
+"to."
+msgstr ""
+"Links in teksten naar iets dat weg, ingetrokken of verwijderd is - lezers "
+"zien alleen de woorden. Haal de link weg (de woorden blijven), of herstel "
+"waar hij naar wijst."
+
+#: dashboard/templates/dashboard/housekeeping/mentions.html:14
+msgid "gone"
+msgstr "weg"
+
+#: dashboard/templates/dashboard/housekeeping/mentions.html:14
+#: dashboard/templates/dashboard/housekeeping/revoked.html:32
+#: dashboard/templates/dashboard/housekeeping/revoked.html:35
+msgid "revoked"
+msgstr "ingetrokken"
+
+#: dashboard/templates/dashboard/housekeeping/mentions.html:16
+msgid "in"
+msgstr "in"
+
+#: dashboard/templates/dashboard/housekeeping/mentions.html:28
+msgid "None - every mention leads somewhere."
+msgstr "Geen - elke vermelding leidt ergens heen."
+
+#: dashboard/templates/dashboard/housekeeping/missing.html:5
+msgid ""
+"Items whose file is missing - upload it on the item's page, or delete the "
+"item."
+msgstr ""
+"Stukken waarvan het bestand ontbreekt - upload het op de pagina van het "
+"stuk, of verwijder het stuk."
+
+#: dashboard/templates/dashboard/housekeeping/orphans.html:5
+msgid "Files in storage no item points to - an old name, an abandoned upload."
+msgstr ""
+"Bestanden in de opslag waar geen stuk naar verwijst - een oude naam, een "
+"afgebroken upload."
+
+#: dashboard/templates/dashboard/housekeeping/orphans.html:19
+msgid "delete selected files…"
+msgstr "geselecteerde bestanden verwijderen…"
+
+#: dashboard/templates/dashboard/housekeeping/revoked.html:11
+msgid ""
+"Pulled back by staff and waiting for a decision. Open one to republish it or"
+" delete it - a deleted item can then be purged under deleted items."
+msgstr ""
+"Teruggetrokken door beheerders, wachtend op een besluit. Open er een om het "
+"opnieuw te publiceren of te verwijderen - een verwijderd stuk kan daarna "
+"definitief weg bij verwijderde stukken."
+
+#: dashboard/templates/dashboard/housekeeping/revoked.html:32
+msgid "no reason given"
+msgstr "geen reden opgegeven"
+
+#: dashboard/templates/dashboard/housekeeping/revoked.html:40
+msgid "Nothing to review."
+msgstr "Niets te beoordelen."
+
+#: dashboard/templates/dashboard/housekeeping/unused-places.html:5
+msgid ""
+"Places nothing lies in or happened at, and not another era's name of a place"
+" - keep the ones meant for later."
+msgstr ""
+"Plaatsen waar niets ligt of gebeurde, en die geen naam uit een andere tijd "
+"van een plaats zijn - houd de plaatsen die voor later bedoeld zijn."
+
+#: dashboard/templates/dashboard/housekeeping/unused-places.html:19
+#: dashboard/templates/dashboard/housekeeping/unused-tags.html:19
+msgid "delete selected…"
+msgstr "geselecteerde verwijderen…"
+
+#: dashboard/templates/dashboard/housekeeping/unused-tags.html:5
+msgid ""
+"Tags nothing carries and nothing sits under - an old category, a typo, or "
+"something meant for later. The Loose end tag isn't listed."
+msgstr ""
+"Tags die nergens aan hangen en waar niets onder valt - een oude categorie, "
+"een typfout, of iets voor later. De tag 'Los eindje' staat er niet bij."
+
+#: dashboard/templates/dashboard/housekeeping_confirm.html:16
+msgid "purge these items?"
+msgstr "deze stukken definitief verwijderen?"
+
+#: dashboard/templates/dashboard/housekeeping_confirm.html:16
+msgid "delete these tags?"
+msgstr "deze tags verwijderen?"
+
+#: dashboard/templates/dashboard/housekeeping_confirm.html:16
+msgid "delete these places?"
+msgstr "deze plaatsen verwijderen?"
+
+#: dashboard/templates/dashboard/housekeeping_confirm.html:16
+msgid "delete these files?"
+msgstr "deze bestanden verwijderen?"
+
+#: dashboard/templates/dashboard/housekeeping_confirm.html:17
+msgid "This can't be undone - only a backup brings it back."
+msgstr "Dit kan niet ongedaan worden - alleen een back-up brengt het terug."
+
+#: dashboard/templates/dashboard/housekeeping_confirm.html:28
+msgid "Nothing to purge."
+msgstr "Niets om definitief te verwijderen."
+
+#: dashboard/templates/dashboard/housekeeping_confirm.html:36
+msgid "Nothing to delete - used in the meantime, or nothing selected."
+msgstr "Niets te verwijderen - intussen in gebruik, of niets geselecteerd."
+
+#: dashboard/templates/dashboard/housekeeping_confirm.html:44
+msgid "No files to delete."
+msgstr "Geen bestanden om te verwijderen."
+
+#: dashboard/templates/dashboard/housekeeping_confirm.html:48
+msgid "delete for good"
+msgstr "definitief verwijderen"
+
+#: dashboard/templates/dashboard/loose_end.html:17
+msgid "back to the list"
+msgstr "terug naar de lijst"
+
+#: dashboard/templates/dashboard/loose_end.html:18
+#, python-format
+msgid "%(n)s fine as it is"
+msgid_plural "%(n)s fine as it is"
+msgstr[0] "%(n)s prima zo"
+msgstr[1] "%(n)s prima zo"
+
+#: dashboard/templates/dashboard/loose_end.html:24
+msgid "Tagged “Loose end” - remove the tag when it's done."
+msgstr "Getagd met 'Los eindje' - haal de tag weg als het klaar is."
+
+#: dashboard/templates/dashboard/loose_end.html:36
+#, python-format
+msgid "%(counter)s without a role"
+msgid_plural "%(counter)s without a role"
+msgstr[0] "%(counter)s zonder rol"
+msgstr[1] "%(counter)s zonder rol"
+
+#: dashboard/templates/dashboard/loose_end.html:36
+msgid "not checked"
+msgstr "niet gecontroleerd"
+
+#: dashboard/templates/dashboard/loose_end.html:46
+#, python-format
+msgid ""
+"comment: %(comment_level)s - item: %(item_level)s. The item was made "
+"narrower after it: on purpose? If not, restore the item."
+msgstr ""
+"opmerking: %(comment_level)s - stuk: %(item_level)s. Het stuk is daarna "
+"beperkt: met opzet? Zo niet, zet het stuk terug."
+
+#: dashboard/templates/dashboard/loose_end.html:48
+msgid "Open the item"
+msgstr "Open het stuk"
+
+#: dashboard/templates/dashboard/loose_end.html:51
+#, python-format
+msgid "Narrow to %(level)s"
+msgstr "Beperk tot %(level)s"
+
+#: dashboard/templates/dashboard/loose_end.html:68
+#, python-format
+msgid "All: %(role)s"
+msgstr "Allemaal: %(role)s"
+
+#: dashboard/templates/dashboard/loose_end.html:68
+#, python-format
+msgid "Set: %(role)s"
+msgstr "Zet op: %(role)s"
+
+#: dashboard/templatetags/dashboard.py:20
+#, python-format
+msgid "about %(n)s year ago"
+msgid_plural "about %(n)s years ago"
+msgstr[0] "ongeveer %(n)s jaar geleden"
+msgstr[1] "ongeveer %(n)s jaar geleden"
+
+#: dashboard/templatetags/dashboard.py:22
+#, python-format
+msgid "at least %(n)s year ago"
+msgid_plural "at least %(n)s years ago"
+msgstr[0] "minstens %(n)s jaar geleden"
+msgstr[1] "minstens %(n)s jaar geleden"
+
+#: dashboard/templatetags/dashboard.py:24
+#, python-format
+msgid "at most %(n)s year ago"
+msgid_plural "at most %(n)s years ago"
+msgstr[0] "hooguit %(n)s jaar geleden"
+msgstr[1] "hooguit %(n)s jaar geleden"
+
+#: dashboard/templatetags/dashboard.py:25
+#, python-format
+msgid "%(n)s year ago"
+msgid_plural "%(n)s years ago"
+msgstr[0] "%(n)s jaar geleden"
+msgstr[1] "%(n)s jaar geleden"
+
+#: dashboard/views.py:145
+msgid "Back on the list."
+msgstr "Terug op de lijst."
+
+#: dashboard/views.py:151
+msgid "Off the list - fine as it is."
+msgstr "Van de lijst - prima zo."
+
+#: dashboard/views.py:206
+#, python-format
+msgid "%(n)s record purged."
+msgid_plural "%(n)s records purged."
+msgstr[0] "%(n)s record definitief verwijderd."
+msgstr[1] "%(n)s records definitief verwijderd."
+
+#: dashboard/views.py:216
+#, python-format
+msgid "%(n)s file deleted."
+msgid_plural "%(n)s files deleted."
+msgstr[0] "%(n)s bestand verwijderd."
+msgstr[1] "%(n)s bestanden verwijderd."
+
+#: dashboard/views.py:226
+#, python-format
+msgid "%(n)s tag deleted."
+msgid_plural "%(n)s tags deleted."
+msgstr[0] "%(n)s tag verwijderd."
+msgstr[1] "%(n)s tags verwijderd."
+
+#: dashboard/views.py:226
+#, python-format
+msgid "%(n)s place deleted."
+msgid_plural "%(n)s places deleted."
+msgstr[0] "%(n)s plaats verwijderd."
+msgstr[1] "%(n)s plaatsen verwijderd."
+
+#: dashboard/views.py:230
+msgid "Nothing selected."
+msgstr "Niets geselecteerd."
+
+#: dashboard/views.py:290
+#, python-format
+msgid "%(name)s can sign in now."
+msgstr "%(name)s kan nu inloggen."
+
+#: dashboard/views.py:292
+#, python-format
+msgid "%(name)s was declined and removed."
+msgstr "%(name)s is afgewezen en verwijderd."
+
+#: dashboard/views.py:294
+#, python-format
+msgid "%(name)s isn't waiting for approval."
+msgstr "%(name)s wacht niet op goedkeuring."
+
+#: events/forms.py:25 notes/forms.py:20
+msgid "title"
+msgstr "titel"
+
+#: events/forms.py:30
+msgid ""
+"What it was, or its name - e.g. 'Aanstelling als Beheerder bij departement "
+"Zoutaanmaak' or 'Inval Japan Nederlands Indië'. Required for 'other'; a "
+"historical event needs one to say what it is."
+msgstr ""
+"Wat het was, of de naam - bijv. 'Aanstelling als Beheerder bij departement "
+"Zoutaanmaak' of 'Inval Japan Nederlands Indië'. Verplicht bij 'anders'; een "
+"historische gebeurtenis heeft er een nodig om te zeggen wat het is."
+
+#: events/forms.py:77
+msgid "What happened, and the sources - Markdown: [bron](https://...)."
+msgstr "Wat er gebeurde, en de bronnen - Markdown: [bron](https://...)."
+
+#: events/forms.py:86
+msgid ""
+"Delete this event? It disappears everywhere, also from timelines - it can be"
+" recovered in the admin."
+msgstr ""
+"Deze gebeurtenis verwijderen? Ze verdwijnt overal, ook van tijdlijnen - ze "
+"kan in de beheeromgeving worden hersteld."
+
+#: events/forms.py:87
+msgid "Revoke this event? Only staff will see it until it's restored."
+msgstr ""
+"Deze gebeurtenis intrekken? Alleen beheerders zien haar tot ze hersteld is."
+
+#: events/forms.py:110 people/forms.py:59
+msgid "place"
+msgstr "plaats"
+
+#: events/forms.py:113 people/forms.py:62 places/forms.py:52
+msgid "search a place"
+msgstr "zoek een plaats"
+
+#: events/forms.py:114 people/forms.py:63 places/forms.py:53
+msgid "+ new place"
+msgstr "+ nieuwe plaats"
+
+#: events/forms.py:118 events/templates/event/forms/new.html:45
+#: people/templates/people/_person_row.html:99
+#: people/templates/person/functions/get_children.html:14
+msgid "with"
+msgstr "met"
+
+#: events/forms.py:120
+msgid "someone else"
+msgstr "iemand anders"
+
+#: events/forms.py:122
+msgid "search a person"
+msgstr "zoek een persoon"
+
+#: events/forms.py:122
+msgid "no one"
+msgstr "niemand"
+
+#: events/forms.py:131 events/templates/event/event_detail.html:84
+msgid "documented by"
+msgstr "bewezen door"
+
+#: events/forms.py:133
+msgid "search an item"
+msgstr "zoek een stuk"
+
+#: events/forms.py:133
+msgid "nothing yet"
+msgstr "nog niets"
+
+#: events/forms.py:256
+msgid "You may not change their family."
+msgstr "Je mag hun familie niet wijzigen."
+
+#: events/forms.py:257
+#, python-format
+msgid "%(name)s wasn't linked as a partner: %(reason)s"
+msgstr "%(name)s is niet als partner gekoppeld: %(reason)s"
+
+#: events/models.py:35 events/models.py:319
+#: people/templates/person/blocks/birth.html:18
+msgid "birth"
+msgstr "geboorte"
+
+#: events/models.py:36 events/models.py:319
+#: people/templates/person/blocks/death.html:20
+msgid "death"
+msgstr "overlijden"
+
+#: events/models.py:39
+msgid "engagement"
+msgstr "verloving"
+
+#: events/models.py:40
+msgid "marriage"
+msgstr "huwelijk"
+
+#: events/models.py:41
+msgid "divorce"
+msgstr "scheiding"
+
+#: events/models.py:42
+msgid "migration"
+msgstr "migratie"
+
+#: events/models.py:47
+msgid "residence"
+msgstr "woonplaats"
+
+#: events/models.py:52
+msgid "appointment"
+msgstr "aanstelling"
+
+#: events/models.py:53
+msgid "discharge"
+msgstr "ontslag"
+
+#: events/models.py:98
+msgid ""
+"Events this one is background for: what made them possible, or explains them"
+msgstr ""
+"Gebeurtenissen waar deze de achtergrond van is: wat ze mogelijk maakte, of "
+"verklaart"
+
+#: events/models.py:141
+msgid "An event can't be background for itself."
+msgstr "Een gebeurtenis kan geen achtergrond van zichzelf zijn."
+
+#: events/models.py:143
+msgid "Background is for the people in an event - add them first."
+msgstr ""
+"Achtergrond is voor de personen bij een gebeurtenis - voeg die eerst toe."
+
+#: events/models.py:270
+msgid "That page isn't part of this item."
+msgstr "Die pagina hoort niet bij dit stuk."
+
+#: events/models.py:275
+#, python-format
+msgid "Documented by “%(item)s” now."
+msgstr "Nu bewezen door “%(item)s”."
+
+#: events/models.py:286
+msgid "Say what it was - required for kind 'other'."
+msgstr "Zeg wat het was - verplicht bij de soort 'anders'."
+
+#: events/models.py:321
+#, python-format
+msgid "A %(kind)s is one person's - make one for each (twins too)."
+msgstr ""
+"Een %(kind)s hoort bij één persoon - maak er een per persoon (ook bij een "
+"tweeling)."
+
+#: events/models.py:327
+#, python-format
+msgid "%(name)s already has a %(kind)s - change that one, or delete it first."
+msgstr "%(name)s heeft al een %(kind)s - wijzig die, of verwijder die eerst."
+
+#: events/templates/event/_event.html:28
+msgid "you came here through this event"
+msgstr "je kwam hier via deze gebeurtenis"
+
+#: events/templates/event/_event.html:32
+msgid "history"
+msgstr "geschiedenis"
+
+#: events/templates/event/_event.html:33
+msgid "same day"
+msgstr "zelfde dag"
+
+#: events/templates/event/_event.html:36
+msgid "background to"
+msgstr "achtergrond van"
+
+#: events/templates/event/_item.html:19
+msgid "choose another page"
+msgstr "kies een andere pagina"
+
+#: events/templates/event/_item.html:19
+msgid "choose a page"
+msgstr "kies een pagina"
+
+#: events/templates/event/_item.html:32
+#: people/templates/people/_similar.html:18
+msgid "use this one"
+msgstr "deze gebruiken"
+
+#: events/templates/event/_place.html:8 events/templates/event/_place.html:10
+#: places/templates/field/places/name.html:1
+#: places/templates/place/_alternative.html:11
+#: places/templates/place/_alternative.html:13
+#: places/templates/place/blocks/parent.html:10
+msgid "you came here through this place"
+msgstr "je kwam hier via deze plaats"
+
+#: events/templates/event/event_calendar.html:18
+msgid "previous month"
+msgstr "vorige maand"
+
+#: events/templates/event/event_calendar.html:20
+msgid "next month"
+msgstr "volgende maand"
+
+#: events/templates/event/event_calendar.html:22
+msgid ""
+"What happened, by day - across the years: the family's events and the "
+"history around them."
+msgstr ""
+"Wat er gebeurde, per dag - door de jaren heen: de gebeurtenissen van de "
+"familie en de geschiedenis eromheen."
+
+#: events/templates/event/event_calendar.html:32
+msgid "today"
+msgstr "vandaag"
+
+#: events/templates/event/event_calendar.html:40
+msgid "nothing in this month yet"
+msgstr "nog niets in deze maand"
+
+#: events/templates/event/event_detail.html:65
+msgid "background"
+msgstr "achtergrond"
+
+#: events/templates/event/event_detail.html:68
+msgid ""
+"What made this event possible, or explains it - its people see it on their "
+"timeline as background."
+msgstr ""
+"Wat deze gebeurtenis mogelijk maakte, of verklaart - de personen erbij zien "
+"het als achtergrond op hun tijdlijn."
+
+#: events/templates/event/event_detail.html:69
+msgid "add background"
+msgstr "achtergrond toevoegen"
+
+#: events/templates/event/event_detail.html:69
+msgid "new historical event"
+msgstr "nieuwe historische gebeurtenis"
+
+#: events/templates/event/event_detail.html:77
+msgid "background for"
+msgstr "achtergrond van"
+
+#: events/templates/event/event_detail.html:89
+msgid "With the people of this event - choose one to link it:"
+msgstr "Met de personen van deze gebeurtenis - kies er een om te koppelen:"
+
+#: events/templates/event/event_detail.html:94
+msgid "link"
+msgstr "koppelen"
+
+#: events/templates/event/event_detail.html:103
+msgid "Or search all content:"
+msgstr "Of zoek in alle stukken:"
+
+#: events/templates/event/event_overview.html:16
+msgid ""
+"The history the family's lives took place in. Each also shows in the "
+"timeline of the people alive at the time."
+msgstr ""
+"De geschiedenis waarin het leven van de familie zich afspeelde. Elke "
+"gebeurtenis staat ook op de tijdlijn van wie toen leefde."
+
+#: events/templates/event/event_overview.html:16
+msgid "Everything that happened, across all branches of the family."
+msgstr "Alles wat er gebeurde, in alle takken van de familie."
+
+#: events/templates/event/event_overview.html:54
+msgid "no events here"
+msgstr "hier geen gebeurtenissen"
+
+#: events/templates/event/forms/new.html:48
+#, python-format
+msgid ""
+"A marriage or divorce is between partners: choose %(name)s's partner. "
+"Someone who isn't linked as a partner yet becomes one."
+msgstr ""
+"Een huwelijk of scheiding is tussen partners: kies de partner van %(name)s. "
+"Wie nog niet als partner gekoppeld is, wordt het."
+
+#: events/templates/event/forms/new.html:48
+msgid ""
+"A marriage or divorce is between partners: choose one here, the other on the"
+" event's page."
+msgstr ""
+"Een huwelijk of scheiding is tussen partners: kies er hier een, de ander op "
+"de pagina van de gebeurtenis."
+
+#: events/templates/event/forms/new.html:62
+#, python-format
+msgid "%(name)s is added to it."
+msgstr "%(name)s is eraan toegevoegd."
+
+#: events/templates/event/forms/new.html:65
+#: people/templates/people/person_create.html:32
+#: people/templates/person/forms/new.html:11
+msgid "add"
+msgstr "toevoegen"
+
+#: events/views/EventListView.py:16
+msgid "births"
+msgstr "geboortes"
+
+#: events/views/EventListView.py:17
+msgid "engagements"
+msgstr "verlovingen"
+
+#: events/views/EventListView.py:18
+msgid "marriages"
+msgstr "huwelijken"
+
+#: events/views/EventListView.py:19
+msgid "divorces"
+msgstr "scheidingen"
+
+#: events/views/EventListView.py:20
+msgid "migrations"
+msgstr "migraties"
+
+#: events/views/EventListView.py:21
+msgid "residences"
+msgstr "woonplaatsen"
+
+#: events/views/EventListView.py:22
+msgid "appointments"
+msgstr "aanstellingen"
+
+#: events/views/EventListView.py:23
+msgid "discharges"
+msgstr "ontslagen"
+
+#: events/views/EventListView.py:24
+msgid "deaths"
+msgstr "overlijdens"
+
+#: notes/forms.py:21
+msgid "Optional - without one, the first line of the text names the note."
+msgstr ""
+"Optioneel - zonder titel geeft de eerste regel van de tekst de notitie haar "
+"naam."
+
+#: notes/forms.py:30
+msgid "Markdown: *italic*, **bold**, [link](https://...), # heading, - list."
+msgstr "Markdown: *cursief*, **vet**, [link](https://...), # kop, - lijst."
+
+#: notes/forms.py:74 notes/templates/note/note_detail.html:35
+msgid "confidence"
+msgstr "zekerheid"
+
+#: notes/forms.py:78
+msgid "not said"
+msgstr "niet gezegd"
+
+#: notes/forms.py:94
+msgid ""
+"Delete this note? It will be hidden from everyone - it can be recovered in "
+"the admin."
+msgstr ""
+"Deze notitie verwijderen? Ze wordt voor iedereen verborgen - ze kan in de "
+"beheeromgeving worden hersteld."
+
+#: notes/forms.py:95
+msgid "Revoke this note? Only staff will see it until it's restored."
+msgstr ""
+"Deze notitie intrekken? Alleen beheerders zien haar tot ze hersteld is."
+
+#: notes/models.py:51
+msgid "scratch"
+msgstr "kladje"
+
+#: notes/models.py:53
+msgid "question"
+msgstr "vraag"
+
+#: notes/models.py:54
+msgid "hypothesis"
+msgstr "hypothese"
+
+#: notes/models.py:55
+msgid "conclusion"
+msgstr "conclusie"
+
+#: notes/models.py:56
+msgid "context"
+msgstr "context"
+
+#: notes/models.py:62
+msgid "certain"
+msgstr "zeker"
+
+#: notes/models.py:63
+msgid "probable"
+msgstr "waarschijnlijk"
+
+#: notes/models.py:64
+msgid "uncertain"
+msgstr "onzeker"
+
+#: notes/models.py:70
+msgid "The reasoning, a quoted source, the anecdote - Markdown"
+msgstr "De redenering, een geciteerde bron, de anekdote - Markdown"
+
+#: notes/models.py:123
+msgid "untitled note"
+msgstr "notitie zonder titel"
+
+#: notes/templates/note/_links.html:18
+msgid "link another note"
+msgstr "andere notitie koppelen"
+
+#: notes/templates/note/_links.html:19
+msgid "links to"
+msgstr "verwijst naar"
+
+#: notes/templates/note/_new_note.html:9
+msgid "new note"
+msgstr "nieuwe notitie"
+
+#: notes/templates/note/_note_row.html:13
+msgid "only you"
+msgstr "alleen jij"
+
+#: notes/templates/note/_note_row.html:16
+#: notes/templates/note/note_detail.html:38
+msgid "changed"
+msgstr "gewijzigd"
+
+#: notes/templates/note/blocks/body.html:9
+msgid "No text yet - the pencil opens it."
+msgstr "Nog geen tekst - het potlood opent haar."
+
+#: notes/templates/note/note_detail.html:37
+msgid "by"
+msgstr "door"
+
+#: notes/templates/note/note_detail.html:49
+msgid "linked from"
+msgstr "gekoppeld vanuit"
+
+#: notes/templates/note/note_overview.html:16
+msgid ""
+"Research: leads, questions, hypotheses, conclusions and background - linked "
+"to people, content, places and events."
+msgstr ""
+"Onderzoek: sporen, vragen, hypotheses, conclusies en achtergrond - gekoppeld"
+" aan personen, stukken, plaatsen en gebeurtenissen."
+
+#: notes/templates/note/note_overview.html:36
+msgid "no notes yet"
+msgstr "nog geen notities"
+
+#: notes/views/note_create.py:44
+msgid "New note - a draft only you can see until you publish it."
+msgstr ""
+"Nieuwe notitie - een concept dat alleen jij ziet tot je het publiceert."
+
+#: people/forms.py:22
+msgid "given names"
+msgstr "voornamen"
+
+#: people/forms.py:22
+msgid "called"
+msgstr "roepnaam"
+
+#: people/forms.py:22
+msgid "last name at birth"
+msgstr "achternaam bij geboorte"
+
+#: people/forms.py:23
+msgid "married name"
+msgstr "getrouwde naam"
+
+#: people/forms.py:23
+msgid "nickname"
+msgstr "bijnaam"
+
+#: people/forms.py:41 people/templates/person/blocks/biography.html:9
+#: people/templates/person/fields/biography.html:3
+msgid "biography"
+msgstr "levensverhaal"
+
+#: people/forms.py:42
+msgid "Markdown: *italic*, **bold**, [link](https://...)."
+msgstr "Markdown: *cursief*, **vet**, [link](https://...)."
+
+#: people/forms.py:127
+msgid "Died, details unknown"
+msgstr "Overleden, gegevens onbekend"
+
+#: people/forms.py:141
+msgid "Portrait"
+msgstr "Portret"
+
+#: people/forms.py:153
+msgid "crop left"
+msgstr "uitsnede links"
+
+#: people/forms.py:153
+msgid "crop top"
+msgstr "uitsnede boven"
+
+#: people/forms.py:153
+msgid "crop width"
+msgstr "uitsnede breedte"
+
+#: people/forms.py:153
+msgid "crop height"
+msgstr "uitsnede hoogte"
+
+#: people/forms.py:154
+msgid "rotation"
+msgstr "draaiing"
+
+#: people/forms.py:251 people/forms.py:292
+msgid "gender"
+msgstr "geslacht"
+
+#: people/forms.py:274
+msgid ""
+"Delete this person? They will be hidden from everyone - it can be recovered "
+"in the admin."
+msgstr ""
+"Deze persoon verwijderen? Die wordt voor iedereen verborgen - het kan in de "
+"beheeromgeving worden hersteld."
+
+#: people/forms.py:275
+msgid "Revoke this person? Only staff will see them until restored."
+msgstr ""
+"Deze persoon intrekken? Alleen beheerders zien die tot het hersteld is."
+
+#: people/forms.py:328
+msgid "other parent"
+msgstr "andere ouder"
+
+#: people/forms.py:372
+msgid "Choose one other parent at most."
+msgstr "Kies hooguit één andere ouder."
+
+#: people/forms.py:389
+msgid "The other parent wasn't linked: you may not change them."
+msgstr "De andere ouder is niet gekoppeld: je mag die niet wijzigen."
+
+#: people/models/Person.py:31
+msgid "male"
+msgstr "man"
+
+#: people/models/Person.py:32
+msgid "female"
+msgstr "vrouw"
+
+#: people/models/Person.py:36
+msgid "All official first name(s) of the person"
+msgstr "Alle officiële voornamen van de persoon"
+
+#: people/models/Person.py:37
+msgid ""
+"The name the person is commonly called by, if different from the given name"
+msgstr ""
+"De naam waarmee de persoon meestal werd aangesproken, als die anders is dan "
+"de voornaam"
+
+#: people/models/Person.py:38
+msgid "Last name of the person at birth"
+msgstr "Achternaam van de persoon bij de geboorte"
+
+#: people/models/Person.py:39
+msgid "Married name of the person, if any"
+msgstr "Getrouwde naam van de persoon, als die er is"
+
+#: people/models/Person.py:40
+msgid "Nickname of the person, if any"
+msgstr "Bijnaam van de persoon, als die er is"
+
+#: people/models/Person.py:44 people/views/PersonListView.py:24
+msgid "possibly family"
+msgstr "mogelijk familie"
+
+#: people/models/Person.py:45
+msgid "outsider"
+msgstr "buitenstaander"
+
+#: people/models/Person.py:56
+msgid "How this person relates to the family"
+msgstr "Hoe deze persoon bij de familie hoort"
+
+#: people/models/Person.py:64
+msgid ""
+"If checked, this person still appears in the family tree but has no "
+"clickable detail page - for people who are part of the tree (e.g. living "
+"relatives) but not represented with viewable details"
+msgstr ""
+"Aangevinkt: deze persoon staat nog in de stamboom, maar heeft geen eigen "
+"pagina om te openen - voor mensen die bij de stamboom horen (bijv. levende "
+"familieleden) maar niet met hun gegevens worden getoond"
+
+#: people/models/Person.py:65
+msgid "The user account associated with this person, if any"
+msgstr "Het gebruikersaccount dat bij deze persoon hoort, als dat er is"
+
+#: people/models/Person.py:67
+msgid "Tags for categorizing or labeling this person"
+msgstr "Tags om deze persoon in te delen of te labelen"
+
+#: people/models/Person.py:106
+msgid "Person"
+msgstr "Persoon"
+
+#: people/models/Person.py:107
+msgid "People"
+msgstr "Personen"
+
+#: people/models/Person.py:145
+msgid "private"
+msgstr "privé"
+
+#: people/models/Person.py:184
+#: people/templates/person/functions/get_full_name.html:50
+msgid "née"
+msgstr "geb."
+
+#: people/models/Person.py:294
+msgid ""
+"A person needs at least one of given names, last name, married name, called "
+"name or nickname."
+msgstr ""
+"Een persoon heeft minstens een voornaam, achternaam, getrouwde naam, "
+"roepnaam of bijnaam nodig."
+
+#: people/models/PersonRelations.py:7 people/models/RelationshipLabel.py:33
+#: people/relatives.py:97
+msgid "parent"
+msgstr "ouder"
+
+#: people/models/PersonRelations.py:8 people/relatives.py:97
+msgid "partner"
+msgstr "partner"
+
+#: people/models/RelationshipLabel.py:33
+msgid "father"
+msgstr "vader"
+
+#: people/models/RelationshipLabel.py:33
+msgid "mother"
+msgstr "moeder"
+
+#: people/models/RelationshipLabel.py:34
+msgid "grandfather"
+msgstr "grootvader"
+
+#: people/models/RelationshipLabel.py:34
+msgid "grandmother"
+msgstr "grootmoeder"
+
+#: people/models/RelationshipLabel.py:34
+msgid "grandparent"
+msgstr "grootouder"
+
+#: people/models/RelationshipLabel.py:35
+msgid "great-grandfather"
+msgstr "overgrootvader"
+
+#: people/models/RelationshipLabel.py:35
+msgid "great-grandmother"
+msgstr "overgrootmoeder"
+
+#: people/models/RelationshipLabel.py:35
+msgid "great-grandparent"
+msgstr "overgrootouder"
+
+#: people/models/RelationshipLabel.py:36
+msgid "great-great-grandfather"
+msgstr "betovergrootvader"
+
+#: people/models/RelationshipLabel.py:36
+msgid "great-great-grandmother"
+msgstr "betovergrootmoeder"
+
+#: people/models/RelationshipLabel.py:36
+msgid "great-great-grandparent"
+msgstr "betovergrootouder"
+
+#: people/models/RelationshipLabel.py:37
+msgid "great-great-great-grandfather"
+msgstr "oudovergrootvader"
+
+#: people/models/RelationshipLabel.py:37
+msgid "great-great-great-grandmother"
+msgstr "oudovergrootmoeder"
+
+#: people/models/RelationshipLabel.py:37
+msgid "great-great-great-grandparent"
+msgstr "oudovergrootouder"
+
+#: people/models/RelationshipLabel.py:38
+msgid "son"
+msgstr "zoon"
+
+#: people/models/RelationshipLabel.py:38
+msgid "daughter"
+msgstr "dochter"
+
+#: people/models/RelationshipLabel.py:38 people/relatives.py:97
+msgid "child"
+msgstr "kind"
+
+#: people/models/RelationshipLabel.py:39
+msgid "grandson"
+msgstr "kleinzoon"
+
+#: people/models/RelationshipLabel.py:39
+msgid "granddaughter"
+msgstr "kleindochter"
+
+#: people/models/RelationshipLabel.py:39
+msgid "grandchild"
+msgstr "kleinkind"
+
+#: people/models/RelationshipLabel.py:40
+msgid "great-grandson"
+msgstr "achterkleinzoon"
+
+#: people/models/RelationshipLabel.py:40
+msgid "great-granddaughter"
+msgstr "achterkleindochter"
+
+#: people/models/RelationshipLabel.py:40
+msgid "great-grandchild"
+msgstr "achterkleinkind"
+
+#: people/models/RelationshipLabel.py:41
+msgid "great-great-grandson"
+msgstr "achter-achterkleinzoon"
+
+#: people/models/RelationshipLabel.py:41
+msgid "great-great-granddaughter"
+msgstr "achter-achterkleindochter"
+
+#: people/models/RelationshipLabel.py:41
+msgid "great-great-grandchild"
+msgstr "achter-achterkleinkind"
+
+#: people/models/RelationshipLabel.py:42
+msgid "great-great-great-grandson"
+msgstr "achter-achter-achterkleinzoon"
+
+#: people/models/RelationshipLabel.py:42
+msgid "great-great-great-granddaughter"
+msgstr "achter-achter-achterkleindochter"
+
+#: people/models/RelationshipLabel.py:42
+msgid "great-great-great-grandchild"
+msgstr "achter-achter-achterkleinkind"
+
+#: people/models/RelationshipLabel.py:43
+msgid "brother"
+msgstr "broer"
+
+#: people/models/RelationshipLabel.py:43
+msgid "sister"
+msgstr "zus"
+
+#: people/models/RelationshipLabel.py:44
+msgid "uncle"
+msgstr "oom"
+
+#: people/models/RelationshipLabel.py:44
+msgid "aunt"
+msgstr "tante"
+
+#: people/models/RelationshipLabel.py:45
+msgid "nephew"
+msgstr "neef"
+
+#: people/models/RelationshipLabel.py:45
+msgid "niece"
+msgstr "nicht"
+
+#: people/models/RelationshipLabel.py:46
+msgid "cousin"
+msgstr "neef of nicht"
+
+#: people/models/RelationshipLabel.py:104
+msgid "You"
+msgstr "Jij"
+
+#: people/models/RelationshipLabel.py:106
+msgid "Your partner"
+msgstr "Je partner"
+
+#: people/models/RelationshipLabel.py:135
+#, python-brace-format
+msgid "Your {label}"
+msgstr "Je {label}"
+
+#: people/relatives.py:38
+msgid "Someone can't be related to themselves."
+msgstr "Iemand kan geen familie van zichzelf zijn."
+
+#: people/relatives.py:44
+msgid "That can't be changed here."
+msgstr "Dat kan hier niet worden gewijzigd."
+
+#: people/relatives.py:84
+#, python-format
+msgid "%(name)s is already linked."
+msgstr "%(name)s is al gekoppeld."
+
+#: people/relatives.py:89
+#, python-format
+msgid "%(name)s already has two parents."
+msgstr "%(name)s heeft al twee ouders."
+
+#: people/relatives.py:91
+msgid "That would make someone their own ancestor."
+msgstr "Dan zou iemand zijn eigen voorouder worden."
+
+#: people/relatives.py:95
+msgid "A parent or child can't also be a partner."
+msgstr "Een ouder of kind kan niet ook een partner zijn."
+
+#: people/relatives.py:100
+#, python-format
+msgid "%(name)s added as %(label)s."
+msgstr "%(name)s toegevoegd als %(label)s."
+
+#: people/relatives.py:111
+msgid "That isn't linked."
+msgstr "Dat is niet gekoppeld."
+
+#: people/relatives.py:115
+#, python-format
+msgid "%(name)s is no longer linked."
+msgstr "%(name)s is niet meer gekoppeld."
+
+#: people/star_signs.py:13
+msgid "Aquarius"
+msgstr "Waterman"
+
+#: people/star_signs.py:14
+msgid "Pisces"
+msgstr "Vissen"
+
+#: people/star_signs.py:15
+msgid "Aries"
+msgstr "Ram"
+
+#: people/star_signs.py:16
+msgid "Taurus"
+msgstr "Stier"
+
+#: people/star_signs.py:17
+msgid "Gemini"
+msgstr "Tweelingen"
+
+#: people/star_signs.py:18
+msgid "Cancer"
+msgstr "Kreeft"
+
+#: people/star_signs.py:19
+msgid "Leo"
+msgstr "Leeuw"
+
+#: people/star_signs.py:20
+msgid "Virgo"
+msgstr "Maagd"
+
+#: people/star_signs.py:21
+msgid "Libra"
+msgstr "Weegschaal"
+
+#: people/star_signs.py:22
+msgid "Scorpio"
+msgstr "Schorpioen"
+
+#: people/star_signs.py:23
+msgid "Sagittarius"
+msgstr "Boogschutter"
+
+#: people/star_signs.py:24
+msgid "Capricorn"
+msgstr "Steenbok"
+
+#: people/templates/people/_person_create_fields.html:27
+#, python-format
+msgid "%(connection)s, like %(name)s"
+msgstr "%(connection)s, net als %(name)s"
+
+#: people/templates/people/_person_create_fields.html:36
+msgid "Leave unpressed when the other parent is unknown."
+msgstr "Laat leeg als de andere ouder onbekend is."
+
+#: people/templates/people/_person_row.html:72
+msgid "you came here through this person"
+msgstr "je kwam hier via deze persoon"
+
+#: people/templates/people/_person_row.html:92
+msgid "Their portrait is from this photo"
+msgstr "Hun portret komt van deze foto"
+
+#: people/templates/people/_similar.html:11
+#, python-format
+msgid "Already in the archive? %(counter)s person with these names"
+msgid_plural "Already in the archive? %(counter)s people with these names"
+msgstr[0] "Al in het archief? %(counter)s persoon met deze namen"
+msgstr[1] "Al in het archief? %(counter)s personen met deze namen"
+
+#: people/templates/people/_similar.html:23
+msgid "more - add a name to narrow down"
+msgstr "meer - voeg een naam toe om te verfijnen"
+
+#: people/templates/people/person_create.html:18
+#, python-format
+msgid "Will be added as a parent of %(name)s."
+msgstr "Wordt toegevoegd als ouder van %(name)s."
+
+#: people/templates/people/person_create.html:19
+#, python-format
+msgid "Will be added as a partner of %(name)s."
+msgstr "Wordt toegevoegd als partner van %(name)s."
+
+#: people/templates/people/person_create.html:20
+#, python-format
+msgid "Will be added as a child of %(name)s."
+msgstr "Wordt toegevoegd als kind van %(name)s."
+
+#: people/templates/people/person_create.html:33
+msgid "Birth, death, family and the biography come next, on their page."
+msgstr ""
+"Geboorte, overlijden, familie en het levensverhaal volgen daarna, op hun "
+"pagina."
+
+#: people/templates/people/person_detail.html:41
+msgid "Relevant to the archive, but not related to the family"
+msgstr "Van belang voor het archief, maar geen familie"
+
+#: people/templates/people/person_detail.html:41
+msgid "A relation is suspected but not yet known"
+msgstr "Er wordt een verwantschap vermoed, maar die is nog niet bekend"
+
+#: people/templates/people/person_detail.html:70
+msgid "also known as"
+msgstr "ook bekend als"
+
+#: people/templates/people/person_detail.html:108
+msgid "relationships"
+msgstr "familie"
+
+#: people/templates/people/person_list.html:20 templates/navigation.html:45
+msgid "add person"
+msgstr "persoon toevoegen"
+
+#: people/templates/people/person_list.html:25
+#: people/templates/people/person_list.html:26
+msgid "search by name"
+msgstr "zoek op naam"
+
+#: people/templates/people/person_list.html:33
+msgid "show"
+msgstr "tonen"
+
+#: people/templates/person/_relative_picker.html:26
+msgid "partner of the known parent"
+msgstr "partner van de bekende ouder"
+
+#: people/templates/person/_relative_picker.html:26
+msgid "other parent of a sibling"
+msgstr "andere ouder van een broer of zus"
+
+#: people/templates/person/blocks/biography.html:10
+msgid "No biography yet."
+msgstr "Nog geen levensverhaal."
+
+#: people/templates/person/blocks/birth.html:12
+msgid "born"
+msgstr "geboren"
+
+#: people/templates/person/blocks/birth.html:14
+#: people/templates/person/blocks/death.html:16
+msgid "add date"
+msgstr "datum toevoegen"
+
+#: people/templates/person/blocks/birth.html:19
+msgid "add birth record"
+msgstr "geboorte toevoegen"
+
+#: people/templates/person/blocks/death.html:14
+msgid "died"
+msgstr "overleden"
+
+#: people/templates/person/blocks/death.html:21
+msgid "add death record"
+msgstr "overlijden toevoegen"
+
+#: people/templates/person/forms/portrait.html:39
+#: people/templates/person/forms/portrait.html:49
+msgid "whole photo"
+msgstr "hele foto"
+
+#: people/templates/person/forms/portrait.html:43
+msgid "from"
+msgstr "van"
+
+#: people/templates/person/forms/portrait.html:51
+msgid ""
+"Drag or scroll to move, pinch or Ctrl + scroll to zoom. The square is the "
+"portrait; the circle shows the avatar."
+msgstr ""
+"Sleep of scroll om te verplaatsen, knijp of Ctrl + scroll om te zoomen. Het "
+"vierkant is het portret; de cirkel toont de avatar."
+
+#: people/templates/person/functions/get_children.html:9
+msgid "children"
+msgstr "kinderen"
+
+#: people/templates/person/functions/get_children.html:16
+msgid "other parent not recorded"
+msgstr "andere ouder niet bekend"
+
+#: people/templates/person/functions/get_children.html:26
+msgid "add a child"
+msgstr "kind toevoegen"
+
+#: people/templates/person/functions/get_parents.html:9
+msgid "parents"
+msgstr "ouders"
+
+#: people/templates/person/functions/get_parents.html:15
+msgid "add a parent"
+msgstr "ouder toevoegen"
+
+#: people/templates/person/functions/get_partners.html:9
+msgid "partners"
+msgstr "partners"
+
+#: people/templates/person/functions/get_partners.html:15
+msgid "add a partner"
+msgstr "partner toevoegen"
+
+#: people/templates/person/functions/get_siblings.html:3
+msgid "siblings"
+msgstr "broers en zussen"
+
+#: people/templates/person/functions/get_visible_content.html:20
+msgid "related content"
+msgstr "verwante stukken"
+
+#: people/templates/person/functions/get_visible_content.html:21
+msgid "Documenting their events - not linked to them."
+msgstr "Bewijs bij hun gebeurtenissen - niet aan hen gekoppeld."
+
+#: people/templates/person/functions/get_visible_events.html:20
+msgid "with historic events"
+msgstr "met historische gebeurtenissen"
+
+#: people/templates/person/functions/get_visible_events.html:21
+msgid "own events"
+msgstr "eigen gebeurtenissen"
+
+#: people/templates/person/functions/get_visible_events.html:28
+msgid "No events yet."
+msgstr "Nog geen gebeurtenissen."
+
+#: people/templates/person/person_list.html:20
+msgid "jump to letter"
+msgstr "naar letter"
+
+#: people/templates/person/person_list.html:48
+msgid "no one matches"
+msgstr "niemand gevonden"
+
+#: people/templates/person/person_list.html:54
+msgid "no one to show yet"
+msgstr "nog niemand te zien"
+
+#: people/templates/person/person_list.html:55
+msgid ""
+"Most of this archive is visible to signed-in family and community members. "
+"Sign in to see the full list."
+msgstr ""
+"Het meeste in dit archief is zichtbaar voor ingelogde familie en leden. Log "
+"in om de hele lijst te zien."
+
+#: people/templates/person/person_list.html:62
+msgid "no people in the archive yet"
+msgstr "nog geen personen in het archief"
+
+#: people/timeline.py:77
+msgctxt "relation"
+msgid "son"
+msgstr "zoon"
+
+#: people/timeline.py:77
+msgctxt "relation"
+msgid "daughter"
+msgstr "dochter"
+
+#: people/timeline.py:78
+msgctxt "relation"
+msgid "father"
+msgstr "vader"
+
+#: people/timeline.py:78
+msgctxt "relation"
+msgid "mother"
+msgstr "moeder"
+
+#: people/timeline.py:79
+msgctxt "relation"
+msgid "husband"
+msgstr "echtgenoot"
+
+#: people/timeline.py:79
+msgctxt "relation"
+msgid "wife"
+msgstr "echtgenote"
+
+#: people/timeline.py:81
+msgctxt "relation"
+msgid "child"
+msgstr "kind"
+
+#: people/timeline.py:81
+msgctxt "relation"
+msgid "parent"
+msgstr "ouder"
+
+#: people/timeline.py:81
+msgctxt "relation"
+msgid "partner"
+msgstr "partner"
+
+#: people/timeline.py:102
+#, python-format
+msgid "aged %(years)s"
+msgstr "%(years)s jaar oud"
+
+#: people/timeline.py:103
+#, python-format
+msgid "about %(years)s"
+msgstr "ongeveer %(years)s"
+
+#: people/views/PersonCreateView.py:73
+#, python-format
+msgid "Added, but not linked: %(error)s"
+msgstr "Toegevoegd, maar niet gekoppeld: %(error)s"
+
+#: people/views/PersonCreateView.py:75
+#, python-format
+msgid "Added, but not linked: you may not change %(name)s."
+msgstr "Toegevoegd, maar niet gekoppeld: je mag %(name)s niet wijzigen."
+
+#: people/views/PersonCreateView.py:76
+#, python-format
+msgid "%(name)s added."
+msgstr "%(name)s toegevoegd."
+
+#: people/views/PersonListView.py:25 templates/navigation.html:40
+msgid "outsiders"
+msgstr "buitenstaanders"
+
+#: places/forms.py:28 places/templates/place/blocks/alias.html:7
+msgid "also written as"
+msgstr "ook geschreven als"
+
+#: places/forms.py:29
+msgid ""
+"Another spelling or language for the same place in the same time - e.g. "
+"Indonesië / Indonesia. A name from another era is a place of its own: add it"
+" under “in another era”."
+msgstr ""
+"Een andere spelling of taal voor dezelfde plaats in dezelfde tijd - bijv. "
+"Indonesië / Indonesia. Een naam uit een andere tijd is een plaats op zich: "
+"voeg die toe onder “in een andere tijd”."
+
+#: places/forms.py:49
+msgid "lies in"
+msgstr "ligt in"
+
+#: places/forms.py:52
+msgid "nowhere - a country or region of its own"
+msgstr "nergens - een eigen land of gebied"
+
+#: places/models.py:21
+msgid ""
+"Alternate spelling/language for the same place at the same time - e.g. "
+"Indonesië / Indonesia"
+msgstr ""
+"Andere spelling of taal voor dezelfde plaats in dezelfde tijd - bijv. "
+"Indonesië / Indonesia"
+
+#: places/models.py:25
+msgid ""
+"Other Place records for the same location in a different era - e.g. Batavia "
+"/ Jakarta"
+msgstr ""
+"Andere plaatsen voor dezelfde plek in een andere tijd - bijv. Batavia / "
+"Jakarta"
+
+#: places/models.py:81
+msgid "A place can't lie within itself or one of its own places."
+msgstr ""
+"Een plaats kan niet in zichzelf of in een van haar eigen plaatsen liggen."
+
+#: places/places.py:103
+#, python-format
+msgid "There are several places called “%(name)s” - choose one from the list."
+msgstr ""
+"Er zijn meerdere plaatsen die “%(name)s” heten - kies er een uit de lijst."
+
+#: places/places.py:110
+msgid "You may not add a place."
+msgstr "Je mag geen plaats toevoegen."
+
+#: places/templates/field/places/name.html:1
+msgid "additional name(s)"
+msgstr "andere naam of namen"
+
+#: places/templates/place/_count.html:5
+#: places/templates/place/place_detail.html:31
+#, python-format
+msgid "%(counter)s event"
+msgid_plural "%(counter)s events"
+msgstr[0] "%(counter)s gebeurtenis"
+msgstr[1] "%(counter)s gebeurtenissen"
+
+#: places/templates/place/blocks/alias.html:9
+msgid "No other spelling."
+msgstr "Geen andere spelling."
+
+#: places/templates/place/blocks/parent.html:11
+msgid "lies nowhere - a country or region of its own"
+msgstr "ligt nergens - een eigen land of gebied"
+
+#: places/templates/place/place_detail.html:39
+msgid "in another era"
+msgstr "in een andere tijd"
+
+#: places/templates/place/place_detail.html:42
+msgid "add the same place in another era"
+msgstr "dezelfde plaats in een andere tijd toevoegen"
+
+#: places/templates/place/place_detail.html:50
+#, python-format
+msgid "places in %(name)s"
+msgstr "plaatsen in %(name)s"
+
+#: places/templates/place/place_detail.html:76
+msgid "nothing here yet"
+msgstr "hier nog niets"
+
+#: places/templates/place/place_overview.html:18
+msgid "Edit mode: every place is listed, also those with nothing there yet."
+msgstr "Bewerkmodus: elke plaats staat erbij, ook die waar nog niets is."
+
+#: places/templates/place/place_overview.html:24
+msgid "other places"
+msgstr "andere plaatsen"
+
+#: places/templates/place/place_overview.html:41
+msgid "no places yet"
+msgstr "nog geen plaatsen"
+
+#: templates/branding.html:3
+msgid "Arne Coomans on Github"
+msgstr "Arne Coomans op GitHub"
+
+#: templates/branding.html:3
+msgid "FMlY on GitHub"
+msgstr "FMLY op GitHub"
+
+#: templates/branding.html:4
+msgid "cookie statement"
+msgstr "cookieverklaring"
+
+#: templates/header.html:30
+msgid "You have unsaved changes. Leave edit mode and lose them?"
+msgstr ""
+"Je hebt niet-opgeslagen wijzigingen. Bewerkmodus verlaten en ze kwijtraken?"
+
+#: templates/header.html:34
+msgid "stop editing"
+msgstr "stoppen met bewerken"
+
+#: templates/header.html:34
+msgid "edit this archive"
+msgstr "dit archief bewerken"
+
+#: templates/header.html:35
+msgid "editing"
+msgstr "bewerken"
+
+#: templates/header.html:49
+msgid "you"
+msgstr "jij"
+
+#: templates/header.html:51
+msgid "my record"
+msgstr "mijn gegevens"
+
+#: templates/header.html:54
+msgid "profile"
+msgstr "profiel"
+
+#: templates/header.html:60
+msgid "staff"
+msgstr "beheer"
+
+#: templates/header.html:70
+msgid "open django admin"
+msgstr "Django-beheer openen"
+
+#: templates/header.html:72
+msgid "edit this person in django admin"
+msgstr "deze persoon bewerken in Django-beheer"
+
+#: templates/header.html:75
+msgid "edit this content in django admin"
+msgstr "dit stuk bewerken in Django-beheer"
+
+#: templates/header.html:78
+msgid "edit this tag in django admin"
+msgstr "deze tag bewerken in Django-beheer"
+
+#: templates/header.html:81
+msgid "edit this event in django admin"
+msgstr "deze gebeurtenis bewerken in Django-beheer"
+
+#: templates/header.html:84
+msgid "edit this place in django admin"
+msgstr "deze plaats bewerken in Django-beheer"
+
+#: templates/header.html:87
+msgid "edit this note in django admin"
+msgstr "deze notitie bewerken in Django-beheer"
+
+#: templates/header.html:95
+msgid "log out"
+msgstr "uitloggen"
+
+#: templates/navigation.html:31
+msgid "more"
+msgstr "meer"

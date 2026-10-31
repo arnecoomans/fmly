@@ -269,7 +269,7 @@ class PreferencesForm(forms.ModelForm):
     fields = ['language', 'superstitious', 'family']
     labels = {'language': _("language"), 'superstitious': _("superstitious"), 'family': _("family")}
     help_texts = {
-      'language': _("Empty: the site's language (English). The Dutch translation of this site is still to come - for now Dutch changes dates and standard texts only."),
+      'language': _("Empty: the site's language (English)."),
       'superstitious': _("Show the star sign of people whose exact birth date is known, on their page."),
       'family': _("They see what you mark visible to 'family'. It works one way: adding someone doesn't make you their family."),
     }
