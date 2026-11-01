@@ -136,8 +136,8 @@ class PersonPortraitForm(forms.ModelForm):
   pasted sideways). "Whole photo" saves the whole photo as the crop (a
   document portrait is only used with a crop); the turn stays. Choosing
   another photo makes that the primary portrait (an earlier one stays a
-  portrait). Any photo the person isn't tagged in is made a portrait from
-  its own page (Content.set_portrait)."""
+  portrait). An image the person isn't on yet: link them there, point
+  them out, "use as portrait" (content.portraits.frame_as_portrait)."""
   dialog_title = _("Portrait")
   block_class = 'person-profile-card__portrait'
 

@@ -299,11 +299,7 @@
           {% else %}
             {% include 'cmnsd/edit/link_picker.html' with model='content' owner=content relation='people' picker_model='person' target='#content-people' label=add_label|capfirst placeholder=add_label|capfirst exclude=person_tokens new_dialog=new_dialog new_param='given_name' new_label=new_label|capfirst can_new=perms.people.add_person %}
           {% endif %}
-          {% if content.file and content.media_type == 'image' %}
-            {# This photo as someone's portrait (Content.set_portrait) - any person; cropping is on their page. #}
-            {% translate "use as portrait of" as portrait_label %}
-            {% include 'cmnsd/edit/link_picker.html' with model='content' owner=content relation='portrait' picker_model='person' target='' label=portrait_label|capfirst placeholder=portrait_label|capfirst|add:' …' exclude='' action='set_portrait' insert='reload' new_dialog='' can_new=False %}
-          {% endif %}
+          {# A portrait from this image: point the person out, then "use as portrait" under it (content/_who_is_where.html); changing one is on their own page. #}
         {% endif %}
       </section>
     {% endif %}

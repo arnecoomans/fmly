@@ -1,6 +1,7 @@
 """
-Making a photo someone's portrait, from the photo's page (edit mode) - the
-logic behind Content.set_portrait. Cropping it is done on the person's page
+Making an image someone's portrait - the logic behind Content.set_portrait,
+used by "use as portrait" under the image (frame_as_portrait: someone
+pointed out, without a portrait yet). Cropping it is done on the person's page
 (people.forms.PersonPortraitForm).
 
 The photo becomes the person's primary portrait (content.Portrait,
@@ -86,8 +87,9 @@ def portrait_candidates(person, request):
   """The images this person's portrait can be chosen from on their page
   (the crop dialog's strip, people.forms.PersonPortraitForm): the current
   portrait first, then the images they're tagged in, then earlier
-  portraits - only images this viewer may see. Any other photo is made a
-  portrait from its own page (set_portrait)."""
+  portraits - only images this viewer may see. An image they're not on is
+  made their portrait from its own page: link them, point them out, "use
+  as portrait" (frame_as_portrait)."""
   from django.db.models import Q
   from .models import Content
   items = list(

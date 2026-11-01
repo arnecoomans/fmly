@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-01 10:39+0100\n"
+"POT-Creation-Date: 2026-11-01 16:22+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -485,25 +485,25 @@ msgstr "“%(item)s” heeft weer een eigen nummer."
 msgid "“%(item)s” is a separate item again."
 msgstr "“%(item)s” is weer een los stuk."
 
-#: content/portraits.py:31
+#: content/portraits.py:32
 msgid "Only a photo can be a portrait."
 msgstr "Alleen een foto kan een portret zijn."
 
-#: content/portraits.py:34 content/views/upload.py:68 people/relatives.py:36
+#: content/portraits.py:35 content/views/upload.py:68 people/relatives.py:36
 msgid "That person wasn't found."
 msgstr "Die persoon is niet gevonden."
 
-#: content/portraits.py:45
+#: content/portraits.py:46
 #, python-format
 msgid "This photo is now the portrait of %(name)s - crop it on their page."
 msgstr ""
 "Deze foto is nu het portret van %(name)s - snijd het bij op hun pagina."
 
-#: content/portraits.py:73
+#: content/portraits.py:74
 msgid "Point them out with a frame first."
 msgstr "Wijs ze eerst aan met een kader."
 
-#: content/portraits.py:75
+#: content/portraits.py:76
 msgid "This image's size isn't known yet."
 msgstr "De afmetingen van deze afbeelding zijn nog niet bekend."
 
@@ -1082,11 +1082,7 @@ msgstr "personen"
 msgid "add a person"
 msgstr "persoon toevoegen"
 
-#: content/templates/content/content_detail.html:304
-msgid "use as portrait of"
-msgstr "als portret gebruiken van"
-
-#: content/templates/content/content_detail.html:313
+#: content/templates/content/content_detail.html:309
 #: content/templates/content/inbox.html:62 core/search.py:51
 #: dashboard/templates/dashboard/dashboard.html:194
 #: events/templates/event/event_calendar.html:16
@@ -1099,13 +1095,13 @@ msgstr "als portret gebruiken van"
 msgid "events"
 msgstr "gebeurtenissen"
 
-#: content/templates/content/content_detail.html:319
+#: content/templates/content/content_detail.html:315
 #: notes/templates/note/_links.html:12
 #: people/templates/person/functions/get_visible_events.html:34
 msgid "add an event"
 msgstr "gebeurtenis toevoegen"
 
-#: content/templates/content/content_detail.html:320
+#: content/templates/content/content_detail.html:316
 #: events/templates/event/event_overview.html:21
 #: notes/templates/note/_links.html:12
 #: people/templates/person/functions/get_visible_events.html:34

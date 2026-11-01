@@ -28,7 +28,7 @@ In edit mode, on the item's page:
   A tag has a page of its own with everything that carries it; in edit mode its name, description and the tag it sits under can be changed there. Links to the old name keep working.
 - **Source** - where it came from: a person, an archive, a web address.
 - **Thumbnail** - choose the part of the image shown in lists.
-- **Use as portrait of ...** - make this photo someone's avatar.
+- **Portrait** - to make an image someone's avatar: point them out under it, then *use as portrait* (for someone without one yet); to change an existing portrait, the pencil on the avatar on their own page.
 
 When it's complete, **publish** it - it leaves your inbox and is shared.
 
