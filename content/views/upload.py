@@ -42,7 +42,19 @@ def content_upload(request):
   archive already gets the person linked instead - when this user may see
   and change that item - answered as `duplicate` with `linked`: uploading
   on someone's page means "this belongs with them". A person this user
-  may not see (or no such token) is a 400, before anything is stored."""
+  may not see (or no such token) is a 400, before anything is stored.
+
+  Optional `whole` (a token - the dropzone under an item's parts, issue
+  #485): the new item becomes the last part of that item (content/parts.py
+  add_part - the uploads come one by one, in name order, so they land in
+  order). It takes over what's certain to be the same as its whole: its
+  visibility, and for a document or a book the kind document (a page) -
+  not its date, people or places: a page of another year, or with other
+  people on it, says its own. A file in the archive already: a loose item
+  (no part, no parts) this user may change becomes the part - answered as
+  `duplicate` with `linked`; one that's a part here already, or elsewhere,
+  or has parts of its own, is only reported. The whole must be one: an
+  item this user may see and change, not itself a part."""
   if not (request.user.is_authenticated and request.user.has_perm('content.add_content')):
     return api_response(request, status=403, error=_("You may not add content."), errors={'permission': True})
   uploaded = request.FILES.get('file')
@@ -54,6 +66,15 @@ def content_upload(request):
     person = filter_accessible(Person.objects.all(), request).filter(token=request.POST['person']).first()
     if person is None:
       return api_response(request, status=400, error=_("That person wasn't found."), errors={'person': True})
+  whole = None
+  if request.POST.get('whole'):
+    whole = Content.objects.visible_to(request).filter(token=request.POST['whole']).first()
+    if whole is None:
+      return api_response(request, status=400, error=_("That item wasn't found."), errors={'whole': True})
+    if whole.parent_id:
+      return api_response(request, status=400, error=_("%(item)s is itself a part - add to its whole instead.") % {'item': whole}, errors={'whole': True})
+    if not can_edit(whole, request.user):
+      return api_response(request, status=403, error=_("You may not change this item."), errors={'permission': True})
   content, duplicate = create_upload(uploaded, request.user)
   if duplicate is not None:
     visible = Content.objects.visible_to(request).filter(pk=duplicate.pk).exists()
@@ -62,6 +83,14 @@ def content_upload(request):
     if linked and not duplicate.people.filter(pk=person.pk).exists():
       duplicate.people.add(person)
       log_change(request, duplicate, f"Added people: {person} (uploaded again on their page)")
+    if whole is not None:
+      # A loose item becomes the part; one that's a part (here or elsewhere),
+      # or has parts of its own, is only reported - moving it is its own page's choice.
+      loose = not duplicate.parent_id and not duplicate.parts.exists() and duplicate.pk != whole.pk
+      linked = bool(visible and not deleted and loose and can_edit(duplicate, request.user))
+      if linked:
+        from ..parts import add_part
+        add_part(whole, duplicate, request, announce=False)
     return api_response(request, duplicate={
       'name': str(duplicate) if visible else '',
       'url': duplicate.get_absolute_url() if visible else '',
@@ -71,6 +100,15 @@ def content_upload(request):
   if person is not None:
     content.people.add(person)
     log_change(request, content, f"Uploaded, with {person}")
+  elif whole is not None:
+    # Certain to be the same as its whole: who may see it; a page of a document or book is a document.
+    content.visibility = whole.visibility
+    if whole.kind in (Content.Kind.DOCUMENT, Content.Kind.BOOK):
+      content.kind = Content.Kind.DOCUMENT
+    content.save()
+    log_change(request, content, f"Uploaded, as a part of {whole}")
+    from ..parts import add_part
+    add_part(whole, content, request, announce=False)
   else:
     log_change(request, content, "Uploaded")
   return api_response(request, obj=content, created={

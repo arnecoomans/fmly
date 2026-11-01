@@ -66,8 +66,9 @@ def _whole_of(part, request):
   return whole
 
 
-def add_part(whole, part, request):
-  """Make `part` the last part of `whole` (the next number)."""
+def add_part(whole, part, request, announce=True):
+  """Make `part` the last part of `whole` (the next number). `announce`:
+  its message - not for each file of an upload (issue #485)."""
   require_can_edit(whole, request)
   require_can_edit(part, request)
   if part.pk == whole.pk:
@@ -84,7 +85,8 @@ def add_part(whole, part, request):
   _set(part, parent=whole, position=number)
   log_change(request, whole, f"Added part {number}: {part}")
   log_change(request, part, f"Became part {number} of {whole}")
-  messages.success(request, _("“%(item)s” is now part %(number)s.") % {'item': part, 'number': number})
+  if announce:
+    messages.success(request, _("“%(item)s” is now part %(number)s.") % {'item': part, 'number': number})
 
 
 def move_part(part, direction, request):

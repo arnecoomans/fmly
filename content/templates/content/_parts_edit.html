@@ -10,6 +10,8 @@
     along), variant of the whole (0) and back, share the previous number
     (variants of each other) or take its own again, and remove (it
     becomes a separate item again; nothing is deleted).
+  - "add pages": a dropzone - new files become parts of the whole, in name
+    order (content/_upload_for.html, issue #485).
   - "add a part": a picker (cmnsd.js picker.js) - always added to the
     whole, also from a part's page.
   - "make this item a part of...": for an item that is neither a part nor
@@ -41,6 +43,11 @@
         </li>
       {% endfor %}
     </ol>
+  {% endif %}
+
+  {# New files as its parts, in name order after the existing ones (issue #485) - for who may add content. #}
+  {% if perms.content.add_content %}
+    {% include 'content/_upload_for.html' with param='whole' token=parts_whole.token name=parts_whole as_parts=True %}
   {% endif %}
 
   <form class="picker" data-cmnsd-picker="content" data-picker-param="{{ search_character }}" data-picker-exclude="{{ parts_whole.token }}{% for part in edit_part_rows %},{{ part.token }}{% endfor %}"

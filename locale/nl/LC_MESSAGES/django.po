@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-31 16:38+0100\n"
+"POT-Creation-Date: 2026-11-01 10:39+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -270,7 +270,7 @@ msgstr "Vul alle vier de uitsnedewaarden in, of geen."
 msgid "The crop must lie within the image."
 msgstr "De uitsnede moet binnen de afbeelding liggen."
 
-#: content/models/Content.py:376 content/parts.py:74
+#: content/models/Content.py:376 content/parts.py:75
 msgid "An item can't be a part of itself."
 msgstr "Een stuk kan geen deel van zichzelf zijn."
 
@@ -287,7 +287,7 @@ msgstr "Dit stuk heeft zelf delen, dus het kan geen deel worden."
 msgid "%(item)s is itself a part - choose its whole instead."
 msgstr "%(item)s is zelf een deel - kies het geheel."
 
-#: content/models/Content.py:406
+#: content/models/Content.py:406 content/views/upload.py:73
 msgid "That item wasn't found."
 msgstr "Dat stuk is niet gevonden."
 
@@ -411,76 +411,76 @@ msgstr "onderzoek"
 msgid "This item isn't a part of anything."
 msgstr "Dit stuk is geen deel van iets."
 
-#: content/parts.py:76
+#: content/parts.py:77 content/views/upload.py:75
 #, python-format
 msgid "%(item)s is itself a part - add to its whole instead."
 msgstr "%(item)s is zelf een deel - voeg het toe aan het geheel."
 
-#: content/parts.py:78
+#: content/parts.py:79
 #, python-format
 msgid "%(item)s is already a part of this item."
 msgstr "%(item)s is al een deel van dit stuk."
 
-#: content/parts.py:80
+#: content/parts.py:81
 #, python-format
 msgid "%(item)s is already a part of %(whole)s - remove it there first."
 msgstr "%(item)s is al een deel van %(whole)s - haal het daar eerst weg."
 
-#: content/parts.py:82
+#: content/parts.py:83
 #, python-format
 msgid "%(item)s has parts of its own, so it can't become a part."
 msgstr "%(item)s heeft zelf delen, dus het kan geen deel worden."
 
-#: content/parts.py:87
+#: content/parts.py:89
 #, python-format
 msgid "“%(item)s” is now part %(number)s."
 msgstr "“%(item)s” is nu deel %(number)s."
 
-#: content/parts.py:96
+#: content/parts.py:98
 msgid "Unknown direction."
 msgstr "Onbekende richting."
 
-#: content/parts.py:98
+#: content/parts.py:100
 msgid ""
 "A variant of the whole has no place in the order - make it a part first."
 msgstr ""
 "Een variant van het geheel heeft geen plaats in de volgorde - maak er eerst "
 "een deel van."
 
-#: content/parts.py:111
+#: content/parts.py:113
 #, python-format
 msgid "Part %(old)s moved to %(new)s."
 msgstr "Deel %(old)s verplaatst naar %(new)s."
 
-#: content/parts.py:127
+#: content/parts.py:129
 #, python-format
 msgid "“%(item)s” is now a variant of the whole."
 msgstr "“%(item)s” is nu een variant van het geheel."
 
-#: content/parts.py:129
+#: content/parts.py:131
 #, python-format
 msgid "“%(item)s” is a part again."
 msgstr "“%(item)s” is weer een deel."
 
-#: content/parts.py:137
+#: content/parts.py:139
 msgid "There is no previous part to join."
 msgstr "Er is geen vorig deel om bij aan te sluiten."
 
-#: content/parts.py:142
+#: content/parts.py:144
 #, python-format
 msgid "“%(item)s” now shares number %(number)s."
 msgstr "“%(item)s” deelt nu nummer %(number)s."
 
-#: content/parts.py:150
+#: content/parts.py:152
 msgid "This part doesn't share its number."
 msgstr "Dit deel deelt zijn nummer niet."
 
-#: content/parts.py:155
+#: content/parts.py:157
 #, python-format
 msgid "“%(item)s” has its own number again."
 msgstr "“%(item)s” heeft weer een eigen nummer."
 
-#: content/parts.py:165
+#: content/parts.py:167
 #, python-format
 msgid "“%(item)s” is a separate item again."
 msgstr "“%(item)s” is weer een los stuk."
@@ -489,7 +489,7 @@ msgstr "“%(item)s” is weer een los stuk."
 msgid "Only a photo can be a portrait."
 msgstr "Alleen een foto kan een portret zijn."
 
-#: content/portraits.py:34 content/views/upload.py:56 people/relatives.py:36
+#: content/portraits.py:34 content/views/upload.py:68 people/relatives.py:36
 msgid "That person wasn't found."
 msgstr "Die persoon is niet gevonden."
 
@@ -610,45 +610,45 @@ msgid_plural "%(counter)s files: the item and its parts"
 msgstr[0] "%(counter)s bestand: het stuk en zijn delen"
 msgstr[1] "%(counter)s bestanden: het stuk en zijn delen"
 
-#: content/templates/content/_parts_edit.html:25
 #: content/templates/content/_parts_edit.html:27
+#: content/templates/content/_parts_edit.html:29
 msgid "variant of the whole"
 msgstr "variant van het geheel"
 
-#: content/templates/content/_parts_edit.html:25
+#: content/templates/content/_parts_edit.html:27
 #: dashboard/templates/dashboard/housekeeping_confirm.html:27
 msgid "part"
 msgstr "deel"
 
-#: content/templates/content/_parts_edit.html:27
+#: content/templates/content/_parts_edit.html:29
 msgid "variant - shares its number"
 msgstr "variant - deelt zijn nummer"
 
-#: content/templates/content/_parts_edit.html:30
+#: content/templates/content/_parts_edit.html:32
 msgid "earlier"
 msgstr "eerder"
 
-#: content/templates/content/_parts_edit.html:31
+#: content/templates/content/_parts_edit.html:33
 msgid "later"
 msgstr "later"
 
-#: content/templates/content/_parts_edit.html:33
+#: content/templates/content/_parts_edit.html:35
 msgid "give it its own number"
 msgstr "geef het een eigen nummer"
 
-#: content/templates/content/_parts_edit.html:35
+#: content/templates/content/_parts_edit.html:37
 msgid "same number as the previous part (variants of each other)"
 msgstr "zelfde nummer als het vorige deel (varianten van elkaar)"
 
-#: content/templates/content/_parts_edit.html:37
+#: content/templates/content/_parts_edit.html:39
 msgid "make it a part again"
 msgstr "maak er weer een deel van"
 
-#: content/templates/content/_parts_edit.html:37
+#: content/templates/content/_parts_edit.html:39
 msgid "variant of the whole (e.g. a colorized version)"
 msgstr "variant van het geheel (bijv. een ingekleurde versie)"
 
-#: content/templates/content/_parts_edit.html:38
+#: content/templates/content/_parts_edit.html:40
 #, python-format
 msgid ""
 "Remove “%(item)s” from this item? It becomes a separate item again; nothing "
@@ -657,28 +657,28 @@ msgstr ""
 "“%(item)s” uit dit stuk halen? Het wordt weer een los stuk; er wordt niets "
 "verwijderd."
 
-#: content/templates/content/_parts_edit.html:38
+#: content/templates/content/_parts_edit.html:40
 msgid "remove from this item"
 msgstr "uit dit stuk halen"
 
-#: content/templates/content/_parts_edit.html:48
+#: content/templates/content/_parts_edit.html:55
 msgid "add a part"
 msgstr "deel toevoegen"
 
-#: content/templates/content/_parts_edit.html:48
+#: content/templates/content/_parts_edit.html:55
 #, python-format
 msgid "add a part to “%(whole)s”"
 msgstr "deel toevoegen aan “%(whole)s”"
 
-#: content/templates/content/_parts_edit.html:49
+#: content/templates/content/_parts_edit.html:56
 msgid "search content by name"
 msgstr "zoek stukken op naam"
 
-#: content/templates/content/_parts_edit.html:59
+#: content/templates/content/_parts_edit.html:66
 msgid "make this item a part of…"
 msgstr "maak dit stuk een deel van…"
 
-#: content/templates/content/_parts_edit.html:60
+#: content/templates/content/_parts_edit.html:67
 msgid "search for the whole"
 msgstr "zoek het geheel"
 
@@ -726,64 +726,82 @@ msgstr "onvolledig"
 msgid "has a transcript"
 msgstr "heeft een transcriptie"
 
-#: content/templates/content/_upload_for.html:16
+#: content/templates/content/_upload_for.html:20
 #: content/templates/content/upload.html:23
 #: dashboard/templates/dashboard/dashboard.html:147
 msgid "Sending…"
 msgstr "Versturen…"
 
-#: content/templates/content/_upload_for.html:16
+#: content/templates/content/_upload_for.html:20
 msgid "Open"
 msgstr "Openen"
 
-#: content/templates/content/_upload_for.html:17
+#: content/templates/content/_upload_for.html:21
 #: content/templates/content/upload.html:24
 #: dashboard/templates/dashboard/dashboard.html:148
 msgid "Already in the archive:"
 msgstr "Al in het archief:"
 
-#: content/templates/content/_upload_for.html:18
+#: content/templates/content/_upload_for.html:22
+msgid "Already in the archive - added as a part:"
+msgstr "Al in het archief - toegevoegd als deel:"
+
+#: content/templates/content/_upload_for.html:22
 msgid "Already in the archive - linked:"
 msgstr "Al in het archief - gekoppeld:"
 
-#: content/templates/content/_upload_for.html:19
+#: content/templates/content/_upload_for.html:23
 #: dashboard/templates/dashboard/dashboard.html:149
 msgid "Already in the archive (deleted)."
 msgstr "Al in het archief (verwijderd)."
 
-#: content/templates/content/_upload_for.html:20
+#: content/templates/content/_upload_for.html:24
 #: content/templates/content/upload.html:26
 #: dashboard/templates/dashboard/dashboard.html:150
 msgid "Too large for the server."
 msgstr "Te groot voor de server."
 
-#: content/templates/content/_upload_for.html:20
+#: content/templates/content/_upload_for.html:24
 #: content/templates/content/upload.html:26
 #: dashboard/templates/dashboard/dashboard.html:150
 msgid "Not added"
 msgstr "Niet toegevoegd"
 
-#: content/templates/content/_upload_for.html:22
+#: content/templates/content/_upload_for.html:26
+#, python-format
+msgid "Add pages to %(name)s: drop files here, or"
+msgstr "Pagina's toevoegen aan %(name)s: sleep bestanden hierheen, of"
+
+#: content/templates/content/_upload_for.html:26
 #, python-format
 msgid "Add content for %(name)s: drop files here, or"
 msgstr "Stukken toevoegen voor %(name)s: sleep bestanden hierheen, of"
 
-#: content/templates/content/_upload_for.html:23
+#: content/templates/content/_upload_for.html:27
 #: content/templates/content/upload.html:30
 #: dashboard/templates/dashboard/dashboard.html:152
 msgid "choose files"
 msgstr "kies bestanden"
 
-#: content/templates/content/_upload_for.html:27
+#: content/templates/content/_upload_for.html:31
+#, python-format
+msgid "Added as parts of %(name)s, as drafts in your inbox."
+msgstr "Toegevoegd als delen van %(name)s, als concepten in je inbox."
+
+#: content/templates/content/_upload_for.html:31
+msgid "Show the parts"
+msgstr "Toon de delen"
+
+#: content/templates/content/_upload_for.html:31
 #, python-format
 msgid "Added as drafts in your inbox, linked to %(name)s."
 msgstr "Als concept in je inbox gezet, gekoppeld aan %(name)s."
 
-#: content/templates/content/_upload_for.html:28
+#: content/templates/content/_upload_for.html:32
 msgid "Open one above to describe it, or"
 msgstr "Open er hierboven een om te beschrijven, of"
 
-#: content/templates/content/_upload_for.html:28
+#: content/templates/content/_upload_for.html:32
 msgid "open the inbox"
 msgstr "open de inbox"
 
@@ -1552,19 +1570,23 @@ msgstr "Je mag niet transcriberen."
 msgid "Choose where the text should come from."
 msgstr "Kies waar de tekst vandaan moet komen."
 
-#: content/views/upload.py:47
+#: content/views/upload.py:59
 msgid "You may not add content."
 msgstr "Je mag geen stukken toevoegen."
 
-#: content/views/upload.py:50
+#: content/views/upload.py:62
 msgid "No file sent."
 msgstr "Geen bestand verstuurd."
 
-#: content/views/upload.py:185
+#: content/views/upload.py:77
+msgid "You may not change this item."
+msgstr "Je mag dit stuk niet wijzigen."
+
+#: content/views/upload.py:223
 msgid "Choose at least two to make one item."
 msgstr "Kies er minstens twee om er één stuk van te maken."
 
-#: content/views/upload.py:194
+#: content/views/upload.py:232
 #, python-format
 msgid "“%(whole)s” now has %(count)s parts."
 msgstr "“%(whole)s” heeft nu %(count)s delen."
