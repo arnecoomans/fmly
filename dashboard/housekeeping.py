@@ -1,7 +1,7 @@
 """
 Housekeeping (/dashboard/housekeeping/, dashboard.views.HousekeepingView):
 the archive's storage, checked by eye - for staff who may delete content.
-An overview of counts in three groups (SECTIONS), each section a page of
+An overview of counts in groups (SECTIONS), each section a page of
 its own (/dashboard/housekeeping/<section>/).
 
 - revoked, to review: people, content, events and notes pulled back by
@@ -26,6 +26,9 @@ its own (/dashboard/housekeeping/<section>/).
   old categories, a typo, something abandoned - or something meant for
   later (Nieuw Guinea, for the history to come): hence by eye, not in
   .post_update.sh. The "Loose end" tag is never offered.
+- linked twice (records): a person linked to an item that documents an
+  event they took part in - the event shows it on their page already;
+  remove the direct link where it adds nothing.
 
 The hard deletes are purging what's deleted already, removing files nothing
 points to, and unused tags and places; each goes through a confirmation
@@ -39,8 +42,8 @@ from pathlib import Path
 from django.conf import settings
 from django.contrib.admin.models import DELETION, LogEntry
 from django.core.files.storage import default_storage
-from django.db.models import Count, Q
-from django.utils.translation import ngettext
+from django.db.models import Count, F, Q
+from django.utils.translation import gettext_lazy, ngettext
 
 
 def _plural(singular, plural):
@@ -295,14 +298,6 @@ def revoked_items():
   return items
 
 
-# The overview's groups and their sections: (group label, [(section, label,
-# context name, its list)]). A section page renders housekeeping/<section>.html
-# with its list under that context name.
-def _lazy(label):
-  from django.utils.translation import gettext_lazy
-  return gettext_lazy(label)
-
-
 def life_event_conflicts():
   """Births and deaths that break the rule (events.models.life_event_problem):
   someone with two births or two deaths - the second is invisible, every
@@ -324,6 +319,49 @@ def life_event_conflicts():
   return rows
 
 
+def linked_twice():
+  """People linked to an item that also documents an event they took part
+  in - the same thing administered twice: the event already brings the
+  item to their page (related content, "via marriage 1889"). Only where the
+  direct link adds nothing: no role, or subject (a record of that moment);
+  no frame; not a photo - who's on a photo is more than who was there.
+  Not historical events (they aren't anyone's own), nothing deleted. By
+  eye, one at a time - suggest, never auto-set: a link removed here is
+  the item's "×". Per item its events, each with who took part and who of
+  them is linked directly too (under the first such event only, so a link
+  is listed once): [{'content', 'events': [{'event', 'people', 'direct':
+  [{'person', 'role'}]}]}], by item name."""
+  from content.models import Content, ContentPerson
+  from events.models import Event
+  links = list(
+    ContentPerson.objects.filter(
+      role__in=('', ContentPerson.Role.SUBJECT), region_x__isnull=True,
+      content__events__people=F('person'),
+    ).exclude(content__kind=Content.Kind.PHOTO).exclude(content__status=Content.Status.DELETED)
+    .select_related('content', 'person').distinct().order_by('content__name', 'content__pk', 'person__pk')
+  )
+  events_of = defaultdict(list)
+  events = (
+    Event.objects.current().exclude(kind=Event.Kind.HISTORICAL)
+    .filter(content__in={link.content_id for link in links}).distinct()
+    .prefetch_related('people', 'content', 'places').order_by('year', 'month', 'day', 'pk')
+  )
+  for event in events:
+    for item in event.content.all():
+      events_of[item.pk].append(event)
+  groups = {}
+  for link in links:
+    shared = [event for event in events_of[link.content_id] if link.person in event.people.all()]
+    if not shared:
+      continue
+    group = groups.setdefault(link.content_id, {'content': link.content, 'events': {}})
+    row = group['events'].setdefault(shared[0].pk, {'event': shared[0], 'people': list(shared[0].people.all()), 'direct': []})
+    row['direct'].append({'person': link.person, 'role': link.role})
+  for group in groups.values():
+    group['events'] = list(group['events'].values())
+  return list(groups.values())
+
+
 def broken_mentions():
   """Mentions that lead nowhere (cmnsd mention_problems): gone, revoked or
   deleted - remove the link (the words stay), or restore the target."""
@@ -331,25 +369,29 @@ def broken_mentions():
   return mention_problems()
 
 
+# The overview's groups and their sections: (group label, [(section, label,
+# context name, its list)]). A section page renders housekeeping/<section>.html
+# with its list under that context name.
 SECTIONS = (
-  (_lazy("to review"), (
-    ('revoked', _lazy("revoked, to review"), 'revoked', revoked_items),
-    ('deleted', _lazy("deleted items, to purge"), 'deleted', deleted_items),
+  (gettext_lazy("to review"), (
+    ('revoked', gettext_lazy("revoked, to review"), 'revoked', revoked_items),
+    ('deleted', gettext_lazy("deleted items, to purge"), 'deleted', deleted_items),
   )),
-  (_lazy("files"), (
-    ('duplicates', _lazy("same file twice"), 'duplicates', same_file_twice),
-    ('orphans', _lazy("files without a record"), 'orphans', files_without_record),
-    ('missing', _lazy("records without a file"), 'missing', records_without_file),
+  (gettext_lazy("files"), (
+    ('duplicates', gettext_lazy("same file twice"), 'duplicates', same_file_twice),
+    ('orphans', gettext_lazy("files without a record"), 'orphans', files_without_record),
+    ('missing', gettext_lazy("records without a file"), 'missing', records_without_file),
   )),
-  (_lazy("tags and places"), (
-    ('unused-tags', _lazy("unused tags"), 'unused_tags', unused_tags),
-    ('unused-places', _lazy("unused places"), 'unused_places', unused_places),
+  (gettext_lazy("tags and places"), (
+    ('unused-tags', gettext_lazy("unused tags"), 'unused_tags', unused_tags),
+    ('unused-places', gettext_lazy("unused places"), 'unused_places', unused_places),
   )),
-  (_lazy("records"), (
-    ('life-events', _lazy("births and deaths that break the rules"), 'conflicts', life_event_conflicts),
+  (gettext_lazy("records"), (
+    ('life-events', gettext_lazy("births and deaths that break the rules"), 'conflicts', life_event_conflicts),
+    ('linked-twice', gettext_lazy("people linked twice"), 'linked_twice', linked_twice),
   )),
-  (_lazy("texts"), (
-    ('mentions', _lazy("mentions that lead nowhere"), 'mentions', broken_mentions),
+  (gettext_lazy("texts"), (
+    ('mentions', gettext_lazy("mentions that lead nowhere"), 'mentions', broken_mentions),
   )),
 )
 SECTION_BY_NAME = {name: (label, context, find) for _group, sections in SECTIONS for name, label, context, find in sections}

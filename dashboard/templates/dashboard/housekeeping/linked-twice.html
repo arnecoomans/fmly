@@ -1,0 +1,38 @@
+{% load content_tags %}{% load edit_mode %}
+{% comment %}
+  Housekeeping: people linked twice (dashboard/housekeeping.py
+  linked_twice) - linked to an item that also documents an event they took
+  part in, where the direct link adds nothing (no role or subject, no frame,
+  not a photo). The event brings the item to their page already (related
+  content). Per item (_housekeeping_item.html) its events, two columns: the
+  event and who took part; who of them is linked directly too, each a chip
+  with its "×" (cmnsd/edit/unlink.html) - the chip goes when it's removed.
+  By eye: a document can be theirs as well as evidence (a passport) - then
+  keep it.
+{% endcomment %}
+<p class="housekeeping__intro">{% translate "People linked to an item that also documents an event they took part in. The event shows the item on their page already, under related content. Remove the direct link where the item is evidence of that moment - a certificate, an announcement - and keep it where it's theirs: a passport, a diploma, their file." %}</p>
+{% for group in linked_twice %}
+  {% with may_change=group.content|can_edit:request %}
+  <div class="housekeeping__group">
+    {% include 'dashboard/_housekeeping_item.html' with item=group.content %}
+    {% for row in group.events %}
+      <div class="housekeeping__twice">
+        <div class="housekeeping__twice-event">
+          <span class="housekeeping__meta">{% translate "event"|capfirst %}</span>
+          <span><a href="{{ row.event.get_absolute_url }}" target="_blank" rel="noopener">“{{ row.event.label }}”</a>{% with date=row.event|partial_date %}{% if date %} {{ date }}{% endif %}{% endwith %}{% with places=row.event.places.all %}{% if places %}, {{ places.0.name }}{% endif %}{% endwith %}</span>
+          <span><span class="housekeeping__meta">{% translate "took part:" %}</span>
+            {% for person in row.people %}{% if not forloop.first %}, {% endif %}<a href="{{ person.page_url }}" target="_blank" rel="noopener">{{ person.get_full_name }}</a>{% endfor %}</span>
+        </div>
+        <div class="housekeeping__twice-direct">
+          <span class="housekeeping__meta">{% translate "also linked directly:" %}</span>
+          <div class="housekeeping__chips">
+            {% for link in row.direct %}
+              {% if may_change %}<span class="chip-edit">{% endif %}<a class="tag" href="{{ link.person.page_url }}" target="_blank" rel="noopener">{{ link.person.get_full_name }}{% if link.role %} · {{ link.role|role_label }}{% endif %}</a>{% if may_change %}{% include 'cmnsd/edit/unlink.html' with model='content' owner=group.content relation='people' object=link.person %}</span>{% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endwith %}
+{% empty %}<p class="housekeeping__meta">{% translate "None - no one is linked to an item and through its event as well." %}</p>{% endfor %}

@@ -233,3 +233,63 @@ class UnusedTagsAndPlacesTests(TestCase):
     html = client.get('/dashboard/housekeeping/unused-places/').content.decode().replace('"', '')
     self.assertNotIn(f'value={self.lone.token}', html)                            # listed, without a checkbox
     self.assertIn('Nieuw Guinea', html)
+
+
+class LinkedTwiceTests(TestCase):
+  """Housekeeping: people linked to an item that also documents an event
+  they took part in (dashboard/housekeeping.py linked_twice) - only where
+  the direct link adds nothing: no role or subject, no frame, not a photo,
+  not through a historical event."""
+
+  def setUp(self):
+    from events.models import Event
+    from people.models import Person
+    User = get_user_model()
+    self.staff = User.objects.create(username='beheer2', is_staff=True)
+    for codename in ('delete_content', 'change_content'):
+      self.staff.user_permissions.add(Permission.objects.get(codename=codename))
+    self.staff.save()
+    self.client = Client()
+    self.client.force_login(self.staff)
+    person = lambda name: Person.objects.create(given_name=name, user=self.staff, status='p', visibility='c')
+    self.bride, self.groom, self.parent = person('Bruid'), person('Bruidegom'), person('Ouder')
+    self.marriage = Event.objects.create(kind='marriage', year=1889, user=self.staff, status='p')
+    self.marriage.people.add(self.bride, self.groom)
+
+  def item(self, name, kind='document', events=()):
+    item = Content.objects.create(name=name, kind=kind, user=self.staff, status='p', visibility='c')
+    item.events.add(*events)
+    return item
+
+  def found(self):
+    from dashboard.housekeeping import linked_twice
+    return {(group['content'].name, link['person'].given_name) for group in linked_twice() for row in group['events'] for link in row['direct']}
+
+  def test_only_where_the_link_adds_nothing(self):
+    from content.models import ContentPerson
+    from events.models import Event
+    ad = self.item('Advertentie', events=[self.marriage])
+    ad.people.add(self.bride, self.parent)                                       # the parent wasn't on the event
+    ad.people.add(self.groom, through_defaults={'role': 'subject'})
+    letter = self.item('Brief', events=[self.marriage])
+    letter.people.add(self.bride, through_defaults={'role': 'creator'})          # a role that says more
+    photo = self.item('Trouwfoto', kind='photo', events=[self.marriage])
+    photo.people.add(self.bride)                                                 # who's on a photo
+    framed = self.item('Akte', events=[self.marriage])
+    framed.people.add(self.groom)
+    ContentPerson.objects.filter(content=framed).update(region_x=.1, region_y=.1, region_w=.2, region_h=.2)
+    history = Event.objects.create(kind='historical', year=1889, user=self.staff, status='p')
+    history.people.add(self.parent)
+    clipping = self.item('Krant', events=[history])
+    clipping.people.add(self.parent)                                             # history isn't anyone's own
+    self.assertEqual(self.found(), {('Advertentie', 'Bruid'), ('Advertentie', 'Bruidegom')})
+
+  def test_the_page_and_removing_a_link(self):
+    ad = self.item('Advertentie', events=[self.marriage])
+    ad.people.add(self.bride)
+    page = self.client.get('/dashboard/housekeeping/linked-twice/').content.decode()
+    self.assertIn('Advertentie', page)
+    self.assertIn('data-cmnsd-action', page)
+    self.assertIn('Bruidegom', page)                                             # who took part, also when not linked directly
+    ad.people.remove(self.bride)
+    self.assertEqual(self.found(), set())

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-01 16:22+0100\n"
+"POT-Creation-Date: 2026-11-03 11:13+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -1863,6 +1863,7 @@ msgid "person"
 msgstr "persoon"
 
 #: core/templates/comment/_target.html:33
+#: dashboard/templates/dashboard/housekeeping/linked-twice.html:21
 msgid "event"
 msgstr "gebeurtenis"
 
@@ -2220,6 +2221,66 @@ msgstr "afbeeldingen in lage resolutie"
 msgid "places on their own (no parent, nothing under them)"
 msgstr "losse plaatsen (nergens onder, niets eronder)"
 
+#: dashboard/housekeeping.py:376
+msgid "to review"
+msgstr "te beoordelen"
+
+#: dashboard/housekeeping.py:377
+msgid "revoked, to review"
+msgstr "ingetrokken, te beoordelen"
+
+#: dashboard/housekeeping.py:378
+msgid "deleted items, to purge"
+msgstr "verwijderde stukken, definitief op te ruimen"
+
+#: dashboard/housekeeping.py:380
+msgid "files"
+msgstr "bestanden"
+
+#: dashboard/housekeeping.py:381
+msgid "same file twice"
+msgstr "hetzelfde bestand twee keer"
+
+#: dashboard/housekeeping.py:382
+msgid "files without a record"
+msgstr "bestanden zonder stuk"
+
+#: dashboard/housekeeping.py:383
+msgid "records without a file"
+msgstr "stukken zonder bestand"
+
+#: dashboard/housekeeping.py:385
+msgid "tags and places"
+msgstr "tags en plaatsen"
+
+#: dashboard/housekeeping.py:386
+msgid "unused tags"
+msgstr "ongebruikte tags"
+
+#: dashboard/housekeeping.py:387
+msgid "unused places"
+msgstr "ongebruikte plaatsen"
+
+#: dashboard/housekeeping.py:389
+msgid "records"
+msgstr "gegevens"
+
+#: dashboard/housekeeping.py:390
+msgid "births and deaths that break the rules"
+msgstr "geboortes en overlijdens die de regels breken"
+
+#: dashboard/housekeeping.py:391
+msgid "people linked twice"
+msgstr "personen dubbel gekoppeld"
+
+#: dashboard/housekeeping.py:393
+msgid "texts"
+msgstr "teksten"
+
+#: dashboard/housekeeping.py:394
+msgid "mentions that lead nowhere"
+msgstr "vermeldingen die nergens heen leiden"
+
 #: dashboard/models.py:18
 msgid "The loose end (dashboard/blocks.py LOOSE_ENDS)"
 msgstr "Het losse eindje (dashboard/blocks.py LOOSE_ENDS)"
@@ -2555,6 +2616,33 @@ msgid "None - everyone has at most one birth and one death, each their own."
 msgstr ""
 "Geen - iedereen heeft hooguit één geboorte en één overlijden, elk van "
 "zichzelf."
+
+#: dashboard/templates/dashboard/housekeeping/linked-twice.html:13
+msgid ""
+"People linked to an item that also documents an event they took part in. The"
+" event shows the item on their page already, under related content. Remove "
+"the direct link where the item is evidence of that moment - a certificate, "
+"an announcement - and keep it where it's theirs: a passport, a diploma, "
+"their file."
+msgstr ""
+"Personen gekoppeld aan een stuk dat ook een gebeurtenis bewijst waaraan ze "
+"deelnamen. Via die gebeurtenis staat het stuk al op hun pagina, onder "
+"verwante stukken. Haal de directe koppeling weg waar het stuk bewijs is van "
+"dat moment - een akte, een advertentie - en laat hem staan waar het van hen "
+"is: een paspoort, een diploma, hun dossier."
+
+#: dashboard/templates/dashboard/housekeeping/linked-twice.html:23
+msgid "took part:"
+msgstr "deelnemers:"
+
+#: dashboard/templates/dashboard/housekeeping/linked-twice.html:27
+msgid "also linked directly:"
+msgstr "ook direct gekoppeld:"
+
+#: dashboard/templates/dashboard/housekeeping/linked-twice.html:38
+msgid "None - no one is linked to an item and through its event as well."
+msgstr ""
+"Geen - niemand is zowel aan een stuk als via de gebeurtenis ervan gekoppeld."
 
 #: dashboard/templates/dashboard/housekeeping/mentions.html:10
 msgid ""
@@ -4158,3 +4246,6 @@ msgstr "uitloggen"
 #: templates/navigation.html:31
 msgid "more"
 msgstr "meer"
+
+#~ msgid "via"
+#~ msgstr "via"

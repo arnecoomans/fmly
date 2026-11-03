@@ -1970,6 +1970,15 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .housekeeping__name { font-size: var(--text-sm); }
 .housekeeping__meta { font-size: var(--text-xs); color: var(--color-ink-3); }
 .housekeeping__part { margin: 0 0 0 72px; }
+/* People linked twice: per event of the item two columns - the event and
+   who took part; who of them is linked directly too, chips with their "×".
+   Stacked on a phone. */
+.housekeeping__twice { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2) var(--space-4); margin: 0 0 0 72px; padding: 6px 0; border-top: 1px solid var(--color-border); font-size: var(--text-sm); }
+.housekeeping__twice-event, .housekeeping__twice-direct { display: flex; flex-direction: column; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.housekeeping__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+@media (max-width: 600px) {
+  .housekeeping__twice { grid-template-columns: 1fr; margin-left: 0; }
+}
 .housekeeping__all { display: inline-flex; gap: 6px; align-items: center; margin: 0 0 6px 6px; font-size: var(--text-sm); }
 .housekeeping__nocheck { flex-shrink: 0; width: 13px; }
 .content-detail__deleted { margin: 0 0 var(--space-3); padding: 8px 12px; border-radius: var(--radius-md); background: #6b1d1d; color: #fff; font-size: var(--text-sm); }
