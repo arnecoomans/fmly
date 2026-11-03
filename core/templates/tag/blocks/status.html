@@ -1,0 +1,6 @@
+{% load edit_mode %}
+{% comment %}
+  The tag's status - a choice block, edit mode only (tag_detail.html's
+  choices panel): publish, back to draft, revoke or delete - saved on click.
+{% endcomment %}
+{% edit_choices tag 'status' %}

@@ -9,11 +9,13 @@
 - **Comment visibility** - each comment shows who may read it; a new comment takes its item's visibility, may be narrower, never wider; changeable by its author or staff in edit mode. Changing an item's visibility changes no comment by itself: a notice offers to narrow the wider ones (or, made wider, to widen the narrower ones: your own, or as staff all of them), and the loose end *comments wider than their item* shows where an item was narrowed after them - on purpose, or by mistake ([#481](https://github.com/arnecoomans/fmly/issues/481))
 - **A document's pages, gathered** - the whole's page shows the people and events of its pages: *on its pages*, *documented by its pages*, each with the page number
 - **Make an event from an item** - under *Events* in edit mode: one dialog makes the event a dated item documents, on its date, its name as the title to rewrite, with its places and people to tick; who it replaces moves from the item to the event, who's on it or made it stays on both. On a page of a document, that page is the proof ([#487](https://github.com/arnecoomans/fmly/issues/487))
+- **A tag's visibility and status** - on its page in edit mode, as for an item: who may see it, and publish a concept. A parent you may not see doesn't exist for you: its children read as tags of their own - in chips, the picker, search, the path on their page and /tags/; the parent's page says how many of its tags are wider
 - **People linked twice** - Housekeeping lists people linked to a document that also documents their event: the event shows it on their page already, so the direct link can go where the document is evidence, not theirs. The rule - evidence to the event, what's theirs to the person - in the usage docs
 - **Tag counts** - a tag counts the people and notes it holds too, not only items: *Loose end* on three people no longer says 0
 - **Quiet transcripts on photos** - on a photo, an object or a recording the transcript shows once there is one; in edit mode a small *+ transcript*
 
 ### Under the hood
+- [Bugfix] A parent made from a typed path ("Indozoektpost: 04" in a tag picker) started as a concept no one saw: it now starts as its child - published, as visible (cmnsd `HierarchyMixin`)
 - cmnsd: `RegionMixin` (a box on an image as fractions), `regions.js` (linked regions, marking on an image), `gallery.js` (which item shows)
 - Person rows: their visibility, portrait and pointed-out icons in one line under the name; the row's styles in `components.css` (also loaded on an item's page)
 - Web hosting: a Memory section - swap, and the next steps if a large scan still runs the server out of memory

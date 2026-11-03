@@ -1,0 +1,16 @@
+{% load edit_mode %}
+{% comment %}
+  The tag's visibility - a choice block, edit mode only (tag_detail.html's
+  choices panel): saved on click (cmnsd/edit/choices.html). Under it, when
+  tags directly under it are visible to more people (Tag.wider_children):
+  how many - to those viewers they read as tags of their own. Only said,
+  nothing to click: a private administration above published tags is
+  meant that way, and a mistake is fixed on the child.
+{% endcomment %}
+{% edit_choices tag 'visibility' %}
+{% with wider=tag.wider_children %}{% if wider %}
+  <div class="comments-wider-notice">
+    <p>{% blocktranslate count counter=wider|length with level=tag.get_visibility_display|lower %}{{ counter }} tag under it is visible to more people than this ({{ level }}) - to them it reads as a tag of its own.{% plural %}{{ counter }} tags under it are visible to more people than this ({{ level }}) - to them they read as tags of their own.{% endblocktranslate %}</p>
+    <p class="comments-wider-notice__hint">{% for child in wider %}{% if not forloop.first %} · {% endif %}<a href="{{ child.get_absolute_url }}">{{ child.name }}</a> ({{ child.get_visibility_display|lower }}){% endfor %}</p>
+  </div>
+{% endif %}{% endwith %}

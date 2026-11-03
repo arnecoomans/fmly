@@ -286,6 +286,23 @@ class TagEditingTests(TestCase):
     self.assertEqual(self.new_parent(self.tag, 'Iets nieuws').status_code, 400)
     self.assertFalse(Tag.objects.filter(name='Iets nieuws').exists())
 
+  def test_visibility_and_status_on_the_page(self):
+    html = self.client.get(self.tag.get_absolute_url()).content.decode().replace('"', '')
+    for block in ('visibility', 'status'):
+      self.assertIn(f'data-cmnsd-edit-name={block} ', html)
+    self.assertEqual(self.save(self.tag, 'visibility', visibility='f').status_code, 200)
+    self.tag.refresh_from_db()
+    self.assertEqual(self.tag.visibility, 'f')
+    concept = Tag.objects.create(name='Indozoektpost', user=self.editor, status='c', visibility='c')
+    self.assertEqual(self.save(concept, 'status', status='p').status_code, 200)    # a concept, published on its page
+    concept.refresh_from_db()
+    self.assertEqual(concept.status, 'p')
+
+  def test_a_typed_path_makes_a_parent_as_its_child(self):
+    child = Tag.objects.create(name='Indozoektpost: 04', user=self.editor, status='p', visibility='f')   # the item's tag picker
+    self.assertEqual((child.name, child.parent.name), ('04', 'Indozoektpost'))
+    self.assertEqual((child.parent.status, child.parent.visibility), ('p', 'f'))   # not a concept no one sees
+
 
 
 class TagCountsPeopleTests(TestCase):
@@ -307,3 +324,53 @@ class TagCountsPeopleTests(TestCase):
     request.user = user
     counted = attach_content_counts([tag], request)[0]
     self.assertEqual((counted.content_count, counted.people_count, counted.note_count, counted.count), (0, 2, 0, 2))
+
+
+class PrivateParentTests(TestCase):
+  """A parent tag this viewer may not see doesn't exist for them (core/
+  tags.py visible_path): its child reads as a tag of its own - in chips,
+  the picker, search, its page's path and /tags/. A private administration
+  above published tags leaks nothing; its owner sees the whole path."""
+
+  def setUp(self):
+    self.owner = get_user_model().objects.create(username='archivaris')
+    self.member = get_user_model().objects.create(username='lid')
+    self.admin_tag = Tag.objects.create(name='Gepubliceerd', user=self.owner, status='p', visibility='q')   # private to its owner
+    self.child = Tag.objects.create(name='Indozoektpost 04', parent=self.admin_tag, user=self.owner, status='p', visibility='c')
+    self.item = Content.objects.create(name='Brief', kind='document', user=self.owner, status='p', visibility='c')
+    self.item.tags.add(self.child)
+    self.client.force_login(self.member)
+
+  def test_the_member_sees_no_trace_of_it(self):
+    for url in (self.item.get_absolute_url(), self.child.get_absolute_url(), '/tags/', '/api/tag/?q=Indozoek&format=picker'):
+      response = self.client.get(url)
+      body = response.json().get('html', '') if url.startswith('/api/') else response.content.decode()
+      self.assertIn('Indozoektpost 04', body, url)
+      self.assertNotIn('Gepubliceerd', body, url)
+    self.assertEqual(self.client.get(self.admin_tag.get_absolute_url()).status_code, 404)
+    from core.tags import tag_overview
+    from django.test import RequestFactory
+    request = RequestFactory().get('/tags/')
+    request.user = self.member
+    groups, loose = tag_overview(request)
+    self.assertEqual(([t.name for t in groups], [t.name for t in loose]), ([], ['Indozoektpost 04']))   # a tag of its own
+    self.assertEqual(self.child.api_display(request), 'Indozoektpost 04')
+
+  def test_its_owner_sees_the_path(self):
+    self.client.force_login(self.owner)
+    self.assertIn('Gepubliceerd', self.client.get(self.child.get_absolute_url()).content.decode())
+    self.assertIn('Gepubliceerd: Indozoektpost 04', self.client.get(self.item.get_absolute_url()).content.decode())
+
+  def test_its_page_says_how_many_are_wider(self):
+    from django.contrib.auth.models import Permission
+    self.owner.user_permissions.add(Permission.objects.get(codename='change_tag'))
+    self.owner.save()
+    self.client.force_login(self.owner)
+    self.client.post('/ui/edit/', {'on': '1', 'next': '/'})
+    Tag.objects.create(name='Concept', parent=self.admin_tag, user=self.owner, status='p', visibility='q')   # as narrow: not counted
+    self.assertEqual(self.admin_tag.wider_children(), [self.child])
+    html = self.client.get(self.admin_tag.get_absolute_url()).content.decode()
+    self.assertIn('1 tag under it is visible to more people', html)
+    self.child.visibility = 'q'
+    self.child.save()
+    self.assertNotIn('visible to more people', self.client.get(self.admin_tag.get_absolute_url()).content.decode())

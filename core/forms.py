@@ -66,6 +66,8 @@ class TagParentForm(forms.ModelForm):
     from cmnsd.models.access import filter_accessible
     from .tags import descendant_tokens
     self.fields['parent'].queryset = filter_accessible(Tag.objects.select_related('parent'), self.request)
+    # Each by the path this user may see - not str()'s full one (core/tags.py visible_path).
+    self.fields['parent'].widget.label = lambda tag: tag.api_display(self.request)
     if self.instance.pk:
       self.fields['parent'].widget.exclude = [self.instance.token, *descendant_tokens(self.instance)]
 
@@ -124,6 +126,17 @@ class TagParentForm(forms.ModelForm):
       if created:
         LogEntry.objects.log_actions(self.request.user.pk, [node], ADDITION, change_message="Created while editing", single_object=True)
     return node
+
+
+class TagVisibilityForm(forms.ModelForm):
+  """Who may see the tag - a choice block, saved on click. The tag's own:
+  what carries it, and the tags under it, keep theirs."""
+  choice = True
+
+  class Meta:
+    model = Tag
+    fields = ['visibility']
+    labels = {'visibility': _("visible to")}
 
 
 class TagDescriptionForm(forms.ModelForm):
@@ -288,3 +301,17 @@ class PreferencesForm(forms.ModelForm):
     names = {account.pk: account_name(account) for account in accounts}
     field.choices = [(account.pk, names[account.pk]) for account in accounts]
     self.fields['language'].choices = [('', _("your browser's language"))] + [c for c in self.fields['language'].choices if c[0]]
+
+
+class TagStatusForm(StatusActionsForm):
+  """Status as actions (StatusActionsForm): publish a concept - a parent
+  made from a typed path before release 26.10.1 started as one - back to
+  draft, staff revoke, owners delete their own. A tag has no comments:
+  revoking asks to confirm, not why."""
+  confirm = {
+    'x': _("Delete this tag? It's hidden from everyone, also from what carries it - it can be recovered in the admin."),
+    'r': _("Revoke this tag? Only staff will see it until it's restored."),
+  }
+
+  class Meta(StatusActionsForm.Meta):
+    model = Tag

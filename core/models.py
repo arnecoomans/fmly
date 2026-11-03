@@ -31,7 +31,26 @@ class Tag(TimestampMixin, StatusMixin, VisibilityMixin, SearchableMixin, BaseTag
     'name': 'core.forms.TagNameForm',
     'parent': 'core.forms.TagParentForm',
     'description': 'core.forms.TagDescriptionForm',
+    'visibility': 'core.forms.TagVisibilityForm',
+    'status': 'core.forms.TagStatusForm',
   }
+
+  def wider_children(self):
+    """The tags directly under it that more people may see than this one -
+    to those viewers they read as tags of their own (core/tags.py
+    visible_path). On purpose or not: said under its visibility in edit
+    mode, never changed by itself. Not deleted ones."""
+    wider = VISIBILITY_ORDER[VISIBILITY_ORDER.index(self.visibility) + 1:] if self.visibility in VISIBILITY_ORDER else ()
+    return list(self.children.filter(visibility__in=wider).exclude(status=self.Status.DELETED).order_by('name'))
+
+  def api_display(self, request):
+    """Its name as this viewer may see it: the path of the tags above it
+    they may see - "Indozoektpost: 04", or "04" when Indozoektpost is
+    private to someone else (core/tags.py visible_path). str() is the full
+    path, for the admin and logs."""
+    from django.conf import settings
+    from .tags import visible_path
+    return getattr(settings, 'CMNSD_PARENT_COMPOUNDER', ': ').join(node.name for node in visible_path(self, request))
 
   def save(self, *args, **kwargs):
     """A renamed tag gets a slug from its new name - the address reads

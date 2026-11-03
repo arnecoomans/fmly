@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
-{% load content_tags %}
+{% load content_tags %}{% load edit_mode %}
 {% comment %}
   A tag's page (core.views.TagDetailView): where it sits as a path
   ("Tags › Collection"), the name and description (editable blocks in edit
-  mode: Tag.api_edit_forms, tag/blocks/) - the context the tag
+  mode: Tag.api_edit_forms, tag/blocks/), and in edit mode its visibility
+  and status - the context the tag
   gives - a cover (the earliest image), then its child tags, the people
   carrying it (above the content: a short list, the grid can be long) and
   its content (the shared content grid, remembered sort).
@@ -27,6 +28,13 @@
         <span class="badge-status badge-status--draft tag-page__status">{{ tag.get_status_display }} · {% translate "not published" %}</span>
       {% endif %}
       {% include 'cmnsd/edit/block.html' with model='tag' obj=tag block='description' %}
+      {% if edit_mode and tag|can_edit:request %}
+        {# Edit mode: who may see it and its status - each saved on click (cmnsd/edit/choices.html). #}
+        <div class="tag-page__choices">
+          {% include 'cmnsd/edit/block.html' with model='tag' obj=tag block='visibility' choice=True %}
+          {% include 'cmnsd/edit/block.html' with model='tag' obj=tag block='status' choice=True %}
+        </div>
+      {% endif %}
       <p class="tag-page__counts">
         {% blocktranslate count counter=items|length %}{{ counter }} item{% plural %}{{ counter }} items{% endblocktranslate %}{% if people %} · {% blocktranslate count counter=people|length %}{{ counter }} person{% plural %}{{ counter }} people{% endblocktranslate %}{% endif %}
       </p>

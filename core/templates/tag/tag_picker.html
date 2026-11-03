@@ -1,4 +1,4 @@
-{% load text_filters %}
+{% load tag_counts %}{% load text_filters %}
 {% comment %}
   Tag picker results (GET api/tag/?q=...&format=picker - cmnsd.js
   picker.js): the first 20 tags this viewer may see, with their parent.
@@ -11,7 +11,7 @@
       {% for tag in shown %}
         <li data-picker-row>
           <button type="button" class="picker-result picker-result--plain" data-picker-choose="{{ tag.token }}" data-picker-name="{{ tag.name }}">
-            <span class="picker-result__name"><i class="bi bi-tag"></i> {% highlight_search search_query %}{% if tag.parent %}{{ tag.parent.name }}: {% endif %}{{ tag.name }}{% endhighlight_search %}</span>
+            <span class="picker-result__name"><i class="bi bi-tag"></i> {% highlight_search search_query %}{% if tag.parent_id %}{% with parent=tag|visible_parent:request %}{% if parent %}{{ parent.name }}: {% endif %}{% endwith %}{% endif %}{{ tag.name }}{% endhighlight_search %}</span>
           </button>
         </li>
       {% endfor %}

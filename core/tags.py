@@ -64,15 +64,19 @@ def tag_overview(request):
   each with .listed_children (the non-empty ones); loose: the other root
   tags. A tag with nothing in it for this viewer is left out, and a
   group with no non-empty children unless it holds content itself. One
-  level of children; deeper levels are on the tag's own page."""
+  level of children; deeper levels are on the tag's own page. A tag whose
+  parent this viewer may not see counts as a root tag."""
   tags = attach_content_counts(filter_accessible(Tag.objects.all(), request), request)
+  # A tag under a parent this viewer may not see is one of its own here (visible_path).
+  shown = {tag.pk for tag in tags}
+  under = lambda tag: tag.parent_id if tag.parent_id in shown else None
   children = defaultdict(list)
   for tag in tags:
-    if tag.parent_id and tag.count:
+    if under(tag) and tag.count:
       children[tag.parent_id].append(tag)
   groups, loose = [], []
   for tag in tags:
-    if tag.parent_id:
+    if under(tag):
       continue
     if children[tag.pk]:
       tag.listed_children = sorted(children[tag.pk], key=_by_name)
@@ -80,6 +84,38 @@ def tag_overview(request):
     elif tag.count:
       loose.append(tag)
   return sorted(groups, key=_by_name), sorted(loose, key=_by_name)
+
+
+def visible_tag_ids(request):
+  """The pks of the tags this viewer may see - once per request (a page
+  shows many chips)."""
+  cached = getattr(request, '_visible_tag_ids', None)
+  if cached is None:
+    cached = set(filter_accessible(Tag.objects.all(), request).values_list('pk', flat=True))
+    if request is not None:
+      request._visible_tag_ids = cached
+  return cached
+
+
+def visible_path(tag, request):
+  """The tag and the parents above it this viewer may see, top first,
+  ending at the tag. A parent they may not see doesn't exist for them:
+  from there up the tag reads as one of its own - no name, no link, no
+  place in /tags/ (a private administration of tags above public ones
+  leaks nothing). [Indozoektpost, 04] - or [04]."""
+  visible = visible_tag_ids(request)
+  chain, seen, node = [tag], {tag.pk}, tag.parent
+  while node is not None and node.pk in visible and node.pk not in seen:
+    chain.append(node)
+    seen.add(node.pk)
+    node = node.parent
+  return list(reversed(chain))
+
+
+def visible_parent(tag, request):
+  """The tag's parent, if this viewer may see it - else None."""
+  path = visible_path(tag, request)
+  return path[-2] if len(path) > 1 else None
 
 
 # The tag that marks something to come back to (made by manage.py
