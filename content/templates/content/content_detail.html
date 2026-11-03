@@ -317,6 +317,11 @@
           {% url 'cmnsd_api:object_create' 'event' as new_event_dialog %}
           {# The new event starts on this item's date (new_event_query; changeable in the dialog). #}
           {% include 'cmnsd/edit/link_picker.html' with model='content' owner=content relation='events' picker_model='event' target='#content-events' label=add_label|capfirst placeholder=add_label|capfirst exclude=event_tokens new_dialog=new_event_dialog|add:new_event_query new_param='title' new_label=new_label|capfirst can_new=perms.events.add_event %}
+          {% if perms.events.add_event and from_item_query %}
+            {# The item as an event's proof: its people and places carried over, the ones it replaces moved (issue #487). Dated items only. #}
+            {% translate "make an event from this item" as to_event %}
+            <button type="button" class="btn btn--secondary btn--sm content-detail__to-event" data-cmnsd-create="{{ new_event_dialog }}{{ from_item_query }}" data-cmnsd-create-title="{{ to_event|capfirst }}" data-cmnsd-create-then="reload"><i class="bi bi-calendar-plus"></i> {{ to_event|capfirst }}</button>
+          {% endif %}
         {% endif %}
       </section>
     {% endif %}

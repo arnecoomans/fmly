@@ -1,7 +1,8 @@
 {% comment %}
   A new event in a dialog (cmnsd object_create, EventCreateForm): what it
   is, when (one line, like an item's date), where, who, and the
-  description; one documenting item can be chosen here, more follow on its page. Who: the person
+  description; from an item, its people and places to tick (EventCreateForm
+  _prepare_item); one documenting item can be chosen here, more follow on its page. Who: the person
   it was started from (named below), their close family to tick, and
   someone else through the picker. For a marriage or a divorce a hint says
   the others are partners (shown by the kind chosen - components.css
@@ -28,8 +29,27 @@
     {% endif %}{% endfor %}
   </div>
   {% for field in form.visible_fields %}{% if field.name in form.date_fields %}{% for error in field.errors %}<p class="edit-form__error">{{ field.label|capfirst }}: {{ error }}</p>{% endfor %}{% endif %}{% endfor %}
+  {# From an item (?from_item=, issue #487): its places and people to tick - who moves and who stays, in the help line. #}
+  {% if 'item_places' in form.fields %}
+    <div class="edit-form__field">
+      <span class="edit-form__label" id="event-item-places-label">{{ form.item_places.label|capfirst }}</span>
+      <div class="toggle-choices" role="group" aria-labelledby="event-item-places-label">
+        {% for option in form.item_places %}<label class="choice-btn toggle-choice">{{ option.tag }}{{ option.choice_label }}</label>{% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  {% if 'item_people' in form.fields %}
+    <div class="edit-form__field">
+      <span class="edit-form__label" id="event-item-people-label">{{ form.item_people.label|capfirst }}</span>
+      <div class="toggle-choices" role="group" aria-labelledby="event-item-people-label">
+        {% for option in form.item_people %}<label class="choice-btn toggle-choice">{{ option.tag }}{{ option.choice_label }}</label>{% endfor %}
+      </div>
+      <small class="edit-form__help">{% translate "Ticked, without a role or as subject: moved from the item to the event - it still shows on their page, through the event. Depicted, creator, addressee, owner or pointed out on it: on the event, and still on the item." %}</small>
+      {% for error in form.item_people.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
+    </div>
+  {% endif %}
   <div class="edit-form__field">
-    <label for="{{ form.place.id_for_label }}">{{ form.place.label|capfirst }}</label>
+    <label for="{{ form.place.id_for_label }}">{% if 'item_places' in form.fields %}{% translate "another place" as another %}{{ another|capfirst }}{% else %}{{ form.place.label|capfirst }}{% endif %}</label>
     {{ form.place }}
   </div>
   {# Who: close family as toggle buttons (as a new child's other parent - people/_person_create_fields.html, but several may be pressed), then anyone else through the picker. #}
@@ -45,7 +65,7 @@
     <label for="{{ form.other_person.id_for_label }}">{% if 'with_people' in form.fields %}{{ form.other_person.label|capfirst }}{% else %}{% translate "with"|capfirst %}{% endif %}</label>
     {{ form.other_person }}
     {% for error in form.other_person.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
-    <small class="edit-form__help event-form__partner-hint">{% if form.linked_person %}{% blocktranslate with name=form.linked_person %}A marriage or divorce is between partners: choose {{ name }}'s partner. Someone who isn't linked as a partner yet becomes one.{% endblocktranslate %}{% else %}{% translate "A marriage or divorce is between partners: choose one here, the other on the event's page." %}{% endif %}</small>
+    {% if not form.item %}<small class="edit-form__help event-form__partner-hint">{% if form.linked_person %}{% blocktranslate with name=form.linked_person %}A marriage or divorce is between partners: choose {{ name }}'s partner. Someone who isn't linked as a partner yet becomes one.{% endblocktranslate %}{% else %}{% translate "A marriage or divorce is between partners: choose one here, the other on the event's page." %}{% endif %}</small>{% endif %}
   </div>
   {% if 'content' in form.fields %}
     {# The evidence to hand, if any - more, with suggestions, on the event's page. #}
@@ -60,6 +80,7 @@
     {{ form.description }}
   </div>
   {% if form.linked_person %}<p class="edit-form__help">{% blocktranslate with name=form.linked_person %}{{ name }} is added to it.{% endblocktranslate %}</p>{% endif %}
+  {% if form.item %}<p class="edit-form__help">{% blocktranslate with item=form.item %}Documented by “{{ item }}”. Its description stays with it.{% endblocktranslate %}</p>{% endif %}
   <p class="edit-form__error" data-cmnsd-error hidden></p>
   <div class="edit-form__actions">
     <button type="submit" class="btn btn--primary btn--sm">{% translate "add"|capfirst %}</button>

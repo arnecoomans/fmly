@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-03 11:13+0100\n"
+"POT-Creation-Date: 2026-11-03 15:59+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -23,7 +23,7 @@ msgstr "naam"
 
 #: content/forms.py:29 content/templates/content/blocks/description.html:10
 #: content/templates/content/blocks/description.html:15 core/forms.py:135
-#: events/forms.py:76 events/forms.py:147 places/forms.py:37
+#: events/forms.py:76 events/forms.py:166 places/forms.py:37
 msgid "description"
 msgstr "beschrijving"
 
@@ -210,7 +210,7 @@ msgstr "anders"
 #: content/models/Content.py:87 content/templates/content/blocks/date.html:10
 #: content/templates/content/blocks/isbn.html:6
 #: content/templates/content/blocks/publication.html:7
-#: content/templates/content/blocks/source.html:7 events/forms.py:113
+#: content/templates/content/blocks/source.html:7 events/forms.py:132
 #: events/templates/event/blocks/date.html:7
 #: notes/templates/note/blocks/date.html:8 people/forms.py:62
 #: people/models/Person.py:34
@@ -847,7 +847,7 @@ msgid "remove %(name)s's frame"
 msgstr "kader van %(name)s verwijderen"
 
 #: content/templates/content/_who_is_where.html:46 core/forms.py:50
-#: events/forms.py:113 events/forms.py:122 events/forms.py:133
+#: events/forms.py:132 events/forms.py:141 events/forms.py:152
 #: people/forms.py:62 places/forms.py:52
 msgid "remove"
 msgstr "verwijderen"
@@ -1108,6 +1108,10 @@ msgstr "gebeurtenis toevoegen"
 msgid "new event"
 msgstr "nieuwe gebeurtenis"
 
+#: content/templates/content/content_detail.html:322
+msgid "make an event from this item"
+msgstr "maak een gebeurtenis van dit stuk"
+
 #: content/templates/content/content_list.html:14
 #: core/templates/tag/_count.html:6 core/templates/tag/tag_detail.html:31
 #: events/templates/event/_event.html:49 places/templates/place/_count.html:5
@@ -1210,7 +1214,7 @@ msgstr "opslaan"
 #: content/templates/content/forms/date.html:23
 #: content/templates/content/forms/thumbnail.html:32
 #: dashboard/templates/dashboard/housekeeping_confirm.html:49
-#: events/templates/event/forms/new.html:66
+#: events/templates/event/forms/new.html:87
 #: people/templates/person/forms/_life_event.html:27
 #: people/templates/person/forms/new.html:12
 #: people/templates/person/forms/portrait.html:50
@@ -2932,53 +2936,66 @@ msgid "Revoke this event? Only staff will see it until it's restored."
 msgstr ""
 "Deze gebeurtenis intrekken? Alleen beheerders zien haar tot ze hersteld is."
 
-#: events/forms.py:110 people/forms.py:59
+#: events/forms.py:126
+msgid "people on the item"
+msgstr "personen op het stuk"
+
+#: events/forms.py:127
+msgid "places of the item"
+msgstr "plaatsen van het stuk"
+
+#: events/forms.py:129 people/forms.py:59
 msgid "place"
 msgstr "plaats"
 
-#: events/forms.py:113 people/forms.py:62 places/forms.py:52
+#: events/forms.py:132 people/forms.py:62 places/forms.py:52
 msgid "search a place"
 msgstr "zoek een plaats"
 
-#: events/forms.py:114 people/forms.py:63 places/forms.py:53
+#: events/forms.py:133 people/forms.py:63 places/forms.py:53
 msgid "+ new place"
 msgstr "+ nieuwe plaats"
 
-#: events/forms.py:118 events/templates/event/forms/new.html:45
+#: events/forms.py:137 events/templates/event/forms/new.html:65
 #: people/templates/people/_person_row.html:99
 #: people/templates/person/functions/get_children.html:14
 msgid "with"
 msgstr "met"
 
-#: events/forms.py:120
+#: events/forms.py:139
 msgid "someone else"
 msgstr "iemand anders"
 
-#: events/forms.py:122
+#: events/forms.py:141
 msgid "search a person"
 msgstr "zoek een persoon"
 
-#: events/forms.py:122
+#: events/forms.py:141
 msgid "no one"
 msgstr "niemand"
 
-#: events/forms.py:131 events/templates/event/event_detail.html:84
+#: events/forms.py:150 events/templates/event/event_detail.html:84
 msgid "documented by"
 msgstr "bewezen door"
 
-#: events/forms.py:133
+#: events/forms.py:152
 msgid "search an item"
 msgstr "zoek een stuk"
 
-#: events/forms.py:133
+#: events/forms.py:152
 msgid "nothing yet"
 msgstr "nog niets"
 
-#: events/forms.py:256
+#: events/forms.py:330
+#, python-format
+msgid "Moved from the item to the event: %(names)s."
+msgstr "Van het stuk naar de gebeurtenis verplaatst: %(names)s."
+
+#: events/forms.py:346
 msgid "You may not change their family."
 msgstr "Je mag hun familie niet wijzigen."
 
-#: events/forms.py:257
+#: events/forms.py:347
 #, python-format
 msgid "%(name)s wasn't linked as a partner: %(reason)s"
 msgstr "%(name)s is niet als partner gekoppeld: %(reason)s"
@@ -3175,7 +3192,22 @@ msgstr "Alles wat er gebeurde, in alle takken van de familie."
 msgid "no events here"
 msgstr "hier geen gebeurtenissen"
 
-#: events/templates/event/forms/new.html:48
+#: events/templates/event/forms/new.html:47
+msgid ""
+"Ticked, without a role or as subject: moved from the item to the event - it "
+"still shows on their page, through the event. Depicted, creator, addressee, "
+"owner or pointed out on it: on the event, and still on the item."
+msgstr ""
+"Aangevinkt, zonder rol of als onderwerp: van het stuk naar de gebeurtenis "
+"verplaatst - via de gebeurtenis staat het nog op hun pagina. Afgebeeld, "
+"maker, geadresseerde, eigenaar of erop aangewezen: op de gebeurtenis, en nog"
+" op het stuk."
+
+#: events/templates/event/forms/new.html:52
+msgid "another place"
+msgstr "nog een plaats"
+
+#: events/templates/event/forms/new.html:68
 #, python-format
 msgid ""
 "A marriage or divorce is between partners: choose %(name)s's partner. "
@@ -3184,7 +3216,7 @@ msgstr ""
 "Een huwelijk of scheiding is tussen partners: kies de partner van %(name)s. "
 "Wie nog niet als partner gekoppeld is, wordt het."
 
-#: events/templates/event/forms/new.html:48
+#: events/templates/event/forms/new.html:68
 msgid ""
 "A marriage or divorce is between partners: choose one here, the other on the"
 " event's page."
@@ -3192,12 +3224,17 @@ msgstr ""
 "Een huwelijk of scheiding is tussen partners: kies er hier een, de ander op "
 "de pagina van de gebeurtenis."
 
-#: events/templates/event/forms/new.html:62
+#: events/templates/event/forms/new.html:82
 #, python-format
 msgid "%(name)s is added to it."
 msgstr "%(name)s is eraan toegevoegd."
 
-#: events/templates/event/forms/new.html:65
+#: events/templates/event/forms/new.html:83
+#, python-format
+msgid "Documented by “%(item)s”. Its description stays with it."
+msgstr "Bewezen door “%(item)s”. De beschrijving blijft bij het stuk."
+
+#: events/templates/event/forms/new.html:86
 #: people/templates/people/person_create.html:32
 #: people/templates/person/forms/new.html:11
 msgid "add"

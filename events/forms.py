@@ -105,7 +105,26 @@ class EventCreateForm(forms.ModelForm):
   expected to be partners (the form hints so - event/forms/new.html): one
   who isn't yet is linked as a partner on save, through people/relatives.py
   with its own permission check and rules; a refusal leaves the event as it
-  is, with the reason as a message."""
+  is, with the reason as a message.
+
+  From an item (?from_item=<token> - "make an event from this item", issue
+  #487): an item this user may see and change, the page they're on (a
+  part, not its whole). The item is linked as "documented by" on save; its
+  people and places to tick. Ticked by role: no role or subject - moved
+  (on the event, the item's own link removed: the event brings the item
+  to their page, as related content); depicted - copied (who's on a photo
+  is more than who was there); creator, addressee, owner - not ticked, and
+  copied when ticked (they say something about the item). Someone with a
+  frame is never moved. The description stays with the item. A refused
+  event (a second birth) moves nothing: the form isn't valid."""
+  # Roles whose link to the item the event replaces - moved, not copied.
+  MOVED_ROLES = ('', 'subject')
+  # Ticked to start with: the moved ones, and who's on it.
+  TICKED_ROLES = ('', 'subject', 'depicted', 'possibly_depicted')
+
+  from_item = forms.CharField(required=False, widget=forms.HiddenInput)
+  item_people = forms.MultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple, label=_("people on the item"))
+  item_places = forms.MultipleChoiceField(required=False, widget=forms.CheckboxSelectMultiple, label=_("places of the item"))
   place = forms.ModelChoiceField(
     Place.objects.select_related('parent'), to_field_name='token', required=False, label=_("place"),
     widget=PickerInput(
@@ -152,6 +171,8 @@ class EventCreateForm(forms.ModelForm):
     super().__init__(*args, **kwargs)
     _month_choices(self)
     self.linked_person = None
+    self.item = None
+    self.item_links = {}
 
   def prepare(self):
     """The person from ?person= - only one this user may see - and the
@@ -172,13 +193,57 @@ class EventCreateForm(forms.ModelForm):
       self.fields['with_people'].choices = family
     else:
       del self.fields['with_people']
-    self.fields['other_person'].widget.exclude = [t for t in [getattr(self.linked_person, 'token', None), *(t for t, _l in family)] if t]
+    self._prepare_item(visible)
+    self.fields['other_person'].widget.exclude = [t for t in [
+      getattr(self.linked_person, 'token', None), *(t for t, _l in family), *self.item_links,
+    ] if t]
     # Documented by: an item this user may see; not from an item's page.
     from content.models import Content
-    if not self.is_bound and self.request.GET.get('from_content'):
+    if self.item is not None or (not self.is_bound and self.request.GET.get('from_content')):
       del self.fields['content']
     else:
       self.fields['content'].queryset = Content.objects.visible_to(self.request)
+
+  def _prepare_item(self, visible):
+    """From an item (?from_item=): its people this user may see, each
+    saying whether it moves or stays, and its places - ticked as the
+    class docstring says. Without one (or one this user may not change):
+    neither field."""
+    from cmnsd.edit.mode import can_edit
+    from content.models import Content, ContentPerson
+    token = (self.data.get('from_item') if self.is_bound else self.initial.get('from_item')) or ''
+    item = Content.objects.visible_to(self.request).filter(token=token).first() if token else None
+    if item is None or not can_edit(item, self.request.user):
+      for name in ('from_item', 'item_people', 'item_places'):
+        del self.fields[name]
+      return
+    self.item = item
+    links = ContentPerson.objects.filter(content=item, person__in=visible).select_related('person').order_by('person__given_name', 'pk')
+    self.item_links = {link.person.token: link for link in links}
+    choices, ticked = [], []
+    for token, link in self.item_links.items():
+      name = link.person.get_full_name()
+      role = ContentPerson.Role(link.role).label if link.role else ''
+      label = f"{name} ({role})" if role else name
+      choices.append((token, label))
+      if link.role in self.TICKED_ROLES:
+        ticked.append(token)
+    places = list(item.places.select_related('parent'))
+    if choices:
+      self.fields['item_people'].choices = choices
+      self.fields['item_people'].initial = ticked
+    else:
+      del self.fields['item_people']
+    if places:
+      self.fields['item_places'].choices = [(place.token, place.name) for place in places]
+      self.fields['item_places'].initial = [place.token for place in places]
+    else:
+      del self.fields['item_places']
+
+  def moves(self, link):
+    """Whether ticking this item link moves it to the event (the item's own
+    link removed) rather than copying it."""
+    return link.role in self.MOVED_ROLES and not link.has_region
 
   def _family(self, visible):
     """[(token, "Jacoba Bake (wife)")] - the linked person's partners, then
@@ -200,12 +265,16 @@ class EventCreateForm(forms.ModelForm):
   def chosen_people(self):
     """Everyone the new event is about, besides the linked person: the
     ticked family and the picked someone else."""
-    tokens = self.cleaned_data.get('with_people') or []
+    tokens = [*(self.cleaned_data.get('with_people') or []), *self.ticked_item_tokens()]
     people = list(Person.objects.filter(token__in=tokens)) if tokens else []
     other = self.cleaned_data.get('other_person')
     if other is not None and other not in people and other != self.linked_person:
       people.append(other)
     return people
+
+  def ticked_item_tokens(self):
+    """The item's people ticked - only those offered (item_links)."""
+    return [token for token in self.cleaned_data.get('item_people') or [] if token in self.item_links]
 
   def clean(self):
     from places.places import picked_place
@@ -236,8 +305,29 @@ class EventCreateForm(forms.ModelForm):
     item = self.cleaned_data.get('content')
     if item is not None:
       self.instance.content.add(item)
+    if self.item is not None:
+      self._from_item()
     if self.linked_person is not None and self.instance.kind in self.PARTNER_KINDS:
       self._link_partners(others)
+
+  def _from_item(self):
+    """The item it was made from: linked as "documented by", its ticked
+    places added, and its ticked people that move taken off the item - each
+    logged on it, said in one message."""
+    from django.contrib import messages
+    from cmnsd.edit.log import log_change
+    event, item = self.instance, self.item
+    event.content.add(item)
+    places = self.cleaned_data.get('item_places') or []
+    if places:
+      event.places.add(*item.places.filter(token__in=places))
+    moved = [self.item_links[token] for token in self.ticked_item_tokens() if self.moves(self.item_links[token])]
+    for link in moved:
+      link.delete()
+    if moved:
+      names = ', '.join(link.person.get_full_name() for link in moved)
+      log_change(self.request, item, f"Removed people: {names} (moved to the event {event.label()})")
+      messages.info(self.request, _("Moved from the item to the event: %(names)s.") % {'names': names})
 
   def _link_partners(self, others):
     """A marriage or divorce is between partners: link the ones who aren't

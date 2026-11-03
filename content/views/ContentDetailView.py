@@ -138,6 +138,13 @@ class ContentDetailView(VisibilityViewMixin, DetailView):
     # from_content: the dialog leaves out its own "documented by" - this
     # page's picker links the item once the event is made.
     context['new_event_query'] = '?' + urlencode({**date, 'from_content': 1})
+    # "Make an event from this item" (issue #487): the same dialog, with the
+    # item's people and places to tick; the item is linked on save, and the
+    # page reloads - people may have moved to the event. Only for a dated
+    # item: a quick way for what's known, and a timeline needs the date. Its
+    # name as the title, to rewrite into the event's (a suggestion - kinds
+    # that name themselves don't keep one).
+    context['from_item_query'] = '?' + urlencode({**date, 'title': content.name, 'from_item': content.token}) if content.year else ''
     # A deleted item (only staff get here) is opened to be checked: every
     # section open, whatever is remembered (cmnsd/section.html).
     context['unfold_sections'] = content.status == Content.Status.DELETED
