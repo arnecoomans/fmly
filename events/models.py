@@ -239,9 +239,10 @@ class Event(MentionableSourceMixin, TimestampMixin, TokenMixin, StatusMixin, Own
     shown (event/_event.html, blocks/description.html) nor searched - a
     match would give its words away."""
     from people.models import Person
+    from people.names import initials_q
     named = filter_accessible(Person.objects.all(), request).filter(
       Q(**{contains('given_name'): term}) | Q(**{contains('called_name'): term}) | Q(**{contains('last_name'): term})
-      | Q(**{contains('married_name'): term}) | Q(**{contains('nickname'): term})
+      | Q(**{contains('married_name'): term}) | Q(**{contains('nickname'): term}) | initials_q(term)
     )
     q = Q(people__in=named) | Q(**{contains('places__name'): term})
     if request is not None and request.user.is_authenticated:

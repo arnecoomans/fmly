@@ -72,7 +72,12 @@ def search(request, query, kind=None):
     if not objects:
       continue
     limit = PER_KIND if kind in known else PER_SECTION
-    hits = rank_by_name(objects, query, request)[:limit]
+    hits = rank_by_name(objects, query, request)
+    if name == 'person':
+      # Named by every word (or its initials) before found in a biography:
+      # "A. Coomans" leads with the Coomanses whose given name starts with A.
+      hits = sorted(hits, key=lambda hit: bool(_unexplained(hit, query)))
+    hits = hits[:limit]
     for hit in hits:
       hit.search_snippet = snippet(hit, query, request)
     sections.append(Section(name, label, icon, hits, len(objects), more=len(objects) > limit))
@@ -109,12 +114,21 @@ def _plain(text):
   return ' '.join(_MARKDOWN_MARKS.sub('', text).split())
 
 
+def _unexplained(obj, query):
+  """The search words the object's name doesn't explain - for a person,
+  initials ("P.W.A.") are explained by the given names they match."""
+  from people.models import Person
+  from people.names import matches_initials
+  name = str(obj).casefold()
+  return [term for term in query.split() if term.casefold() not in name
+          and not (isinstance(obj, Person) and matches_initials(obj, term))]
+
+
 def snippet(obj, query, request):
   """'... the words around the hit ...' - when a search word isn't in the
   object's name, from the first of its texts that holds one; '' when the
   name explains the hit."""
-  name = str(obj).casefold()
-  missing = [term for term in query.split() if term.casefold() not in name]
+  missing = _unexplained(obj, query)
   if not missing:
     return ''
   term = missing[0].casefold()

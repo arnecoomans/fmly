@@ -165,6 +165,14 @@ class Person(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, Stat
     from ..privacy import may_open_page
     return self.page_url() if may_open_page(self, user) else None
 
+  @classmethod
+  def api_search_q(cls, term, request=None):
+    """Extra free-text search (cmnsd.api.filtering - the people list, the
+    pickers, @-mentions, /search/): a word written as initials ("P.W.A.",
+    "p. w. a.", "pwa") against the given names (people/names.py)."""
+    from ..names import initials_q
+    return initials_q(term)
+
   def get_list_url(self):
     """Where to go when this person is gone for the viewer (set to
     deleted in edit mode - cmnsd object_form)."""

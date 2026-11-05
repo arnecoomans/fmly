@@ -291,11 +291,13 @@ class Content(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, Sta
     from cmnsd.models.access import filter_accessible
     from cmnsd.models.search import contains
     from people.models import Person
+    from people.names import initials_q
     in_text = models.Q(**{contains('transcripts__text'): term})
     parts = Content.objects.visible_to(request).filter(in_text)
     named = models.Q()
     for field in ('given_name', 'called_name', 'last_name', 'married_name', 'nickname'):
       named |= models.Q(**{contains(field): term})
+    named |= initials_q(term)
     authors = filter_accessible(Person.objects.filter(named), request)
     return in_text | models.Q(parts__in=parts) | models.Q(book_detail__authors__in=authors)
 
