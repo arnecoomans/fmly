@@ -209,6 +209,18 @@ class EventEditingTests(TestCase):
     self.assertEqual(Client().get(self.history.get_absolute_url()).status_code, 200)   # historical: public
     self.assertEqual(Client().get(self.birth.get_absolute_url()).status_code, 404)     # through a signed-in-only person
 
+  def test_a_year_needed_but_for_a_birth_or_death(self):
+    self.assertEqual(self.new(year='').status_code, 400)                          # would vanish from the timeline
+    self.assertFalse(Event.objects.filter(title='Feest').exists())
+    self.assertEqual(self.new(year='', date_qualifier='circa').status_code, 400)   # ca. needs its guess
+    self.assertEqual(self.client.post('/api/event/new/', {'kind': 'death', 'date_qualifier': 'exact'}).status_code, 200)   # a death may be undated
+    marriage = Event.objects.create(kind=Event.Kind.MARRIAGE, year=1940, user=self.editor)
+    self.assertEqual(self.save(marriage, 'date', date_qualifier='exact', year='').status_code, 400)   # nor by editing
+    marriage.refresh_from_db()
+    self.assertEqual(marriage.year, 1940)
+    self.assertEqual(self.save(self.birth, 'date', date_qualifier='exact', year='').status_code, 200)
+    self.assertEqual(self.save(self.birth, 'what', kind='other', title='Verhuizing').status_code, 400)   # undated, it can't become another kind
+
   def test_cards_link_to_the_page(self):
     html = self.client.get('/events/').content.decode().replace('"', '')
     self.assertIn(f'href={self.history.get_absolute_url()}>Inval Japan</a>', html)

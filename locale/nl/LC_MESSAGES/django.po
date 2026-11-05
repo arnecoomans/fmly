@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-03 19:21+0100\n"
+"POT-Creation-Date: 2026-11-04 20:52+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -23,7 +23,7 @@ msgstr "naam"
 
 #: content/forms.py:29 content/templates/content/blocks/description.html:10
 #: content/templates/content/blocks/description.html:15 core/forms.py:148
-#: events/forms.py:76 events/forms.py:166 places/forms.py:37
+#: events/forms.py:100 events/forms.py:190 places/forms.py:37
 msgid "description"
 msgstr "beschrijving"
 
@@ -211,7 +211,7 @@ msgstr "anders"
 #: content/models/Content.py:87 content/templates/content/blocks/date.html:10
 #: content/templates/content/blocks/isbn.html:6
 #: content/templates/content/blocks/publication.html:7
-#: content/templates/content/blocks/source.html:7 events/forms.py:132
+#: content/templates/content/blocks/source.html:7 events/forms.py:156
 #: events/templates/event/blocks/date.html:7
 #: notes/templates/note/blocks/date.html:8 people/forms.py:62
 #: people/models/Person.py:34
@@ -848,7 +848,7 @@ msgid "remove %(name)s's frame"
 msgstr "kader van %(name)s verwijderen"
 
 #: content/templates/content/_who_is_where.html:46 core/forms.py:50
-#: events/forms.py:132 events/forms.py:141 events/forms.py:152
+#: events/forms.py:156 events/forms.py:165 events/forms.py:176
 #: people/forms.py:62 places/forms.py:52
 msgid "remove"
 msgstr "verwijderen"
@@ -2947,11 +2947,18 @@ msgstr ""
 "Zoutaanmaak' of 'Inval Japan Nederlands Indië'. Verplicht bij 'anders'; een "
 "historische gebeurtenis heeft er een nodig om te zeggen wat het is."
 
-#: events/forms.py:77
+#: events/forms.py:43
+msgid ""
+"A year is needed - if you're not sure, give your best guess with “ca.”."
+msgstr ""
+"Een jaar is nodig - weet je het niet zeker, geef dan je beste schatting met "
+"“ca.”."
+
+#: events/forms.py:101
 msgid "What happened, and the sources - Markdown: [bron](https://...)."
 msgstr "Wat er gebeurde, en de bronnen - Markdown: [bron](https://...)."
 
-#: events/forms.py:86
+#: events/forms.py:110
 msgid ""
 "Delete this event? It disappears everywhere, also from timelines - it can be"
 " recovered in the admin."
@@ -2959,71 +2966,71 @@ msgstr ""
 "Deze gebeurtenis verwijderen? Ze verdwijnt overal, ook van tijdlijnen - ze "
 "kan in de beheeromgeving worden hersteld."
 
-#: events/forms.py:87
+#: events/forms.py:111
 msgid "Revoke this event? Only staff will see it until it's restored."
 msgstr ""
 "Deze gebeurtenis intrekken? Alleen beheerders zien haar tot ze hersteld is."
 
-#: events/forms.py:126
+#: events/forms.py:150
 msgid "people on the item"
 msgstr "personen op het stuk"
 
-#: events/forms.py:127
+#: events/forms.py:151
 msgid "places of the item"
 msgstr "plaatsen van het stuk"
 
-#: events/forms.py:129 people/forms.py:59
+#: events/forms.py:153 people/forms.py:59
 msgid "place"
 msgstr "plaats"
 
-#: events/forms.py:132 people/forms.py:62 places/forms.py:52
+#: events/forms.py:156 people/forms.py:62 places/forms.py:52
 msgid "search a place"
 msgstr "zoek een plaats"
 
-#: events/forms.py:133 people/forms.py:63 places/forms.py:53
+#: events/forms.py:157 people/forms.py:63 places/forms.py:53
 msgid "+ new place"
 msgstr "+ nieuwe plaats"
 
-#: events/forms.py:137 events/templates/event/forms/new.html:65
+#: events/forms.py:161 events/templates/event/forms/new.html:65
 #: people/templates/people/_person_row.html:99
 #: people/templates/person/functions/get_children.html:14
 msgid "with"
 msgstr "met"
 
-#: events/forms.py:139
+#: events/forms.py:163
 msgid "someone else"
 msgstr "iemand anders"
 
-#: events/forms.py:141
+#: events/forms.py:165
 msgid "search a person"
 msgstr "zoek een persoon"
 
-#: events/forms.py:141
+#: events/forms.py:165
 msgid "no one"
 msgstr "niemand"
 
-#: events/forms.py:150 events/templates/event/event_detail.html:84
+#: events/forms.py:174 events/templates/event/event_detail.html:84
 msgid "documented by"
 msgstr "bewezen door"
 
-#: events/forms.py:152
+#: events/forms.py:176
 msgid "search an item"
 msgstr "zoek een stuk"
 
-#: events/forms.py:152
+#: events/forms.py:176
 msgid "nothing yet"
 msgstr "nog niets"
 
-#: events/forms.py:330
+#: events/forms.py:357
 #, python-format
 msgid "Moved from the item to the event: %(names)s."
 msgstr "Van het stuk naar de gebeurtenis verplaatst: %(names)s."
 
-#: events/forms.py:346
+#: events/forms.py:373
 msgid "You may not change their family."
 msgstr "Je mag hun familie niet wijzigen."
 
-#: events/forms.py:347
+#: events/forms.py:374
 #, python-format
 msgid "%(name)s wasn't linked as a partner: %(reason)s"
 msgstr "%(name)s is niet als partner gekoppeld: %(reason)s"

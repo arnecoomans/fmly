@@ -31,6 +31,19 @@ WHAT_HELP = {
 }
 
 
+def year_problem(kind, year):
+  """Why an event of this kind can't be without a year, or None. A birth or
+  a death may be undated - it has a place in a life anyway (the start, the
+  end); anything else without a year has no place on any timeline. Not
+  sure: a guess with "ca.". In the forms only - the admin and the legacy
+  import may still store one, and the loose end "events without a date"
+  lists them."""
+  from .models import LIFE_KINDS
+  if kind and kind not in LIFE_KINDS and not year:
+    return _("A year is needed - if you're not sure, give your best guess with “ca.”.")
+  return None
+
+
 def _month_choices(form):
   # An empty month is "unknown", not "- Select an option -".
   form.fields['month'].choices = [('', '—'), *[c for c in form.fields['month'].choices if c[0] != '']]
@@ -52,6 +65,10 @@ class EventWhatForm(forms.ModelForm):
     problem = life_event_problem(kind, self.instance.people.all(), event=self.instance) if self.instance.pk else None
     if problem:
       raise forms.ValidationError(problem)
+    # An undated birth made into another kind would lose its place on the timeline.
+    problem = year_problem(kind, self.instance.year)
+    if problem:
+      raise forms.ValidationError(problem)
     return kind
 
 
@@ -67,6 +84,13 @@ class EventDateForm(forms.ModelForm):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
     _month_choices(self)
+
+  def clean(self):
+    data = super().clean()
+    problem = year_problem(self.instance.kind, data.get('year'))
+    if problem:
+      self.add_error('year', problem)
+    return data
 
 
 class EventDescriptionForm(forms.ModelForm):
@@ -285,6 +309,9 @@ class EventCreateForm(forms.ModelForm):
     problem = life_event_problem(data.get('kind'), people)
     if problem:
       self.add_error('kind', problem)
+    problem = year_problem(data.get('kind'), data.get('year'))
+    if problem:
+      self.add_error('year', problem)
     return data
 
   def save(self, commit=True):
