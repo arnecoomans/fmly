@@ -229,11 +229,9 @@ def _loose_end_queryset(name, request):
   if name == 'photos-without-people':
     return Content.objects.visible_to(request).listable().filter(kind=Content.Kind.PHOTO, people__isnull=True)
   if name == 'undocumented-events':
-    # Proven events: an item documenting it (the event page's "documented
-    # by") - as far as this viewer may see: what they can't see doesn't
-    # count, nor leak. Not history: its source goes in its description.
-    from content.models import Content
-    return documentable_events(events).exclude(content__in=Content.objects.visible_to(request)).distinct()
+    # Not a source cited in the description either: those are documented,
+    # outside the archive (cited_events, shown below the list).
+    return unproven_events(request).exclude(description__iregex=SOURCE_CITED)
   if name == 'wider-comments':
     return wider_comments(request)
   if name == 'people-without-role':
@@ -292,6 +290,34 @@ def documentable_events(events):
   """The events a document can prove: those with people, not history."""
   from events.models import Event
   return events.exclude(kind=Event.Kind.HISTORICAL).filter(people__isnull=False).distinct()
+
+
+def unproven_events(request):
+  """Events an item could prove (documentable_events) without one
+  documenting it (the event page's "documented by") - as far as this
+  viewer may see: what they can't see doesn't count, nor leak. Not
+  history: its source goes in its description."""
+  from content.models import Content
+  from events.models import Event
+  events = filter_accessible(Event.objects.all(), request)
+  return documentable_events(events).exclude(content__in=Content.objects.visible_to(request)).distinct()
+
+
+# A description that cites a source: a link, the word "bron" or "source"
+# ("Bron: IGV: Kleian's adresboek 1917", "[bron](https://www.delpher.nl/...)"),
+# or "Uit:" - documented, outside the archive: a whole adresboek is too much
+# to store for this. Not a detail ("Nabij vliegveld Semarang") or a quoted
+# line with no source named. For SQLite (Python re) and PostgreSQL alike:
+# no \b.
+SOURCE_CITED = r'https?://|(^|[^a-z0-9])(bron|bronnen|source|sources)([^a-z0-9]|$)|(^|[^a-z0-9])uit:'
+
+
+def cited_events(request):
+  """Events without an item documenting them, but with a source in their
+  description (SOURCE_CITED) - the second part of "events without
+  documentation": done, its source outside the archive. The event row
+  shows the description, so what it cites shows with it."""
+  return unproven_events(request).filter(description__iregex=SOURCE_CITED)
 
 
 def events_by_person(events, request):

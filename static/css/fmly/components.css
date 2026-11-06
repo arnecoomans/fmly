@@ -1876,7 +1876,7 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .loose-end-progress { display: flex; flex-direction: row; height: 5px; margin-top: 4px; border-radius: var(--radius-pill); overflow: hidden; background: var(--color-surface-alt); }
 .loose-end-progress__part { display: block; height: 100%; }
 .loose-end-progress__part--done, .loose-end-progress__part--both { background: var(--color-complete-text); }
-.loose-end-progress__part--birth { background: var(--color-accent); }
+.loose-end-progress__part--birth, .loose-end-progress__part--cited { background: var(--color-accent); }
 .loose-end-progress__part--death, .loose-end-progress__part--open { background: var(--color-draft-text); }
 .loose-end-progress__part--none { background: var(--color-border); }
 .tag-page__intro .loose-end-progress { max-width: 420px; margin-top: var(--space-2); }

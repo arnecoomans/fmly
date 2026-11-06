@@ -20,6 +20,12 @@
       {% if bar and not show_dismissed %}{% include 'dashboard/_progress.html' with legend=True %}{% endif %}
     </div>
   </header>
+  {% if kinds|length > 2 %}
+    {# Events: a pill per kind (?kind=, as /events/) - one kind at a time is easier to work through. #}
+    <nav class="content-grid-pills events-page__kinds" aria-label="{% translate 'kind'|capfirst %}">
+      {% for value, label, count in kinds %}<a class="content-grid-pill{% if value == kind %} is-active{% endif %}" href="?{% if show_dismissed %}dismissed=1&amp;{% endif %}kind={{ value }}"{% if value == kind %} aria-current="page"{% endif %}>{{ label|capfirst }} {{ count }}</a>{% endfor %}
+    </nav>
+  {% endif %}
   {% if name == 'marked' %}
     <p class="tag-page__counts">{% translate "Tagged “Loose end” - remove the tag when it's done." %}</p>
     {% if marked.people %}<section class="tag-page__section"><h2 class="section-title">{% translate "people"|capfirst %}</h2><div class="tag-page__people">{% for person in marked.people %}{% include 'people/_person_row.html' with related=person show_visibility=True %}{% endfor %}</div></section>{% endif %}
@@ -74,6 +80,14 @@
     </div>
   {% else %}
     <ol class="events-page__list">{% for event in items %}<li class="event-row loose-end__event">{% include 'event/_event.html' with others=event.people.all %}{% include 'dashboard/_dismiss.html' with item=event %}</li>{% endfor %}</ol>
+  {% endif %}
+  {% if cited %}
+    {# Events without documentation, a source cited in the description (dashboard.blocks.cited_events): done - shown, not to do. #}
+    <section class="tag-page__section">
+      <h2 class="section-title">{% translate "source cited" %} · {{ cited|length }}</h2>
+      <p class="housekeeping__meta">{% translate "Documented outside the archive: a link or “Bron:” in the description. Done - an item is only needed if you want the source here." %}</p>
+      <ol class="events-page__list">{% for event in cited %}<li class="event-row loose-end__event">{% include 'event/_event.html' with others=event.people.all %}</li>{% endfor %}</ol>
+    </section>
   {% endif %}
 </div>
 {% endblock %}

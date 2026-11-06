@@ -1,4 +1,8 @@
+from collections import Counter
+from urllib.parse import urlencode
+
 from django.contrib import messages
+from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.translation import gettext as _, ngettext
@@ -115,8 +119,24 @@ class LooseEndView(TemplateView):
       for item in context['items']:
         item.roleless_people = by_item.get(item.pk, [])
     if name in ('undated-events', 'undocumented-events'):
+      # A pill per kind (?kind=, as /events/): a marriage is easier to find
+      # proof for than a birth. Counts of the list itself.
+      from events.views.EventListView import KINDS
+      counts = Counter(dict(items.model.objects.filter(pk__in=items.values('pk')).values_list('kind').annotate(n=Count('pk')).values_list('kind', 'n')))
+      kind = self.request.GET.get('kind', '')
+      if kind not in counts:
+        kind = ''
+      context['kind'] = kind
+      context['kinds'] = [('', _("all"), sum(counts.values()))] + [(value, label, counts[value]) for value, label in KINDS if counts[value]]
+      if kind:
+        items = items.filter(kind=kind)
+        context['items'] = list(items.distinct()[:300])
       # Each person's together: what's undated or unproven in one life, side by side.
       context['items'] = blocks.events_by_person(items.distinct().filter(pk__in=[e.pk for e in context['items']]), self.request)
+    if name == 'undocumented-events' and not show_dismissed:
+      # Below the list: documented outside the archive - its description says where.
+      cited = blocks.cited_events(self.request)
+      context['cited'] = blocks.events_by_person(cited.filter(kind=kind) if kind else cited, self.request)
     return context
 
 
@@ -150,7 +170,11 @@ class LooseEndView(TemplateView):
       )
       messages.success(request, _("Off the list - fine as it is."))
     url = reverse('dashboard:loose_end', args=[name])
-    return redirect(f'{url}?dismissed=1' if restore else url)
+    # Back to the kind it was dismissed from (?kind=, events).
+    kind = request.GET.get('kind', '')
+    if restore:
+      return redirect(f'{url}?dismissed=1')
+    return redirect(f'{url}?{urlencode({"kind": kind})}' if kind else url)
 
 
 class HousekeepingView(TemplateView):

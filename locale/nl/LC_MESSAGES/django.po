@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 20:52+0100\n"
+"POT-Creation-Date: 2026-11-05 17:38+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -63,9 +63,8 @@ msgstr "Miniatuur"
 
 #: content/forms.py:142 core/forms.py:139
 #: core/templates/comment/comment.html:36
-#: core/templates/comment/comment.html:40
-#: core/templates/comment/thread.html:26 notes/forms.py:87 people/forms.py:269
-#: people/forms.py:292
+#: core/templates/comment/comment.html:40 core/templates/comment/thread.html:26
+#: notes/forms.py:87 people/forms.py:269 people/forms.py:292
 msgid "visible to"
 msgstr "zichtbaar voor"
 
@@ -85,8 +84,9 @@ msgstr ""
 "Waarom wordt dit stuk ingetrokken? Alleen beheerders zien het tot het "
 "hersteld is; je reden blijft erbij als opmerking."
 
-#: content/forms.py:171 events/forms.py:25
-#: events/templates/event/event_overview.html:25 notes/forms.py:63
+#: content/forms.py:171 dashboard/templates/dashboard/loose_end.html:25
+#: events/forms.py:25 events/templates/event/event_overview.html:25
+#: notes/forms.py:63
 msgid "kind"
 msgstr "soort"
 
@@ -256,39 +256,39 @@ msgstr "Waar dit vandaan komt: een persoon, archief of webadres"
 #: content/templates/content/inbox.html:18
 #: content/templates/content/upload.html:15 core/search.py:50
 #: core/templates/tag/tag_detail.html:64
-#: dashboard/templates/dashboard/loose_end.html:26
+#: dashboard/templates/dashboard/loose_end.html:32
 #: notes/templates/note/_links.html:11
 #: people/templates/people/person_detail.html:112
 #: places/templates/place/place_detail.html:68
 msgid "content"
 msgstr "stuk"
 
-#: content/models/Content.py:370 content/models/Portrait.py:59
+#: content/models/Content.py:372 content/models/Portrait.py:59
 msgid "Set all four crop values, or none."
 msgstr "Vul alle vier de uitsnedewaarden in, of geen."
 
-#: content/models/Content.py:373 content/models/Portrait.py:61
+#: content/models/Content.py:375 content/models/Portrait.py:61
 msgid "The crop must lie within the image."
 msgstr "De uitsnede moet binnen de afbeelding liggen."
 
-#: content/models/Content.py:376 content/parts.py:75
+#: content/models/Content.py:378 content/parts.py:75
 msgid "An item can't be a part of itself."
 msgstr "Een stuk kan geen deel van zichzelf zijn."
 
-#: content/models/Content.py:378
+#: content/models/Content.py:380
 msgid "That item is itself a part - choose its whole instead."
 msgstr "Dat stuk is zelf een deel - kies het geheel."
 
-#: content/models/Content.py:380
+#: content/models/Content.py:382
 msgid "This item has parts of its own, so it can't become a part."
 msgstr "Dit stuk heeft zelf delen, dus het kan geen deel worden."
 
-#: content/models/Content.py:390
+#: content/models/Content.py:392
 #, python-format
 msgid "%(item)s is itself a part - choose its whole instead."
 msgstr "%(item)s is zelf een deel - kies het geheel."
 
-#: content/models/Content.py:406 content/views/upload.py:73
+#: content/models/Content.py:408 content/views/upload.py:73
 msgid "That item wasn't found."
 msgstr "Dat stuk is niet gevonden."
 
@@ -316,8 +316,7 @@ msgstr "mogelijk afgebeeld"
 msgid "owner"
 msgstr "eigenaar"
 
-#: content/models/Transcript.py:25
-#: content/templates/content/transcribe.html:61
+#: content/models/Transcript.py:25 content/templates/content/transcribe.html:61
 msgid "original"
 msgstr "origineel"
 
@@ -560,7 +559,7 @@ msgstr "bestand nog niet beschikbaar"
 
 #: content/templates/content/_content_grid.html:21
 #: content/templates/content/_content_grid.html:28 core/views.py:28
-#: dashboard/templates/dashboard/dashboard.html:172
+#: dashboard/templates/dashboard/dashboard.html:172 dashboard/views.py:130
 #: events/views/EventListView.py:15 notes/templates/note/note_overview.html:24
 #: people/views/PersonListView.py:25
 msgid "all"
@@ -719,7 +718,7 @@ msgstr "transcriptie"
 #: content/templates/content/content_detail.html:130
 #: content/templates/content/transcribe.html:28
 #: content/templates/content/transcribe.html:61
-#: dashboard/templates/dashboard/loose_end.html:36
+#: dashboard/templates/dashboard/loose_end.html:42
 msgid "incomplete"
 msgstr "onvolledig"
 
@@ -822,8 +821,7 @@ msgstr "Aangewezen op deze foto"
 #: content/templates/content/_who_is_where.html:34
 #, python-format
 msgid "Drag a frame around %(name)s - or click a spot. Escape cancels."
-msgstr ""
-"Trek een kader rond %(name)s - of klik een plek aan. Escape annuleert."
+msgstr "Trek een kader rond %(name)s - of klik een plek aan. Escape annuleert."
 
 #: content/templates/content/_who_is_where.html:34
 msgid "redraw"
@@ -982,8 +980,8 @@ msgstr "verwijderd"
 
 #: content/templates/content/content_detail.html:164
 msgid ""
-"Hidden from everyone; staff can see it. Purge it in housekeeping, or restore"
-" its status."
+"Hidden from everyone; staff can see it. Purge it in housekeeping, or restore "
+"its status."
 msgstr ""
 "Voor iedereen verborgen; beheerders zien het. Verwijder het definitief bij "
 "onderhoud, of herstel de status."
@@ -1068,7 +1066,7 @@ msgstr "delen"
 #: content/templates/content/inbox.html:55 core/search.py:49
 #: core/templates/tag/tag_detail.html:53
 #: dashboard/templates/dashboard/dashboard.html:192
-#: dashboard/templates/dashboard/loose_end.html:25
+#: dashboard/templates/dashboard/loose_end.html:31
 #: events/templates/event/event_detail.html:32
 #: notes/templates/note/_links.html:9
 #: people/templates/people/person_create.html:14
@@ -1187,8 +1185,7 @@ msgstr "niets gevonden"
 
 #: content/templates/content/favorites.html:8
 #: content/templates/content/favorites.html:19
-#: dashboard/templates/dashboard/dashboard.html:91
-#: templates/navigation.html:38
+#: dashboard/templates/dashboard/dashboard.html:91 templates/navigation.html:38
 msgid "your favorites"
 msgstr "je favorieten"
 
@@ -1274,8 +1271,8 @@ msgstr "maak hier één stuk van"
 msgid ""
 "The first selected becomes the whole, the others its pages, in this order."
 msgstr ""
-"De eerste die je selecteert wordt het geheel, de andere de pagina's, in deze"
-" volgorde."
+"De eerste die je selecteert wordt het geheel, de andere de pagina's, in deze "
+"volgorde."
 
 #: content/templates/content/inbox.html:70
 msgid "your inbox is empty"
@@ -1381,8 +1378,7 @@ msgstr "Typ wat er staat - een ? waar je het niet kunt lezen."
 
 #: content/templates/content/transcribe.html:107
 msgid ""
-"Saves itself · Ctrl+S saves now · Alt + arrows / plus / minus moves the "
-"image"
+"Saves itself · Ctrl+S saves now · Alt + arrows / plus / minus moves the image"
 msgstr ""
 "Slaat zichzelf op · Ctrl+S slaat nu op · Alt + pijlen / plus / min "
 "verplaatst de afbeelding"
@@ -1398,8 +1394,8 @@ msgstr "Ophalen…"
 #: content/templates/content/upload.html:17
 msgid ""
 "Each file becomes a draft in your inbox, visible only to you until you "
-"publish it. Describe it there - pages of one letter or album can be made one"
-" item."
+"publish it. Describe it there - pages of one letter or album can be made one "
+"item."
 msgstr ""
 "Elk bestand wordt een concept in je inbox, alleen voor jou zichtbaar tot je "
 "het publiceert. Beschrijf het daar - pagina's van één brief of album kun je "
@@ -1462,8 +1458,8 @@ msgstr "Delpher"
 
 #: content/transcription/delpher.py:116
 msgid ""
-"The article's own text from the KB - only the article number from the source"
-" link is sent."
+"The article's own text from the KB - only the article number from the source "
+"link is sent."
 msgstr ""
 "De eigen tekst van het artikel bij de KB - alleen het artikelnummer uit de "
 "bronlink wordt verstuurd."
@@ -1508,11 +1504,11 @@ msgstr ""
 
 #: content/transcription/tesseract.py:46
 msgid ""
-"The language data for this text isn't installed (see "
-"documentation/developer/installation.md)."
+"The language data for this text isn't installed (see documentation/developer/"
+"installation.md)."
 msgstr ""
-"De taalgegevens voor deze tekst zijn niet geïnstalleerd (zie "
-"documentation/developer/installation.md)."
+"De taalgegevens voor deze tekst zijn niet geïnstalleerd (zie documentation/"
+"developer/installation.md)."
 
 #: content/transcription/tesseract.py:66
 msgid "The image couldn't be opened."
@@ -1712,14 +1708,14 @@ msgid ""
 "It's mentioned in %(n)s text: remove the link there, or see Housekeeping → "
 "mentions that lead nowhere."
 msgid_plural ""
-"It's mentioned in %(n)s texts: remove the links there, or see Housekeeping →"
-" mentions that lead nowhere."
+"It's mentioned in %(n)s texts: remove the links there, or see Housekeeping → "
+"mentions that lead nowhere."
 msgstr[0] ""
 "Het wordt genoemd in %(n)s tekst: haal de link daar weg, of zie Onderhoud → "
 "vermeldingen die nergens heen leiden."
 msgstr[1] ""
-"Het wordt genoemd in %(n)s teksten: haal de links daar weg, of zie Onderhoud"
-" → vermeldingen die nergens heen leiden."
+"Het wordt genoemd in %(n)s teksten: haal de links daar weg, of zie Onderhoud "
+"→ vermeldingen die nergens heen leiden."
 
 #: core/forms.py:283
 msgid "superstitious"
@@ -1747,8 +1743,8 @@ msgstr ""
 
 #: core/forms.py:287
 msgid ""
-"They see what you mark visible to 'family'. It works one way: adding someone"
-" doesn't make you their family."
+"They see what you mark visible to 'family'. It works one way: adding someone "
+"doesn't make you their family."
 msgstr ""
 "Zij zien wat jij zichtbaar maakt voor 'familie'. Het werkt één kant op: "
 "iemand toevoegen maakt jou niet hun familie."
@@ -1854,7 +1850,7 @@ msgstr "Sterrenbeelden tonen op de pagina's van personen"
 
 #: core/search.py:52 dashboard/templates/dashboard/dashboard.html:121
 #: dashboard/templates/dashboard/dashboard.html:197
-#: dashboard/templates/dashboard/loose_end.html:27 notes/apps.py:7
+#: dashboard/templates/dashboard/loose_end.html:33 notes/apps.py:7
 #: notes/models.py:117 notes/templates/note/_notes_section.html:11
 #: notes/templates/note/note_detail.html:17
 #: notes/templates/note/note_overview.html:9
@@ -1873,8 +1869,8 @@ msgstr "notities"
 msgid "tags"
 msgstr "tags"
 
-#: core/templates/comment/_target.html:27 people/models/Person.py:175
-#: people/models/Person.py:207
+#: core/templates/comment/_target.html:27 people/models/Person.py:183
+#: people/models/Person.py:215
 #: people/templates/person/functions/get_full_name.html:58
 msgid "person"
 msgstr "persoon"
@@ -2156,11 +2152,11 @@ msgid ""
 "%(counter)s tag under it is visible to more people than this (%(level)s) - "
 "to them it reads as a tag of its own."
 msgid_plural ""
-"%(counter)s tags under it are visible to more people than this (%(level)s) -"
-" to them they read as tags of their own."
+"%(counter)s tags under it are visible to more people than this (%(level)s) - "
+"to them they read as tags of their own."
 msgstr[0] ""
-"%(counter)s tag eronder is voor meer mensen zichtbaar dan deze (%(level)s) -"
-" voor hen is het een tag op zichzelf."
+"%(counter)s tag eronder is voor meer mensen zichtbaar dan deze (%(level)s) - "
+"voor hen is het een tag op zichzelf."
 msgstr[1] ""
 "%(counter)s tags eronder zijn voor meer mensen zichtbaar dan deze "
 "(%(level)s) - voor hen zijn het tags op zichzelf."
@@ -2317,46 +2313,54 @@ msgstr "vermeldingen die nergens heen leiden"
 msgid "The loose end (dashboard/blocks.py LOOSE_ENDS)"
 msgstr "Het losse eindje (dashboard/blocks.py LOOSE_ENDS)"
 
-#: dashboard/progress.py:63
+#: dashboard/progress.py:68
 #, python-format
 msgid "%(done)s of %(total)s done (%(percent)s%%)"
 msgstr "%(done)s van %(total)s klaar (%(percent)s%%)"
 
-#: dashboard/progress.py:79
+#: dashboard/progress.py:84
 msgid "birth and death"
 msgstr "geboorte en overlijden"
 
-#: dashboard/progress.py:80
+#: dashboard/progress.py:85
 msgid "birth only"
 msgstr "alleen geboorte"
 
-#: dashboard/progress.py:81
+#: dashboard/progress.py:86
 msgid "death only"
 msgstr "alleen overlijden"
 
-#: dashboard/progress.py:82
+#: dashboard/progress.py:87
 msgid "neither"
 msgstr "geen van beide"
 
-#: dashboard/progress.py:99
+#: dashboard/progress.py:104
 msgid "transcribed"
 msgstr "getranscribeerd"
 
-#: dashboard/progress.py:100
+#: dashboard/progress.py:105
 msgid "to finish or check"
 msgstr "af te maken of te controleren"
 
-#: dashboard/progress.py:101
+#: dashboard/progress.py:106
 msgid "no transcript"
 msgstr "geen transcriptie"
 
-#: dashboard/progress.py:120
-msgid "done"
-msgstr "klaar"
+#: dashboard/progress.py:123
+msgid "documented"
+msgstr "gedocumenteerd"
 
-#: dashboard/progress.py:120 notes/models.py:52
+#: dashboard/progress.py:123 dashboard/templates/dashboard/loose_end.html:87
+msgid "source cited"
+msgstr "bron vermeld"
+
+#: dashboard/progress.py:123 dashboard/progress.py:131 notes/models.py:52
 msgid "to do"
 msgstr "te doen"
+
+#: dashboard/progress.py:131
+msgid "done"
+msgstr "klaar"
 
 #: dashboard/templates/dashboard/_account_row.html:11
 #, python-format
@@ -2406,8 +2410,7 @@ msgstr "accounts"
 #: dashboard/templates/dashboard/accounts.html:14
 #: dashboard/templates/dashboard/dashboard.html:13
 #: dashboard/templates/dashboard/housekeeping.html:16
-#: dashboard/templates/dashboard/loose_end.html:14
-#: templates/navigation.html:26
+#: dashboard/templates/dashboard/loose_end.html:14 templates/navigation.html:26
 msgid "dashboard"
 msgstr "dashboard"
 
@@ -2574,8 +2577,8 @@ msgstr "onderhoud"
 
 #: dashboard/templates/dashboard/housekeeping.html:18
 msgid ""
-"Storage, checked by eye. Deleting here is for good - only a backup brings it"
-" back."
+"Storage, checked by eye. Deleting here is for good - only a backup brings it "
+"back."
 msgstr ""
 "Opslag, met het oog gecontroleerd. Verwijderen gebeurt hier definitief - "
 "alleen een back-up brengt het terug."
@@ -2603,8 +2606,8 @@ msgstr "selectie definitief verwijderen…"
 
 #: dashboard/templates/dashboard/housekeeping/duplicates.html:5
 msgid ""
-"Items with the same file. Delete the one you don't want on its page; here it"
-" can then be purged - the record and its file."
+"Items with the same file. Delete the one you don't want on its page; here it "
+"can then be purged - the record and its file."
 msgstr ""
 "Stukken met hetzelfde bestand. Verwijder het stuk dat je niet wilt op zijn "
 "pagina; hier kan het dan definitief weg - het record en het bestand."
@@ -2651,8 +2654,8 @@ msgstr ""
 
 #: dashboard/templates/dashboard/housekeeping/linked-twice.html:13
 msgid ""
-"People linked to an item that also documents an event they took part in. The"
-" event shows the item on their page already, under related content. Remove "
+"People linked to an item that also documents an event they took part in. The "
+"event shows the item on their page already, under related content. Remove "
 "the direct link where the item is evidence of that moment - a certificate, "
 "an announcement - and keep it where it's theirs: a passport, a diploma, "
 "their file."
@@ -2724,8 +2727,8 @@ msgstr "geselecteerde bestanden verwijderen…"
 
 #: dashboard/templates/dashboard/housekeeping/revoked.html:11
 msgid ""
-"Pulled back by staff and waiting for a decision. Open one to republish it or"
-" delete it - a deleted item can then be purged under deleted items."
+"Pulled back by staff and waiting for a decision. Open one to republish it or "
+"delete it - a deleted item can then be purged under deleted items."
 msgstr ""
 "Teruggetrokken door beheerders, wachtend op een besluit. Open er een om het "
 "opnieuw te publiceren of te verwijderen - een verwijderd stuk kan daarna "
@@ -2741,8 +2744,8 @@ msgstr "Niets te beoordelen."
 
 #: dashboard/templates/dashboard/housekeeping/unused-places.html:5
 msgid ""
-"Places nothing lies in or happened at, and not another era's name of a place"
-" - keep the ones meant for later."
+"Places nothing lies in or happened at, and not another era's name of a place "
+"- keep the ones meant for later."
 msgstr ""
 "Plaatsen waar niets ligt of gebeurde, en die geen naam uit een andere tijd "
 "van een plaats zijn - houd de plaatsen die voor later bedoeld zijn."
@@ -2807,22 +2810,22 @@ msgid_plural "%(n)s fine as it is"
 msgstr[0] "%(n)s prima zo"
 msgstr[1] "%(n)s prima zo"
 
-#: dashboard/templates/dashboard/loose_end.html:24
+#: dashboard/templates/dashboard/loose_end.html:30
 msgid "Tagged “Loose end” - remove the tag when it's done."
 msgstr "Getagd met 'Los eindje' - haal de tag weg als het klaar is."
 
-#: dashboard/templates/dashboard/loose_end.html:36
+#: dashboard/templates/dashboard/loose_end.html:42
 #, python-format
 msgid "%(counter)s without a role"
 msgid_plural "%(counter)s without a role"
 msgstr[0] "%(counter)s zonder rol"
 msgstr[1] "%(counter)s zonder rol"
 
-#: dashboard/templates/dashboard/loose_end.html:36
+#: dashboard/templates/dashboard/loose_end.html:42
 msgid "not checked"
 msgstr "niet gecontroleerd"
 
-#: dashboard/templates/dashboard/loose_end.html:46
+#: dashboard/templates/dashboard/loose_end.html:52
 #, python-format
 msgid ""
 "comment: %(comment_level)s - item: %(item_level)s. The item was made "
@@ -2831,24 +2834,32 @@ msgstr ""
 "opmerking: %(comment_level)s - stuk: %(item_level)s. Het stuk is daarna "
 "beperkt: met opzet? Zo niet, zet het stuk terug."
 
-#: dashboard/templates/dashboard/loose_end.html:48
+#: dashboard/templates/dashboard/loose_end.html:54
 msgid "Open the item"
 msgstr "Open het stuk"
 
-#: dashboard/templates/dashboard/loose_end.html:51
+#: dashboard/templates/dashboard/loose_end.html:57
 #, python-format
 msgid "Narrow to %(level)s"
 msgstr "Beperk tot %(level)s"
 
-#: dashboard/templates/dashboard/loose_end.html:68
+#: dashboard/templates/dashboard/loose_end.html:74
 #, python-format
 msgid "All: %(role)s"
 msgstr "Allemaal: %(role)s"
 
-#: dashboard/templates/dashboard/loose_end.html:68
+#: dashboard/templates/dashboard/loose_end.html:74
 #, python-format
 msgid "Set: %(role)s"
 msgstr "Zet op: %(role)s"
+
+#: dashboard/templates/dashboard/loose_end.html:88
+msgid ""
+"Documented outside the archive: a link or “Bron:” in the description. Done - "
+"an item is only needed if you want the source here."
+msgstr ""
+"Gedocumenteerd buiten het archief: een link of “Bron:” in de beschrijving. "
+"Klaar - een stuk is alleen nodig als je de bron hier wilt hebben."
 
 #: dashboard/templatetags/dashboard.py:20
 #, python-format
@@ -2878,57 +2889,57 @@ msgid_plural "%(n)s years ago"
 msgstr[0] "%(n)s jaar geleden"
 msgstr[1] "%(n)s jaar geleden"
 
-#: dashboard/views.py:145
+#: dashboard/views.py:165
 msgid "Back on the list."
 msgstr "Terug op de lijst."
 
-#: dashboard/views.py:151
+#: dashboard/views.py:171
 msgid "Off the list - fine as it is."
 msgstr "Van de lijst - prima zo."
 
-#: dashboard/views.py:206
+#: dashboard/views.py:230
 #, python-format
 msgid "%(n)s record purged."
 msgid_plural "%(n)s records purged."
 msgstr[0] "%(n)s record definitief verwijderd."
 msgstr[1] "%(n)s records definitief verwijderd."
 
-#: dashboard/views.py:216
+#: dashboard/views.py:240
 #, python-format
 msgid "%(n)s file deleted."
 msgid_plural "%(n)s files deleted."
 msgstr[0] "%(n)s bestand verwijderd."
 msgstr[1] "%(n)s bestanden verwijderd."
 
-#: dashboard/views.py:226
+#: dashboard/views.py:250
 #, python-format
 msgid "%(n)s tag deleted."
 msgid_plural "%(n)s tags deleted."
 msgstr[0] "%(n)s tag verwijderd."
 msgstr[1] "%(n)s tags verwijderd."
 
-#: dashboard/views.py:226
+#: dashboard/views.py:250
 #, python-format
 msgid "%(n)s place deleted."
 msgid_plural "%(n)s places deleted."
 msgstr[0] "%(n)s plaats verwijderd."
 msgstr[1] "%(n)s plaatsen verwijderd."
 
-#: dashboard/views.py:230
+#: dashboard/views.py:254
 msgid "Nothing selected."
 msgstr "Niets geselecteerd."
 
-#: dashboard/views.py:290
+#: dashboard/views.py:314
 #, python-format
 msgid "%(name)s can sign in now."
 msgstr "%(name)s kan nu inloggen."
 
-#: dashboard/views.py:292
+#: dashboard/views.py:316
 #, python-format
 msgid "%(name)s was declined and removed."
 msgstr "%(name)s is afgewezen en verwijderd."
 
-#: dashboard/views.py:294
+#: dashboard/views.py:318
 #, python-format
 msgid "%(name)s isn't waiting for approval."
 msgstr "%(name)s wacht niet op goedkeuring."
@@ -2948,8 +2959,7 @@ msgstr ""
 "historische gebeurtenis heeft er een nodig om te zeggen wat het is."
 
 #: events/forms.py:43
-msgid ""
-"A year is needed - if you're not sure, give your best guess with “ca.”."
+msgid "A year is needed - if you're not sure, give your best guess with “ca.”."
 msgstr ""
 "Een jaar is nodig - weet je het niet zeker, geef dan je beste schatting met "
 "“ca.”."
@@ -2960,8 +2970,8 @@ msgstr "Wat er gebeurde, en de bronnen - Markdown: [bron](https://...)."
 
 #: events/forms.py:110
 msgid ""
-"Delete this event? It disappears everywhere, also from timelines - it can be"
-" recovered in the admin."
+"Delete this event? It disappears everywhere, also from timelines - it can be "
+"recovered in the admin."
 msgstr ""
 "Deze gebeurtenis verwijderen? Ze verdwijnt overal, ook van tijdlijnen - ze "
 "kan in de beheeromgeving worden hersteld."
@@ -3035,12 +3045,12 @@ msgstr "Je mag hun familie niet wijzigen."
 msgid "%(name)s wasn't linked as a partner: %(reason)s"
 msgstr "%(name)s is niet als partner gekoppeld: %(reason)s"
 
-#: events/models.py:35 events/models.py:319
+#: events/models.py:35 events/models.py:320
 #: people/templates/person/blocks/birth.html:18
 msgid "birth"
 msgstr "geboorte"
 
-#: events/models.py:36 events/models.py:319
+#: events/models.py:36 events/models.py:320
 #: people/templates/person/blocks/death.html:20
 msgid "death"
 msgstr "overlijden"
@@ -3089,27 +3099,27 @@ msgid "Background is for the people in an event - add them first."
 msgstr ""
 "Achtergrond is voor de personen bij een gebeurtenis - voeg die eerst toe."
 
-#: events/models.py:270
+#: events/models.py:271
 msgid "That page isn't part of this item."
 msgstr "Die pagina hoort niet bij dit stuk."
 
-#: events/models.py:275
+#: events/models.py:276
 #, python-format
 msgid "Documented by “%(item)s” now."
 msgstr "Nu bewezen door “%(item)s”."
 
-#: events/models.py:286
+#: events/models.py:287
 msgid "Say what it was - required for kind 'other'."
 msgstr "Zeg wat het was - verplicht bij de soort 'anders'."
 
-#: events/models.py:321
+#: events/models.py:322
 #, python-format
 msgid "A %(kind)s is one person's - make one for each (twins too)."
 msgstr ""
 "Een %(kind)s hoort bij één persoon - maak er een per persoon (ook bij een "
 "tweeling)."
 
-#: events/models.py:327
+#: events/models.py:328
 #, python-format
 msgid "%(name)s already has a %(kind)s - change that one, or delete it first."
 msgstr "%(name)s heeft al een %(kind)s - wijzig die, of verwijder die eerst."
@@ -3235,8 +3245,8 @@ msgid ""
 msgstr ""
 "Aangevinkt, zonder rol of als onderwerp: van het stuk naar de gebeurtenis "
 "verplaatst - via de gebeurtenis staat het nog op hun pagina. Afgebeeld, "
-"maker, geadresseerde, eigenaar of erop aangewezen: op de gebeurtenis, en nog"
-" op het stuk."
+"maker, geadresseerde, eigenaar of erop aangewezen: op de gebeurtenis, en nog "
+"op het stuk."
 
 #: events/templates/event/forms/new.html:52
 msgid "another place"
@@ -3253,8 +3263,8 @@ msgstr ""
 
 #: events/templates/event/forms/new.html:68
 msgid ""
-"A marriage or divorce is between partners: choose one here, the other on the"
-" event's page."
+"A marriage or divorce is between partners: choose one here, the other on the "
+"event's page."
 msgstr ""
 "Een huwelijk of scheiding is tussen partners: kies er hier een, de ander op "
 "de pagina van de gebeurtenis."
@@ -3420,8 +3430,8 @@ msgid ""
 "Research: leads, questions, hypotheses, conclusions and background - linked "
 "to people, content, places and events."
 msgstr ""
-"Onderzoek: sporen, vragen, hypotheses, conclusies en achtergrond - gekoppeld"
-" aan personen, stukken, plaatsen en gebeurtenissen."
+"Onderzoek: sporen, vragen, hypotheses, conclusies en achtergrond - gekoppeld "
+"aan personen, stukken, plaatsen en gebeurtenissen."
 
 #: notes/templates/note/note_overview.html:36
 msgid "no notes yet"
@@ -3591,12 +3601,12 @@ msgstr "Personen"
 msgid "private"
 msgstr "privé"
 
-#: people/models/Person.py:184
+#: people/models/Person.py:192
 #: people/templates/person/functions/get_full_name.html:50
 msgid "née"
 msgstr "geb."
 
-#: people/models/Person.py:294
+#: people/models/Person.py:302
 msgid ""
 "A person needs at least one of given names, last name, married name, called "
 "name or nickname."
@@ -4143,8 +4153,8 @@ msgstr "ook geschreven als"
 #: places/forms.py:29
 msgid ""
 "Another spelling or language for the same place in the same time - e.g. "
-"Indonesië / Indonesia. A name from another era is a place of its own: add it"
-" under “in another era”."
+"Indonesië / Indonesia. A name from another era is a place of its own: add it "
+"under “in another era”."
 msgstr ""
 "Een andere spelling of taal voor dezelfde plaats in dezelfde tijd - bijv. "
 "Indonesië / Indonesia. Een naam uit een andere tijd is een plaats op zich: "
@@ -4168,8 +4178,8 @@ msgstr ""
 
 #: places/models.py:25
 msgid ""
-"Other Place records for the same location in a different era - e.g. Batavia "
-"/ Jakarta"
+"Other Place records for the same location in a different era - e.g. "
+"Batavia / Jakarta"
 msgstr ""
 "Andere plaatsen voor dezelfde plek in een andere tijd - bijv. Batavia / "
 "Jakarta"

@@ -196,6 +196,41 @@ class LooseEndRulesTests(DashboardTestCase):
     summary = bar('undocumented-events', self.request(self.editor))['summary']
     self.assertTrue(summary.startswith('1 of 3'), summary)                                 # proven: done
 
+  def test_a_source_cited_in_the_description(self):
+    """A link, "Bron:" or "Uit:" in the description: documented, outside
+    the archive - not to do, shown below it."""
+    def described(text):
+      event = self.event('residence', [self.person('Piet')], date(1913, 1, 1), 1913)
+      event.description = text
+      event.save()
+      return event
+    linked = described('[bron 2](https://www.delpher.nl/nl/kranten/view?x=1)')
+    named = described("> Coomans, P. W. A. -- Landbouwer Bron: IGV: Kleian's Nieuw adresboek - 1913")
+    from_ = described("Uit: IGV: Kleian's Nieuw adresboek - 1903")
+    detail = described('Nabij vliegveld Semarang')                                         # what happened, not a source
+    spring = described('Bij de bronzen beelden')                                           # not the word "bron"
+    self.assertEqual(set(self.items('undocumented-events')), {detail, spring})
+    self.assertEqual(set(blocks.cited_events(self.request(self.editor))), {linked, named, from_})
+    from .progress import bar
+    progress = bar('undocumented-events', self.request(self.editor))
+    self.assertTrue(progress['summary'].startswith('3 of 5'), progress['summary'])          # cited: done
+    self.client.force_login(self.editor)
+    page = self.client.get('/dashboard/loose-ends/undocumented-events/').content.decode()
+    self.assertIn('Kleian', page)                                                           # its description
+
+  def test_events_by_kind(self):
+    """A pill per kind (?kind=): one kind at a time - also after "fine as it is"."""
+    birth = self.event('birth', [self.person('Kind')], date(1900, 1, 1), 1900)
+    marriage = self.event('marriage', [self.person('Bruid')], date(1925, 6, 1), 1925)
+    self.client.force_login(self.editor)
+    url = '/dashboard/loose-ends/undocumented-events/'
+    page = self.client.get(url + '?kind=marriage')
+    self.assertEqual(page.context['items'], [marriage])
+    self.assertEqual([value for value, _label, _count in page.context['kinds']], ['', 'birth', 'marriage'])
+    self.assertEqual(len(self.client.get(url + '?kind=bogus').context['items']), 2)       # unknown: all
+    response = self.client.post(url + '?kind=birth', {'object_id': birth.pk})
+    self.assertEqual(response['Location'], url + '?kind=birth')
+
   def test_open_transcripts(self):
     from content.models import Content, Transcript
     item = Content.objects.create(name='Krant', kind='document', user=self.editor, status='p', visibility='c')

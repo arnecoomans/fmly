@@ -8,7 +8,8 @@ whole share one bar (GROUPS): people without a birth and without a death
 in four parts, documents without a transcript and transcripts to check in
 three. People without parents, events without documentation and items
 with people without a role have a bar of two parts: done - "fine as it
-is" included - and still to do. The others have none: little work left,
+is" included - and still to do; events also a third, done as well: a
+source cited in the description. The others have none: little work left,
 or no whole to measure against.
 
 Only what this viewer may see, as the loose ends themselves.
@@ -28,6 +29,10 @@ GROUPS = {
 # amount of work: photos without people matter less, and undated or
 # untitled events are to be resolved down to none - a bar adds nothing.
 SINGLE = ('no-parents', 'undocumented-events', 'people-without-role')
+
+# The parts of a single bar that count as done ("source cited": events
+# documented outside the archive).
+DONE = ('done', 'cited')
 
 IMAGE_FILES = r'\.(jpe?g|png|gif|webp|tiff?)$'
 
@@ -59,7 +64,7 @@ def _bar(parts, done_key=None):
     for key, label, count in parts if count
   ]
   if done_key:
-    done = parts[0][2]
+    done = sum(count for key, _label, count in parts if key in DONE)
     summary = _("%(done)s of %(total)s done (%(percent)s%%)") % {'done': done, 'total': total, 'percent': round(100 * done / total)}
   else:
     summary = ' · '.join(f"{label} {count}" for _key, label, count in parts if count)
@@ -110,6 +115,12 @@ def _single(name, request):
   from .blocks import documentable_events, loose_end_items, role_items
   if name == 'undocumented-events':
     whole = documentable_events(filter_accessible(Event.objects.all(), request))
+    # Three parts: a source cited in the description is done too, outside the archive.
+    from .blocks import cited_events
+    total = whole.distinct().count()
+    todo = loose_end_items(name, request).distinct().count()
+    cited = cited_events(request).count()
+    return [('done', _("documented"), total - cited - todo), ('cited', _("source cited"), cited), ('none', _("to do"), todo)]
   elif name == 'people-without-role':
     # By item: done when everyone on it has a role (or it's fine as it is).
     whole = role_items(request)
