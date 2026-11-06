@@ -1506,6 +1506,12 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 /* ===== People: adding a person, the family editor ===== */
 .person-create__form { max-width: 640px; }
 .person-create__names { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--space-2) var(--space-4); }
+/* Born / died (people/_person_create_life.html): a row each under the basics; died folds away. */
+.person-create__life { margin: var(--space-3) 0 0; padding: var(--space-2) 0 0; border: 0; border-top: 1px solid var(--color-border); min-width: 0; }
+.person-create__life > legend { float: left; width: 100%; padding: 0; }
+.person-create__death > summary { cursor: pointer; }
+.person-create__death:not([open]) > summary::after { content: ' +'; }
+.person-create__record { display: flex; align-items: center; gap: 6px; font-size: var(--text-sm); }
 /* "Already in the archive?" under the names (people/_similar.html). */
 .person-similar { margin: var(--space-2) 0 var(--space-3); padding: 8px 12px; border-radius: var(--radius-md); background: var(--color-accent-soft); }
 .person-similar__title { margin: 0 0 4px; font-size: var(--text-sm); font-weight: 600; }

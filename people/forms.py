@@ -282,8 +282,10 @@ class PersonStatusForm(StatusActionsForm):
 # --- Adding a person (PersonCreateView) -------------------------------------
 
 class PersonCreateForm(forms.ModelForm):
-  """The names and the basics; everything else is edited on the new
-  person's page. Used by /people/new/ (PersonCreateView) and by a picker's
+  """The names and the basics - and, optional, birth and death (the
+  page's own block forms, prefixed: birth-, death-; their events made on
+  save, linked to the new person - nothing filled in, no event).
+  Everything else is edited on the new person's page. Used by /people/new/ (PersonCreateView) and by a picker's
   "+ new person" dialog (Person.api_create_form, cmnsd object_create). Published, visible to signed-in users - like the rest
   of the tree; visibility can be tightened right here."""
   class Meta:
@@ -301,6 +303,37 @@ class PersonCreateForm(forms.ModelForm):
   # Adding a parent, partner or child of someone (a family picker): their
   # token - the new person takes their family connection (prepare).
   relative_of = forms.CharField(required=False, widget=forms.HiddenInput)
+  # Added as whose what (a family picker: parent, partner, child): a parent
+  # added is mostly someone historical - the death row opens.
+  added_as = forms.CharField(required=False, widget=forms.HiddenInput)
+
+  def _prepare_life_events(self):
+    """Birth and death: PersonBirthForm / PersonDeathForm on a new event of
+    their kind, prefixed - shown under the basics
+    (people/_person_create_life.html), validated with this form, saved
+    after the person (_save_m2m). The death row is folded away unless it's
+    a parent being added or the row holds something."""
+    self.life_forms = []
+    for form_class, prefix in ((PersonBirthForm, 'birth'), (PersonDeathForm, 'death')):
+      # Bound only when the row was sent: a caller without it (a script, an
+      # older form) adds a person without birth or death, as before.
+      sent = self.is_bound and any(key.startswith(f'{prefix}-') for key in self.data)
+      data = self.data if sent else None
+      form = form_class(data, prefix=prefix, instance=Event(kind=form_class.KIND))
+      form.request = getattr(self, 'request', None)
+      form.record_checked = bool(data and data.get(form.record_name))   # a checkbox here, not the page's button
+      self.life_forms.append(form)
+    self.birth_form, self.death_form = self.life_forms
+    source = self.data if self.is_bound else self.initial
+    death_typed = self.is_bound and any(value for key, value in self.data.items() if key.startswith('death-') and key != 'death-date_qualifier')
+    self.death_open = source.get('added_as') == 'parent' or death_typed
+
+  def clean(self):
+    data = super().clean()
+    # Each row's errors show in the row; the form as a whole is refused.
+    if not all([form.is_valid() for form in getattr(self, 'life_forms', []) if form.is_bound]):
+      raise forms.ValidationError(_("Check the birth or death below."))
+    return data
 
   def prepare(self):
     """With child_of: an "other parent" choice - one of that person's
@@ -309,6 +342,7 @@ class PersonCreateForm(forms.ModelForm):
     if not self.is_bound:
       self._split_typed_name()
     self._inherit_family_connection()
+    self._prepare_life_events()
     self.other_parents = {}
     token = (self.data.get('child_of') if self.is_bound else self.initial.get('child_of')) or ''
     request = getattr(self, 'request', None)
@@ -374,6 +408,13 @@ class PersonCreateForm(forms.ModelForm):
 
   def _save_m2m(self):
     super()._save_m2m()
+    # Birth and death, now the person exists: an event each - only what's
+    # filled in (LifeEventForm.save makes nothing of an empty row).
+    for form in getattr(self, 'life_forms', []):
+      if not form.is_bound:
+        continue
+      form.instance._for_person = self.instance
+      form.save()
     # The other parent, once the new person exists - with the family rules
     # and history of people/relatives.py.
     partner = getattr(self, 'other_parents', {}).get(self.cleaned_data.get('other_parent') or '')

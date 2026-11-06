@@ -1,0 +1,22 @@
+{% comment %}
+  Birth or death of a new person (PersonCreateForm life_forms): the date on
+  one line - how sure · day · month · year - and the place, as the page's
+  own block (person/forms/_life_event.html), without its buttons; for a
+  death "died, details unknown" as a checkbox. Empty: no event.
+  Context: life (the sub-form).
+{% endcomment %}
+<div class="edit-form__row edit-form__row--date">
+  {% for field in life %}{% if field.name != 'place' %}
+    <div class="edit-form__field edit-form__field--{{ field.name }}">
+      <label for="{{ field.id_for_label }}">{{ field.label|capfirst }}</label>
+      {{ field }}
+    </div>
+  {% endif %}{% endfor %}
+</div>
+<div class="edit-form__field">
+  <label for="{{ life.place.id_for_label }}">{{ life.place.label|capfirst }}</label>
+  {{ life.place }}
+</div>
+{% if life.record_label %}<label class="person-create__record"><input type="checkbox" name="{{ life.record_name }}" value="1"{% if life.record_checked %} checked{% endif %}> {{ life.record_label }}</label>{% endif %}
+{% for field in life %}{% for error in field.errors %}<p class="edit-form__error">{{ field.label|capfirst }}: {{ error }}</p>{% endfor %}{% endfor %}
+{% if life.non_field_errors %}<p class="edit-form__error">{{ life.non_field_errors|join:' ' }}</p>{% endif %}

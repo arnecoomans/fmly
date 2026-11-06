@@ -128,7 +128,7 @@ class RelativesTests(PersonEditTestCase):
     self.assertEqual(html.count('data-cmnsd-action=add_relative'), 3)     # a picker under parents, partners, children
     self.assertEqual(html.count('data-cmnsd-action=remove_relative'), 1)  # an "×" on the father's row
     self.assertNotIn('relatives-edit', html)                              # no separate panel
-    self.assertIn(f'data-picker-new-dialog=/api/person/new/?relative_of={self.son.token} ', html)   # parent, partner: family as the son is
+    self.assertIn(f'data-picker-new-dialog=/api/person/new/?relative_of={self.son.token}&added_as=parent ', html)   # parent, partner: family as the son is; a parent's death row open
     self.assertIn(f'data-picker-new-dialog=/api/person/new/?child_of={self.son.token}&last_name=Coomans ', html)   # a child: other parent + family name
 
   def test_a_new_child_carries_the_married_name(self):

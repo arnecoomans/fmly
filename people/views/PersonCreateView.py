@@ -46,6 +46,7 @@ class PersonCreateView(PermissionRequiredMixin, FormView):
       initial['child_of'] = other.token   # the form offers the other parent
     if other:
       initial['relative_of'] = other.token   # family as they are
+      initial['added_as'] = relation         # a parent: the death row open
     return initial
 
   def get_form(self, form_class=None):
@@ -78,4 +79,5 @@ class PersonCreateView(PermissionRequiredMixin, FormView):
       set_edit_mode(self.request, True)
     except PermissionError:
       return redirect(person.page_url())
-    return redirect(f"{person.page_url()}?open=birth")
+    # Birth not given here: its block opens on the page.
+    return redirect(person.page_url() if person.birth else f"{person.page_url()}?open=birth")

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% comment %}
-  Add a person (people.views.PersonCreateView): the names and the basics;
-  the rest - birth, death, family, biography - on their page, which opens
+  Add a person (people.views.PersonCreateView): the names and the basics,
+  birth and death; the rest - family, biography - on their page, which opens
   in edit mode. From a family picker: who they'll be linked to, shown on top.
 {% endcomment %}
 
@@ -30,7 +30,7 @@
     {% include 'people/_person_create_fields.html' %}
     <div class="edit-form__actions">
       <button type="submit" class="btn btn--primary btn--sm">{% translate "add"|capfirst %}</button>
-      <span class="edit-form__hint">{% translate "Birth, death, family and the biography come next, on their page." %}</span>
+      <span class="edit-form__hint">{% translate "Family and the biography come next, on their page." %}</span>
     </div>
   </form>
 </div>

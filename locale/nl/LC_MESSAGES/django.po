@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 15:11+0100\n"
+"POT-Creation-Date: 2026-11-06 15:21+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -65,7 +65,7 @@ msgstr "Miniatuur"
 #: core/templates/comment/comment.html:36
 #: core/templates/comment/comment.html:40
 #: core/templates/comment/thread.html:26 notes/forms.py:87 people/forms.py:269
-#: people/forms.py:292
+#: people/forms.py:294
 msgid "visible to"
 msgstr "zichtbaar voor"
 
@@ -1237,6 +1237,7 @@ msgid "cancel"
 msgstr "annuleren"
 
 #: content/templates/content/forms/date.html:24
+#: people/templates/people/_person_create_fields.html:58
 #: people/templates/person/forms/_life_event.html:28
 msgid "Leave unknown parts empty"
 msgstr "Laat onbekende delen leeg"
@@ -1747,7 +1748,7 @@ msgstr[1] ""
 msgid "superstitious"
 msgstr "bijgelovig"
 
-#: core/forms.py:283 people/forms.py:260 people/forms.py:292
+#: core/forms.py:283 people/forms.py:260 people/forms.py:294
 #: people/models/Person.py:43 people/views/PersonListView.py:24
 msgid "family"
 msgstr "familie"
@@ -3527,7 +3528,7 @@ msgstr "uitsnede hoogte"
 msgid "rotation"
 msgstr "draaiing"
 
-#: people/forms.py:251 people/forms.py:292
+#: people/forms.py:251 people/forms.py:294
 msgid "gender"
 msgstr "geslacht"
 
@@ -3544,15 +3545,19 @@ msgid "Revoke this person? Only staff will see them until restored."
 msgstr ""
 "Deze persoon intrekken? Alleen beheerders zien die tot het hersteld is."
 
-#: people/forms.py:328
+#: people/forms.py:332
+msgid "Check the birth or death below."
+msgstr "Controleer de geboorte of het overlijden hieronder."
+
+#: people/forms.py:359
 msgid "other parent"
 msgstr "andere ouder"
 
-#: people/forms.py:372
+#: people/forms.py:403
 msgid "Choose one other parent at most."
 msgstr "Kies hooguit één andere ouder."
 
-#: people/forms.py:389
+#: people/forms.py:425
 msgid "The other parent wasn't linked: you may not change them."
 msgstr "De andere ouder is niet gekoppeld: je mag die niet wijzigen."
 
@@ -3896,14 +3901,24 @@ msgstr "Boogschutter"
 msgid "Capricorn"
 msgstr "Steenbok"
 
-#: people/templates/people/_person_create_fields.html:27
+#: people/templates/people/_person_create_fields.html:28
 #, python-format
 msgid "%(connection)s, like %(name)s"
 msgstr "%(connection)s, net als %(name)s"
 
-#: people/templates/people/_person_create_fields.html:36
+#: people/templates/people/_person_create_fields.html:37
 msgid "Leave unpressed when the other parent is unknown."
 msgstr "Laat leeg als de andere ouder onbekend is."
+
+#: people/templates/people/_person_create_fields.html:51
+#: people/templates/person/blocks/birth.html:12
+msgid "born"
+msgstr "geboren"
+
+#: people/templates/people/_person_create_fields.html:55
+#: people/templates/person/blocks/death.html:14
+msgid "died"
+msgstr "overleden"
 
 #: people/templates/people/_person_row.html:72
 msgid "you came here through this person"
@@ -3940,10 +3955,8 @@ msgid "Will be added as a child of %(name)s."
 msgstr "Wordt toegevoegd als kind van %(name)s."
 
 #: people/templates/people/person_create.html:33
-msgid "Birth, death, family and the biography come next, on their page."
-msgstr ""
-"Geboorte, overlijden, familie en het levensverhaal volgen daarna, op hun "
-"pagina."
+msgid "Family and the biography come next, on their page."
+msgstr "Familie en het levensverhaal volgen daarna, op hun pagina."
 
 #: people/templates/people/person_detail.html:41
 msgid "Relevant to the archive, but not related to the family"
@@ -3986,10 +3999,6 @@ msgstr "andere ouder van een broer of zus"
 msgid "No biography yet."
 msgstr "Nog geen levensverhaal."
 
-#: people/templates/person/blocks/birth.html:12
-msgid "born"
-msgstr "geboren"
-
 #: people/templates/person/blocks/birth.html:14
 #: people/templates/person/blocks/death.html:16
 msgid "add date"
@@ -3998,10 +4007,6 @@ msgstr "datum toevoegen"
 #: people/templates/person/blocks/birth.html:19
 msgid "add birth record"
 msgstr "geboorte toevoegen"
-
-#: people/templates/person/blocks/death.html:14
-msgid "died"
-msgstr "overleden"
 
 #: people/templates/person/blocks/death.html:21
 msgid "add death record"
@@ -4155,17 +4160,17 @@ msgstr "%(years)s jaar oud"
 msgid "about %(years)s"
 msgstr "ongeveer %(years)s"
 
-#: people/views/PersonCreateView.py:73
+#: people/views/PersonCreateView.py:74
 #, python-format
 msgid "Added, but not linked: %(error)s"
 msgstr "Toegevoegd, maar niet gekoppeld: %(error)s"
 
-#: people/views/PersonCreateView.py:75
+#: people/views/PersonCreateView.py:76
 #, python-format
 msgid "Added, but not linked: you may not change %(name)s."
 msgstr "Toegevoegd, maar niet gekoppeld: je mag %(name)s niet wijzigen."
 
-#: people/views/PersonCreateView.py:76
+#: people/views/PersonCreateView.py:77
 #, python-format
 msgid "%(name)s added."
 msgstr "%(name)s toegevoegd."
@@ -4356,6 +4361,10 @@ msgstr "uitloggen"
 #: templates/navigation.html:31
 msgid "more"
 msgstr "meer"
+
+#, fuzzy
+#~ msgid "Leave unknown parts empty."
+#~ msgstr "Laat onbekende delen leeg"
 
 #~ msgid "via"
 #~ msgstr "via"

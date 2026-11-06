@@ -2,8 +2,9 @@
   The fields of a new person (PersonCreateForm): the names in a grid, then
   gender, family (not asked for a relative of someone: inherited) and
   visibility - and, for a new child, the other parent
-  (PersonCreateForm.prepare) - on /people/new/ and in the "+ new person"
-  dialog (person/forms/new.html). Under the names, while typing: people
+  (PersonCreateForm.prepare), then birth and death (optional; the death row
+  folded away unless it's a parent added) - on /people/new/ and in the
+  "+ new person" dialog (person/forms/new.html). Under the names, while typing: people
   already in the archive with these names (people/similar.py, asked by
   cmnsd.js hints.js). Context: form, in_dialog (the dialog: "use this one").
 {% endcomment %}
@@ -44,3 +45,15 @@
     {% for error in field.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
   </div>
 {% endif %}{% endfor %}
+{% if form.life_forms %}
+  {# Birth and death: events, made on save - nothing filled in, none made (PersonCreateForm._prepare_life_events). #}
+  <fieldset class="person-create__life">
+    <legend class="edit-form__label">{% translate "born"|capfirst %}</legend>
+    {% include 'people/_person_create_life.html' with life=form.birth_form %}
+  </fieldset>
+  <details class="person-create__life person-create__death"{% if form.death_open %} open{% endif %}>
+    <summary class="edit-form__label">{% translate "died"|capfirst %}</summary>
+    {% include 'people/_person_create_life.html' with life=form.death_form %}
+  </details>
+  <small class="edit-form__help">{% translate "Leave unknown parts empty" %}</small>
+{% endif %}

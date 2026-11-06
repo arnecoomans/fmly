@@ -13,7 +13,7 @@ The people section holds the family members - and the others who matter to the a
 
 ## Adding a person
 
-*More* → **Add person**, or **+ Add person** on the people list. Fill in the names and the basics; the rest - birth, death, family, biography - follows on their page, which opens in edit mode.
+*More* → **Add person**, or **+ Add person** on the people list. Fill in the names and the basics, and - when you know them - **born** and **died**: the date (partial is fine, *ca.* when unsure) and the place, or *died, details unknown*. Each becomes the person's birth or death event; leave a row empty and none is made. *Died* is folded away, except when adding a parent - mostly someone historical. The rest - family, biography - follows on their page, which opens in edit mode.
 
 While you type the names, FMLY3 shows people **already in the archive** with those names. Open one to check it - or, when adding from a family member's page, choose **use this one** to link the existing person instead of making a second one.
 
@@ -28,7 +28,7 @@ While you type the names, FMLY3 shows people **already in the archive** with tho
 ## In edit mode
 
 - **Birth or death record** - *add birth record* / *add death record*. When someone has died but nothing else is known, use **Died, details unknown**. Leave unknown parts empty; never guess.
-- **Family** - add a parent, partner or child by searching for them, or make a new person on the spot - type the full name, and the new person's form splits it into given names and last name (check it: "van der Wall" is recognised, a double name without "van" or "de" may need moving). A new relative is family as the person you add them to - family, possibly family or outsider - so the dialog doesn't ask; change it on their page if it differs. When you add a child, choose the **other parent** from your partners, or leave it unset when unknown.
+- **Family** - add a parent, partner or child by searching for them, or make a new person on the spot - type the full name, and the new person's form splits it into given names and last name (check it: "van der Wall" is recognised, a double name without "van" or "de" may need moving). A new relative is family as the person you add them to - family, possibly family or outsider - so the dialog doesn't ask; change it on their page if it differs. When you add a child, choose the **other parent** from your partners, or leave it unset when unknown. Birth and death can go in the same dialog.
 - **Add content for them** - drop files on the dropzone at the top of *Content* (for editors who may add content). Each file becomes a draft in your inbox, already linked to this person. A file that's already in the archive isn't added again: the existing item gets this person linked instead, when you may change it.
 - **Portrait** - the pencil on the avatar: choose one of the photos they're tagged in, then drag, zoom and turn it until their face fills the square.
 

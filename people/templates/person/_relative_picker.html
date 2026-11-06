@@ -37,10 +37,10 @@
         {% include 'cmnsd/edit/link_picker.html' with model='person' owner=person relation=kind picker_model='person' target='' label=add_label|capfirst placeholder=add_label|capfirst exclude=tokens.child action='add_relative' insert='reload' new_dialog=new_dialog new_param='given_name' new_label=new_label|capfirst can_new=perms.people.add_person %}
       {% endwith %}{% endwith %}
     {% else %}
-      {# The dialog: family as this person is (relative_of). #}
-      {% with new_dialog=create_url|add:'?relative_of='|add:person.token %}
+      {# The dialog: family as this person is (relative_of); a parent's death row open (added_as). #}
+      {% with relative_url=create_url|add:'?relative_of='|add:person.token %}{% with new_dialog=relative_url|add:'&added_as='|add:kind %}
       {% include 'cmnsd/edit/link_picker.html' with model='person' owner=person relation=kind picker_model='person' target='' label=add_label|capfirst placeholder=add_label|capfirst exclude=tokens|get_item:kind action='add_relative' insert='reload' new_dialog=new_dialog new_param='given_name' new_label=new_label|capfirst can_new=perms.people.add_person %}
-      {% endwith %}
+      {% endwith %}{% endwith %}
     {% endif %}
   {% endwith %}
 {% endif %}
