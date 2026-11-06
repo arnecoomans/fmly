@@ -13,22 +13,24 @@
   param='whole'): `as_parts` - its own wording ("add pages", "added as
   parts", a file in the archive already "added as a part"), and the page
   reloads when the queue is done (data-upload-reload): the new parts show
-  in order.
+  in order. Under an event's "documented by" (param='event'): `as_proof` -
+  "Add documentation for this event", "linked as proof" (no name: Dutch
+  would need "dit huwelijk" but "deze geboorte").
 {% endcomment %}
 <div class="upload-for">
   <div class="dropzone dropzone--compact" data-cmnsd-upload="{% url 'content:upload_file' %}"
        data-text-sending="{% translate 'Sending…' %}" data-text-added="{% translate 'Open' %}"
        data-text-duplicate="{% translate 'Already in the archive:' %}"
-       data-text-duplicate-linked="{% if as_parts %}{% translate 'Already in the archive - added as a part:' %}{% else %}{% translate 'Already in the archive - linked:' %}{% endif %}"{% if as_parts %} data-upload-reload{% endif %}
+       data-text-duplicate-linked="{% if as_parts %}{% translate 'Already in the archive - added as a part:' %}{% elif as_proof %}{% translate 'Already in the archive - linked as proof:' %}{% else %}{% translate 'Already in the archive - linked:' %}{% endif %}"{% if as_parts %} data-upload-reload{% endif %}
        data-text-duplicate-deleted="{% translate 'Already in the archive (deleted).' %}"
        data-text-too-large="{% translate 'Too large for the server.' %}" data-text-failed="{% translate 'Not added' %}">
     <input type="hidden" name="{{ param }}" value="{{ token }}" data-upload-param>
-    <p class="dropzone__text"><i class="bi bi-cloud-arrow-up"></i> {% if as_parts %}{% blocktranslate %}Add pages to {{ name }}: drop files here, or{% endblocktranslate %}{% else %}{% blocktranslate %}Add content for {{ name }}: drop files here, or{% endblocktranslate %}{% endif %}
+    <p class="dropzone__text"><i class="bi bi-cloud-arrow-up"></i> {% if as_parts %}{% blocktranslate %}Add pages to {{ name }}: drop files here, or{% endblocktranslate %}{% elif as_proof %}{% translate "Add documentation for this event: drop files here, or" %}{% else %}{% blocktranslate %}Add content for {{ name }}: drop files here, or{% endblocktranslate %}{% endif %}
       <label class="dropzone__choose">{% translate "choose files" %}<input type="file" multiple data-upload-input accept="image/*,application/pdf,audio/*,video/*"></label></p>
     <ul class="upload-list upload-list--compact" data-upload-list></ul>
   </div>
   <p class="upload-for__done" data-upload-done hidden>
-    {% if as_parts %}{% blocktranslate %}Added as parts of {{ name }}, as drafts in your inbox.{% endblocktranslate %} <a href="">{% translate "Show the parts" %}</a>.{% else %}{% blocktranslate %}Added as drafts in your inbox, linked to {{ name }}.{% endblocktranslate %}{% endif %}
+    {% if as_parts %}{% blocktranslate %}Added as parts of {{ name }}, as drafts in your inbox.{% endblocktranslate %} <a href="">{% translate "Show the parts" %}</a>.{% elif as_proof %}{% translate "Added as drafts in your inbox, linked as proof of this event." %}{% else %}{% blocktranslate %}Added as drafts in your inbox, linked to {{ name }}.{% endblocktranslate %}{% endif %}
     {% translate "Open one above to describe it, or" %} <a href="{% url 'content:inbox' %}">{% translate "open the inbox" %}</a>.
   </p>
 </div>

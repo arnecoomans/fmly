@@ -54,7 +54,15 @@ def content_upload(request):
   (no part, no parts) this user may change becomes the part - answered as
   `duplicate` with `linked`; one that's a part here already, or elsewhere,
   or has parts of its own, is only reported. The whole must be one: an
-  item this user may see and change, not itself a part."""
+  item this user may see and change, not itself a part.
+
+  Optional `event` (a token - the dropzone under an event's "documented
+  by"): the new item documents that event - linked as its proof, nothing
+  else: not its people (the event brings it to their pages - linking them
+  too is what "people linked twice" cleans up), not its date (an
+  announcement comes days later, a certificate maybe years), not its
+  places. A file in the archive already is linked as its proof instead.
+  The event must be one this user may see and change."""
   if not (request.user.is_authenticated and request.user.has_perm('content.add_content')):
     return api_response(request, status=403, error=_("You may not add content."), errors={'permission': True})
   uploaded = request.FILES.get('file')
@@ -75,6 +83,14 @@ def content_upload(request):
       return api_response(request, status=400, error=_("%(item)s is itself a part - add to its whole instead.") % {'item': whole}, errors={'whole': True})
     if not can_edit(whole, request.user):
       return api_response(request, status=403, error=_("You may not change this item."), errors={'permission': True})
+  event = None
+  if request.POST.get('event'):
+    from events.models import Event
+    event = filter_accessible(Event.objects.all(), request).filter(token=request.POST['event']).first()
+    if event is None:
+      return api_response(request, status=400, error=_("That event wasn't found."), errors={'event': True})
+    if not can_edit(event, request.user):
+      return api_response(request, status=403, error=_("You may not change this event."), errors={'permission': True})
   content, duplicate = create_upload(uploaded, request.user)
   if duplicate is not None:
     visible = Content.objects.visible_to(request).filter(pk=duplicate.pk).exists()
@@ -91,6 +107,11 @@ def content_upload(request):
       if linked:
         from ..parts import add_part
         add_part(whole, duplicate, request, announce=False)
+    if event is not None:
+      linked = bool(visible and not deleted)
+      if linked and not event.content.filter(pk=duplicate.pk).exists():
+        duplicate.events.add(event)
+        log_change(request, event, f"Added content: {duplicate} (uploaded again on its page)")
     return api_response(request, duplicate={
       'name': str(duplicate) if visible else '',
       'url': duplicate.get_absolute_url() if visible else '',
@@ -109,6 +130,10 @@ def content_upload(request):
     log_change(request, content, f"Uploaded, as a part of {whole}")
     from ..parts import add_part
     add_part(whole, content, request, announce=False)
+  elif event is not None:
+    content.events.add(event)
+    log_change(request, content, f"Uploaded, as proof of {event}")
+    log_change(request, event, f"Added content: {content} (uploaded on its page)")
   else:
     log_change(request, content, "Uploaded")
   return api_response(request, obj=content, created={

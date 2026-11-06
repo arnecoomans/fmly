@@ -103,6 +103,8 @@
         {% endif %}
         {% translate "add content" as add_label %}
         {% include 'cmnsd/edit/link_picker.html' with model='event' owner=event relation='content' picker_model='content' target='#event-content' label=add_label|capfirst placeholder=add_label|capfirst exclude=tokens.content new_dialog='' %}
+        {# Not in the archive yet: drop it here - a draft in your inbox, linked as proof only (content_upload's `event`). #}
+        {% if perms.content.add_content %}{% include 'content/_upload_for.html' with param='event' token=event.token as_proof=True %}{% endif %}
       {% endif %}
     </section>
   {% endif %}

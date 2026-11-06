@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 17:38+0100\n"
+"POT-Creation-Date: 2026-11-06 15:11+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -63,8 +63,9 @@ msgstr "Miniatuur"
 
 #: content/forms.py:142 core/forms.py:139
 #: core/templates/comment/comment.html:36
-#: core/templates/comment/comment.html:40 core/templates/comment/thread.html:26
-#: notes/forms.py:87 people/forms.py:269 people/forms.py:292
+#: core/templates/comment/comment.html:40
+#: core/templates/comment/thread.html:26 notes/forms.py:87 people/forms.py:269
+#: people/forms.py:292
 msgid "visible to"
 msgstr "zichtbaar voor"
 
@@ -288,7 +289,7 @@ msgstr "Dit stuk heeft zelf delen, dus het kan geen deel worden."
 msgid "%(item)s is itself a part - choose its whole instead."
 msgstr "%(item)s is zelf een deel - kies het geheel."
 
-#: content/models/Content.py:408 content/views/upload.py:73
+#: content/models/Content.py:408 content/views/upload.py:81
 msgid "That item wasn't found."
 msgstr "Dat stuk is niet gevonden."
 
@@ -316,7 +317,8 @@ msgstr "mogelijk afgebeeld"
 msgid "owner"
 msgstr "eigenaar"
 
-#: content/models/Transcript.py:25 content/templates/content/transcribe.html:61
+#: content/models/Transcript.py:25
+#: content/templates/content/transcribe.html:61
 msgid "original"
 msgstr "origineel"
 
@@ -411,7 +413,7 @@ msgstr "onderzoek"
 msgid "This item isn't a part of anything."
 msgstr "Dit stuk is geen deel van iets."
 
-#: content/parts.py:77 content/views/upload.py:75
+#: content/parts.py:77 content/views/upload.py:83
 #, python-format
 msgid "%(item)s is itself a part - add to its whole instead."
 msgstr "%(item)s is zelf een deel - voeg het toe aan het geheel."
@@ -489,7 +491,7 @@ msgstr "“%(item)s” is weer een los stuk."
 msgid "Only a photo can be a portrait."
 msgstr "Alleen een foto kan een portret zijn."
 
-#: content/portraits.py:35 content/views/upload.py:68 people/relatives.py:36
+#: content/portraits.py:35 content/views/upload.py:76 people/relatives.py:36
 msgid "That person wasn't found."
 msgstr "Die persoon is niet gevonden."
 
@@ -726,82 +728,95 @@ msgstr "onvolledig"
 msgid "has a transcript"
 msgstr "heeft een transcriptie"
 
-#: content/templates/content/_upload_for.html:20
+#: content/templates/content/_upload_for.html:22
 #: content/templates/content/upload.html:23
 #: dashboard/templates/dashboard/dashboard.html:147
 msgid "Sending…"
 msgstr "Versturen…"
 
-#: content/templates/content/_upload_for.html:20
+#: content/templates/content/_upload_for.html:22
 msgid "Open"
 msgstr "Openen"
 
-#: content/templates/content/_upload_for.html:21
+#: content/templates/content/_upload_for.html:23
 #: content/templates/content/upload.html:24
 #: dashboard/templates/dashboard/dashboard.html:148
 msgid "Already in the archive:"
 msgstr "Al in het archief:"
 
-#: content/templates/content/_upload_for.html:22
+#: content/templates/content/_upload_for.html:24
 msgid "Already in the archive - added as a part:"
 msgstr "Al in het archief - toegevoegd als deel:"
 
-#: content/templates/content/_upload_for.html:22
+#: content/templates/content/_upload_for.html:24
+msgid "Already in the archive - linked as proof:"
+msgstr "Al in het archief - gekoppeld als bewijs:"
+
+#: content/templates/content/_upload_for.html:24
 msgid "Already in the archive - linked:"
 msgstr "Al in het archief - gekoppeld:"
 
-#: content/templates/content/_upload_for.html:23
+#: content/templates/content/_upload_for.html:25
 #: dashboard/templates/dashboard/dashboard.html:149
 msgid "Already in the archive (deleted)."
 msgstr "Al in het archief (verwijderd)."
 
-#: content/templates/content/_upload_for.html:24
+#: content/templates/content/_upload_for.html:26
 #: content/templates/content/upload.html:26
 #: dashboard/templates/dashboard/dashboard.html:150
 msgid "Too large for the server."
 msgstr "Te groot voor de server."
 
-#: content/templates/content/_upload_for.html:24
+#: content/templates/content/_upload_for.html:26
 #: content/templates/content/upload.html:26
 #: dashboard/templates/dashboard/dashboard.html:150
 msgid "Not added"
 msgstr "Niet toegevoegd"
 
-#: content/templates/content/_upload_for.html:26
+#: content/templates/content/_upload_for.html:28
 #, python-format
 msgid "Add pages to %(name)s: drop files here, or"
 msgstr "Pagina's toevoegen aan %(name)s: sleep bestanden hierheen, of"
 
-#: content/templates/content/_upload_for.html:26
+#: content/templates/content/_upload_for.html:28
+msgid "Add documentation for this event: drop files here, or"
+msgstr "Bewijs toevoegen voor deze gebeurtenis: sleep bestanden hierheen, of"
+
+#: content/templates/content/_upload_for.html:28
 #, python-format
 msgid "Add content for %(name)s: drop files here, or"
 msgstr "Stukken toevoegen voor %(name)s: sleep bestanden hierheen, of"
 
-#: content/templates/content/_upload_for.html:27
+#: content/templates/content/_upload_for.html:29
 #: content/templates/content/upload.html:30
 #: dashboard/templates/dashboard/dashboard.html:152
 msgid "choose files"
 msgstr "kies bestanden"
 
-#: content/templates/content/_upload_for.html:31
+#: content/templates/content/_upload_for.html:33
 #, python-format
 msgid "Added as parts of %(name)s, as drafts in your inbox."
 msgstr "Toegevoegd als delen van %(name)s, als concepten in je inbox."
 
-#: content/templates/content/_upload_for.html:31
+#: content/templates/content/_upload_for.html:33
 msgid "Show the parts"
 msgstr "Toon de delen"
 
-#: content/templates/content/_upload_for.html:31
+#: content/templates/content/_upload_for.html:33
+msgid "Added as drafts in your inbox, linked as proof of this event."
+msgstr ""
+"Als concept in je inbox gezet, gekoppeld als bewijs van deze gebeurtenis."
+
+#: content/templates/content/_upload_for.html:33
 #, python-format
 msgid "Added as drafts in your inbox, linked to %(name)s."
 msgstr "Als concept in je inbox gezet, gekoppeld aan %(name)s."
 
-#: content/templates/content/_upload_for.html:32
+#: content/templates/content/_upload_for.html:34
 msgid "Open one above to describe it, or"
 msgstr "Open er hierboven een om te beschrijven, of"
 
-#: content/templates/content/_upload_for.html:32
+#: content/templates/content/_upload_for.html:34
 msgid "open the inbox"
 msgstr "open de inbox"
 
@@ -821,7 +836,8 @@ msgstr "Aangewezen op deze foto"
 #: content/templates/content/_who_is_where.html:34
 #, python-format
 msgid "Drag a frame around %(name)s - or click a spot. Escape cancels."
-msgstr "Trek een kader rond %(name)s - of klik een plek aan. Escape annuleert."
+msgstr ""
+"Trek een kader rond %(name)s - of klik een plek aan. Escape annuleert."
 
 #: content/templates/content/_who_is_where.html:34
 msgid "redraw"
@@ -980,8 +996,8 @@ msgstr "verwijderd"
 
 #: content/templates/content/content_detail.html:164
 msgid ""
-"Hidden from everyone; staff can see it. Purge it in housekeeping, or restore "
-"its status."
+"Hidden from everyone; staff can see it. Purge it in housekeeping, or restore"
+" its status."
 msgstr ""
 "Voor iedereen verborgen; beheerders zien het. Verwijder het definitief bij "
 "onderhoud, of herstel de status."
@@ -1185,7 +1201,8 @@ msgstr "niets gevonden"
 
 #: content/templates/content/favorites.html:8
 #: content/templates/content/favorites.html:19
-#: dashboard/templates/dashboard/dashboard.html:91 templates/navigation.html:38
+#: dashboard/templates/dashboard/dashboard.html:91
+#: templates/navigation.html:38
 msgid "your favorites"
 msgstr "je favorieten"
 
@@ -1271,8 +1288,8 @@ msgstr "maak hier één stuk van"
 msgid ""
 "The first selected becomes the whole, the others its pages, in this order."
 msgstr ""
-"De eerste die je selecteert wordt het geheel, de andere de pagina's, in deze "
-"volgorde."
+"De eerste die je selecteert wordt het geheel, de andere de pagina's, in deze"
+" volgorde."
 
 #: content/templates/content/inbox.html:70
 msgid "your inbox is empty"
@@ -1378,7 +1395,8 @@ msgstr "Typ wat er staat - een ? waar je het niet kunt lezen."
 
 #: content/templates/content/transcribe.html:107
 msgid ""
-"Saves itself · Ctrl+S saves now · Alt + arrows / plus / minus moves the image"
+"Saves itself · Ctrl+S saves now · Alt + arrows / plus / minus moves the "
+"image"
 msgstr ""
 "Slaat zichzelf op · Ctrl+S slaat nu op · Alt + pijlen / plus / min "
 "verplaatst de afbeelding"
@@ -1394,8 +1412,8 @@ msgstr "Ophalen…"
 #: content/templates/content/upload.html:17
 msgid ""
 "Each file becomes a draft in your inbox, visible only to you until you "
-"publish it. Describe it there - pages of one letter or album can be made one "
-"item."
+"publish it. Describe it there - pages of one letter or album can be made one"
+" item."
 msgstr ""
 "Elk bestand wordt een concept in je inbox, alleen voor jou zichtbaar tot je "
 "het publiceert. Beschrijf het daar - pagina's van één brief of album kun je "
@@ -1458,8 +1476,8 @@ msgstr "Delpher"
 
 #: content/transcription/delpher.py:116
 msgid ""
-"The article's own text from the KB - only the article number from the source "
-"link is sent."
+"The article's own text from the KB - only the article number from the source"
+" link is sent."
 msgstr ""
 "De eigen tekst van het artikel bij de KB - alleen het artikelnummer uit de "
 "bronlink wordt verstuurd."
@@ -1504,11 +1522,11 @@ msgstr ""
 
 #: content/transcription/tesseract.py:46
 msgid ""
-"The language data for this text isn't installed (see documentation/developer/"
-"installation.md)."
+"The language data for this text isn't installed (see "
+"documentation/developer/installation.md)."
 msgstr ""
-"De taalgegevens voor deze tekst zijn niet geïnstalleerd (zie documentation/"
-"developer/installation.md)."
+"De taalgegevens voor deze tekst zijn niet geïnstalleerd (zie "
+"documentation/developer/installation.md)."
 
 #: content/transcription/tesseract.py:66
 msgid "The image couldn't be opened."
@@ -1567,23 +1585,31 @@ msgstr "Je mag niet transcriberen."
 msgid "Choose where the text should come from."
 msgstr "Kies waar de tekst vandaan moet komen."
 
-#: content/views/upload.py:59
+#: content/views/upload.py:67
 msgid "You may not add content."
 msgstr "Je mag geen stukken toevoegen."
 
-#: content/views/upload.py:62
+#: content/views/upload.py:70
 msgid "No file sent."
 msgstr "Geen bestand verstuurd."
 
-#: content/views/upload.py:77
+#: content/views/upload.py:85
 msgid "You may not change this item."
 msgstr "Je mag dit stuk niet wijzigen."
 
-#: content/views/upload.py:223
+#: content/views/upload.py:91
+msgid "That event wasn't found."
+msgstr "Die gebeurtenis is niet gevonden."
+
+#: content/views/upload.py:93
+msgid "You may not change this event."
+msgstr "Je mag deze gebeurtenis niet wijzigen."
+
+#: content/views/upload.py:248
 msgid "Choose at least two to make one item."
 msgstr "Kies er minstens twee om er één stuk van te maken."
 
-#: content/views/upload.py:232
+#: content/views/upload.py:257
 #, python-format
 msgid "“%(whole)s” now has %(count)s parts."
 msgstr "“%(whole)s” heeft nu %(count)s delen."
@@ -1708,14 +1734,14 @@ msgid ""
 "It's mentioned in %(n)s text: remove the link there, or see Housekeeping → "
 "mentions that lead nowhere."
 msgid_plural ""
-"It's mentioned in %(n)s texts: remove the links there, or see Housekeeping → "
-"mentions that lead nowhere."
+"It's mentioned in %(n)s texts: remove the links there, or see Housekeeping →"
+" mentions that lead nowhere."
 msgstr[0] ""
 "Het wordt genoemd in %(n)s tekst: haal de link daar weg, of zie Onderhoud → "
 "vermeldingen die nergens heen leiden."
 msgstr[1] ""
-"Het wordt genoemd in %(n)s teksten: haal de links daar weg, of zie Onderhoud "
-"→ vermeldingen die nergens heen leiden."
+"Het wordt genoemd in %(n)s teksten: haal de links daar weg, of zie Onderhoud"
+" → vermeldingen die nergens heen leiden."
 
 #: core/forms.py:283
 msgid "superstitious"
@@ -1743,8 +1769,8 @@ msgstr ""
 
 #: core/forms.py:287
 msgid ""
-"They see what you mark visible to 'family'. It works one way: adding someone "
-"doesn't make you their family."
+"They see what you mark visible to 'family'. It works one way: adding someone"
+" doesn't make you their family."
 msgstr ""
 "Zij zien wat jij zichtbaar maakt voor 'familie'. Het werkt één kant op: "
 "iemand toevoegen maakt jou niet hun familie."
@@ -2152,11 +2178,11 @@ msgid ""
 "%(counter)s tag under it is visible to more people than this (%(level)s) - "
 "to them it reads as a tag of its own."
 msgid_plural ""
-"%(counter)s tags under it are visible to more people than this (%(level)s) - "
-"to them they read as tags of their own."
+"%(counter)s tags under it are visible to more people than this (%(level)s) -"
+" to them they read as tags of their own."
 msgstr[0] ""
-"%(counter)s tag eronder is voor meer mensen zichtbaar dan deze (%(level)s) - "
-"voor hen is het een tag op zichzelf."
+"%(counter)s tag eronder is voor meer mensen zichtbaar dan deze (%(level)s) -"
+" voor hen is het een tag op zichzelf."
 msgstr[1] ""
 "%(counter)s tags eronder zijn voor meer mensen zichtbaar dan deze "
 "(%(level)s) - voor hen zijn het tags op zichzelf."
@@ -2410,7 +2436,8 @@ msgstr "accounts"
 #: dashboard/templates/dashboard/accounts.html:14
 #: dashboard/templates/dashboard/dashboard.html:13
 #: dashboard/templates/dashboard/housekeeping.html:16
-#: dashboard/templates/dashboard/loose_end.html:14 templates/navigation.html:26
+#: dashboard/templates/dashboard/loose_end.html:14
+#: templates/navigation.html:26
 msgid "dashboard"
 msgstr "dashboard"
 
@@ -2577,8 +2604,8 @@ msgstr "onderhoud"
 
 #: dashboard/templates/dashboard/housekeeping.html:18
 msgid ""
-"Storage, checked by eye. Deleting here is for good - only a backup brings it "
-"back."
+"Storage, checked by eye. Deleting here is for good - only a backup brings it"
+" back."
 msgstr ""
 "Opslag, met het oog gecontroleerd. Verwijderen gebeurt hier definitief - "
 "alleen een back-up brengt het terug."
@@ -2606,8 +2633,8 @@ msgstr "selectie definitief verwijderen…"
 
 #: dashboard/templates/dashboard/housekeeping/duplicates.html:5
 msgid ""
-"Items with the same file. Delete the one you don't want on its page; here it "
-"can then be purged - the record and its file."
+"Items with the same file. Delete the one you don't want on its page; here it"
+" can then be purged - the record and its file."
 msgstr ""
 "Stukken met hetzelfde bestand. Verwijder het stuk dat je niet wilt op zijn "
 "pagina; hier kan het dan definitief weg - het record en het bestand."
@@ -2654,8 +2681,8 @@ msgstr ""
 
 #: dashboard/templates/dashboard/housekeeping/linked-twice.html:13
 msgid ""
-"People linked to an item that also documents an event they took part in. The "
-"event shows the item on their page already, under related content. Remove "
+"People linked to an item that also documents an event they took part in. The"
+" event shows the item on their page already, under related content. Remove "
 "the direct link where the item is evidence of that moment - a certificate, "
 "an announcement - and keep it where it's theirs: a passport, a diploma, "
 "their file."
@@ -2727,8 +2754,8 @@ msgstr "geselecteerde bestanden verwijderen…"
 
 #: dashboard/templates/dashboard/housekeeping/revoked.html:11
 msgid ""
-"Pulled back by staff and waiting for a decision. Open one to republish it or "
-"delete it - a deleted item can then be purged under deleted items."
+"Pulled back by staff and waiting for a decision. Open one to republish it or"
+" delete it - a deleted item can then be purged under deleted items."
 msgstr ""
 "Teruggetrokken door beheerders, wachtend op een besluit. Open er een om het "
 "opnieuw te publiceren of te verwijderen - een verwijderd stuk kan daarna "
@@ -2744,8 +2771,8 @@ msgstr "Niets te beoordelen."
 
 #: dashboard/templates/dashboard/housekeeping/unused-places.html:5
 msgid ""
-"Places nothing lies in or happened at, and not another era's name of a place "
-"- keep the ones meant for later."
+"Places nothing lies in or happened at, and not another era's name of a place"
+" - keep the ones meant for later."
 msgstr ""
 "Plaatsen waar niets ligt of gebeurde, en die geen naam uit een andere tijd "
 "van een plaats zijn - houd de plaatsen die voor later bedoeld zijn."
@@ -2855,8 +2882,8 @@ msgstr "Zet op: %(role)s"
 
 #: dashboard/templates/dashboard/loose_end.html:88
 msgid ""
-"Documented outside the archive: a link or “Bron:” in the description. Done - "
-"an item is only needed if you want the source here."
+"Documented outside the archive: a link or “Bron:” in the description. Done -"
+" an item is only needed if you want the source here."
 msgstr ""
 "Gedocumenteerd buiten het archief: een link of “Bron:” in de beschrijving. "
 "Klaar - een stuk is alleen nodig als je de bron hier wilt hebben."
@@ -2959,7 +2986,8 @@ msgstr ""
 "historische gebeurtenis heeft er een nodig om te zeggen wat het is."
 
 #: events/forms.py:43
-msgid "A year is needed - if you're not sure, give your best guess with “ca.”."
+msgid ""
+"A year is needed - if you're not sure, give your best guess with “ca.”."
 msgstr ""
 "Een jaar is nodig - weet je het niet zeker, geef dan je beste schatting met "
 "“ca.”."
@@ -2970,8 +2998,8 @@ msgstr "Wat er gebeurde, en de bronnen - Markdown: [bron](https://...)."
 
 #: events/forms.py:110
 msgid ""
-"Delete this event? It disappears everywhere, also from timelines - it can be "
-"recovered in the admin."
+"Delete this event? It disappears everywhere, also from timelines - it can be"
+" recovered in the admin."
 msgstr ""
 "Deze gebeurtenis verwijderen? Ze verdwijnt overal, ook van tijdlijnen - ze "
 "kan in de beheeromgeving worden hersteld."
@@ -3245,8 +3273,8 @@ msgid ""
 msgstr ""
 "Aangevinkt, zonder rol of als onderwerp: van het stuk naar de gebeurtenis "
 "verplaatst - via de gebeurtenis staat het nog op hun pagina. Afgebeeld, "
-"maker, geadresseerde, eigenaar of erop aangewezen: op de gebeurtenis, en nog "
-"op het stuk."
+"maker, geadresseerde, eigenaar of erop aangewezen: op de gebeurtenis, en nog"
+" op het stuk."
 
 #: events/templates/event/forms/new.html:52
 msgid "another place"
@@ -3263,8 +3291,8 @@ msgstr ""
 
 #: events/templates/event/forms/new.html:68
 msgid ""
-"A marriage or divorce is between partners: choose one here, the other on the "
-"event's page."
+"A marriage or divorce is between partners: choose one here, the other on the"
+" event's page."
 msgstr ""
 "Een huwelijk of scheiding is tussen partners: kies er hier een, de ander op "
 "de pagina van de gebeurtenis."
@@ -3430,8 +3458,8 @@ msgid ""
 "Research: leads, questions, hypotheses, conclusions and background - linked "
 "to people, content, places and events."
 msgstr ""
-"Onderzoek: sporen, vragen, hypotheses, conclusies en achtergrond - gekoppeld "
-"aan personen, stukken, plaatsen en gebeurtenissen."
+"Onderzoek: sporen, vragen, hypotheses, conclusies en achtergrond - gekoppeld"
+" aan personen, stukken, plaatsen en gebeurtenissen."
 
 #: notes/templates/note/note_overview.html:36
 msgid "no notes yet"
@@ -4153,8 +4181,8 @@ msgstr "ook geschreven als"
 #: places/forms.py:29
 msgid ""
 "Another spelling or language for the same place in the same time - e.g. "
-"Indonesië / Indonesia. A name from another era is a place of its own: add it "
-"under “in another era”."
+"Indonesië / Indonesia. A name from another era is a place of its own: add it"
+" under “in another era”."
 msgstr ""
 "Een andere spelling of taal voor dezelfde plaats in dezelfde tijd - bijv. "
 "Indonesië / Indonesia. Een naam uit een andere tijd is een plaats op zich: "
@@ -4178,8 +4206,8 @@ msgstr ""
 
 #: places/models.py:25
 msgid ""
-"Other Place records for the same location in a different era - e.g. "
-"Batavia / Jakarta"
+"Other Place records for the same location in a different era - e.g. Batavia "
+"/ Jakarta"
 msgstr ""
 "Andere plaatsen voor dezelfde plek in een andere tijd - bijv. Batavia / "
 "Jakarta"
