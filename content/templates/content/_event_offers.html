@@ -1,0 +1,18 @@
+{% comment %}
+  Edit mode: per event this item documents, its date and places to copy
+  onto the item - while the item has none (content/event_details.py,
+  ContentDetailView event_offers). A suggestion: often the same, not
+  always (an announcement comes later). Context: event_offers, content.
+{% endcomment %}
+<div class="content-detail__field--wide content-detail__event-offers">
+  <dt>{% translate "from the event"|capfirst %}</dt>
+  <dd>
+    {% for event, date, places in event_offers %}
+      <div class="content-detail__event-offer">
+        <span class="housekeeping__meta">{{ event.title|default:event.get_kind_display|capfirst }}{% if event.year %} · {{ event.partial_date_display }}{% endif %}{% for place in event.places.all %}{% if forloop.first %} · {% else %}, {% endif %}{{ place.name }}{% endfor %}</span>
+        {% if date %}<form data-cmnsd-action="use_event_detail" data-model="content" data-object-token="{{ content.token }}" data-cmnsd-insert="reload"><input type="hidden" name="event" value="{{ event.token }}"><input type="hidden" name="part" value="date"><button class="loose-end__suggest">{% blocktranslate %}Use date: {{ date }}{% endblocktranslate %}</button></form>{% endif %}
+        {% if places %}<form data-cmnsd-action="use_event_detail" data-model="content" data-object-token="{{ content.token }}" data-cmnsd-insert="reload"><input type="hidden" name="event" value="{{ event.token }}"><input type="hidden" name="part" value="places"><button class="loose-end__suggest">{% blocktranslate count counter=places|length %}Use place{% plural %}Use places{% endblocktranslate %}</button></form>{% endif %}
+      </div>
+    {% endfor %}
+  </dd>
+</div>

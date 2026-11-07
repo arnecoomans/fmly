@@ -238,6 +238,7 @@
             </dd>
           </div>
         {% endif %}
+        {% if event_offers %}{% include 'content/_event_offers.html' %}{% endif %}
         {% if content.source or edit_relations %}
           {% include 'cmnsd/edit/block.html' with model='content' obj=content block='source' block_class='content-detail__field--wide' %}
         {% endif %}

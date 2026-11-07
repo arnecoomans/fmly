@@ -127,6 +127,11 @@ class ContentDetailView(VisibilityViewMixin, DetailView):
     # Edit mode: chips with "×" and a picker per relation (cmnsd
     # EditableRelationsMixin; content/_tag_chip.html).
     context['edit_relations'] = is_edit_mode(self.request) and can_edit(content, self.request.user)
+    # The date and places of the events it documents, to copy with a click
+    # while it has none (content/event_details.py - never set by itself).
+    if context['edit_relations']:
+      from ..event_details import event_offers
+      context['event_offers'] = event_offers(content, context['events'])
     # "+ new event" starts on this item's date (a clipping: when it was
     # published - often just after the event; changeable in the dialog,
     # nothing stays tied to the item). The event form reads its initial

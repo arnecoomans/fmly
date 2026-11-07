@@ -1301,6 +1301,10 @@ a.tag:hover { border-color: var(--color-accent); color: var(--color-accent-hover
 .tag--place > i { margin-top: 2px; }
 .tag__text { min-width: 0; }
 .content-detail__places--edit { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+/* A linked event's date and places to copy onto the item (content/_event_offers.html). */
+.content-detail__event-offer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.content-detail__event-offer + .content-detail__event-offer { margin-top: var(--space-2); }
+.content-detail__event-offer form { margin: 0; }
 /* A long name (an event with several people) wraps instead of being cut off. */
 .picker-result__name--wrap { white-space: normal; }
 

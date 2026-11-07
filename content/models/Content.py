@@ -431,6 +431,14 @@ class Content(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, Sta
     return {}
 
   @api_action()
+  def use_event_detail(self, request, data):
+    """data: {event: token, part: 'date' | 'places'} - a linked event's date
+    or places onto this item, while it has none (content/event_details.py
+    - offered, never set by itself)."""
+    from ..event_details import use_event_detail
+    return use_event_detail(self, data, request)
+
+  @api_action()
   def set_person_role(self, request, data):
     """data: {person: token, role} - how that person is on this item
     (content/roles.py)."""
