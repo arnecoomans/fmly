@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 19:02+0100\n"
+"POT-Creation-Date: 2026-11-08 19:07+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -1949,8 +1949,8 @@ msgid "people without parents"
 msgstr "personen zonder ouders"
 
 #: dashboard/blocks.py:114
-msgid "photos without people"
-msgstr "foto's zonder personen"
+msgid "pictures without people"
+msgstr "afbeeldingen zonder personen"
 
 #: dashboard/blocks.py:115
 msgid "people on items without a role"

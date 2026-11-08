@@ -111,7 +111,7 @@ LOOSE_ENDS = {
   'no-birth': _("people without a birth"),
   'no-death': _("people born over 100 years ago without a death"),
   'no-parents': _("people without parents"),
-  'photos-without-people': _("photos without people"),
+  'photos-without-people': _("pictures without people"),   # photos and artworks (Content.PICTURES); the name stays - dismissals and addresses use it
   'people-without-role': _("people on items without a role"),
   'wider-comments': _("comments wider than their item"),
   'undated-events': _("events without a date"),
