@@ -68,6 +68,7 @@ class BookContent(models.Model):
 # Content.kind -> detail model. Kinds not listed have no extra fields (yet).
 DETAIL_MODELS = {
   'photo': PhotoContent,
+  'artwork': PhotoContent,   # a picture too: the same kinds
   'document': DocumentContent,
   'book': BookContent,
 }

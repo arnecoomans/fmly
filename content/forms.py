@@ -164,6 +164,9 @@ class ContentKindForm(forms.ModelForm):
   offered: it only means not decided yet."""
   choice = True
   reload_page = True
+  choice_hints = {
+    'artwork': _("Made by hand: a painting, drawing, miniature, silhouette, engraving."),
+  }
 
   class Meta:
     model = Content
@@ -194,6 +197,12 @@ class PhotoKindForm(forms.ModelForm):
     model = PhotoContent
     fields = ['photo_kind']
     labels = {'photo_kind': _("kind of photo")}
+
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    content = getattr(self.instance, 'content', None) if self.instance.content_id else None
+    if content is not None and content.kind == content.Kind.ARTWORK:
+      self.fields['photo_kind'].label = _("kind of picture")
 
   @staticmethod
   def instance_for(content):

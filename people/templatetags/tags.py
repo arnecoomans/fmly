@@ -78,6 +78,7 @@ def type_counts(items):
   choices = {
     Content.Kind.DOCUMENT: DocumentContent.DocumentKind.choices,
     Content.Kind.PHOTO: PhotoContent.PhotoKind.choices,
+    Content.Kind.ARTWORK: PhotoContent.PhotoKind.choices,
   }
   counts = Counter((item.kind, item.sub_kind) for item in items if item.kind in choices)
   rows = []

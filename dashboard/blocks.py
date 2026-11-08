@@ -60,7 +60,7 @@ def conversation(request, count=3):
 def from_the_archive(request):
   """One image at random, from what this viewer may see."""
   from content.models import Content
-  items = Content.objects.visible_to(request).listable().filter(status=Content.Status.PUBLISHED, kind=Content.Kind.PHOTO).exclude(file='')
+  items = Content.objects.visible_to(request).listable().filter(status=Content.Status.PUBLISHED, kind__in=Content.PICTURES).exclude(file='')
   return items.order_by('?').first()
 
 
@@ -227,7 +227,7 @@ def _loose_end_queryset(name, request):
   if name == 'no-parents':
     return people.exclude(relations_to__relation_type='parent').filter(family_connection='family')
   if name == 'photos-without-people':
-    return Content.objects.visible_to(request).listable().filter(kind=Content.Kind.PHOTO, people__isnull=True)
+    return Content.objects.visible_to(request).listable().filter(kind__in=Content.PICTURES, people__isnull=True)
   if name == 'undocumented-events':
     # Not a source cited in the description either: those are documented,
     # outside the archive (cited_events, shown below the list).

@@ -86,10 +86,19 @@ class Content(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, Sta
   class Kind(models.TextChoices):
     UNKNOWN = "unknown", _("unknown")
     PHOTO = "photo", _("photo")
+    # Made by hand - a painting, drawing, miniature, silhouette, engraving:
+    # a picture like a photo (its kinds - portrait, group - and what goes
+    # with them), dated, made and sourced as the original. How it's made
+    # goes in its name or description.
+    ARTWORK = "artwork", _("artwork")
     DOCUMENT = "document", _("document")
     BOOK = "book", _("book")
     OBJECT = "object", _("object")
     RECORDING = "recording", _("recording")
+
+  # The kinds that are pictures: someone on it is depicted, a posed one is
+  # a portrait (PhotoContent's kinds), a frame points them out.
+  PICTURES = (Kind.PHOTO, Kind.ARTWORK)
 
   # SlugMixin: the slug names the file and is the readable part of the
   # page URL (content/<token>/<slug>/), so it follows the name - the token
@@ -334,7 +343,11 @@ class Content(MentionableSourceMixin, TimestampMixin, TokenMixin, SlugMixin, Sta
     return bool(self.file) and self.media_type in ('image', 'pdf')
 
   def get_detail(self):
-    return getattr(self, f"{self.kind}_detail", None)
+    """The kind's detail row (details.DETAIL_MODELS - an artwork has a
+    photo's), or None."""
+    from .details import DETAIL_MODELS
+    model = DETAIL_MODELS.get(self.kind)
+    return getattr(self, model._meta.get_field('content').remote_field.related_name, None) if model else None
 
   def ensure_detail(self):
     """Create the detail row for this kind, if the kind has one and it's

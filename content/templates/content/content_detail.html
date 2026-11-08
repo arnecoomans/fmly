@@ -176,7 +176,7 @@
         <div class="content-detail__choices">
           {# What it is first (kind, then the kind's own details), then who sees it and its status. #}
           {% include 'cmnsd/edit/block.html' with model='content' obj=content block='kind' choice=True %}
-          {% if content.kind == 'photo' %}{% include 'cmnsd/edit/block.html' with model='content' obj=content block='photo_kind' choice=True %}{% endif %}
+          {% if content.kind == 'photo' or content.kind == 'artwork' %}{% include 'cmnsd/edit/block.html' with model='content' obj=content block='photo_kind' choice=True %}{% endif %}
           {% if content.kind == 'document' %}
             {% include 'cmnsd/edit/block.html' with model='content' obj=content block='document_kind' choice=True %}
             {% include 'cmnsd/edit/block.html' with model='content' obj=content block='language' choice=True %}

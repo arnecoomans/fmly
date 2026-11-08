@@ -337,7 +337,7 @@ def linked_twice():
     ContentPerson.objects.filter(
       role__in=('', ContentPerson.Role.SUBJECT), region_x__isnull=True,
       content__events__people=F('person'),
-    ).exclude(content__kind=Content.Kind.PHOTO).exclude(content__status=Content.Status.DELETED)
+    ).exclude(content__kind__in=Content.PICTURES).exclude(content__status=Content.Status.DELETED)
     .select_related('content', 'person').distinct().order_by('content__name', 'content__pk', 'person__pk')
   )
   events_of = defaultdict(list)

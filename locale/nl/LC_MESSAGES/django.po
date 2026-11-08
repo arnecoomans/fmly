@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 19:33+0100\n"
+"POT-Creation-Date: 2026-11-08 10:41+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -103,59 +103,67 @@ msgstr "Dit stuk verwijderen? Het wordt voor iedereen verborgen - het kan in de 
 msgid "Why is this item revoked? Only staff will see it until it's restored; your reason is kept as a comment on it."
 msgstr "Waarom wordt dit stuk ingetrokken? Alleen beheerders zien het tot het hersteld is; je reden blijft erbij als opmerking."
 
-#: content/forms.py:171 dashboard/templates/dashboard/loose_end.html:25 events/forms.py:25 events/templates/event/event_overview.html:25 notes/forms.py:63
+#: content/forms.py:168
+msgid "Made by hand: a painting, drawing, miniature, silhouette, engraving."
+msgstr "Met de hand gemaakt: een schilderij, tekening, miniatuur, silhouet, gravure."
+
+#: content/forms.py:174 dashboard/templates/dashboard/loose_end.html:25 events/forms.py:25 events/templates/event/event_overview.html:25 notes/forms.py:63
 msgid "kind"
 msgstr "soort"
 
-#: content/forms.py:186
+#: content/forms.py:189
 msgid "Posed, one person - head and shoulders up to full length; a passport photo too."
 msgstr "Geposeerd, één persoon - van hoofd en schouders tot ten voeten uit; ook een pasfoto."
 
-#: content/forms.py:187
+#: content/forms.py:190
 msgid "Posed, two or more people - a couple, a family, a class, a team."
 msgstr "Geposeerd, twee of meer mensen - een stel, een gezin, een klas, een team."
 
-#: content/forms.py:188
+#: content/forms.py:191
 msgid "Not posed, however many people - caught in a moment: a party, a holiday, at home."
 msgstr "Niet geposeerd, met hoeveel mensen ook - een moment: een feest, een vakantie, thuis."
 
-#: content/forms.py:189
+#: content/forms.py:192
 msgid "No family as the subject: the setting or the time - a street, a ship, a building."
 msgstr "Geen familie als onderwerp: de plek of de tijd - een straat, een schip, een gebouw."
 
-#: content/forms.py:190
+#: content/forms.py:193
 msgid "Not classified yet, or none of these."
 msgstr "Nog niet ingedeeld, of geen van deze."
 
-#: content/forms.py:196
+#: content/forms.py:199
 msgid "kind of photo"
 msgstr "soort foto"
 
-#: content/forms.py:210
+#: content/forms.py:205
+msgid "kind of picture"
+msgstr "soort afbeelding"
+
+#: content/forms.py:219
 msgid "kind of document"
 msgstr "soort document"
 
-#: content/forms.py:224 content/forms.py:243 content/templates/content/content_detail.html:206 core/forms.py:283
+#: content/forms.py:233 content/forms.py:252 content/templates/content/content_detail.html:206 core/forms.py:283
 msgid "language"
 msgstr "taal"
 
-#: content/forms.py:243
+#: content/forms.py:252
 msgid "original or translation"
 msgstr "origineel of vertaling"
 
-#: content/forms.py:243
+#: content/forms.py:252
 msgid "how it was made"
 msgstr "hoe het gemaakt is"
 
-#: content/forms.py:244
+#: content/forms.py:253
 msgid "transcription incomplete"
 msgstr "transcriptie onvolledig"
 
-#: content/forms.py:244 content/templates/content/transcribe.html:105 notes/forms.py:29
+#: content/forms.py:253 content/templates/content/transcribe.html:105 notes/forms.py:29
 msgid "text"
 msgstr "tekst"
 
-#: content/forms.py:246 content/templates/content/transcribe.html:105
+#: content/forms.py:255 content/templates/content/transcribe.html:105
 msgid "@ mention"
 msgstr "@ noemen"
 
@@ -215,64 +223,68 @@ msgstr "onbekend"
 msgid "photo"
 msgstr "foto"
 
-#: content/models/Content.py:89
+#: content/models/Content.py:93
+msgid "artwork"
+msgstr "kunstwerk"
+
+#: content/models/Content.py:94
 msgid "document"
 msgstr "document"
 
-#: content/models/Content.py:90
+#: content/models/Content.py:95
 msgid "book"
 msgstr "boek"
 
-#: content/models/Content.py:91
+#: content/models/Content.py:96
 msgid "object"
 msgstr "voorwerp"
 
-#: content/models/Content.py:92
+#: content/models/Content.py:97
 msgid "recording"
 msgstr "opname"
 
-#: content/models/Content.py:137
+#: content/models/Content.py:146
 msgid "add a transcript or translation"
 msgstr "transcriptie of vertaling toevoegen"
 
-#: content/models/Content.py:161
+#: content/models/Content.py:170
 msgid "The name the file arrived with"
 msgstr "De naam waarmee het bestand binnenkwam"
 
-#: content/models/Content.py:169
+#: content/models/Content.py:178
 msgid "Where this came from: a person, archive or URL"
 msgstr "Waar dit vandaan komt: een persoon, archief of webadres"
 
-#: content/models/Content.py:214 content/models/Content.py:215 content/templates/content/favorites.html:18 content/templates/content/inbox.html:18 content/templates/content/upload.html:15 core/search.py:50 core/templates/tag/tag_detail.html:64 dashboard/templates/dashboard/loose_end.html:32 notes/templates/note/_links.html:11 people/templates/people/person_detail.html:112 places/templates/place/place_detail.html:68
+#: content/models/Content.py:223 content/models/Content.py:224 content/templates/content/favorites.html:18 content/templates/content/inbox.html:18 content/templates/content/upload.html:15 core/search.py:50 core/templates/tag/tag_detail.html:64 dashboard/templates/dashboard/loose_end.html:32 notes/templates/note/_links.html:11 people/templates/people/person_detail.html:112 places/templates/place/place_detail.html:68
 msgid "content"
 msgstr "stuk"
 
-#: content/models/Content.py:372 content/models/Portrait.py:59
+#: content/models/Content.py:385 content/models/Portrait.py:59
 msgid "Set all four crop values, or none."
 msgstr "Vul alle vier de uitsnedewaarden in, of geen."
 
-#: content/models/Content.py:375 content/models/Portrait.py:61
+#: content/models/Content.py:388 content/models/Portrait.py:61
 msgid "The crop must lie within the image."
 msgstr "De uitsnede moet binnen de afbeelding liggen."
 
-#: content/models/Content.py:378 content/parts.py:75
+#: content/models/Content.py:391 content/parts.py:75
 msgid "An item can't be a part of itself."
 msgstr "Een stuk kan geen deel van zichzelf zijn."
 
-#: content/models/Content.py:380
+#: content/models/Content.py:393
 msgid "That item is itself a part - choose its whole instead."
 msgstr "Dat stuk is zelf een deel - kies het geheel."
 
-#: content/models/Content.py:382
+#: content/models/Content.py:395
 msgid "This item has parts of its own, so it can't become a part."
 msgstr "Dit stuk heeft zelf delen, dus het kan geen deel worden."
 
-#: content/models/Content.py:392
+#: content/models/Content.py:405
 #, python-format
 msgid "%(item)s is itself a part - choose its whole instead."
 msgstr "%(item)s is zelf een deel - kies het geheel."
 
-#: content/models/Content.py:408 content/views/upload.py:81
+#: content/models/Content.py:421 content/views/upload.py:81
 msgid "That item wasn't found."
 msgstr "Dat stuk is niet gevonden."
 
@@ -484,7 +496,7 @@ msgstr "Wijs ze eerst aan met een kader."
 msgid "This image's size isn't known yet."
 msgstr "De afmetingen van deze afbeelding zijn nog niet bekend."
 
-#: content/roles.py:20 content/roles.py:91
+#: content/roles.py:20 content/roles.py:92
 msgid "That person isn't on this item."
 msgstr "Die persoon staat niet bij dit stuk."
 
@@ -496,35 +508,35 @@ msgstr "Die rol past niet bij dit stuk."
 msgid "Role saved."
 msgstr "Rol opgeslagen."
 
-#: content/roles.py:71
+#: content/roles.py:72
 msgid "This item's kind suggests no role - choose one per person."
 msgstr "Bij dit soort stuk hoort geen voorgestelde rol - kies er een per persoon."
 
-#: content/roles.py:78
+#: content/roles.py:79
 #, python-format
 msgid "%(count)s person is now %(role)s."
 msgid_plural "%(count)s people are now %(role)s."
 msgstr[0] "%(count)s persoon is nu %(role)s."
 msgstr[1] "%(count)s personen zijn nu %(role)s."
 
-#: content/roles.py:88
+#: content/roles.py:89
 msgid "Only a photo or a scan has places to point out."
 msgstr "Alleen een foto of scan heeft plekken om aan te wijzen."
 
-#: content/roles.py:93
+#: content/roles.py:94
 #, python-format
 msgid "%(name)s is %(role)s here - to point them out, make them depicted."
 msgstr "%(name)s is hier %(role)s - maak ze afgebeeld om ze aan te wijzen."
 
-#: content/roles.py:97
+#: content/roles.py:98
 msgid "Frame removed."
 msgstr "Kader verwijderd."
 
-#: content/roles.py:102
+#: content/roles.py:103
 msgid "Point out where they are on the photo."
 msgstr "Wijs aan waar ze op de foto staan."
 
-#: content/roles.py:106
+#: content/roles.py:107
 #, python-format
 msgid "%(name)s is pointed out."
 msgstr "%(name)s is aangewezen."
@@ -936,7 +948,7 @@ msgstr "Deel %(index)s van %(count)s"
 msgid "part of"
 msgstr "deel van"
 
-#: content/templates/content/content_detail.html:214 content/templates/content/content_detail.html:222 content/templatetags/content_tags.py:270
+#: content/templates/content/content_detail.html:214 content/templates/content/content_detail.html:222 content/templatetags/content_tags.py:271
 msgid "author"
 msgstr "auteur"
 
@@ -1245,7 +1257,7 @@ msgstr "Sleep bestanden hierheen, of"
 msgid "to your inbox"
 msgstr "naar je inbox"
 
-#: content/templatetags/content_tags.py:273
+#: content/templatetags/content_tags.py:274
 #, python-format
 msgid "via %(events)s"
 msgstr "via %(events)s"

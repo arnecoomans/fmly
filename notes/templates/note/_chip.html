@@ -8,7 +8,7 @@
   {# A private person: a link only for themself, their parents and staff (person_url). #}
   {% with url=object|person_url:request %}<{% if url %}a href="{{ url }}"{% else %}span{% endif %} class="tag tag--person"><i class="bi bi-person"></i>{{ object|viewer_name:request }}</{% if url %}a{% else %}span{% endif %}>{% endwith %}
 {% elif relation == 'content' %}
-  <a class="tag" href="{{ object.get_absolute_url }}"><i class="bi bi-{% if object.kind == 'photo' %}image{% elif object.kind == 'book' %}book{% else %}file-earmark-text{% endif %}"></i>{{ object }}</a>
+  <a class="tag" href="{{ object.get_absolute_url }}"><i class="bi bi-{% if object.kind == 'photo' %}image{% elif object.kind == 'artwork' %}palette{% elif object.kind == 'book' %}book{% else %}file-earmark-text{% endif %}"></i>{{ object }}</a>
 {% elif relation == 'places' %}
   {% with path=object.ancestors|slice:":-1" %}<a class="tag tag--place" href="{{ object.get_absolute_url }}"><i class="bi bi-geo-alt"></i>{{ object.name }}{% if path %} <span class="tag__meta">{{ path|last }}</span>{% endif %}</a>{% endwith %}
 {% elif relation == 'events' %}

@@ -38,7 +38,7 @@ See [Photos & documents](content.md) for the inbox in detail.
 For editors: what's still missing in the archive, each as a list with a count, for example:
 
 - people without a birth or without parents, and people born over a hundred years ago without a death (a death without a date counts)
-- photos without people
+- photos without people (artworks too)
 - documents without a transcript, and transcripts to finish or check - not identity documents (passport applications, ID cards): they're forms, so tag the people on them and add their facts to those people instead
 - events without a date
 - people on items without a role - photos and documents with someone on them whose role isn't set yet (*subject*, *depicted*, ...), with how many - set them right there, each with its menu, or with one click to the role the item's kind suggests (*All: depicted* on a group photo) after a look at it. Set the photo or document kind first: an unclassified one suggests nothing. A bar shows how many items are done.

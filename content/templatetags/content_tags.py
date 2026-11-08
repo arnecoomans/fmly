@@ -48,6 +48,7 @@ def portrait_to_crop(person, user):
 # Bootstrap Icons per kind - the card's kind icon / icon chip.
 _KIND_ICONS = {
   'photo': 'image',
+  'artwork': 'palette',
   'document': 'file-earmark-text',
   'book': 'book',
   'object': 'gem',

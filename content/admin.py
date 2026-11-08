@@ -93,7 +93,7 @@ class ContentAdmin(
     self.message_user(request, f"{renamed} of {queryset.count()} file(s) renamed; the rest already had a useful name.")
 
   # Only the inline for this item's kind - a photo has no book fields.
-  _DETAIL_INLINES = {'photo': PhotoContentInline, 'document': DocumentContentInline, 'book': BookContentInline}
+  _DETAIL_INLINES = {'photo': PhotoContentInline, 'artwork': PhotoContentInline, 'document': DocumentContentInline, 'book': BookContentInline}
 
   @admin.action(description="Move description to transcript")
   def move_description_to_transcript(self, request, queryset):
@@ -128,7 +128,7 @@ class ContentAdmin(
     if obj:
       inlines.append(ContentPersonInline)
       inlines.append(TranscriptInline)
-    if obj and obj.kind == Content.Kind.PHOTO:
+    if obj and obj.kind in Content.PICTURES:
       inlines.append(PortraitInline)
     # Parts for every kind - but not on an item that is itself a part
     # (one level deep, see Content.clean).

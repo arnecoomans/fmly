@@ -190,14 +190,14 @@ class PersonPortraitForm(forms.ModelForm):
 
   @staticmethod
   def _first_choice(images):
-    """Without a portrait yet, the dialog opens on a photo - a posed
-    portrait first, then any photo - rather than the oldest image they're
+    """Without a portrait yet, the dialog opens on a picture (a photo or
+    an artwork) - a posed portrait first, then any - rather than the oldest image they're
     tagged in (often a document, e.g. a passport page)."""
     def rank(image):
-      detail = getattr(image, 'photo_detail', None) if image.kind == 'photo' else None
+      detail = getattr(image, 'photo_detail', None) if image.kind in image.PICTURES else None
       if detail is not None and detail.photo_kind == 'portrait':
         return 0
-      return 1 if image.kind == 'photo' else 2
+      return 1 if image.kind in image.PICTURES else 2
     return min(images, key=rank).token   # min is stable: the oldest within a rank
 
   def clean_photo(self):

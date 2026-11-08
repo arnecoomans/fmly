@@ -49,7 +49,7 @@ def suggested_role(content):
   """SUGGESTED_ROLES for this item - '' when its kind says nothing."""
   from django.core.exceptions import ObjectDoesNotExist
   try:
-    if content.kind == 'photo':
+    if content.kind in content.PICTURES:
       sub = content.photo_detail.photo_kind
     elif content.kind == 'document':
       sub = content.document_detail.document_kind
@@ -57,7 +57,8 @@ def suggested_role(content):
       return ''
   except ObjectDoesNotExist:
     return ''
-  return SUGGESTED_ROLES.get((content.kind, sub), '')
+  kind = 'photo' if content.kind in content.PICTURES else content.kind   # a painted portrait is of someone too
+  return SUGGESTED_ROLES.get((kind, sub), '')
 
 
 def apply_suggested_roles(content, request):
