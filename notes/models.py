@@ -92,6 +92,7 @@ class Note(MentionableSourceMixin, TimestampMixin, TokenMixin, StatusMixin, Owne
   api_edit_forms = {
     'title': 'notes.forms.NoteTitleForm',
     'body': 'notes.forms.NoteBodyForm',
+    'section': 'notes.forms.NoteSectionForm',   # one section of the body (?section=<n>, core/sections.py)
     'date': 'notes.forms.NoteDateForm',
     'kind': 'notes.forms.NoteKindForm',
     'confidence': 'notes.forms.NoteConfidenceForm',

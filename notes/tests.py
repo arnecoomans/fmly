@@ -181,3 +181,53 @@ class NoteEditTests(NoteTestCase):
     self.question.status = 'p'
     self.question.save()
     self.assertEqual(reader.post(f'/api/note/{self.question.token}/form/kind/', {}).status_code, 403)
+
+
+class NoteSectionTests(NoteTestCase):
+  """Edit mode, a text with headings: a pencil per section (NoteSectionForm,
+  core/sections.py) - one saved into its place; read, one text as ever."""
+
+  BODY = "# Archieven\n* CBG\n\n# Hulpmiddelen\n* Delpher\n"
+
+  def setUp(self):
+    super().setUp()
+    self.n = self.note(body=self.BODY)
+    self.url = f'/api/note/{self.n.token}/form/section/'
+
+  def save(self, client, index, text, modified=None):
+    self.n.refresh_from_db()
+    return client.post(self.url, {'_modified': modified or self.n.date_modified.isoformat(), 'section-section': index, 'section-text': text})
+
+  def test_a_pencil_per_section_in_edit_mode_only(self):
+    page = self.html(self.n.get_absolute_url(), self.client_for(self.author, edit=True))
+    self.assertIn(f'{self.url}?section=0', page)
+    self.assertIn(f'{self.url}?section=1', page)
+    self.assertIn(f'{self.url}?section=2', page)                                 # + section
+    self.assertNotIn(self.url, self.html(self.n.get_absolute_url(), self.client_for(self.author)))
+
+  def test_opens_on_its_section(self):
+    data = self.client_for(self.author, edit=True).get(f'{self.url}?section=1').json()
+    self.assertIn('# Hulpmiddelen', data['html'])
+    self.assertNotIn('CBG', data['html'])
+
+  def test_saved_into_its_place(self):
+    response = self.save(self.client_for(self.author, edit=True), 0, "# Archieven\n* CBG\n* [IGV](https://igv.nl/)")
+    self.assertTrue(response.json()['reload'])
+    self.n.refresh_from_db()
+    self.assertEqual(self.n.body, "# Archieven\n* CBG\n* [IGV](https://igv.nl/)\n\n# Hulpmiddelen\n* Delpher\n")
+
+  def test_a_new_section(self):
+    self.save(self.client_for(self.author, edit=True), 2, "# Kranten\n* Delpher")
+    self.n.refresh_from_db()
+    self.assertTrue(self.n.body.endswith("* Delpher\n\n# Kranten\n* Delpher\n"))
+
+  def test_changed_meanwhile_is_refused(self):
+    stale = self.n.date_modified.isoformat()
+    from datetime import timedelta
+    Note.objects.filter(pk=self.n.pk).update(body="# Anders\n", date_modified=self.n.date_modified + timedelta(seconds=5))   # someone else's save
+    self.assertEqual(self.save(self.client_for(self.author, edit=True), 0, "# Weg", modified=stale).status_code, 409)
+
+  def test_only_who_may_change_it(self):
+    self.assertIn(self.save(self.client_for(self.other, edit=True), 0, "# Weg").status_code, (403, 404))
+    self.n.refresh_from_db()
+    self.assertEqual(self.n.body, self.BODY)

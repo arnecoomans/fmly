@@ -16,6 +16,8 @@ A question can grow into a hypothesis and a conclusion as you find out more: cha
 
 Link a note to the **people**, **photos and documents**, **events** and **places** it's about - it then shows on their pages too. Make a note from the item or person itself (*new note* on its page), and it's linked straight away.
 
+**A long note in pieces.** A note with headings (`# Archives`) shows in edit mode per section - a heading and what follows, up to the next - each with its own pencil: adding a link to one list opens just that list. *+ section* adds one at the end; emptied, a section goes; without its heading it joins the one above, a heading typed in it splits it. The pencil after *Edit the whole text* opens it all. Read, the note is one text as before.
+
 A new note is yours until you share it. *More* → **Notes** lists all notes you may see, open work first.
 
 **Tip:** a research line about a photo or a person belongs in a note, not in a comment or a tag - a note has room for the question and the answers, and it stays findable as open work.

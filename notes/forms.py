@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from cmnsd.forms.widgets import MentionTextarea
 
 from core.forms import StatusActionsForm
+from core.sections import SectionForm
 
 from .models import Note
 
@@ -29,6 +30,15 @@ class NoteBodyForm(forms.ModelForm):
     labels = {'body': _("text")}
     help_texts = {'body': _("Markdown: *italic*, **bold**, [link](https://...), # heading, - list.")}
     widgets = {'body': MentionTextarea(attrs={'rows': 14})}
+
+
+class NoteSectionForm(SectionForm):
+  """One section of the text (core/sections.py) - a heading and what
+  follows, up to the next: a long text edited a piece at a time."""
+
+  class Meta:
+    model = Note
+    fields = []
 
 
 class NoteDateForm(forms.ModelForm):

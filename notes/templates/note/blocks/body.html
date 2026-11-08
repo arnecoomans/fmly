@@ -1,10 +1,31 @@
-{% load markdown %}
+{% load markdown %}{% load sections %}
 {% comment %}
   The note's text, as Markdown - an editable block (form: NoteBodyForm),
-  shown even when empty in edit mode.
+  shown even when empty in edit mode. In edit mode, a text with headings
+  shows per section (core/sections.py), each with its own pencil
+  (NoteSectionForm, ?section=<n>) - a long text edited a piece at a time -
+  and "+ section" after them; the block's own pencil (at the bottom, then, after "Edit the whole text:")
+  edits the whole text. Read, it's one text as ever.
 {% endcomment %}
 {% if note.body %}
-  <div class="note-page__body reading-copy">{{ note.body|markdown:request }}</div>
+  {% with sections=note.body|markdown_sections %}
+    {% if edit_mode and sections|length > 1 %}
+      <div class="note-page__body note-sections">
+        {% for index, text in sections %}
+          <div class="edit-block edit-block--editable note-section" data-cmnsd-edit-block data-cmnsd-edit-name="section-{{ index }}" id="edit-block-note-section-{{ index }}">
+            <div class="reading-copy">{{ text|markdown:request }}</div>
+            <button type="button" class="edit-block__open" data-cmnsd-edit-open data-cmnsd-edit-url="{% url 'cmnsd_api:object_form' 'note' note.token 'section' %}?section={{ index }}" title="{% translate 'edit this section'|capfirst %}" aria-label="{% translate 'edit this section'|capfirst %}"><i class="bi bi-pencil"></i></button>
+          </div>
+        {% endfor %}
+        <div class="edit-block note-section note-section--new" data-cmnsd-edit-block data-cmnsd-edit-name="section-new" id="edit-block-note-section-new">
+          <button type="button" class="note-section__add" data-cmnsd-edit-open data-cmnsd-edit-url="{% url 'cmnsd_api:object_form' 'note' note.token 'section' %}?section={{ sections|length }}"><i class="bi bi-plus-lg"></i> {% translate "section" %}</button>
+          <span class="edit-form__hint">{% translate "Edit the whole text:" %}</span>
+        </div>
+      </div>
+    {% else %}
+      <div class="note-page__body reading-copy">{{ note.body|markdown:request }}</div>
+    {% endif %}
+  {% endwith %}
 {% elif edit_mode %}
   <p class="note-page__body edit-block__empty">{% translate "No text yet - the pencil opens it." %}</p>
 {% endif %}

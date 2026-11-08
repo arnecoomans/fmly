@@ -1,0 +1,22 @@
+{% comment %}
+  One section of a note's text (NoteSectionForm, core/sections.py): its
+  number hidden, the text - a heading and what follows. Emptied, the
+  section goes; without its heading it joins the one above.
+{% endcomment %}
+<form class="edit-form" data-cmnsd-edit-form action="{{ form_action }}" method="post" novalidate>
+  <input type="hidden" name="{{ modified_field }}" value="{{ modified }}">
+  {{ form.section }}
+  {% if form.non_field_errors %}<p class="edit-form__error">{{ form.non_field_errors|join:' ' }}</p>{% endif %}
+  <div class="edit-form__field edit-form__field--text">
+    <label for="{{ form.text.id_for_label }}">{% if form.is_new %}{% translate "new section"|capfirst %}{% else %}{{ form.text.label|capfirst }}{% endif %}</label>
+    {{ form.text }}
+    <small class="edit-form__help">{% translate "A heading (# …) and what follows, up to the next. Empty: the section goes; without its heading it joins the one above." %}</small>
+    {% for error in form.text.errors %}<p class="edit-form__error">{{ error }}</p>{% endfor %}
+  </div>
+  <p class="edit-form__error" data-cmnsd-error hidden></p>
+  <div class="edit-form__actions">
+    <button type="submit" class="btn btn--primary btn--sm">{% translate "save"|capfirst %}</button>
+    <button type="button" class="btn btn--secondary btn--sm" data-cmnsd-edit-cancel>{% translate "cancel"|capfirst %}</button>
+    <span class="edit-form__hint">{% translate "Esc to cancel · Ctrl+Enter to save" %}</span>
+  </div>
+</form>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 10:41+0100\n"
+"POT-Creation-Date: 2026-11-08 18:47+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -63,19 +63,19 @@ msgstr "beschrijving"
 msgid "What you see - Markdown: *italic*, **bold**, [link](https://...)."
 msgstr "Wat je ziet - Markdown: *cursief*, **vet**, [link](https://...)."
 
-#: content/forms.py:42 events/forms.py:20 notes/forms.py:41 people/forms.py:70
+#: content/forms.py:42 events/forms.py:20 notes/forms.py:51 people/forms.py:70
 msgid "how sure"
 msgstr "hoe zeker"
 
-#: content/forms.py:42 events/forms.py:20 notes/forms.py:41 people/forms.py:70
+#: content/forms.py:42 events/forms.py:20 notes/forms.py:51 people/forms.py:70
 msgid "day"
 msgstr "dag"
 
-#: content/forms.py:42 events/forms.py:20 events/templates/event/event_calendar.html:26 notes/forms.py:41 people/forms.py:70
+#: content/forms.py:42 events/forms.py:20 events/templates/event/event_calendar.html:26 notes/forms.py:51 people/forms.py:70
 msgid "month"
 msgstr "maand"
 
-#: content/forms.py:42 events/forms.py:20 notes/forms.py:41 people/forms.py:70
+#: content/forms.py:42 events/forms.py:20 notes/forms.py:51 people/forms.py:70
 msgid "year"
 msgstr "jaar"
 
@@ -91,7 +91,7 @@ msgstr "uitgever"
 msgid "Thumbnail"
 msgstr "Miniatuur"
 
-#: content/forms.py:142 core/forms.py:139 core/templates/comment/comment.html:36 core/templates/comment/comment.html:40 core/templates/comment/thread.html:26 notes/forms.py:87 people/forms.py:269 people/forms.py:294
+#: content/forms.py:142 core/forms.py:139 core/templates/comment/comment.html:36 core/templates/comment/comment.html:40 core/templates/comment/thread.html:26 notes/forms.py:97 people/forms.py:269 people/forms.py:294
 msgid "visible to"
 msgstr "zichtbaar voor"
 
@@ -107,7 +107,7 @@ msgstr "Waarom wordt dit stuk ingetrokken? Alleen beheerders zien het tot het he
 msgid "Made by hand: a painting, drawing, miniature, silhouette, engraving."
 msgstr "Met de hand gemaakt: een schilderij, tekening, miniatuur, silhouet, gravure."
 
-#: content/forms.py:174 dashboard/templates/dashboard/loose_end.html:25 events/forms.py:25 events/templates/event/event_overview.html:25 notes/forms.py:63
+#: content/forms.py:174 dashboard/templates/dashboard/loose_end.html:25 events/forms.py:25 events/templates/event/event_overview.html:25 notes/forms.py:73
 msgid "kind"
 msgstr "soort"
 
@@ -159,7 +159,7 @@ msgstr "hoe het gemaakt is"
 msgid "transcription incomplete"
 msgstr "transcriptie onvolledig"
 
-#: content/forms.py:253 content/templates/content/transcribe.html:105 notes/forms.py:29
+#: content/forms.py:253 content/templates/content/transcribe.html:105 notes/forms.py:30
 msgid "text"
 msgstr "tekst"
 
@@ -1073,11 +1073,11 @@ msgstr[1] "%(counter)s stukken, de laatste favoriet eerst."
 msgid "Nothing yet - the heart on an item's page adds it here."
 msgstr "Nog niets - het hartje op de pagina van een stuk zet het hier."
 
-#: content/templates/content/forms/date.html:22 content/templates/content/forms/thumbnail.html:30 core/templates/comment/comment.html:57 core/templates/preferences/preferences.html:54 people/templates/person/forms/_life_event.html:25 people/templates/person/forms/portrait.html:48
+#: content/templates/content/forms/date.html:22 content/templates/content/forms/thumbnail.html:30 core/templates/comment/comment.html:57 core/templates/preferences/preferences.html:54 notes/templates/note/forms/section.html:18 people/templates/person/forms/_life_event.html:25 people/templates/person/forms/portrait.html:48
 msgid "save"
 msgstr "opslaan"
 
-#: content/templates/content/forms/date.html:23 content/templates/content/forms/thumbnail.html:32 dashboard/templates/dashboard/housekeeping_confirm.html:49 events/templates/event/forms/new.html:87 people/templates/person/forms/_life_event.html:27 people/templates/person/forms/new.html:12 people/templates/person/forms/portrait.html:50
+#: content/templates/content/forms/date.html:23 content/templates/content/forms/thumbnail.html:32 dashboard/templates/dashboard/housekeeping_confirm.html:49 events/templates/event/forms/new.html:87 notes/templates/note/forms/section.html:19 people/templates/person/forms/_life_event.html:27 people/templates/person/forms/new.html:12 people/templates/person/forms/portrait.html:50
 msgid "cancel"
 msgstr "annuleren"
 
@@ -1626,13 +1626,21 @@ msgstr "Gebruikers die als familie gelden voor stukken die zichtbaar zijn voor '
 msgid "Show star signs on people's pages"
 msgstr "Sterrenbeelden tonen op de pagina's van personen"
 
-#: core/search.py:52 dashboard/templates/dashboard/dashboard.html:121 dashboard/templates/dashboard/dashboard.html:197 dashboard/templates/dashboard/loose_end.html:33 notes/apps.py:7 notes/models.py:117 notes/templates/note/_notes_section.html:11 notes/templates/note/note_detail.html:17 notes/templates/note/note_overview.html:9 notes/templates/note/note_overview.html:15 templates/navigation.html:37
+#: core/search.py:52 dashboard/templates/dashboard/dashboard.html:121 dashboard/templates/dashboard/dashboard.html:197 dashboard/templates/dashboard/loose_end.html:33 notes/apps.py:7 notes/models.py:118 notes/templates/note/_notes_section.html:11 notes/templates/note/note_detail.html:17 notes/templates/note/note_overview.html:9 notes/templates/note/note_overview.html:15 templates/navigation.html:37
 msgid "notes"
 msgstr "notities"
 
 #: core/search.py:54 core/templates/tag/blocks/parent.html:9 core/templates/tag/tag_overview.html:10 core/templates/tag/tag_overview.html:16 dashboard/templates/dashboard/dashboard.html:198 notes/templates/note/_links.html:17 people/templates/person/functions/get_tags.html:11 people/templates/person/functions/get_tags.html:20 templates/navigation.html:35
 msgid "tags"
 msgstr "tags"
+
+#: core/sections.py:72 notes/templates/note/blocks/body.html:21
+msgid "section"
+msgstr "sectie"
+
+#: core/sections.py:89
+msgid "That section isn't there any more - reload the page."
+msgstr "Die sectie is er niet meer - laad de pagina opnieuw."
 
 #: core/templates/comment/_target.html:27 people/models/Person.py:183 people/models/Person.py:215 people/templates/person/functions/get_full_name.html:58
 msgid "person"
@@ -1760,7 +1768,7 @@ msgstr "Aan je favorieten toevoegen"
 msgid "biography of"
 msgstr "levensverhaal van"
 
-#: core/templates/mention/_list.html:14 notes/models.py:116
+#: core/templates/mention/_list.html:14 notes/models.py:117
 msgid "note"
 msgstr "notitie"
 
@@ -2583,7 +2591,7 @@ msgstr "%(name)s is afgewezen en verwijderd."
 msgid "%(name)s isn't waiting for approval."
 msgstr "%(name)s wacht niet op goedkeuring."
 
-#: events/forms.py:25 notes/forms.py:20
+#: events/forms.py:25 notes/forms.py:21
 msgid "title"
 msgstr "titel"
 
@@ -2903,27 +2911,27 @@ msgstr "ontslagen"
 msgid "deaths"
 msgstr "overlijdens"
 
-#: notes/forms.py:21
+#: notes/forms.py:22
 msgid "Optional - without one, the first line of the text names the note."
 msgstr "Optioneel - zonder titel geeft de eerste regel van de tekst de notitie haar naam."
 
-#: notes/forms.py:30
+#: notes/forms.py:31
 msgid "Markdown: *italic*, **bold**, [link](https://...), # heading, - list."
 msgstr "Markdown: *cursief*, **vet**, [link](https://...), # kop, - lijst."
 
-#: notes/forms.py:74 notes/templates/note/note_detail.html:35
+#: notes/forms.py:84 notes/templates/note/note_detail.html:35
 msgid "confidence"
 msgstr "zekerheid"
 
-#: notes/forms.py:78
+#: notes/forms.py:88
 msgid "not said"
 msgstr "niet gezegd"
 
-#: notes/forms.py:94
+#: notes/forms.py:104
 msgid "Delete this note? It will be hidden from everyone - it can be recovered in the admin."
 msgstr "Deze notitie verwijderen? Ze wordt voor iedereen verborgen - ze kan in de beheeromgeving worden hersteld."
 
-#: notes/forms.py:95
+#: notes/forms.py:105
 msgid "Revoke this note? Only staff will see it until it's restored."
 msgstr "Deze notitie intrekken? Alleen beheerders zien haar tot ze hersteld is."
 
@@ -2963,7 +2971,7 @@ msgstr "onzeker"
 msgid "The reasoning, a quoted source, the anecdote - Markdown"
 msgstr "De redenering, een geciteerde bron, de anekdote - Markdown"
 
-#: notes/models.py:123
+#: notes/models.py:124
 msgid "untitled note"
 msgstr "notitie zonder titel"
 
@@ -2987,9 +2995,29 @@ msgstr "alleen jij"
 msgid "changed"
 msgstr "gewijzigd"
 
-#: notes/templates/note/blocks/body.html:9
+#: notes/templates/note/blocks/body.html:17
+msgid "edit this section"
+msgstr "deze sectie bewerken"
+
+#: notes/templates/note/blocks/body.html:22
+msgid "Edit the whole text:"
+msgstr "De hele tekst bewerken:"
+
+#: notes/templates/note/blocks/body.html:30
 msgid "No text yet - the pencil opens it."
 msgstr "Nog geen tekst - het potlood opent haar."
+
+#: notes/templates/note/forms/section.html:11
+msgid "new section"
+msgstr "nieuwe sectie"
+
+#: notes/templates/note/forms/section.html:13
+msgid "A heading (# …) and what follows, up to the next. Empty: the section goes; without its heading it joins the one above."
+msgstr "Een kop (# …) en wat volgt, tot de volgende. Leeg: de sectie verdwijnt; zonder kop gaat ze op in de sectie erboven."
+
+#: notes/templates/note/forms/section.html:20
+msgid "Esc to cancel · Ctrl+Enter to save"
+msgstr ""
 
 #: notes/templates/note/note_detail.html:37
 msgid "by"

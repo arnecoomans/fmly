@@ -1504,6 +1504,18 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .note-page__body h1 { font-size: 1.35rem; }
 .note-page__body h2 { font-size: 1.2rem; }
 .note-page__body h3 { font-size: 1.05rem; }
+/* Edit mode, a text with headings: per section, each its own pencil (note/blocks/body.html).
+   The block around them doesn't light up as a whole; its pencil - the whole text - moves to the bottom. */
+.edit-block--editable:has(> .note-sections) { padding-right: 0; }
+.edit-block--editable:has(> .note-sections):hover { background: none; box-shadow: none; }
+.edit-block--editable:has(> .note-sections) > .edit-block__open { top: auto; bottom: 0; }
+.note-sections { display: flex; flex-direction: column; gap: var(--space-3); }
+.note-section > .reading-copy > :first-child { margin-top: 0; }
+.note-section > .reading-copy > :last-child { margin-bottom: 0; }
+.note-section--new { display: flex; align-items: center; gap: var(--space-3); min-height: 30px; padding-right: 40px; }
+.note-section--new.is-editing { display: block; padding-right: 0; }
+.note-section__add { padding: 4px 12px; border: 1px dashed var(--color-border); border-radius: 999px; background: none; color: var(--color-ink-2); font-size: var(--text-sm); cursor: pointer; }
+.note-section__add:hover { border-color: var(--color-accent); color: var(--color-accent); }
 .note-links .tag-list { margin-bottom: var(--space-2); }
 .tag--person i { color: var(--color-ink-3); }
 
