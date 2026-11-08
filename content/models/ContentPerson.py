@@ -36,11 +36,18 @@ class ContentPerson(RegionMixin, models.Model):
     OWNER = 'owner', _("owner")             # it was theirs - a library, a passport, a medal
 
   # Who can be pointed out on it: who is depicted (or possibly) - or not
-  # known yet (no role: pointing out is a reason to set it). Not a subject -
-  # it's about them, which is another thing than where they are in it - nor
-  # a creator, addressee or owner. A frame kept from before shows again when
-  # the role is one of these.
+  # known yet (no role: pointing out is a reason to set it). Not a creator,
+  # addressee or owner. A subject only on a picture (frame_roles): a
+  # portrait's sitter is in it; on a record it's about them, which is
+  # another thing than where they are in it. A frame kept from before shows
+  # again when the role is one of these.
   FRAME_ROLES = ('', Role.DEPICTED, Role.POSSIBLY_DEPICTED)
+
+  @classmethod
+  def frame_roles(cls, content):
+    """The roles that can be pointed out on this item: FRAME_ROLES, and on
+    a picture (Content.PICTURES - a photo, an artwork) the subject too."""
+    return (*cls.FRAME_ROLES, cls.Role.SUBJECT) if content.kind in content.PICTURES else cls.FRAME_ROLES
 
   content = models.ForeignKey('content.Content', on_delete=models.CASCADE, related_name='person_links')
   person = models.ForeignKey('people.Person', on_delete=models.CASCADE, related_name='content_links')

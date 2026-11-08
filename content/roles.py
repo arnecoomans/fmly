@@ -90,7 +90,7 @@ def set_person_region(content, data, request):
   link = content.person_links.select_related('person').filter(person__token=data.get('person') or '').first()
   if link is None:
     raise ValidationError(_("That person isn't on this item."))
-  if not data.get('clear') and link.role not in link.FRAME_ROLES:
+  if not data.get('clear') and link.role not in link.frame_roles(content):
     raise ValidationError(_("%(name)s is %(role)s here - to point them out, make them depicted.") % {'name': link.person, 'role': link.get_role_display()})
   if data.get('clear'):
     link.set_region(None)
@@ -113,9 +113,10 @@ def attach_roles(content, people):
   """Each person's role on this item as person.content_role, and whether
   they're pointed out on it (person.has_frame) - one query."""
   from .models import ContentPerson
+  frame_roles = ContentPerson.frame_roles(content)
   links = {person_id: (role, x is not None) for person_id, role, x in content.person_links.values_list('person_id', 'role', 'region_x')}
   for person in people:
     person.content_role, framed = links.get(person.pk, ('', False))
-    person.can_frame = person.content_role in ContentPerson.FRAME_ROLES   # in the picture, or not known yet
+    person.can_frame = person.content_role in frame_roles   # in the picture, or not known yet
     person.has_frame = framed and person.can_frame
   return people

@@ -188,16 +188,28 @@ class PointOutTests(TestCase):
     self.assertIsNone(self.region())
 
   def test_not_for_who_isnt_in_the_picture(self):
-    """Only depicted, possibly depicted or no role yet: not a subject,
-    creator, addressee or owner - and a frame kept from before shows again
-    when the role comes back."""
+    """Only depicted, possibly depicted or no role yet - on a picture the
+    subject too: not a creator, addressee or owner - and a frame kept from
+    before shows again when the role comes back."""
     self.point(region_x='0.5', region_y='0.2', region_w='0.1', region_h='0.1')
-    for role in ('subject', 'creator'):
-      ContentPerson.objects.filter(content=self.photo, person=self.albert).update(role=role)
-      self.assertEqual(self.point(region_x='0.4', region_y='0.2', region_w='0.1', region_h='0.1').status_code, 400)
+    ContentPerson.objects.filter(content=self.photo, person=self.albert).update(role='creator')
+    self.assertEqual(self.point(region_x='0.4', region_y='0.2', region_w='0.1', region_h='0.1').status_code, 400)
     self.assertNotIn('>Albert</span>', self.client.get(self.photo.get_absolute_url()).content.decode())   # hidden
     ContentPerson.objects.filter(content=self.photo, person=self.albert).update(role='depicted')
     self.assertIn('>Albert</span>', self.client.get(self.photo.get_absolute_url()).content.decode())      # kept, shown again
+
+  def test_a_portraits_subject_on_a_picture(self):
+    """A portrait's sitter is its subject - and in it: on a photo or an
+    artwork the subject is pointed out; on a document (a record about
+    them) not."""
+    for kind in ('photo', 'artwork'):
+      Content.objects.filter(pk=self.photo.pk).update(kind=kind)
+      ContentPerson.objects.filter(content=self.photo, person=self.albert).update(role='subject', region_x=None, region_y=None, region_w=None, region_h=None)
+      self.assertEqual(self.point(region_x='0.4', region_y='0.2', region_w='0.1', region_h='0.1').status_code, 200)
+      self.assertIn('>Albert</span>', self.client.get(self.photo.get_absolute_url()).content.decode())
+    Content.objects.filter(pk=self.photo.pk).update(kind='document')
+    self.assertEqual(self.point(region_x='0.4', region_y='0.2', region_w='0.1', region_h='0.1').status_code, 400)
+    self.assertNotIn('>Albert</span>', self.client.get(self.photo.get_absolute_url()).content.decode())   # its frame hidden there
 
   def test_controls_in_edit_mode(self):
     self.client.post('/ui/edit/', {'on': '1', 'next': '/'})

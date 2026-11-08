@@ -9,7 +9,7 @@ from cmnsd.views.mixins import VisibilityViewMixin
 from core.tags import attach_content_counts, by_count
 from people.models import Person
 
-from ..models import Content
+from ..models import Content, ContentPerson
 
 
 class ContentDetailView(VisibilityViewMixin, DetailView):
@@ -215,10 +215,11 @@ class ContentDetailView(VisibilityViewMixin, DetailView):
       .only('person_id', 'role', 'region_x', 'region_y', 'region_w', 'region_h')
     }
     frames = []
+    frame_roles = ContentPerson.frame_roles(content)
     for person in people:
       link = regions.get(person.pk)
-      # Depicted, possibly, or not known yet (ContentPerson.FRAME_ROLES) - another role's frame stays hidden.
-      person.has_frame = link is not None and link.has_region and link.role in link.FRAME_ROLES
+      # Depicted, possibly, not known yet - on a picture the subject too (ContentPerson.frame_roles); another role's frame stays hidden.
+      person.has_frame = link is not None and link.has_region and link.role in frame_roles
       if not person.has_frame:
         continue
       person.frame_is_point = link.region_is_point   # a spot, no face: no portrait from it
