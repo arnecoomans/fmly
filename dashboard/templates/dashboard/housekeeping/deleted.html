@@ -1,13 +1,19 @@
 {% comment %}
-  Housekeeping: deleted items (dashboard/housekeeping.py SECTIONS) - on its own
-  page (housekeeping_section.html). Its forms post to this page.
+  Housekeeping: deleted, to purge (dashboard/housekeeping.py SECTIONS,
+  deleted_items) - on its own page (housekeeping_section.html), by kind:
+  content, people, events, notes, comments. Its form posts to this page;
+  the confirmation lists what goes along.
 {% endcomment %}
-<p class="housekeeping__intro">{% translate "Hidden from everyone, but the record and the file are still there. Purge removes the record, its file and its thumbnails - and its parts." %}</p>
+<p class="housekeeping__intro">{% translate "Hidden from everyone, but still there. Purge removes it for good, with its links: an item with its file, thumbnails and parts; a person with their family relations and the events only they are in. Texts that mention it keep the words - the link then shows under mentions that lead nowhere." %}</p>
 {% if deleted %}
   <form method="post">
     {% csrf_token %}<input type="hidden" name="action" value="purge">
     <label class="housekeeping__all"><input type="checkbox" data-housekeeping-all> {% translate "select all" %}</label>
-    <div class="housekeeping__list">{% for item in deleted %}{% include 'dashboard/_housekeeping_item.html' with checkbox=True %}{% endfor %}</div>
+    {% regroup deleted by review_kind as kinds %}
+    {% for kind in kinds %}
+      <h3 class="housekeeping__kind">{{ kind.grouper|capfirst }} <span class="page-section__count">{{ kind.list|length }}</span></h3>
+      <div class="housekeeping__list">{% for item in kind.list %}{% if item.purge_kind == 'content' %}{% include 'dashboard/_housekeeping_item.html' with checkbox=True %}{% else %}{% include 'dashboard/_housekeeping_record.html' with checkbox=True %}{% endif %}{% endfor %}</div>
+    {% endfor %}
     <div class="edit-form__actions"><button type="submit" class="btn btn--secondary btn--sm">{% translate "purge selected…"|capfirst %}</button></div>
   </form>
 {% endif %}

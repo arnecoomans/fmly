@@ -4,11 +4,11 @@
   on its own page (housekeeping_section.html). People, content, events and
   notes, by kind (review_kind). Each with its discussion: every comment on
   it, oldest first - the revocation reasons titled - so the case reads
-  here; decided on its page: Republish, or Delete - content is then purged
-  under "deleted items". No delete here: purging for good goes through one
+  here; decided on its page: Republish, or Delete - then purged under
+  "deleted, to purge". No delete here: purging for good goes through one
   place. A note has no comments, so no discussion.
 {% endcomment %}
-<p class="housekeeping__intro">{% translate "Pulled back by staff and waiting for a decision. Open one to republish it or delete it - a deleted item can then be purged under deleted items." %}</p>
+<p class="housekeeping__intro">{% translate "Pulled back by staff and waiting for a decision. Open one to republish it or delete it - then purge it under deleted, to purge." %}</p>
 {% regroup revoked by review_kind as kinds %}
 {% for kind in kinds %}
   <h3 class="housekeeping__kind">{{ kind.grouper|capfirst }} <span class="page-section__count">{{ kind.list|length }}</span></h3>

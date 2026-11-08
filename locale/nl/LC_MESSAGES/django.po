@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 18:47+0100\n"
+"POT-Creation-Date: 2026-11-08 19:02+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -255,7 +255,7 @@ msgstr "De naam waarmee het bestand binnenkwam"
 msgid "Where this came from: a person, archive or URL"
 msgstr "Waar dit vandaan komt: een persoon, archief of webadres"
 
-#: content/models/Content.py:223 content/models/Content.py:224 content/templates/content/favorites.html:18 content/templates/content/inbox.html:18 content/templates/content/upload.html:15 core/search.py:50 core/templates/tag/tag_detail.html:64 dashboard/templates/dashboard/loose_end.html:32 notes/templates/note/_links.html:11 people/templates/people/person_detail.html:112 places/templates/place/place_detail.html:68
+#: content/models/Content.py:223 content/models/Content.py:224 content/templates/content/favorites.html:18 content/templates/content/inbox.html:18 content/templates/content/upload.html:15 core/search.py:50 core/templates/tag/tag_detail.html:64 dashboard/housekeeping.py:283 dashboard/templates/dashboard/loose_end.html:32 notes/templates/note/_links.html:11 people/templates/people/person_detail.html:112 places/templates/place/place_detail.html:68
 msgid "content"
 msgstr "stuk"
 
@@ -960,7 +960,7 @@ msgstr "auteur koppelen"
 msgid "new person"
 msgstr "nieuwe persoon"
 
-#: content/templates/content/content_detail.html:231 core/search.py:53 dashboard/templates/dashboard/dashboard.html:195 events/templates/event/event_detail.html:46 notes/templates/note/_links.html:15 places/templates/place/blocks/parent.html:9 places/templates/place/place_overview.html:11 places/templates/place/place_overview.html:17 templates/navigation.html:36
+#: content/templates/content/content_detail.html:231 core/search.py:53 dashboard/housekeeping.py:270 dashboard/housekeeping.py:284 dashboard/templates/dashboard/dashboard.html:195 events/templates/event/event_detail.html:46 notes/templates/note/_links.html:15 places/templates/place/blocks/parent.html:9 places/templates/place/place_overview.html:11 places/templates/place/place_overview.html:17 templates/navigation.html:36
 msgid "places"
 msgstr "plaatsen"
 
@@ -980,7 +980,7 @@ msgstr "tag toevoegen"
 msgid "parts"
 msgstr "delen"
 
-#: content/templates/content/content_detail.html:288 content/templates/content/inbox.html:55 core/search.py:49 core/templates/tag/tag_detail.html:53 dashboard/templates/dashboard/dashboard.html:192 dashboard/templates/dashboard/loose_end.html:31 events/templates/event/event_detail.html:32 notes/templates/note/_links.html:9 people/templates/people/person_create.html:14 people/templates/people/person_list.html:3 people/templates/people/person_list.html:19 templates/navigation.html:27
+#: content/templates/content/content_detail.html:288 content/templates/content/inbox.html:55 core/search.py:49 core/templates/tag/tag_detail.html:53 dashboard/housekeeping.py:269 dashboard/housekeeping.py:281 dashboard/templates/dashboard/dashboard.html:192 dashboard/templates/dashboard/loose_end.html:31 events/templates/event/event_detail.html:32 notes/templates/note/_links.html:9 people/templates/people/person_create.html:14 people/templates/people/person_list.html:3 people/templates/people/person_list.html:19 templates/navigation.html:27
 msgid "people"
 msgstr "personen"
 
@@ -988,7 +988,7 @@ msgstr "personen"
 msgid "add a person"
 msgstr "persoon toevoegen"
 
-#: content/templates/content/content_detail.html:310 content/templates/content/inbox.html:62 core/search.py:51 dashboard/templates/dashboard/dashboard.html:194 events/templates/event/event_calendar.html:16 events/templates/event/event_detail.html:17 events/templates/event/event_overview.html:9 events/templates/event/event_overview.html:15 notes/templates/note/_links.html:13 people/templates/people/person_detail.html:118 places/templates/place/place_detail.html:58 templates/navigation.html:33
+#: content/templates/content/content_detail.html:310 content/templates/content/inbox.html:62 core/search.py:51 dashboard/housekeeping.py:282 dashboard/templates/dashboard/dashboard.html:194 events/templates/event/event_calendar.html:16 events/templates/event/event_detail.html:17 events/templates/event/event_overview.html:9 events/templates/event/event_overview.html:15 notes/templates/note/_links.html:13 people/templates/people/person_detail.html:118 places/templates/place/place_detail.html:58 templates/navigation.html:33
 msgid "events"
 msgstr "gebeurtenissen"
 
@@ -1518,7 +1518,7 @@ msgstr[1] "Het wordt genoemd in %(n)s teksten: haal de links daar weg, of zie On
 msgid "superstitious"
 msgstr "bijgelovig"
 
-#: core/forms.py:283 people/forms.py:260 people/forms.py:294 people/models/Person.py:43 people/views/PersonListView.py:24
+#: core/forms.py:283 dashboard/housekeeping.py:258 people/forms.py:260 people/forms.py:294 people/models/Person.py:43 people/views/PersonListView.py:24
 msgid "family"
 msgstr "familie"
 
@@ -1784,7 +1784,7 @@ msgstr "transcriptie van"
 msgid "comment by"
 msgstr "opmerking van"
 
-#: core/templates/mention/_list.html:18
+#: core/templates/mention/_list.html:18 dashboard/housekeeping.py:289
 msgid "on"
 msgstr "bij"
 
@@ -1988,63 +1988,188 @@ msgstr "afbeeldingen in lage resolutie"
 msgid "places on their own (no parent, nothing under them)"
 msgstr "losse plaatsen (nergens onder, niets eronder)"
 
-#: dashboard/housekeeping.py:376
+#: dashboard/housekeeping.py:236 dashboard/housekeeping.py:307
+#, python-format
+msgid "mentioned in %(n)s text"
+msgid_plural "mentioned in %(n)s texts"
+msgstr[0] "genoemd in %(n)s tekst"
+msgstr[1] "genoemd in %(n)s teksten"
+
+#: dashboard/housekeeping.py:237 dashboard/housekeeping.py:303
+#, python-format
+msgid "%(n)s comment"
+msgid_plural "%(n)s comments"
+msgstr[0] "%(n)s opmerking"
+msgstr[1] "%(n)s opmerkingen"
+
+#: dashboard/housekeeping.py:243
+#, python-format
+msgid "%(n)s own event"
+msgid_plural "%(n)s own events"
+msgstr[0] "%(n)s eigen gebeurtenis"
+msgstr[1] "%(n)s eigen gebeurtenissen"
+
+#: dashboard/housekeeping.py:244
+#, python-format
+msgid "in %(n)s event with others"
+msgid_plural "in %(n)s events with others"
+msgstr[0] "in %(n)s gebeurtenis met anderen"
+msgstr[1] "in %(n)s gebeurtenissen met anderen"
+
+#: dashboard/housekeeping.py:245
+#, python-format
+msgid "%(n)s family relation"
+msgid_plural "%(n)s family relations"
+msgstr[0] "%(n)s familierelatie"
+msgstr[1] "%(n)s familierelaties"
+
+#: dashboard/housekeeping.py:246
+#, python-format
+msgid "on %(n)s item"
+msgid_plural "on %(n)s items"
+msgstr[0] "op %(n)s stuk"
+msgstr[1] "op %(n)s stukken"
+
+#: dashboard/housekeeping.py:247 dashboard/housekeeping.py:304
+#, python-format
+msgid "%(n)s portrait"
+msgid_plural "%(n)s portraits"
+msgstr[0] "%(n)s portret"
+msgstr[1] "%(n)s portretten"
+
+#: dashboard/housekeeping.py:248 dashboard/housekeeping.py:265
+#, python-format
+msgid "in %(n)s note"
+msgid_plural "in %(n)s notes"
+msgstr[0] "in %(n)s notitie"
+msgstr[1] "in %(n)s notities"
+
+#: dashboard/housekeeping.py:252
+msgid "has a user account - link the account to someone else first"
+msgstr "heeft een gebruikersaccount - koppel het account eerst aan iemand anders"
+
+#: dashboard/housekeeping.py:257
+msgid "same name"
+msgstr "zelfde naam"
+
+#: dashboard/housekeeping.py:259
+msgid "events with others"
+msgstr "gebeurtenissen met anderen"
+
+#: dashboard/housekeeping.py:263 dashboard/housekeeping.py:305
+#, python-format
+msgid "%(n)s person"
+msgid_plural "%(n)s people"
+msgstr[0] "%(n)s persoon"
+msgstr[1] "%(n)s personen"
+
+#: dashboard/housekeeping.py:264
+#, python-format
+msgid "%(n)s item as proof"
+msgid_plural "%(n)s items as proof"
+msgstr[0] "%(n)s stuk als bewijs"
+msgstr[1] "%(n)s stukken als bewijs"
+
+#: dashboard/housekeeping.py:271
+msgid "proof"
+msgstr "bewijs"
+
+#: dashboard/housekeeping.py:276
+#, python-format
+msgid "%(n)s link"
+msgid_plural "%(n)s links"
+msgstr[0] "%(n)s koppeling"
+msgstr[1] "%(n)s koppelingen"
+
+#: dashboard/housekeeping.py:277
+#, python-format
+msgid "%(n)s related note"
+msgid_plural "%(n)s related notes"
+msgstr[0] "%(n)s verwante notitie"
+msgstr[1] "%(n)s verwante notities"
+
+#: dashboard/housekeeping.py:301
+#, python-format
+msgid "%(n)s part"
+msgid_plural "%(n)s parts"
+msgstr[0] "%(n)s deel"
+msgstr[1] "%(n)s delen"
+
+#: dashboard/housekeeping.py:302
+#, python-format
+msgid "%(n)s transcript"
+msgid_plural "%(n)s transcripts"
+msgstr[0] "%(n)s transcriptie"
+msgstr[1] "%(n)s transcripties"
+
+#: dashboard/housekeeping.py:306
+#, python-format
+msgid "%(n)s note"
+msgid_plural "%(n)s notes"
+msgstr[0] "%(n)s notitie"
+msgstr[1] "%(n)s notities"
+
+#: dashboard/housekeeping.py:312
+msgid "has parts that aren't deleted - not purged"
+msgstr "heeft delen die niet verwijderd zijn - niet definitief verwijderd"
+
+#: dashboard/housekeeping.py:541
 msgid "to review"
 msgstr "te beoordelen"
 
-#: dashboard/housekeeping.py:377
+#: dashboard/housekeeping.py:542
 msgid "revoked, to review"
 msgstr "ingetrokken, te beoordelen"
 
-#: dashboard/housekeeping.py:378
-msgid "deleted items, to purge"
-msgstr "verwijderde stukken, definitief op te ruimen"
+#: dashboard/housekeeping.py:543
+msgid "deleted, to purge"
+msgstr "verwijderd, definitief op te ruimen"
 
-#: dashboard/housekeeping.py:380
+#: dashboard/housekeeping.py:545
 msgid "files"
 msgstr "bestanden"
 
-#: dashboard/housekeeping.py:381
+#: dashboard/housekeeping.py:546
 msgid "same file twice"
 msgstr "hetzelfde bestand twee keer"
 
-#: dashboard/housekeeping.py:382
+#: dashboard/housekeeping.py:547
 msgid "files without a record"
 msgstr "bestanden zonder stuk"
 
-#: dashboard/housekeeping.py:383
+#: dashboard/housekeeping.py:548
 msgid "records without a file"
 msgstr "stukken zonder bestand"
 
-#: dashboard/housekeeping.py:385
+#: dashboard/housekeeping.py:550
 msgid "tags and places"
 msgstr "tags en plaatsen"
 
-#: dashboard/housekeeping.py:386
+#: dashboard/housekeeping.py:551
 msgid "unused tags"
 msgstr "ongebruikte tags"
 
-#: dashboard/housekeeping.py:387
+#: dashboard/housekeeping.py:552
 msgid "unused places"
 msgstr "ongebruikte plaatsen"
 
-#: dashboard/housekeeping.py:389
+#: dashboard/housekeeping.py:554
 msgid "records"
 msgstr "gegevens"
 
-#: dashboard/housekeeping.py:390
+#: dashboard/housekeeping.py:555
 msgid "births and deaths that break the rules"
 msgstr "geboortes en overlijdens die de regels breken"
 
-#: dashboard/housekeeping.py:391
+#: dashboard/housekeeping.py:556
 msgid "people linked twice"
 msgstr "personen dubbel gekoppeld"
 
-#: dashboard/housekeeping.py:393
+#: dashboard/housekeeping.py:558
 msgid "texts"
 msgstr "teksten"
 
-#: dashboard/housekeeping.py:394
+#: dashboard/housekeeping.py:559
 msgid "mentions that lead nowhere"
 msgstr "vermeldingen die nergens heen leiden"
 
@@ -2131,13 +2256,20 @@ msgstr "waarom (optioneel)"
 msgid "off the list"
 msgstr "van de lijst"
 
-#: dashboard/templates/dashboard/_housekeeping_item.html:22
-msgid "has parts that aren't deleted - not purged"
-msgstr "heeft delen die niet verwijderd zijn - niet definitief verwijderd"
-
 #: dashboard/templates/dashboard/_housekeeping_item.html:23
 msgid "file kept: used by another item"
 msgstr "bestand behouden: gebruikt door een ander stuk"
+
+#: dashboard/templates/dashboard/_housekeeping_record.html:16
+msgid "admin"
+msgstr "admin"
+
+#: dashboard/templates/dashboard/_housekeeping_record.html:20
+#, python-format
+msgid "%(counter)s more"
+msgid_plural "%(counter)s more"
+msgstr[0] "nog %(counter)s"
+msgstr[1] "nog %(counter)s"
 
 #: dashboard/templates/dashboard/accounts.html:8 dashboard/templates/dashboard/accounts.html:15 dashboard/templates/dashboard/dashboard.html:172 templates/header.html:63
 msgid "accounts"
@@ -2303,15 +2435,15 @@ msgstr "onderhoud"
 msgid "Storage, checked by eye. Deleting here is for good - only a backup brings it back."
 msgstr "Opslag, met het oog gecontroleerd. Verwijderen gebeurt hier definitief - alleen een back-up brengt het terug."
 
-#: dashboard/templates/dashboard/housekeeping/deleted.html:5
-msgid "Hidden from everyone, but the record and the file are still there. Purge removes the record, its file and its thumbnails - and its parts."
-msgstr "Voor iedereen verborgen, maar het record en het bestand zijn er nog. Definitief verwijderen haalt het record, het bestand en de miniaturen weg - en de delen."
+#: dashboard/templates/dashboard/housekeeping/deleted.html:7
+msgid "Hidden from everyone, but still there. Purge removes it for good, with its links: an item with its file, thumbnails and parts; a person with their family relations and the events only they are in. Texts that mention it keep the words - the link then shows under mentions that lead nowhere."
+msgstr "Voor iedereen verborgen, maar nog aanwezig. Opruimen verwijdert het definitief, met de koppelingen: een stuk met het bestand, de miniaturen en de delen; een persoon met de familierelaties en de gebeurtenissen waar alleen die persoon in staat. Teksten die het noemen houden de woorden - de link staat dan onder vermeldingen die nergens heen leiden."
 
-#: dashboard/templates/dashboard/housekeeping/deleted.html:9 dashboard/templates/dashboard/housekeeping/orphans.html:9 dashboard/templates/dashboard/housekeeping/unused-places.html:9 dashboard/templates/dashboard/housekeeping/unused-tags.html:9
+#: dashboard/templates/dashboard/housekeeping/deleted.html:11 dashboard/templates/dashboard/housekeeping/orphans.html:9 dashboard/templates/dashboard/housekeeping/unused-places.html:9 dashboard/templates/dashboard/housekeeping/unused-tags.html:9
 msgid "select all"
 msgstr "alles selecteren"
 
-#: dashboard/templates/dashboard/housekeeping/deleted.html:11 dashboard/templates/dashboard/housekeeping/duplicates.html:12
+#: dashboard/templates/dashboard/housekeeping/deleted.html:17 dashboard/templates/dashboard/housekeeping/duplicates.html:12
 msgid "purge selected…"
 msgstr "selectie definitief verwijderen…"
 
@@ -2395,8 +2527,8 @@ msgid "delete selected files…"
 msgstr "geselecteerde bestanden verwijderen…"
 
 #: dashboard/templates/dashboard/housekeeping/revoked.html:11
-msgid "Pulled back by staff and waiting for a decision. Open one to republish it or delete it - a deleted item can then be purged under deleted items."
-msgstr "Teruggetrokken door beheerders, wachtend op een besluit. Open er een om het opnieuw te publiceren of te verwijderen - een verwijderd stuk kan daarna definitief weg bij verwijderde stukken."
+msgid "Pulled back by staff and waiting for a decision. Open one to republish it or delete it - then purge it under deleted, to purge."
+msgstr "Teruggetrokken door beheerders, wachtend op een besluit. Open er een om het opnieuw te publiceren of te verwijderen - ruim het daarna op onder verwijderd, definitief op te ruimen."
 
 #: dashboard/templates/dashboard/housekeeping/revoked.html:32
 msgid "no reason given"
@@ -2419,8 +2551,8 @@ msgid "Tags nothing carries and nothing sits under - an old category, a typo, or
 msgstr "Tags die nergens aan hangen en waar niets onder valt - een oude categorie, een typfout, of iets voor later. De tag 'Los eindje' staat er niet bij."
 
 #: dashboard/templates/dashboard/housekeeping_confirm.html:16
-msgid "purge these items?"
-msgstr "deze stukken definitief verwijderen?"
+msgid "purge these?"
+msgstr "deze definitief verwijderen?"
 
 #: dashboard/templates/dashboard/housekeeping_confirm.html:16
 msgid "delete these tags?"
@@ -2437,6 +2569,10 @@ msgstr "deze bestanden verwijderen?"
 #: dashboard/templates/dashboard/housekeeping_confirm.html:17
 msgid "This can't be undone - only a backup brings it back."
 msgstr "Dit kan niet ongedaan worden - alleen een back-up brengt het terug."
+
+#: dashboard/templates/dashboard/housekeeping_confirm.html:27
+msgid "their own event"
+msgstr "eigen gebeurtenis"
 
 #: dashboard/templates/dashboard/housekeeping_confirm.html:28
 msgid "Nothing to purge."
@@ -3017,7 +3153,7 @@ msgstr "Een kop (# …) en wat volgt, tot de volgende. Leeg: de sectie verdwijnt
 
 #: notes/templates/note/forms/section.html:20
 msgid "Esc to cancel · Ctrl+Enter to save"
-msgstr ""
+msgstr "Esc om te annuleren · Ctrl+Enter om op te slaan"
 
 #: notes/templates/note/note_detail.html:37
 msgid "by"
@@ -3877,6 +4013,9 @@ msgstr "uitloggen"
 #: templates/navigation.html:31
 msgid "more"
 msgstr "meer"
+
+#~ msgid "Hidden from everyone, but the record and the file are still there. Purge removes the record, its file and its thumbnails - and its parts."
+#~ msgstr "Voor iedereen verborgen, maar het record en het bestand zijn er nog. Definitief verwijderen haalt het record, het bestand en de miniaturen weg - en de delen."
 
 #, fuzzy
 #~ msgid "Leave unknown parts empty."

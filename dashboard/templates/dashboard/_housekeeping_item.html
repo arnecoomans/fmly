@@ -19,7 +19,7 @@
     {% if item.purge_summary or item.blocked or item.file_shared %}
       <span class="housekeeping__meta">
         {{ item.purge_summary }}
-        {% if item.blocked %}<strong>{% translate "has parts that aren't deleted - not purged" %}</strong>{% endif %}
+        {% if item.blocked %}<strong>{{ item.blocked }}</strong>{% endif %}
         {% if item.file_shared %}<strong>{% translate "file kept: used by another item" %}</strong>{% endif %}
       </span>
     {% endif %}

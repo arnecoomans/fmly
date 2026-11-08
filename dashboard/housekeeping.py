@@ -9,10 +9,13 @@ its own (/dashboard/housekeeping/<section>/).
   every revocation reason (a titled comment) and what was said since -
   republished or deleted on their page.
 
-- deleted items: content with status "deleted" (hidden from everyone, but
-  record and file still there) - purge: the record, its file and its
-  thumbnails, for good. Its parts go with it, so an item with parts that
-  aren't deleted themselves can't be purged.
+- deleted items: content, people, events, notes and comments with status
+  "deleted" (hidden from everyone, but the record - and an item's file -
+  still there) - purge: for good, with its links. An item takes its file,
+  thumbnails and parts (so one with parts that aren't deleted can't be
+  purged); a person their family relations and the events only they are in
+  (their birth, their death); a person with a user account can't be purged.
+  Mentions of it in other texts then lead nowhere (listed there).
 - files without a record: files under MEDIA_ROOT/content/ no item points
   to (an old name, an abandoned upload) - delete the file.
 - same file twice: items with the same checksum, side by side - delete
@@ -43,12 +46,8 @@ from django.conf import settings
 from django.contrib.admin.models import DELETION, LogEntry
 from django.core.files.storage import default_storage
 from django.db.models import Count, F, Q
-from django.utils.translation import gettext_lazy, ngettext
+from django.utils.translation import gettext, gettext_lazy, ngettext_lazy
 
-
-def _plural(singular, plural):
-  """A count phrase: _plural("%(n)s part", "%(n)s parts")(n) % {"n": n}."""
-  return lambda n: ngettext(singular, plural, n)
 
 CONTENT_DIR = 'content'
 
@@ -128,35 +127,192 @@ def same_file_twice():
   return result
 
 
-def deleted_items():
+def purge_models():
+  """{kind: model} - what can be deleted and then purged here, in the
+  page's order: (kind is the value's prefix in the form, 'person:<token>')."""
   from content.models import Content
-  items = list(Content.objects.filter(status=Content.Status.DELETED).order_by('-date_modified'))
-  attach_consequences(items)
+  from core.models import Comment
+  from events.models import Event
+  from notes.models import Note
+  from people.models import Person
+  return {'content': Content, 'person': Person, 'event': Event, 'note': Note, 'comment': Comment}
+
+
+def deleted_items():
+  """Everything deleted, to purge: per kind (purge_models), newest first -
+  each with purge_kind, review_kind (the heading) and its consequences."""
+  items = []
+  for kind, model in purge_models().items():
+    found = list(model.objects.filter(status=model.Status.DELETED).order_by('-date_modified'))
+    for item in found:
+      item.purge_kind = kind
+      item.review_kind = model._meta.verbose_name_plural
+    items += found
+  return attach_consequences(items)
+
+
+def selected_deleted(values):
+  """The deleted records named in the form ('person:<token>', ...) - checked
+  again here, not trusted from the form."""
+  models = purge_models()
+  tokens = defaultdict(list)
+  for value in values:
+    kind, _sep, token = value.partition(':') if ':' in value else ('content', '', value)   # an item: its token alone (same file twice)
+    if kind in models and token:
+      tokens[kind].append(token)
+  items = []
+  for kind, model in models.items():
+    for item in model.objects.filter(token__in=tokens[kind], status=model.Status.DELETED):
+      item.purge_kind = kind
+      item.review_kind = model._meta.verbose_name_plural
+      items.append(item)
   return items
+
+
+def _mentions_of(obj):
+  """How many texts mention obj (the index, cmnsd Mention)."""
+  from cmnsd.models.Mention import Mention
+  from django.contrib.contenttypes.models import ContentType
+  return Mention.objects.filter(target_content_type=ContentType.objects.get_for_model(obj), target_id=obj.pk).values('source_content_type', 'source_id').distinct().count()
+
+
+def _summary(counts):
+  """'1 part · 2 comments' - the counts that aren't 0."""
+  return ' · '.join(str(words % {'n': n}) for n, words in counts if n)
 
 
 def attach_consequences(items):
-  """On each item: what hangs on it (parts, transcripts, comments,
-  portraits, people, notes) and `blocked` - why it can't be purged, or ''."""
+  """On each record: what goes with it or is unlinked (purge_summary),
+  what it takes along (purge_parts: an item's parts, a person's own events)
+  and `blocked` - why it can't be purged, or ''."""
   from content.models import Content
   for item in items:
-    item.purge_parts = list(item.parts.all())
-    counts = (
-      (len(item.purge_parts), _plural("%(n)s part", "%(n)s parts")),
-      (item.transcripts.count() + sum(part.transcripts.count() for part in item.purge_parts), _plural("%(n)s transcript", "%(n)s transcripts")),
-      (item.comments.count(), _plural("%(n)s comment", "%(n)s comments")),
-      (item.portrait_links.count(), _plural("%(n)s portrait", "%(n)s portraits")),
-      (item.people.count(), _plural("%(n)s person", "%(n)s people")),
-      (item.notes.count(), _plural("%(n)s note", "%(n)s notes")),
-    )
-    # What goes with it (or is unlinked), for the page: '1 part · 2 comments'.
-    item.purge_summary = ' · '.join(str(words(n) % {'n': n}) for n, words in counts if n)
-    live_parts = [part for part in item.purge_parts if part.status != Content.Status.DELETED]
-    item.blocked = 'parts' if live_parts else ''
-    # The very same stored file used by another item: purging keeps it.
-    own = [item.pk, *(part.pk for part in item.purge_parts)]
-    item.file_shared = bool(item.file) and Content.objects.filter(file=item.file.name).exclude(pk__in=own).exists()
+    item.purge_parts, item.blocked, item.file_shared = [], '', False
+    if isinstance(item, Content):
+      _content_consequences(item)
+    else:
+      _record_consequences(item)
   return items
+
+
+RELATED_MAX = 8   # links per line on the purge list - enough to recognise it
+
+
+def _lifespan(person):
+  """'Willem Warnaar (1880-1950)' - a person as a related link, with the
+  years that tell two of the same name apart."""
+  born, died = person.birth, person.death
+  years = '-'.join(event.year_display() if event and event.year else '' for event in (born, died)).strip('-')
+  return f"{person} ({years})" if years else str(person)
+
+
+def _related(label, objects, text=str):
+  """(label, [(text, object)]) - one "linked to" line on the purge list:
+  what it's about, to open and check (a double?) before it goes."""
+  objects = list(objects)
+  return (label, [(text(obj), obj) for obj in objects[:RELATED_MAX]], len(objects) - RELATED_MAX)
+
+
+def attach_admin_urls(items, user):
+  """purge_admin_url on each person, event, note or comment this user may
+  view in the admin - its page is gone (deleted), the admin shows it all."""
+  from django.urls import reverse
+  for item in items:
+    meta = item._meta
+    if item.purge_kind != 'content' and user.has_perm(f'{meta.app_label}.view_{meta.model_name}'):
+      item.purge_admin_url = reverse(f'admin:{meta.app_label}_{meta.model_name}_change', args=[item.pk])
+  return items
+
+
+def _record_consequences(item):
+  """A person, event, note or comment: its links, and texts mentioning it -
+  and `purge_related`: what it's linked to, still there, to open and check
+  why it was deleted (a person: their family, and anyone of the same name)."""
+  from cmnsd.models.mixins import StatusMixin
+  from core.models import Comment
+  from events.models import Event
+  from notes.models import Note
+  from people.models import Person
+  mentions = (_mentions_of(item), ngettext_lazy("mentioned in %(n)s text", "mentioned in %(n)s texts", 'n'))
+  comments = (item.comments.count() if hasattr(item, 'comments') else 0, ngettext_lazy("%(n)s comment", "%(n)s comments", 'n'))
+  if isinstance(item, Person):
+    # Counted on their own, not through item.events: that join sees only this person.
+    events = list(Event.objects.filter(pk__in=item.events.values('pk')).annotate(n=Count('people')))
+    item.purge_parts = [event for event in events if event.n == 1]   # only theirs: their birth, their death
+    counts = (
+      (len(item.purge_parts), ngettext_lazy("%(n)s own event", "%(n)s own events", 'n')),
+      (len(events) - len(item.purge_parts), ngettext_lazy("in %(n)s event with others", "in %(n)s events with others", 'n')),
+      (item.relations_from.count() + item.relations_to.count(), ngettext_lazy("%(n)s family relation", "%(n)s family relations", 'n')),
+      (item.content_links.count(), ngettext_lazy("on %(n)s item", "on %(n)s items", 'n')),
+      (item.portrait_links.count(), ngettext_lazy("%(n)s portrait", "%(n)s portraits", 'n')),
+      (item.notes.count(), ngettext_lazy("in %(n)s note", "in %(n)s notes", 'n')),
+      comments, mentions,
+    )
+    if item.related_user_id:
+      item.blocked = gettext("has a user account - link the account to someone else first")
+    live = Person.objects.exclude(status=Person.Status.DELETED)
+    family = live.filter(Q(relations_to__person_from=item) | Q(relations_from__person_to=item)).distinct()
+    same_name = live.filter(given_name__iexact=item.given_name, last_name__iexact=item.last_name).exclude(pk=item.pk) if item.last_name else live.none()
+    item.purge_related = [
+      _related(gettext("same name"), same_name, _lifespan),
+      _related(gettext("family"), family, _lifespan),
+      _related(gettext("events with others"), [event for event in events if event.n > 1]),
+    ]
+  elif isinstance(item, Event):
+    counts = (
+      (item.people.count(), ngettext_lazy("%(n)s person", "%(n)s people", 'n')),
+      (item.content.count(), ngettext_lazy("%(n)s item as proof", "%(n)s items as proof", 'n')),
+      (item.notes.count(), ngettext_lazy("in %(n)s note", "in %(n)s notes", 'n')),
+      comments, mentions,
+    )
+    item.purge_related = [
+      _related(gettext("people"), item.people.exclude(status=Person.Status.DELETED), _lifespan),
+      _related(gettext("places"), item.places.all()),
+      _related(gettext("proof"), item.content.exclude(status=StatusMixin.Status.DELETED)),
+    ]
+  elif isinstance(item, Note):
+    links = item.people.count() + item.content.count() + item.events.count() + item.places.count() + item.tags.count()
+    counts = (
+      (links, ngettext_lazy("%(n)s link", "%(n)s links", 'n')),
+      (item.related_notes.count() + item.linked_from.count(), ngettext_lazy("%(n)s related note", "%(n)s related notes", 'n')),
+      mentions,
+    )
+    item.purge_related = [
+      _related(gettext("people"), item.people.exclude(status=Person.Status.DELETED), _lifespan),
+      _related(gettext("events"), item.events.exclude(status=Event.Status.DELETED)),
+      _related(gettext("content"), item.content.exclude(status=StatusMixin.Status.DELETED)),
+      _related(gettext("places"), item.places.all()),
+    ]
+  else:
+    counts = ()
+    if isinstance(item, Comment) and item.target is not None:
+      item.purge_related = [_related(gettext("on"), [item.target])]
+  item.purge_summary = _summary(counts)
+  item.purge_related = [line for line in getattr(item, 'purge_related', []) if line[1]]
+  for part in item.purge_parts:
+    part.purge_kind = 'event'
+
+
+def _content_consequences(item):
+  """An item: its parts, transcripts, comments, portraits, people, notes."""
+  from content.models import Content
+  item.purge_parts = list(item.parts.all())
+  counts = (
+    (len(item.purge_parts), ngettext_lazy("%(n)s part", "%(n)s parts", 'n')),
+    (item.transcripts.count() + sum(part.transcripts.count() for part in item.purge_parts), ngettext_lazy("%(n)s transcript", "%(n)s transcripts", 'n')),
+    (item.comments.count(), ngettext_lazy("%(n)s comment", "%(n)s comments", 'n')),
+    (item.portrait_links.count(), ngettext_lazy("%(n)s portrait", "%(n)s portraits", 'n')),
+    (item.people.count(), ngettext_lazy("%(n)s person", "%(n)s people", 'n')),
+    (item.notes.count(), ngettext_lazy("%(n)s note", "%(n)s notes", 'n')),
+    (_mentions_of(item), ngettext_lazy("mentioned in %(n)s text", "mentioned in %(n)s texts", 'n')),
+  )
+  # What goes with it (or is unlinked), for the page: '1 part · 2 comments'.
+  item.purge_summary = _summary(counts)
+  live_parts = [part for part in item.purge_parts if part.status != Content.Status.DELETED]
+  item.blocked = gettext("has parts that aren't deleted - not purged") if live_parts else ''
+  # The very same stored file used by another item: purging keeps it.
+  own = [item.pk, *(part.pk for part in item.purge_parts)]
+  item.file_shared = bool(item.file) and Content.objects.filter(file=item.file.name).exclude(pk__in=own).exists()
 
 
 def _shared(obj, purging):
@@ -179,13 +335,22 @@ def _delete_file(field_file):
 
 
 def purge(items, user):
-  """Hard-delete deleted items (and their parts): files, thumbnails,
-  records. Returns how many records went. Skips anything not deleted or
-  blocked - checked again here, not trusted from the form."""
+  """Hard-delete deleted records: an item with its parts, file and
+  thumbnails; a person with their own events; an event, note or comment -
+  their links go with them (cascade), comments on them too. Returns how many
+  records went. Skips anything not deleted or blocked - checked again here,
+  not trusted from the form."""
   from content.models import Content
   gone = 0
-  for item in attach_consequences([i for i in items if i.status == Content.Status.DELETED]):
+  for item in attach_consequences([i for i in items if i.status == i.Status.DELETED]):
     if item.blocked:
+      continue
+    if not isinstance(item, Content):
+      LogEntry.objects.log_actions(user.pk, [*item.purge_parts, item], DELETION, change_message="Purged in housekeeping")
+      for part in item.purge_parts:
+        part.delete()
+      item.delete()
+      gone += 1 + len(item.purge_parts)
       continue
     LogEntry.objects.log_actions(
       user.pk, [item, *item.purge_parts], DELETION,
@@ -375,7 +540,7 @@ def broken_mentions():
 SECTIONS = (
   (gettext_lazy("to review"), (
     ('revoked', gettext_lazy("revoked, to review"), 'revoked', revoked_items),
-    ('deleted', gettext_lazy("deleted items, to purge"), 'deleted', deleted_items),
+    ('deleted', gettext_lazy("deleted, to purge"), 'deleted', deleted_items),
   )),
   (gettext_lazy("files"), (
     ('duplicates', gettext_lazy("same file twice"), 'duplicates', same_file_twice),

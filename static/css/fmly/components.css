@@ -1995,6 +1995,10 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .housekeeping__name { font-size: var(--text-sm); }
 .housekeeping__meta { font-size: var(--text-xs); color: var(--color-ink-3); }
 .housekeeping__part { margin: 0 0 0 72px; }
+/* A deleted record (_housekeeping_record.html): its page is gone - the admin and what it's linked to instead. */
+.housekeeping__admin { margin-left: 6px; font-size: var(--text-xs); }
+.housekeeping__related a { color: var(--color-ink-2); }
+.housekeeping__item .housekeeping__said { font-size: var(--text-sm); color: var(--color-ink-2); }
 /* People linked twice: per event of the item two columns - the event and
    who took part; who of them is linked directly too, chips with their "×".
    Stacked on a phone. */

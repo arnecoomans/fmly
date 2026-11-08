@@ -13,7 +13,7 @@
   <header class="tag-page__header">
     <div class="tag-page__intro">
       <a class="tag-page__parent" href="{% if section %}{% url 'dashboard:housekeeping_section' section %}{% else %}{% url 'dashboard:housekeeping' %}{% endif %}">{% translate "housekeeping"|capfirst %} <i class="bi bi-chevron-right"></i></a>
-      <h1 class="tag-page__name">{% if action == 'purge' %}{% translate "purge these items?"|capfirst %}{% elif action == 'tags' %}{% translate "delete these tags?"|capfirst %}{% elif action == 'places' %}{% translate "delete these places?"|capfirst %}{% else %}{% translate "delete these files?"|capfirst %}{% endif %}</h1>
+      <h1 class="tag-page__name">{% if action == 'purge' %}{% translate "purge these?"|capfirst %}{% elif action == 'tags' %}{% translate "delete these tags?"|capfirst %}{% elif action == 'places' %}{% translate "delete these places?"|capfirst %}{% else %}{% translate "delete these files?"|capfirst %}{% endif %}</h1>
       <p class="tag-page__counts">{% translate "This can't be undone - only a backup brings it back." %}</p>
     </div>
   </header>
@@ -22,9 +22,9 @@
     <div class="housekeeping__list">
       {% if action == 'purge' %}
         {% for item in items %}
-          {% if not item.blocked %}<input type="hidden" name="item" value="{{ item.token }}">{% endif %}
-          {% include 'dashboard/_housekeeping_item.html' %}
-          {% for part in item.purge_parts %}<p class="housekeeping__meta housekeeping__part">↳ {% translate "part" %}: {{ part }}{% if part.file %} · {{ part.file.name }}{% endif %}</p>{% endfor %}
+          {% if not item.blocked %}<input type="hidden" name="item" value="{{ item.purge_kind|default:'content' }}:{{ item.token }}">{% endif %}
+          {% if item.purge_kind and item.purge_kind != 'content' %}{% include 'dashboard/_housekeeping_record.html' %}{% else %}{% include 'dashboard/_housekeeping_item.html' %}{% endif %}
+          {% for part in item.purge_parts %}<p class="housekeeping__meta housekeeping__part">↳ {% if part.purge_kind == 'event' %}{% translate "their own event" %}{% else %}{% translate "part" %}{% endif %}: {{ part }}{% if part.file %} · {{ part.file.name }}{% endif %}</p>{% endfor %}
         {% empty %}<p>{% translate "Nothing to purge." %}</p>{% endfor %}
       {% elif action == 'tags' or action == 'places' %}
         {% for obj in objects %}

@@ -206,6 +206,8 @@ class HousekeepingView(TemplateView):
       return context
     label, name, find = housekeeping.SECTION_BY_NAME[section]
     items = find()
+    if section == 'deleted':
+      housekeeping.attach_admin_urls(items, self.request.user)   # their own page is gone
     context.update({
       'section': section, 'label': label, 'count': len(items), name: items,
       'section_template': f'dashboard/housekeeping/{section}.html',
@@ -220,16 +222,14 @@ class HousekeepingView(TemplateView):
     return redirect('dashboard:housekeeping_section', section) if section else redirect('dashboard:housekeeping')
 
   def post(self, request, *args, **kwargs):
-    from content.models import Content
     action = request.POST.get('action')
     if action == 'purge':
-      tokens = request.POST.getlist('item')
-      items = list(Content.objects.filter(token__in=tokens, status=Content.Status.DELETED))
+      items = housekeeping.selected_deleted(request.POST.getlist('item'))
       if request.POST.get('confirm') == '1':
         gone = housekeeping.purge(items, request.user)
         messages.success(request, ngettext("%(n)s record purged.", "%(n)s records purged.", gone) % {'n': gone})
         return self.back()
-      housekeeping.attach_consequences(items)
+      housekeeping.attach_admin_urls(housekeeping.attach_consequences(items), request.user)
       return self.render_to_response({'action': action, 'items': items}, template_name='dashboard/housekeeping_confirm.html')
     if action == 'files':
       names = [name for name in request.POST.getlist('file') if housekeeping.safe_name(name)]

@@ -1,0 +1,26 @@
+{% comment %}
+  A deleted person, event, note or comment on the purge lists (housekeeping.
+  deleted_items) - as _housekeeping_item.html for content, but without a
+  link to its page: that's gone with it. Instead "admin" (every field, for
+  who may view it there) and what it's linked to, still there - to open and
+  check why it was deleted (a double?) before it goes: a person's family and
+  anyone of the same name, an event's people, places and proof, a note's
+  links, the page a comment was on. Then what goes along or is unlinked
+  (attach_consequences), why it can't be purged. A comment: its text.
+  Context: item, checkbox (bool).
+{% endcomment %}
+<div class="housekeeping__item{% if item.blocked %} is-blocked{% endif %}">
+  {% if checkbox %}<input type="checkbox" name="item" value="{{ item.purge_kind }}:{{ item.token }}" aria-label="{{ item }}"{% if item.blocked %} disabled{% endif %}>{% endif %}
+  <span class="housekeeping__thumb housekeeping__thumb--icon"><i class="bi bi-{% if item.purge_kind == 'person' %}person{% elif item.purge_kind == 'event' %}calendar-event{% elif item.purge_kind == 'note' %}journal-text{% else %}chat-left-text{% endif %}"></i></span>
+  <span class="housekeeping__text">
+    <span class="housekeeping__name">{{ item }}{% if item.purge_admin_url %} <a class="housekeeping__admin" href="{{ item.purge_admin_url }}" target="_blank" rel="noopener">{% translate "admin" %}</a>{% endif %}</span>
+    <span class="housekeeping__meta">{{ item.get_status_display|capfirst }} {{ item.date_modified|date:"j M Y" }}</span>
+    {% if item.purge_kind == 'comment' and item.content %}<span class="housekeeping__said">{{ item.content|linebreaksbr }}</span>{% endif %}
+    {% for label, links, more in item.purge_related %}
+      <span class="housekeeping__meta housekeeping__related">{{ label|capfirst }}: {% for text, obj in links %}{% if not forloop.first %} · {% endif %}<a href="{{ obj.get_absolute_url }}" target="_blank" rel="noopener">{{ text }}</a>{% endfor %}{% if more > 0 %} · {% blocktranslate count counter=more %}{{ counter }} more{% plural %}{{ counter }} more{% endblocktranslate %}{% endif %}</span>
+    {% endfor %}
+    {% if item.purge_summary or item.blocked %}
+      <span class="housekeeping__meta">{{ item.purge_summary }}{% if item.blocked %} <strong>{{ item.blocked }}</strong>{% endif %}</span>
+    {% endif %}
+  </span>
+</div>

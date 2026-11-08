@@ -111,7 +111,7 @@ class HousekeepingTests(TestCase):
     for section in ('revoked', 'deleted', 'duplicates', 'orphans', 'missing', 'unused-tags', 'unused-places'):
       self.assertIn(f'href=/dashboard/housekeeping/{section}/', page)
       self.assertEqual(self.client.get(f'/dashboard/housekeeping/{section}/').status_code, 200)
-    self.assertRegex(page, r'<span class=tag__count>1</span> deleted items, to purge')
+    self.assertRegex(page, r'<span class=tag__count>1</span> deleted, to purge')
     self.assertIn('class=is-clear', page)                                       # an empty section stays, muted
     self.assertEqual(self.client.get('/dashboard/housekeeping/nonsense/').status_code, 404)
 
@@ -293,3 +293,108 @@ class LinkedTwiceTests(TestCase):
     self.assertIn('Bruidegom', page)                                             # who took part, also when not linked directly
     ad.people.remove(self.bride)
     self.assertEqual(self.found(), set())
+
+
+class PurgeRecordsTests(TestCase):
+  """Deleted people, events, notes and comments, to purge (housekeeping.
+  deleted_items): listed by kind with what goes along; purged after the
+  confirmation - a person with the events only they are in, never one with
+  a user account; links and comments go with them, the rest stays."""
+
+  def setUp(self):
+    from people.models import Person
+    User = get_user_model()
+    self.staff = User.objects.create(username='beheer', is_staff=True)
+    self.staff.user_permissions.add(Permission.objects.get(codename='delete_content'))
+    self.staff.save()
+    self.client = Client()
+    self.client.force_login(self.staff)
+    self.person = Person.objects.create(given_name='Willem', last_name='Warnaar', user=self.staff, status='x', visibility='c')
+    self.other = Person.objects.create(given_name='Anna', user=self.staff, status='p', visibility='c')
+
+  def purge(self, *values, confirm=True):
+    return self.client.post('/dashboard/housekeeping/deleted/', {'action': 'purge', 'item': list(values), **({'confirm': '1'} if confirm else {})})
+
+  def test_listed_by_kind(self):
+    from notes.models import Note
+    Note.objects.create(title='Klad', user=self.staff, status='x')
+    page = self.client.get('/dashboard/housekeeping/deleted/').content.decode().replace('"', '')
+    self.assertIn(f'value=person:{self.person.token}', page)
+    self.assertIn('Klad', page)
+    self.assertIn('People', page)
+
+  def test_a_person_with_their_own_events(self):
+    from events.models import Event
+    from people.models import Person, PersonRelation
+    birth = Event.objects.create(kind='birth', year=1880, user=self.staff, status='p')
+    birth.people.add(self.person)
+    marriage = Event.objects.create(kind='marriage', year=1905, user=self.staff, status='p')
+    marriage.people.add(self.person, self.other)
+    PersonRelation.objects.create(person_from=self.person, person_to=self.other, relation_type='partner')
+    item = Content.objects.create(name='Foto', kind='photo', user=self.staff, status='p', visibility='c')
+    item.people.add(self.person)
+    confirm = self.purge(f'person:{self.person.token}', confirm=False).content.decode()
+    self.assertIn('1 own event', confirm)
+    self.assertIn('in 1 event with others', confirm)
+    self.purge(f'person:{self.person.token}')
+    self.assertFalse(Person.objects.filter(pk=self.person.pk).exists())
+    self.assertFalse(Event.objects.filter(pk=birth.pk).exists())                 # theirs alone: gone
+    self.assertEqual(list(Event.objects.get(pk=marriage.pk).people.all()), [self.other])   # with others: stays
+    self.assertFalse(PersonRelation.objects.exists())
+    self.assertTrue(Content.objects.filter(pk=item.pk).exists())
+    self.assertTrue(LogEntry.objects.filter(object_id=str(self.person.pk), change_message='Purged in housekeeping').exists())
+
+  def test_never_a_person_with_a_user_account(self):
+    from people.models import Person
+    self.person.related_user = get_user_model().objects.create(username='willem')
+    self.person.save()
+    self.assertIn('has a user account', self.client.get('/dashboard/housekeeping/deleted/').content.decode())
+    self.purge(f'person:{self.person.token}')
+    self.assertTrue(Person.objects.filter(pk=self.person.pk).exists())
+
+  def test_only_what_is_deleted(self):
+    from people.models import Person
+    self.purge(f'person:{self.other.token}', 'nonsense:abc', 'person:')
+    self.assertTrue(Person.objects.filter(pk=self.other.pk).exists())
+
+  def test_an_event_note_and_comment(self):
+    from core.models import Comment
+    from events.models import Event
+    from notes.models import Note
+    event = Event.objects.create(kind='historical', title='Oorlog', year=1942, user=self.staff, status='x')
+    event.people.add(self.other)
+    note = Note.objects.create(title='Klad', body=f'Over [Anna](person:{self.other.token})', user=self.staff, status='x')
+    note.people.add(self.other)
+    on_event = Comment.objects.create(target=self.other, content='Klopt dit?', user=self.staff, status='x')
+    self.purge(f'event:{event.token}', f'note:{note.token}', f'comment:{on_event.token}')
+    self.assertFalse(Event.objects.filter(pk=event.pk).exists())
+    self.assertFalse(Note.objects.filter(pk=note.pk).exists())
+    self.assertFalse(Comment.objects.filter(pk=on_event.pk).exists())
+    self.assertTrue(self.other.__class__.objects.filter(pk=self.other.pk).exists())
+
+  def test_what_its_linked_to_and_the_admin(self):
+    """No link to its own page - that's gone - but to the admin and to what
+    it's linked to, still there: an event's people and places, a person's
+    family and anyone of the same name."""
+    from events.models import Event
+    from people.models import Person, PersonRelation
+    from places.models import Place
+    double = Person.objects.create(given_name='Willem', last_name='Warnaar', user=self.staff, status='p', visibility='c')
+    PersonRelation.objects.create(person_from=self.other, person_to=self.person, relation_type='parent')
+    place = Place.objects.create(name='Alphen', user=self.staff)
+    birth = Event.objects.create(kind='birth', year=1986, user=self.staff, status='x')
+    birth.people.add(self.other)
+    birth.places.add(place)
+    self.staff.is_superuser = True
+    self.staff.save()
+    page = self.client.get('/dashboard/housekeeping/deleted/').content.decode().replace('"', '')
+    self.assertNotIn(f'href={self.person.get_absolute_url()}', page)
+    self.assertIn(f'href=/admin/people/person/{self.person.pk}/change/', page)
+    self.assertIn(f'href={double.get_absolute_url()}', page)                    # same name: a double?
+    self.assertIn(f'href={self.other.get_absolute_url()}', page)                # family, and the birth's person
+    self.assertIn(f'href={place.get_absolute_url()}', page)
+
+  def test_mentions_counted(self):
+    from notes.models import Note
+    Note.objects.create(title='Onderzoek', body=f'Zie [Willem](person:{self.person.token})', user=self.staff, status='p')
+    self.assertIn('mentioned in 1 text', self.client.get('/dashboard/housekeeping/deleted/').content.decode())
