@@ -480,6 +480,30 @@ class AccountsTests(DashboardTestCase):
     self.client.post('/dashboard/accounts/', {'account': self.reader.pk, 'action': 'decline'})
     self.assertTrue(get_user_model().objects.filter(pk=self.reader.pk).exists())
 
+  def test_email_and_login_links(self):
+    """The email address on each account; with login links on, "send login
+    link" (or why not), the open invite, and "approve and send"."""
+    from django.test import override_settings
+    self.reader.email = 'lezer@example.org'
+    self.reader.save()
+    self.new.email = 'nieuw@example.org'
+    self.new.save()
+    with override_settings(CMNSD_LOGIN_LINKS=False):
+      page = self.client.get('/dashboard/accounts/').content.decode()
+    self.assertIn('lezer@example.org', page)
+    self.assertNotIn('/accounts/login/link/send/', page)                         # off
+    with override_settings(CMNSD_LOGIN_LINKS=True, EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend'):
+      page = self.client.get('/dashboard/accounts/').content.decode().replace('&amp;', '&')
+      self.assertIn(f'/accounts/login/link/send/?user={self.reader.pk}&back=/dashboard/accounts/', page)
+      self.assertIn('value=approve_send', page.replace('"', ''))
+      self.assertIn(f'/admin/auth/user/{self.reader.pk}/change/', page)          # edit: e.g. to add an address
+      response = self.client.post('/dashboard/accounts/', {'account': self.new.pk, 'action': 'approve_send'})
+      self.assertRedirects(response, f'/accounts/login/link/send/?user={self.new.pk}&back=%2Fdashboard%2Faccounts%2F', fetch_redirect_response=False)
+      self.new.refresh_from_db()
+      self.assertTrue(self.new.is_active)
+      self.client.post('/accounts/login/link/send/', {'user': self.reader.pk})
+      self.assertIn('login link sent by beheer', self.client.get('/dashboard/accounts/').content.decode())
+
   def test_activity(self):
     from dashboard import accounts
     from notes.models import Note

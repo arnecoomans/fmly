@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 19:00+0100\n"
+"POT-Creation-Date: 2026-11-09 19:22+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -255,7 +255,7 @@ msgstr "De naam waarmee het bestand binnenkwam"
 msgid "Where this came from: a person, archive or URL"
 msgstr "Waar dit vandaan komt: een persoon, archief of webadres"
 
-#: content/models/Content.py:223 content/models/Content.py:224 content/templates/content/favorites.html:18 content/templates/content/inbox.html:18 content/templates/content/upload.html:15 core/search.py:50 core/templates/tag/tag_detail.html:64 dashboard/housekeeping.py:283 dashboard/templates/dashboard/loose_end.html:32 notes/templates/note/_links.html:11 people/templates/people/person_detail.html:118 places/templates/place/place_detail.html:68
+#: content/models/Content.py:223 content/models/Content.py:224 content/templates/content/favorites.html:18 content/templates/content/inbox.html:18 content/templates/content/upload.html:15 core/search.py:50 core/templates/tag/tag_detail.html:64 dashboard/housekeeping.py:283 dashboard/templates/dashboard/loose_end.html:32 notes/templates/note/_links.html:11 people/templates/people/person_detail.html:112 places/templates/place/place_detail.html:68
 msgid "content"
 msgstr "stuk"
 
@@ -348,7 +348,7 @@ msgstr "Dit stuk heeft al een origineel - voeg dit toe als vertaling."
 msgid "A transcript can't be empty."
 msgstr "Een transcriptie mag niet leeg zijn."
 
-#: content/models/details.py:12 people/templates/people/person_detail.html:20
+#: content/models/details.py:12 people/templates/people/person_detail.html:19
 msgid "portrait"
 msgstr "portret"
 
@@ -545,7 +545,7 @@ msgstr "%(name)s is aangewezen."
 msgid "file not available yet"
 msgstr "bestand nog niet beschikbaar"
 
-#: content/templates/content/_content_grid.html:21 content/templates/content/_content_grid.html:28 core/views.py:28 dashboard/templates/dashboard/dashboard.html:172 dashboard/views.py:130 events/views/EventListView.py:15 notes/templates/note/note_overview.html:24 people/views/PersonListView.py:25
+#: content/templates/content/_content_grid.html:21 content/templates/content/_content_grid.html:28 core/views.py:28 dashboard/templates/dashboard/dashboard.html:172 dashboard/views.py:131 events/views/EventListView.py:15 notes/templates/note/note_overview.html:24 people/views/PersonListView.py:25
 msgid "all"
 msgstr "alle"
 
@@ -915,7 +915,7 @@ msgstr "lees minder"
 msgid "No transcript yet."
 msgstr "Nog geen transcriptie."
 
-#: content/templates/content/content_detail.html:158 core/templates/tag/tag.html:12 core/templates/tag/tag_detail.html:28 core/templates/tag/tag_overview.html:23 notes/templates/note/note_detail.html:21 people/templates/people/_person_row.html:102 people/templates/people/person_detail.html:49
+#: content/templates/content/content_detail.html:158 core/templates/tag/tag.html:12 core/templates/tag/tag_detail.html:28 core/templates/tag/tag_overview.html:23 notes/templates/note/note_detail.html:21 people/templates/people/_person_row.html:102 people/templates/people/person_detail.html:48
 msgid "not published"
 msgstr "niet gepubliceerd"
 
@@ -988,7 +988,7 @@ msgstr "personen"
 msgid "add a person"
 msgstr "persoon toevoegen"
 
-#: content/templates/content/content_detail.html:310 content/templates/content/inbox.html:62 core/search.py:51 dashboard/housekeeping.py:282 dashboard/templates/dashboard/dashboard.html:194 events/templates/event/event_calendar.html:16 events/templates/event/event_detail.html:17 events/templates/event/event_overview.html:9 events/templates/event/event_overview.html:15 notes/templates/note/_links.html:13 people/templates/people/person_detail.html:124 places/templates/place/place_detail.html:58 templates/navigation.html:33
+#: content/templates/content/content_detail.html:310 content/templates/content/inbox.html:62 core/search.py:51 dashboard/housekeeping.py:282 dashboard/templates/dashboard/dashboard.html:194 events/templates/event/event_calendar.html:16 events/templates/event/event_detail.html:17 events/templates/event/event_overview.html:9 events/templates/event/event_overview.html:15 notes/templates/note/_links.html:13 people/templates/people/person_detail.html:118 places/templates/place/place_detail.html:58 templates/navigation.html:33
 msgid "events"
 msgstr "gebeurtenissen"
 
@@ -1701,7 +1701,7 @@ msgstr "bewerkt"
 msgid "hidden"
 msgstr "verborgen"
 
-#: core/templates/comment/comment.html:52 templates/header.html:35
+#: core/templates/comment/comment.html:52 dashboard/templates/dashboard/_account_row.html:23 dashboard/templates/dashboard/accounts.html:34 templates/header.html:35
 msgid "edit"
 msgstr "bewerken"
 
@@ -1717,7 +1717,7 @@ msgstr "tonen"
 msgid "hide"
 msgstr "verbergen"
 
-#: core/templates/comment/comment_overview.html:11 core/templates/comment/comment_overview.html:16 core/templates/comment/comments.html:11 dashboard/templates/dashboard/dashboard.html:196 people/templates/people/person_detail.html:121 templates/navigation.html:34
+#: core/templates/comment/comment_overview.html:11 core/templates/comment/comment_overview.html:16 core/templates/comment/comments.html:11 dashboard/templates/dashboard/dashboard.html:196 people/templates/people/person_detail.html:115 templates/navigation.html:34
 msgid "comments"
 msgstr "opmerkingen"
 
@@ -2227,18 +2227,39 @@ msgid "done"
 msgstr "klaar"
 
 #: dashboard/templates/dashboard/_account_row.html:11
+msgid "no email address"
+msgstr "geen e-mailadres"
+
+#: dashboard/templates/dashboard/_account_row.html:12
+#, python-format
+msgid "login link sent by %(name)s, open until %(when)s"
+msgstr "inloglink gestuurd door %(name)s, open tot %(when)s"
+
+#: dashboard/templates/dashboard/_account_row.html:15
 #, python-format
 msgid "signed in %(when)s ago"
 msgstr "%(when)s geleden ingelogd"
 
-#: dashboard/templates/dashboard/_account_row.html:11
+#: dashboard/templates/dashboard/_account_row.html:15
 msgid "never signed in"
 msgstr "nooit ingelogd"
 
-#: dashboard/templates/dashboard/_account_row.html:12
+#: dashboard/templates/dashboard/_account_row.html:16
 #, python-format
 msgid "last %(what)s %(when)s ago"
 msgstr "laatste %(what)s %(when)s geleden"
+
+#: dashboard/templates/dashboard/_account_row.html:21
+msgid "send again"
+msgstr "opnieuw sturen"
+
+#: dashboard/templates/dashboard/_account_row.html:21
+msgid "send login link"
+msgstr "inloglink sturen"
+
+#: dashboard/templates/dashboard/_account_row.html:23 dashboard/templates/dashboard/accounts.html:34
+msgid "edit the account in the admin"
+msgstr "het account bewerken in de admin"
 
 #: dashboard/templates/dashboard/_dismiss.html:11
 msgid "back on the list"
@@ -2271,40 +2292,44 @@ msgid_plural "%(counter)s more"
 msgstr[0] "nog %(counter)s"
 msgstr[1] "nog %(counter)s"
 
-#: dashboard/templates/dashboard/accounts.html:8 dashboard/templates/dashboard/accounts.html:15 dashboard/templates/dashboard/dashboard.html:172 templates/header.html:63
+#: dashboard/templates/dashboard/accounts.html:11 dashboard/templates/dashboard/accounts.html:18 dashboard/templates/dashboard/dashboard.html:172 templates/header.html:63
 msgid "accounts"
 msgstr "accounts"
 
-#: dashboard/templates/dashboard/accounts.html:14 dashboard/templates/dashboard/dashboard.html:13 dashboard/templates/dashboard/housekeeping.html:16 dashboard/templates/dashboard/loose_end.html:14 templates/navigation.html:26
+#: dashboard/templates/dashboard/accounts.html:17 dashboard/templates/dashboard/dashboard.html:13 dashboard/templates/dashboard/housekeeping.html:16 dashboard/templates/dashboard/loose_end.html:14 templates/navigation.html:26
 msgid "dashboard"
 msgstr "dashboard"
 
-#: dashboard/templates/dashboard/accounts.html:20
+#: dashboard/templates/dashboard/accounts.html:23
 msgid "waiting for approval"
 msgstr "wacht op goedkeuring"
 
-#: dashboard/templates/dashboard/accounts.html:26
+#: dashboard/templates/dashboard/accounts.html:29
 #, python-format
 msgid "registered %(when)s ago"
 msgstr "%(when)s geleden aangemeld"
 
-#: dashboard/templates/dashboard/accounts.html:29
+#: dashboard/templates/dashboard/accounts.html:32
 msgid "approve"
 msgstr "goedkeuren"
 
-#: dashboard/templates/dashboard/accounts.html:30
+#: dashboard/templates/dashboard/accounts.html:33
+msgid "approve and send login link"
+msgstr "goedkeuren en inloglink sturen"
+
+#: dashboard/templates/dashboard/accounts.html:35
 msgid "Decline and remove this account?"
 msgstr "Afwijzen en dit account verwijderen?"
 
-#: dashboard/templates/dashboard/accounts.html:30
+#: dashboard/templates/dashboard/accounts.html:35
 msgid "decline"
 msgstr "afwijzen"
 
-#: dashboard/templates/dashboard/accounts.html:36
+#: dashboard/templates/dashboard/accounts.html:41
 msgid "No one is waiting."
 msgstr "Er wacht niemand."
 
-#: dashboard/templates/dashboard/accounts.html:41
+#: dashboard/templates/dashboard/accounts.html:46
 msgid "activity"
 msgstr "activiteit"
 
@@ -2712,17 +2737,17 @@ msgstr[1] "%(n)s plaatsen verwijderd."
 msgid "Nothing selected."
 msgstr "Niets geselecteerd."
 
-#: dashboard/views.py:314
+#: dashboard/views.py:321
 #, python-format
 msgid "%(name)s can sign in now."
 msgstr "%(name)s kan nu inloggen."
 
-#: dashboard/views.py:316
+#: dashboard/views.py:326
 #, python-format
 msgid "%(name)s was declined and removed."
 msgstr "%(name)s is afgewezen en verwijderd."
 
-#: dashboard/views.py:318
+#: dashboard/views.py:328
 #, python-format
 msgid "%(name)s isn't waiting for approval."
 msgstr "%(name)s wacht niet op goedkeuring."
@@ -3639,23 +3664,19 @@ msgstr "Wordt toegevoegd als kind van %(name)s."
 msgid "Family and the biography come next, on their page."
 msgstr "Familie en het levensverhaal volgen daarna, op hun pagina."
 
-#: people/templates/people/person_detail.html:42
+#: people/templates/people/person_detail.html:41
 msgid "Relevant to the archive, but not related to the family"
 msgstr "Van belang voor het archief, maar geen familie"
 
-#: people/templates/people/person_detail.html:42
+#: people/templates/people/person_detail.html:41
 msgid "A relation is suspected but not yet known"
 msgstr "Er wordt een verwantschap vermoed, maar die is nog niet bekend"
 
-#: people/templates/people/person_detail.html:71
+#: people/templates/people/person_detail.html:70
 msgid "also known as"
 msgstr "ook bekend als"
 
-#: people/templates/people/person_detail.html:92
-msgid "send login link"
-msgstr "inloglink sturen"
-
-#: people/templates/people/person_detail.html:114
+#: people/templates/people/person_detail.html:108
 msgid "relationships"
 msgstr "familie"
 

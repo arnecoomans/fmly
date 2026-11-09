@@ -69,3 +69,28 @@ def activity():
     account.last_activity, account.last_activity_kind = latest.get(account.pk, (None, ''))
   moments = lambda a: max([m for m in (a.last_login, a.last_activity) if m] or [None], key=lambda m: m.timestamp() if m else 0)
   return sorted(accounts, key=lambda a: (moments(a) is None, -(moments(a).timestamp() if moments(a) else 0)))
+
+
+def attach_login_links(accounts, sender):
+  """Login links (cmnsd/login_links.py) on each account: .login_link_refusal
+  - why `sender` may not send one ('' if they may: no address...) - and
+  .open_invite, the open one, if any.
+  One query for the invites."""
+  from cmnsd import login_links
+  from cmnsd.models import LoginLink
+  invites = {}
+  for link in LoginLink.objects.open().filter(user__in=accounts, purpose=LoginLink.Purpose.INVITE).order_by('created_at'):
+    invites[link.user_id] = link
+  for account in accounts:
+    # A waiting account isn't active yet - "approve and send" makes it so
+    # first: checked as it will be once approved.
+    account.login_link_refusal = login_links.refusal(sender, account if account.is_active else _approved(account))
+    account.open_invite = invites.get(account.pk)
+  return accounts
+
+
+def _approved(account):
+  from copy import copy
+  approved = copy(account)
+  approved.is_active = True
+  return approved

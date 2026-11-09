@@ -53,6 +53,13 @@ Where there's a lot of work, a thin bar shows how far along it is - for people (
 
 Your own record in the family, and what you've added.
 
+## Accounts
+
+For staff who may change users, under *Accounts* in the user menu (top right):
+- **Waiting for approval:** approve or decline each new account.
+- **Activity:** every active account, with its email address, last sign-in and last activity.
+- **With login links on** (`CMNSD_LOGIN_LINKS`): *Send login link* per account. It opens a page for an optional message and a page to land on, and the link signs them in once, for 7 days. An account shows its open link (sent by whom, until when); *Send again* replaces it. A waiting account gets *Approve and send login link*. Staff accounts too, and your own: to sign in on another device. Where no link can be sent, the row says why - usually no email address: *edit* opens the account in the admin to add one.
+
 ## Housekeeping
 
 For staff, under *Housekeeping* in the user menu (top right): the archive's storage, checked by eye. An overview with a count per section, in groups - each section opens on a page of its own:

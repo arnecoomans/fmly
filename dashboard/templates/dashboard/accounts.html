@@ -2,7 +2,10 @@
 {% comment %}
   Accounts (dashboard.views.AccountsView, dashboard/accounts.py): waiting
   for approval - approve, or decline (deletes the account, after a
-  question) - and every active account by most recent activity.
+  question) - and every active account by most recent activity, with its
+  email address. With login links on (login_links): "send login link" per
+  account and its open invite (_account_row.html), "approve and send" for
+  one waiting.
 {% endcomment %}
 
 {% block title %}{% translate "accounts"|capfirst %}{% endblock %}
@@ -27,6 +30,8 @@
             </span>
             <span class="account-row__actions">
               <form method="post">{% csrf_token %}<input type="hidden" name="account" value="{{ account.pk }}"><input type="hidden" name="action" value="approve"><button type="submit" class="btn btn--primary btn--sm">{% translate "approve"|capfirst %}</button></form>
+              {% if login_links and not account.login_link_refusal %}<form method="post">{% csrf_token %}<input type="hidden" name="account" value="{{ account.pk }}"><input type="hidden" name="action" value="approve_send"><button type="submit" class="btn btn--secondary btn--sm"><i class="bi bi-envelope"></i> {% translate "approve and send login link"|capfirst %}</button></form>{% endif %}
+              <a class="btn btn--secondary btn--sm" href="{% url 'admin:auth_user_change' account.pk %}" title="{% translate 'edit the account in the admin' %}"><i class="bi bi-pencil"></i> {% translate "edit"|capfirst %}</a>
               <form method="post" onsubmit="return confirm('{% translate "Decline and remove this account?" %}')">{% csrf_token %}<input type="hidden" name="account" value="{{ account.pk }}"><input type="hidden" name="action" value="decline"><button type="submit" class="btn btn--secondary btn--sm">{% translate "decline"|capfirst %}</button></form>
             </span>
           </li>

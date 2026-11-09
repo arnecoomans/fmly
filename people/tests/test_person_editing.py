@@ -324,23 +324,3 @@ class PersonAddressTests(PersonEditTestCase):
     self.assertNotIn('visibility-pill', html)                              # edit mode: the choices panel shows it
     html = self.client_for(self.editor).get(self.son.get_absolute_url()).content.decode()
     self.assertIn('visibility-pill', html)
-
-
-class SendLoginLinkButtonTests(TestCase):
-  """A person with an account: staff in edit mode get "send login link"
-  (cmnsd login links) - landing back on the person - while it's on."""
-
-  def test_for_staff_in_edit_mode_while_on(self):
-    from django.test import override_settings
-    User = get_user_model()
-    staff = User.objects.create(username='beheer', is_staff=True)
-    for codename in ('change_user', 'change_person'):
-      staff.user_permissions.add(Permission.objects.get(codename=codename))
-    staff.save()
-    person = Person.objects.create(given_name='Ilse', user=staff, status='p', visibility='c', related_user=User.objects.create(username='ilse', email='i@example.org'))
-    client = Client()
-    client.force_login(staff)
-    client.post('/ui/edit/', {'on': '1', 'next': '/'})
-    with override_settings(CMNSD_LOGIN_LINKS=True):
-      self.assertContains(client.get(person.get_absolute_url()), f'/accounts/login/link/send/?user={person.related_user.pk}')
-    self.assertNotContains(client.get(person.get_absolute_url()), '/accounts/login/link/send/')

@@ -1543,7 +1543,6 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .person-row .chip-edit__remove button { width: 28px; height: 28px; padding: 0; justify-content: center; border-radius: var(--radius-md); }
 .person-relationships .picker--inline { margin: var(--space-2) 0 var(--space-4); }
 .person-detail__choices { margin-bottom: var(--space-5); }
-.person-detail__login-link { margin: 0 0 var(--space-5); }
 
 /* ===== Dialog (cmnsd.js dialog.js): a form over the page, e.g. "+ new
    person" from a picker. Full screen on a phone. ===== */
@@ -2099,11 +2098,21 @@ a.mention:hover { text-decoration-color: currentColor; }
 /* Accounts (dashboard/accounts.html and the staff block on the dashboard). */
 .account-list { list-style: none; margin: 0; padding: 0; }
 .account-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: 8px 0; border-bottom: 1px solid var(--color-border); }
-.account-row__name { display: flex; flex-direction: column; min-width: 0; font-size: var(--text-sm); }
+.account-row__name { display: flex; flex-direction: column; flex: 1; min-width: 0; font-size: var(--text-sm); overflow-wrap: anywhere; }
 .account-row__meta { font-size: var(--text-xs); color: var(--color-ink-3); }
 .account-row__when { flex-shrink: 0; text-align: right; font-size: var(--text-xs); color: var(--color-ink-3); }
-.account-row__actions { display: flex; gap: 6px; flex-shrink: 0; }
+.account-row__actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.account-row__send { display: flex; justify-content: flex-end; align-items: center; width: 11.5rem; text-align: right; }
 .account-row__actions form { margin: 0; }
+/* Phone: the name, then when, then the buttons on a line of their own. */
+@media (max-width: 600px) {
+  .account-row { flex-wrap: wrap; gap: 4px var(--space-3); padding: 10px 0; }
+  .account-row__name, .account-row__when, .account-row__actions { flex: 1 0 100%; }
+  .account-row__when { text-align: left; }
+  .account-row__actions { flex-wrap: wrap; margin-top: 4px; }
+  .account-row__send { width: auto; justify-content: flex-start; text-align: left; }
+  .account-row__send .account-row__meta { display: none; }   /* why not (no address): under the name already */
+}
 .account-list--compact .account-row { padding: 5px 0; }
 .dashboard__accounts-waiting { margin: 0 0 var(--space-2); font-size: var(--text-sm); }
 

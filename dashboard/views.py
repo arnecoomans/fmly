@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from django.utils.translation import gettext as _, ngettext
 from django.views.decorators.http import require_GET
 from django.views.generic import TemplateView
@@ -145,7 +146,6 @@ class LooseEndView(TemplateView):
     optional note) or restore it - only an item this loose end holds for
     this viewer (checked again here, not trusted from the form)."""
     from django.contrib.contenttypes.models import ContentType
-    from django.urls import reverse
     from .models import LooseEndDismissal
     name = kwargs['name']
     if not blocks.DISMISSABLE(name) or not blocks.is_editor(request.user):
@@ -293,7 +293,9 @@ def housekeeping_preview(request):
 class AccountsView(TemplateView):
   """dashboard/accounts/ - accounts waiting for approval (approve / decline)
   and every active account's last sign-in and last activity
-  (dashboard/accounts.py). Staff who may change users only."""
+  (dashboard/accounts.py). Staff who may change users only. With login
+  links on (cmnsd CMNSD_LOGIN_LINKS): "send login link" per account - its
+  open invite shown - and "approve and send" for one waiting."""
   template_name = 'dashboard/accounts.html'
 
   def dispatch(self, request, *args, **kwargs):
@@ -304,14 +306,22 @@ class AccountsView(TemplateView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context.update({'waiting': list(accounts.waiting()), 'active': accounts.activity()})
+    from cmnsd import login_links
+    context['login_links'] = login_links.enabled()
+    if context['login_links']:
+      accounts.attach_login_links([*context['waiting'], *context['active']], self.request.user)
     return context
 
   def post(self, request, *args, **kwargs):
     from django.contrib.auth import get_user_model
     account = get_object_or_404(get_user_model(), pk=request.POST.get('account'))
     name = account.username
-    if request.POST.get('action') == 'approve' and accounts.approve(account):
+    action = request.POST.get('action')
+    if action in ('approve', 'approve_send') and accounts.approve(account):
       messages.success(request, _("%(name)s can sign in now.") % {'name': name})
+      if action == 'approve_send':
+        # On to the send page (message, page to land on) - and back here.
+        return redirect(reverse('login_link_send') + '?' + urlencode({'user': account.pk, 'back': reverse('dashboard:accounts')}))
     elif request.POST.get('action') == 'decline' and accounts.decline(account):
       messages.success(request, _("%(name)s was declined and removed.") % {'name': name})
     else:
