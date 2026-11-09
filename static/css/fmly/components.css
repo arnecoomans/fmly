@@ -1543,6 +1543,7 @@ dl .edit-block.is-editing { grid-column: 1 / -1; }
 .person-row .chip-edit__remove button { width: 28px; height: 28px; padding: 0; justify-content: center; border-radius: var(--radius-md); }
 .person-relationships .picker--inline { margin: var(--space-2) 0 var(--space-4); }
 .person-detail__choices { margin-bottom: var(--space-5); }
+.person-detail__login-link { margin: 0 0 var(--space-5); }
 
 /* ===== Dialog (cmnsd.js dialog.js): a form over the page, e.g. "+ new
    person" from a picker. Full screen on a phone. ===== */

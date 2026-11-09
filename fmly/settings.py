@@ -226,6 +226,9 @@ CMNSD_MARKDOWN_EXTENSIONS = [
 # When a user registers, the account requires approval before logging in.
 # If false, the user can log in immediately after registration. 
 CMNSD_REGISTRATION_REQUIRES_APPROVAL = env.bool('CMNSD_REGISTRATION_REQUIRES_APPROVAL', default=False)
+# Login links (cmnsd/login_links.py): staff mail someone a link that logs them
+# in once, and the login page offers "mail me a login link". Off unless set.
+CMNSD_LOGIN_LINKS = env.bool('CMNSD_LOGIN_LINKS', default=False)
 # The string used to compound parent-child names, e.g. "Parent: Child". The child name 
 # is appended to the parent name with this string in between. This is used for 
 # auto-generating names of child objects when a name isn't provided.

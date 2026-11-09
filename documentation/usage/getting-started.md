@@ -6,7 +6,9 @@ Most of the archive is only visible to family members who are signed in. Without
 
 - On the welcome page, choose **Request an account**.
 - Staff approve new accounts by hand. Until then you can't sign in.
-- Once approved, sign in with your username and password.
+- Once approved, sign in with your username and password - or, where the site has it on, choose **Mail me a login link** on the sign-in page: a link that signs you in once, no password needed.
+- Staff can also mail you a login link, e.g. as an invitation. It works once, for 7 days. Open it and press **Sign in**.
+- Your profile shows your *ways to sign in*, with any open login link - revoke one you didn't expect.
 
 Accounts come in two kinds:
 

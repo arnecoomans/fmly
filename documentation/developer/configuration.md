@@ -41,6 +41,7 @@ A copy of this file is in `.env.example`.
 | `SENDFILE_BACKEND` | `simple` (Django sends files itself) | `nginx` in production |
 | `CMNSD_REGISTRATION_REQUIRES_APPROVAL` | `False` | `True`: registered accounts stay inactive until approved |
 | `REGISTER_DEFAULT_GROUPS` | `Visitors` | The groups a new account joins (Visitors may comment) |
+| `CMNSD_LOGIN_LINKS` | `False` | `True`: staff can mail someone a link that signs them in once, and the sign-in page offers *Mail me a login link*. Needs `EMAIL_URL` |
 | `SITE_NAME`, `META_DESCRIPTION` | "A Family Archive" | Shown in titles and pages |
 | `EMAIL_URL` | the console (mail in the log) | The mail server: `smtp+tls://user:password@host:587` or `smtp+ssl://user:password@host:465`. `@`, `/` and `:` in the user or password percent-encoded (`%40`, `%2F`, `%3A`) |
 | `DEFAULT_FROM_EMAIL`, `REGISTRATION_NOTIFY_EMAIL` | - | Sender address - one the mail server may send from (SPF/DKIM of its domain), or it's marked as spam; who hears of a new registration |

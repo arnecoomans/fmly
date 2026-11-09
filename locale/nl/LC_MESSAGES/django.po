@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 19:07+0100\n"
+"POT-Creation-Date: 2026-11-09 19:00+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -255,7 +255,7 @@ msgstr "De naam waarmee het bestand binnenkwam"
 msgid "Where this came from: a person, archive or URL"
 msgstr "Waar dit vandaan komt: een persoon, archief of webadres"
 
-#: content/models/Content.py:223 content/models/Content.py:224 content/templates/content/favorites.html:18 content/templates/content/inbox.html:18 content/templates/content/upload.html:15 core/search.py:50 core/templates/tag/tag_detail.html:64 dashboard/housekeeping.py:283 dashboard/templates/dashboard/loose_end.html:32 notes/templates/note/_links.html:11 people/templates/people/person_detail.html:112 places/templates/place/place_detail.html:68
+#: content/models/Content.py:223 content/models/Content.py:224 content/templates/content/favorites.html:18 content/templates/content/inbox.html:18 content/templates/content/upload.html:15 core/search.py:50 core/templates/tag/tag_detail.html:64 dashboard/housekeeping.py:283 dashboard/templates/dashboard/loose_end.html:32 notes/templates/note/_links.html:11 people/templates/people/person_detail.html:118 places/templates/place/place_detail.html:68
 msgid "content"
 msgstr "stuk"
 
@@ -348,7 +348,7 @@ msgstr "Dit stuk heeft al een origineel - voeg dit toe als vertaling."
 msgid "A transcript can't be empty."
 msgstr "Een transcriptie mag niet leeg zijn."
 
-#: content/models/details.py:12 people/templates/people/person_detail.html:19
+#: content/models/details.py:12 people/templates/people/person_detail.html:20
 msgid "portrait"
 msgstr "portret"
 
@@ -915,7 +915,7 @@ msgstr "lees minder"
 msgid "No transcript yet."
 msgstr "Nog geen transcriptie."
 
-#: content/templates/content/content_detail.html:158 core/templates/tag/tag.html:12 core/templates/tag/tag_detail.html:28 core/templates/tag/tag_overview.html:23 notes/templates/note/note_detail.html:21 people/templates/people/_person_row.html:102 people/templates/people/person_detail.html:48
+#: content/templates/content/content_detail.html:158 core/templates/tag/tag.html:12 core/templates/tag/tag_detail.html:28 core/templates/tag/tag_overview.html:23 notes/templates/note/note_detail.html:21 people/templates/people/_person_row.html:102 people/templates/people/person_detail.html:49
 msgid "not published"
 msgstr "niet gepubliceerd"
 
@@ -988,7 +988,7 @@ msgstr "personen"
 msgid "add a person"
 msgstr "persoon toevoegen"
 
-#: content/templates/content/content_detail.html:310 content/templates/content/inbox.html:62 core/search.py:51 dashboard/housekeeping.py:282 dashboard/templates/dashboard/dashboard.html:194 events/templates/event/event_calendar.html:16 events/templates/event/event_detail.html:17 events/templates/event/event_overview.html:9 events/templates/event/event_overview.html:15 notes/templates/note/_links.html:13 people/templates/people/person_detail.html:118 places/templates/place/place_detail.html:58 templates/navigation.html:33
+#: content/templates/content/content_detail.html:310 content/templates/content/inbox.html:62 core/search.py:51 dashboard/housekeeping.py:282 dashboard/templates/dashboard/dashboard.html:194 events/templates/event/event_calendar.html:16 events/templates/event/event_detail.html:17 events/templates/event/event_overview.html:9 events/templates/event/event_overview.html:15 notes/templates/note/_links.html:13 people/templates/people/person_detail.html:124 places/templates/place/place_detail.html:58 templates/navigation.html:33
 msgid "events"
 msgstr "gebeurtenissen"
 
@@ -1717,7 +1717,7 @@ msgstr "tonen"
 msgid "hide"
 msgstr "verbergen"
 
-#: core/templates/comment/comment_overview.html:11 core/templates/comment/comment_overview.html:16 core/templates/comment/comments.html:11 dashboard/templates/dashboard/dashboard.html:196 people/templates/people/person_detail.html:115 templates/navigation.html:34
+#: core/templates/comment/comment_overview.html:11 core/templates/comment/comment_overview.html:16 core/templates/comment/comments.html:11 dashboard/templates/dashboard/dashboard.html:196 people/templates/people/person_detail.html:121 templates/navigation.html:34
 msgid "comments"
 msgstr "opmerkingen"
 
@@ -3639,19 +3639,23 @@ msgstr "Wordt toegevoegd als kind van %(name)s."
 msgid "Family and the biography come next, on their page."
 msgstr "Familie en het levensverhaal volgen daarna, op hun pagina."
 
-#: people/templates/people/person_detail.html:41
+#: people/templates/people/person_detail.html:42
 msgid "Relevant to the archive, but not related to the family"
 msgstr "Van belang voor het archief, maar geen familie"
 
-#: people/templates/people/person_detail.html:41
+#: people/templates/people/person_detail.html:42
 msgid "A relation is suspected but not yet known"
 msgstr "Er wordt een verwantschap vermoed, maar die is nog niet bekend"
 
-#: people/templates/people/person_detail.html:70
+#: people/templates/people/person_detail.html:71
 msgid "also known as"
 msgstr "ook bekend als"
 
-#: people/templates/people/person_detail.html:108
+#: people/templates/people/person_detail.html:92
+msgid "send login link"
+msgstr "inloglink sturen"
+
+#: people/templates/people/person_detail.html:114
 msgid "relationships"
 msgstr "familie"
 

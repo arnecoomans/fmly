@@ -1,5 +1,8 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
+from cmnsd.admin.login_links import LoginLinkUserAdminMixin
 from cmnsd.admin.mixins import (
   TimestampAdminMixin, StatusAdminMixin, VisibilityAdminMixin, OwnershipAdminMixin,
   HierarchyAdminMixin, TranslationAliasAdminMixin,
@@ -34,3 +37,13 @@ class PreferencesAdmin(TimestampAdminMixin, admin.ModelAdmin):
   # No Status/Visibility/Ownership - Preferences composes only TimestampMixin.
   list_display = ('user', 'language')
   filter_horizontal = ('family',)
+
+
+# Users: Django's own admin, plus "send login link" and their links
+# (cmnsd/login_links.py) - while CMNSD_LOGIN_LINKS is on.
+admin.site.unregister(get_user_model())
+
+
+@admin.register(get_user_model())
+class UserAdmin(LoginLinkUserAdminMixin, DjangoUserAdmin):
+  pass

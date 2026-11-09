@@ -11,6 +11,9 @@ python manage.py create_default_pages
 # Checksums and dimensions of files that don't have them yet (new uploads have them already).
 python manage.py content_checksums
 
+# Login links that are used, revoked or expired, older than 30 days (cmnsd/login_links.py).
+python manage.py login_links_cleanup
+
 # The index of mentions ("mentioned in") keeps itself up to date on every
 # save - not needed each update. Run it once for a release that makes a new
 # kind of text mentionable (mention_fields) or changes texts in bulk

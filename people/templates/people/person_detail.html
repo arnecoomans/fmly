@@ -3,6 +3,7 @@
 {% load markdown %}
 {% load tags %}
 {% load content_tags %}
+{% load login_links %}
 
 {% block title %}{{ person.get_full_name }}{% endblock %}
 
@@ -85,6 +86,11 @@
         {% include 'cmnsd/edit/block.html' with model='person' obj=person block='visibility' choice=True %}
         {% include 'cmnsd/edit/block.html' with model='person' obj=person block='status' choice=True %}
       </div>
+      {% login_links_enabled as login_links_on %}
+      {% if login_links_on and person.related_user and request.user.is_staff and perms.auth.change_user %}
+        {# Their account: mail them a link that signs them in once, landing here (cmnsd login links). #}
+        <p class="person-detail__login-link"><a class="btn btn--secondary btn--sm" href="{% url 'login_link_send' %}?user={{ person.related_user.pk }}&amp;next={{ person.get_absolute_url|urlencode }}&amp;back={{ person.get_absolute_url|urlencode }}"><i class="bi bi-envelope"></i> {% translate "send login link"|capfirst %}</a></p>
+      {% endif %}
     {% endif %}
 
     <!-- Biography -->
