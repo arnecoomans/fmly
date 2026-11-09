@@ -460,7 +460,9 @@ class AccountsTests(DashboardTestCase):
     self.assertEqual(other.get('/dashboard/accounts/').status_code, 404)
     page = self.client.get('/dashboard/accounts/').content.decode()
     self.assertIn('nieuw', page)
-    self.assertIn('/dashboard/accounts/', self.client.get('/').content.decode())     # the dashboard block
+    home = self.client.get('/').content.decode()
+    self.assertIn('/dashboard/accounts/', home)                                       # the dashboard block
+    self.assertNotIn('/admin/auth/user/', home)                                       # informative only: no buttons there
 
   def test_approve_and_decline(self):
     from django.contrib.auth.models import Group

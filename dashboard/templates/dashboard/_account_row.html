@@ -4,17 +4,22 @@
   activity; "edit" - the account in the admin (an address, groups: rare
   enough for the admin). With login links on (login_links,
   accounts.attach_login_links): its open invite, and "send login link" - or
-  why not (no address). Context: account, login_links.
+  why not (no address). `compact` (the dashboard's block): to see who signs
+  in, nothing more - the name and the last sign-in. Context: account,
+  login_links, compact.
 {% endcomment %}
 <li class="account-row">
   <span class="account-row__name">{% if account.person %}{% include 'person/functions/get_full_name.html' with person=account.person %}{% else %}{{ account.get_full_name|default:account.username }}{% endif %}
+    {% if not compact %}
     <span class="account-row__meta">{{ account.username }}{% if account.email %} · <a href="mailto:{{ account.email }}">{{ account.email }}</a>{% else %} · {% translate "no email address" %}{% endif %}{% for group in account.groups.all %} · {{ group.name }}{% endfor %}{% if account.is_staff %} · staff{% endif %}</span>
     {% if login_links and account.open_invite %}<span class="account-row__meta">{% blocktranslate with name=account.open_invite.created_by.get_full_name|default:account.open_invite.created_by.username|default:"-" when=account.open_invite.expires_at|date:"j M" %}login link sent by {{ name }}, open until {{ when }}{% endblocktranslate %}</span>{% endif %}
+    {% endif %}
   </span>
   <span class="account-row__when">
     {% if account.last_login %}{% blocktranslate with when=account.last_login|timesince %}signed in {{ when }} ago{% endblocktranslate %}{% else %}{% translate "never signed in" %}{% endif %}
-    {% if account.last_activity %}<br>{% blocktranslate with what=account.last_activity_kind when=account.last_activity|timesince %}last {{ what }} {{ when }} ago{% endblocktranslate %}{% endif %}
+    {% if account.last_activity and not compact %}<br>{% blocktranslate with what=account.last_activity_kind when=account.last_activity|timesince %}last {{ what }} {{ when }} ago{% endblocktranslate %}{% endif %}
   </span>
+  {% if not compact %}
   <span class="account-row__actions">
     {% if login_links %}
       {# One width whatever is in it - a button or why not - so the rows line up. #}
@@ -25,4 +30,5 @@
     {% endif %}
     <a class="btn btn--secondary btn--sm" href="{% url 'admin:auth_user_change' account.pk %}" title="{% translate 'edit the account in the admin' %}"><i class="bi bi-pencil"></i> {% translate "edit"|capfirst %}</a>
   </span>
+  {% endif %}
 </li>

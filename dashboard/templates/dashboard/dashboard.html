@@ -169,7 +169,7 @@
         <section class="dashboard__block">
           <h2 class="section-title">{% translate "accounts"|capfirst %}{% if accounts.waiting %} <span class="tag__count">{{ accounts.waiting|length }} {% translate "waiting" %}</span>{% endif %} <a class="dashboard__more" href="{% url 'dashboard:accounts' %}">{% translate "all" %} →</a></h2>
           {% if accounts.waiting %}<p class="dashboard__accounts-waiting"><i class="bi bi-person-exclamation"></i> {% for account in accounts.waiting %}{% if not forloop.first %}, {% endif %}{{ account.get_full_name|default:account.username }}{% endfor %} - <a href="{% url 'dashboard:accounts' %}">{% translate "approve or decline" %}</a></p>{% endif %}
-          <ul class="account-list account-list--compact">{% for account in accounts.active %}{% include 'dashboard/_account_row.html' %}{% endfor %}</ul>
+          <ul class="account-list account-list--compact">{% for account in accounts.active %}{% include 'dashboard/_account_row.html' with compact=True %}{% endfor %}</ul>
         </section>
       {% endif %}
 
