@@ -599,3 +599,17 @@ class BrowserLanguageTests(TestCase):
     preferences.language = 'en'
     preferences.save()
     self.assertNotIn('Voorkeuren', self.page(client, '/preferences/', 'nl'))   # chosen: English, whatever the browser
+
+
+class LoginRedirectTests(TestCase):
+  """Signed in without a page to return to: the dashboard, not the profile."""
+
+  def test_password_sign_in_lands_on_the_dashboard(self):
+    get_user_model().objects.create_user('relative', password='a-long-passphrase')
+    response = Client().post('/accounts/login/', {'username': 'relative', 'password': 'a-long-passphrase'})
+    self.assertRedirects(response, '/', fetch_redirect_response=False)
+
+  def test_a_page_to_return_to_still_wins(self):
+    get_user_model().objects.create_user('relative', password='a-long-passphrase')
+    response = Client().post('/accounts/login/?next=/people/', {'username': 'relative', 'password': 'a-long-passphrase'})
+    self.assertRedirects(response, '/people/', fetch_redirect_response=False)

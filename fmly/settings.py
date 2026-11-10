@@ -259,6 +259,10 @@ CMNSD_SEARCH_CHARACTER = env('CMNSD_SEARCH_CHARACTER', default='q')
 # message never gets seen (it'd only show on the next page load, and
 # without a redirect this render IS the response).
 LOGOUT_REDIRECT_URL = '/'
+# Signed in without a page to return to (the sign-in page itself, a login
+# link without one): the dashboard, not Django's default - the profile form
+# is no first sight of the archive for a relative just invited.
+LOGIN_REDIRECT_URL = '/'
 
 # Logging
 # Without this, a 500 with DEBUG=False is only mailed to ADMINS (none set) -
