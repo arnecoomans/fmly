@@ -2102,7 +2102,8 @@ a.mention:hover { text-decoration-color: currentColor; }
 .account-row__meta { font-size: var(--text-xs); color: var(--color-ink-3); }
 .account-row__when { flex-shrink: 0; text-align: right; font-size: var(--text-xs); color: var(--color-ink-3); }
 .account-row__actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.account-row__send { display: flex; justify-content: flex-end; align-items: center; width: 11.5rem; text-align: right; }
+.account-row__inline { display: inline; margin: 0; }
+.account-row__link { border: 0; padding: 0; background: none; font: inherit; color: var(--color-ink-2); text-decoration: underline; cursor: pointer; }
 .account-row__actions form { margin: 0; }
 /* Phone: the name, then when, then the buttons on a line of their own. */
 @media (max-width: 600px) {
@@ -2110,8 +2111,6 @@ a.mention:hover { text-decoration-color: currentColor; }
   .account-row__name, .account-row__when, .account-row__actions { flex: 1 0 100%; }
   .account-row__when { text-align: left; }
   .account-row__actions { flex-wrap: wrap; margin-top: 4px; }
-  .account-row__send { width: auto; justify-content: flex-start; text-align: left; }
-  .account-row__send .account-row__meta { display: none; }   /* why not (no address): under the name already */
 }
 .account-list--compact .account-row { padding: 5px 0; }
 .dashboard__accounts-waiting { margin: 0 0 var(--space-2); font-size: var(--text-sm); }

@@ -486,6 +486,7 @@ class AccountsTests(DashboardTestCase):
     """The email address on each account; with login links on, "send login
     link" (or why not), the open invite, and "approve and send"."""
     from django.test import override_settings
+    from cmnsd.models import LoginLink
     self.reader.email = 'lezer@example.org'
     self.reader.save()
     self.new.email = 'nieuw@example.org'
@@ -503,8 +504,15 @@ class AccountsTests(DashboardTestCase):
       self.assertRedirects(response, f'/accounts/login/link/send/?user={self.new.pk}&back=%2Fdashboard%2Faccounts%2F', fetch_redirect_response=False)
       self.new.refresh_from_db()
       self.assertTrue(self.new.is_active)
+      self.assertNotIn('/accounts/login/link/copy/', page)                     # copying: superusers only
       self.client.post('/accounts/login/link/send/', {'user': self.reader.pk})
-      self.assertIn('login link sent by beheer', self.client.get('/dashboard/accounts/').content.decode())
+      page = self.client.get('/dashboard/accounts/').content.decode()
+      self.assertIn('login link from beheer', page)
+      link = LoginLink.objects.get(user=self.reader)
+      self.assertIn(f'/accounts/login/link/{link.pk}/revoke/', page)             # the open link, to revoke
+      self.staff.is_superuser = True
+      self.staff.save()
+      self.assertIn('/accounts/login/link/copy/', self.client.get('/dashboard/accounts/').content.decode())
 
   def test_activity(self):
     from dashboard import accounts

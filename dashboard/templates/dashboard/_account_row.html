@@ -3,16 +3,19 @@
   person's when linked - email address, groups, last sign-in and last
   activity; "edit" - the account in the admin (an address, groups: rare
   enough for the admin). With login links on (login_links,
-  accounts.attach_login_links): its open invite, and "send login link" - or
-  why not (no address). `compact` (the dashboard's block): to see who signs
+  accounts.attach_login_links): its open invite, to revoke; "send login
+  link" - or why not (no address) - and for a superuser "copy login link"
+  (may_copy_login_links), to pass on in a chat. The actions are icons, each
+  named in its title. `compact` (the dashboard's block): to see who signs
   in, nothing more - the name and the last sign-in. Context: account,
-  login_links, compact.
+  login_links, may_copy_login_links, compact.
 {% endcomment %}
 <li class="account-row">
   <span class="account-row__name">{% if account.person %}{% include 'person/functions/get_full_name.html' with person=account.person %}{% else %}{{ account.get_full_name|default:account.username }}{% endif %}
     {% if not compact %}
     <span class="account-row__meta">{{ account.username }}{% if account.email %} · <a href="mailto:{{ account.email }}">{{ account.email }}</a>{% else %} · {% translate "no email address" %}{% endif %}{% for group in account.groups.all %} · {{ group.name }}{% endfor %}{% if account.is_staff %} · staff{% endif %}</span>
-    {% if login_links and account.open_invite %}<span class="account-row__meta">{% blocktranslate with name=account.open_invite.created_by.get_full_name|default:account.open_invite.created_by.username|default:"-" when=account.open_invite.expires_at|date:"j M" %}login link sent by {{ name }}, open until {{ when }}{% endblocktranslate %}</span>{% endif %}
+    {% if login_links and account.open_invite %}<span class="account-row__meta">{% blocktranslate with name=account.open_invite.created_by.get_full_name|default:account.open_invite.created_by.username|default:"-" when=account.open_invite.expires_at|date:"j M" %}login link from {{ name }}, open until {{ when }}{% endblocktranslate %}
+      <form class="account-row__inline" method="post" action="{% url 'login_link_revoke' account.open_invite.pk %}">{% csrf_token %}<input type="hidden" name="back" value="{% url 'dashboard:accounts' %}"><button type="submit" class="account-row__link">{% translate "revoke" %}</button></form></span>{% endif %}
     {% endif %}
   </span>
   <span class="account-row__when">
@@ -22,13 +25,15 @@
   {% if not compact %}
   <span class="account-row__actions">
     {% if login_links %}
-      {# One width whatever is in it - a button or why not - so the rows line up. #}
-      <span class="account-row__send">
-        {% if account.login_link_refusal %}<span class="account-row__meta">{{ account.login_link_refusal }}</span>
-        {% else %}<a class="btn btn--secondary btn--sm" href="{% url 'login_link_send' %}?user={{ account.pk }}&amp;back={% url 'dashboard:accounts' %}"><i class="bi bi-envelope"></i> {% if account.open_invite %}{% translate "send again"|capfirst %}{% else %}{% translate "send login link"|capfirst %}{% endif %}</a>{% endif %}
-      </span>
+      {% if account.login_link_refusal %}<button type="button" class="btn btn--secondary btn--sm" disabled title="{{ account.login_link_refusal|capfirst }}"><i class="bi bi-envelope-slash"></i><span class="visually-hidden">{{ account.login_link_refusal }}</span></button>
+      {% else %}{% if account.open_invite %}{% translate "send again" as send_label %}{% else %}{% translate "send login link" as send_label %}{% endif %}
+        <a class="btn btn--secondary btn--sm" href="{% url 'login_link_send' %}?user={{ account.pk }}&amp;back={% url 'dashboard:accounts' %}" title="{{ send_label|capfirst }}"><i class="bi bi-envelope"></i><span class="visually-hidden">{{ send_label }}</span></a>{% endif %}
+      {% if may_copy_login_links %}
+        {% if account.login_link_copy_refusal %}<button type="button" class="btn btn--secondary btn--sm" disabled title="{{ account.login_link_copy_refusal|capfirst }}"><i class="bi bi-link-45deg"></i><span class="visually-hidden">{{ account.login_link_copy_refusal }}</span></button>
+        {% else %}<form method="post" action="{% url 'login_link_copy' %}">{% csrf_token %}<input type="hidden" name="user" value="{{ account.pk }}"><input type="hidden" name="back" value="{% url 'dashboard:accounts' %}"><button type="submit" class="btn btn--secondary btn--sm" title="{% translate 'copy login link'|capfirst %}"><i class="bi bi-link-45deg"></i><span class="visually-hidden">{% translate "copy login link" %}</span></button></form>{% endif %}
+      {% endif %}
     {% endif %}
-    <a class="btn btn--secondary btn--sm" href="{% url 'admin:auth_user_change' account.pk %}" title="{% translate 'edit the account in the admin' %}"><i class="bi bi-pencil"></i> {% translate "edit"|capfirst %}</a>
+    <a class="btn btn--secondary btn--sm" href="{% url 'admin:auth_user_change' account.pk %}" title="{% translate 'edit the account in the admin'|capfirst %}"><i class="bi bi-pencil"></i><span class="visually-hidden">{% translate "edit the account in the admin" %}</span></a>
   </span>
   {% endif %}
 </li>

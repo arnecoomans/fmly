@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 19:22+0100\n"
+"POT-Creation-Date: 2026-11-10 19:08+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -1448,7 +1448,7 @@ msgstr "Dit intrekken? Alleen beheerders zien het tot het hersteld is."
 msgid "status"
 msgstr "status"
 
-#: core/forms.py:194
+#: core/forms.py:194 dashboard/templates/dashboard/_account_row.html:18
 msgid "revoke"
 msgstr "intrekken"
 
@@ -1701,7 +1701,7 @@ msgstr "bewerkt"
 msgid "hidden"
 msgstr "verborgen"
 
-#: core/templates/comment/comment.html:52 dashboard/templates/dashboard/_account_row.html:23 dashboard/templates/dashboard/accounts.html:34 templates/header.html:35
+#: core/templates/comment/comment.html:52 dashboard/templates/dashboard/accounts.html:34 templates/header.html:35
 msgid "edit"
 msgstr "bewerken"
 
@@ -2226,38 +2226,42 @@ msgstr "te doen"
 msgid "done"
 msgstr "klaar"
 
-#: dashboard/templates/dashboard/_account_row.html:11
+#: dashboard/templates/dashboard/_account_row.html:16
 msgid "no email address"
 msgstr "geen e-mailadres"
 
-#: dashboard/templates/dashboard/_account_row.html:12
+#: dashboard/templates/dashboard/_account_row.html:17
 #, python-format
-msgid "login link sent by %(name)s, open until %(when)s"
-msgstr "inloglink gestuurd door %(name)s, open tot %(when)s"
+msgid "login link from %(name)s, open until %(when)s"
+msgstr "inloglink van %(name)s, open tot %(when)s"
 
-#: dashboard/templates/dashboard/_account_row.html:15
+#: dashboard/templates/dashboard/_account_row.html:22
 #, python-format
 msgid "signed in %(when)s ago"
 msgstr "%(when)s geleden ingelogd"
 
-#: dashboard/templates/dashboard/_account_row.html:15
+#: dashboard/templates/dashboard/_account_row.html:22
 msgid "never signed in"
 msgstr "nooit ingelogd"
 
-#: dashboard/templates/dashboard/_account_row.html:16
+#: dashboard/templates/dashboard/_account_row.html:23
 #, python-format
 msgid "last %(what)s %(when)s ago"
 msgstr "laatste %(what)s %(when)s geleden"
 
-#: dashboard/templates/dashboard/_account_row.html:21
+#: dashboard/templates/dashboard/_account_row.html:29
 msgid "send again"
 msgstr "opnieuw sturen"
 
-#: dashboard/templates/dashboard/_account_row.html:21
+#: dashboard/templates/dashboard/_account_row.html:29
 msgid "send login link"
 msgstr "inloglink sturen"
 
-#: dashboard/templates/dashboard/_account_row.html:23 dashboard/templates/dashboard/accounts.html:34
+#: dashboard/templates/dashboard/_account_row.html:33
+msgid "copy login link"
+msgstr "inloglink kopiëren"
+
+#: dashboard/templates/dashboard/_account_row.html:36 dashboard/templates/dashboard/accounts.html:34
 msgid "edit the account in the admin"
 msgstr "het account bewerken in de admin"
 
@@ -2737,17 +2741,17 @@ msgstr[1] "%(n)s plaatsen verwijderd."
 msgid "Nothing selected."
 msgstr "Niets geselecteerd."
 
-#: dashboard/views.py:321
+#: dashboard/views.py:323
 #, python-format
 msgid "%(name)s can sign in now."
 msgstr "%(name)s kan nu inloggen."
 
-#: dashboard/views.py:326
+#: dashboard/views.py:328
 #, python-format
 msgid "%(name)s was declined and removed."
 msgstr "%(name)s is afgewezen en verwijderd."
 
-#: dashboard/views.py:328
+#: dashboard/views.py:330
 #, python-format
 msgid "%(name)s isn't waiting for approval."
 msgstr "%(name)s wacht niet op goedkeuring."

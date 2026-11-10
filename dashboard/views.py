@@ -295,7 +295,8 @@ class AccountsView(TemplateView):
   and every active account's last sign-in and last activity
   (dashboard/accounts.py). Staff who may change users only. With login
   links on (cmnsd CMNSD_LOGIN_LINKS): "send login link" per account - its
-  open invite shown - and "approve and send" for one waiting."""
+  open invite shown, to revoke - "copy login link" for a superuser, and
+  "approve and send" for one waiting."""
   template_name = 'dashboard/accounts.html'
 
   def dispatch(self, request, *args, **kwargs):
@@ -310,6 +311,7 @@ class AccountsView(TemplateView):
     context['login_links'] = login_links.enabled()
     if context['login_links']:
       accounts.attach_login_links([*context['waiting'], *context['active']], self.request.user)
+      context['may_copy_login_links'] = login_links.may_copy(self.request.user)
     return context
 
   def post(self, request, *args, **kwargs):

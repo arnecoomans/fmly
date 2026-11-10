@@ -73,7 +73,8 @@ def activity():
 
 def attach_login_links(accounts, sender):
   """Login links (cmnsd/login_links.py) on each account: .login_link_refusal
-  - why `sender` may not send one ('' if they may: no address...) - and
+  - why `sender` may not send one ('' if they may: no address...) -
+  .login_link_copy_refusal - why not copy one (a superuser's only) - and
   .open_invite, the open one, if any.
   One query for the invites."""
   from cmnsd import login_links
@@ -85,6 +86,7 @@ def attach_login_links(accounts, sender):
     # A waiting account isn't active yet - "approve and send" makes it so
     # first: checked as it will be once approved.
     account.login_link_refusal = login_links.refusal(sender, account if account.is_active else _approved(account))
+    account.login_link_copy_refusal = login_links.copy_refusal(sender, account)
     account.open_invite = invites.get(account.pk)
   return accounts
 

@@ -58,7 +58,12 @@ Your own record in the family, and what you've added.
 For staff who may change users, under *Accounts* in the user menu (top right):
 - **Waiting for approval:** approve or decline each new account.
 - **Activity:** every active account, with its email address, last sign-in and last activity.
-- **With login links on** (`CMNSD_LOGIN_LINKS`): *Send login link* per account. It opens a page for an optional message and a page to land on, and the link signs them in once, for 7 days. An account shows its open link (sent by whom, until when); *Send again* replaces it. A waiting account gets *Approve and send login link*. Staff accounts too, and your own: to sign in on another device. Where no link can be sent, the row says why - usually no email address: *edit* opens the account in the admin to add one.
+- **With login links on** (`CMNSD_LOGIN_LINKS`): per account, icons - point at one for its name:
+  - the envelope, *send login link*: a page for an optional message and a page to land on, and the link signs them in once, for 7 days. Staff accounts too, and your own: to sign in on another device. Greyed out where no link can be sent, saying why - usually no email address;
+  - the link, *copy login link* - superusers only: no mail, the link on a page to copy or share in a chat or a text, shown only that once. No email address needed. Whoever has it signs in as them, so send it to them alone;
+  - the pencil, *edit*: the account in the admin, e.g. to add an email address.
+
+  An account shows its open link (from whom, until when), with *revoke*; a new one, sent or copied, replaces it. A waiting account gets *Approve and send login link*.
 
 ## Housekeeping
 
