@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-10 19:08+0100\n"
+"POT-Creation-Date: 2026-11-12 16:48+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -139,31 +139,35 @@ msgstr "soort foto"
 msgid "kind of picture"
 msgstr "soort afbeelding"
 
-#: content/forms.py:219
+#: content/forms.py:216
+msgid "Between two people, or a person and an organisation: a letter, postcard or telegram - to the Oorlogsgravenstichting, about help during repatriation."
+msgstr "Tussen twee mensen, of iemand en een organisatie: een brief, ansichtkaart of telegram - aan de Oorlogsgravenstichting, over hulp bij de repatriëring."
+
+#: content/forms.py:222
 msgid "kind of document"
 msgstr "soort document"
 
-#: content/forms.py:233 content/forms.py:252 content/templates/content/content_detail.html:206 core/forms.py:283
+#: content/forms.py:236 content/forms.py:255 content/templates/content/content_detail.html:206 core/forms.py:283
 msgid "language"
 msgstr "taal"
 
-#: content/forms.py:252
+#: content/forms.py:255
 msgid "original or translation"
 msgstr "origineel of vertaling"
 
-#: content/forms.py:252
+#: content/forms.py:255
 msgid "how it was made"
 msgstr "hoe het gemaakt is"
 
-#: content/forms.py:253
+#: content/forms.py:256
 msgid "transcription incomplete"
 msgstr "transcriptie onvolledig"
 
-#: content/forms.py:253 content/templates/content/transcribe.html:105 notes/forms.py:30
+#: content/forms.py:256 content/templates/content/transcribe.html:105 notes/forms.py:30
 msgid "text"
 msgstr "tekst"
 
-#: content/forms.py:255 content/templates/content/transcribe.html:105
+#: content/forms.py:258 content/templates/content/transcribe.html:105
 msgid "@ mention"
 msgstr "@ noemen"
 
@@ -211,7 +215,7 @@ msgstr "Japans"
 msgid "Chinese"
 msgstr "Chinees"
 
-#: content/languages.py:21 content/models/details.py:16 content/models/details.py:36 events/models.py:55 events/views/EventListView.py:25 people/models/Person.py:33 people/models/PersonRelations.py:9
+#: content/languages.py:21 content/models/details.py:16 content/models/details.py:38 events/models.py:55 events/views/EventListView.py:25 people/models/Person.py:33 people/models/PersonRelations.py:9
 msgid "other"
 msgstr "anders"
 
@@ -396,7 +400,11 @@ msgstr "fragment uit een publicatie"
 msgid "personal paper"
 msgstr "persoonlijk document"
 
-#: content/models/details.py:35
+#: content/models/details.py:36
+msgid "correspondence"
+msgstr "correspondentie"
+
+#: content/models/details.py:37
 msgid "research"
 msgstr "onderzoek"
 

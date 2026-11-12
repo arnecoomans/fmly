@@ -24,6 +24,27 @@ class PhotoKindTests(TestCase):
     self.assertEqual(Content.objects.get(pk=item.pk).photo_detail.photo_kind, 'candid')
 
 
+class DocumentKindTests(TestCase):
+  """Correspondence: a kind of document, explained on its button, with no
+  suggested role - writer and addressee are set per person."""
+
+  def test_correspondence(self):
+    from content.roles import suggested_role
+    user = get_user_model().objects.create(username='redacteur')
+    user.user_permissions.add(Permission.objects.get(codename='change_content'))
+    user.save()
+    client = Client()
+    client.force_login(user)
+    client.post('/ui/edit/', {'on': '1', 'next': '/'})
+    item = Content.objects.create(name='Brief aan de Oorlogsgravenstichting', kind='document', user=user, status='p', visibility='c')
+    item.refresh_from_db()
+    response = client.post(f'/api/content/{item.token}/form/document_kind/', {'_modified': item.date_modified.isoformat(), 'document_kind-document_kind': 'correspondence'})
+    self.assertEqual(response.status_code, 200)
+    item = Content.objects.get(pk=item.pk)
+    self.assertEqual(item.document_detail.document_kind, 'correspondence')
+    self.assertEqual(suggested_role(item), '')
+    self.assertIn('a person and an organisation', client.get(item.get_absolute_url()).content.decode())   # the chosen kind's hint, under the dropdown
+
 class TranscribeLinkTests(TestCase):
   """The transcribe page is its own page: offered to whoever may
   transcribe, with or without edit mode; not to a reader."""

@@ -212,6 +212,9 @@ class PhotoKindForm(forms.ModelForm):
 
 class DocumentKindForm(forms.ModelForm):
   choice = True
+  choice_hints = {
+    'correspondence': _("Between two people, or a person and an organisation: a letter, postcard or telegram - to the Oorlogsgravenstichting, about help during repatriation."),
+  }
 
   class Meta:
     model = DocumentContent

@@ -32,6 +32,8 @@ class DocumentContent(models.Model):
     ADVERTISEMENT = "advertisement", _("advertisement")
     PUBLICATION_EXCERPT = "publication_excerpt", _("publication excerpt")
     PERSONAL = "personal", _("personal paper")
+    # Between two people, or a person and an organisation (content.forms.DocumentKindForm.choice_hints).
+    CORRESPONDENCE = "correspondence", _("correspondence")
     RESEARCH = "research", _("research")
     OTHER = "other", _("other")
 
