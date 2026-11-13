@@ -1,3 +1,5 @@
+import mimetypes
+
 from django.conf import settings
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -55,9 +57,27 @@ def content_file(request, token):
   docs/FMLY-3.0-PLAN.md, Content, "Storage and serving".
   SAMEORIGIN, not the site's DENY (XFrameOptionsMiddleware): the item page
   shows a PDF in an <iframe> - the browser's own viewer - and DENY blocks
-  that too ("blocked:other"). Other sites still can't frame a file."""
+  that too ("blocked:other"). Other sites still can't frame a file.
+  Only what a browser shows as media opens inline (_shown_inline): any
+  other file - an SVG, an HTML page - is a download, and sandboxed, so a
+  script in it never runs as this site."""
   content = _visible_content(request, token)
-  return sendfile(request, _stored_path(content.file), attachment=False)
+  path = _stored_path(content.file)
+  mimetype = mimetypes.guess_type(path)[0] or ''
+  response = sendfile(request, path, attachment=not _shown_inline(mimetype), attachment_filename=content.original_filename or None)
+  if mimetype != 'application/pdf':
+    # Not on a PDF: Chrome won't show one in a sandbox.
+    response['Content-Security-Policy'] = 'sandbox'
+  return response
+
+
+# Raster images (not SVG: it can hold a script), PDF, audio and video.
+INLINE_IMAGES = {'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/bmp', 'image/tiff', 'image/heic'}
+
+
+def _shown_inline(mimetype):
+  major = mimetype.split('/')[0]
+  return mimetype in INLINE_IMAGES or mimetype == 'application/pdf' or major in ('audio', 'video')
 
 
 @require_GET

@@ -28,6 +28,7 @@
 - **Quiet transcripts on photos** - on a photo, an object or a recording the transcript shows once there is one; in edit mode a small *+ transcript*
 
 ### Under the hood
+- [Bugfix] Security: an uploaded file that isn't media (an SVG, an HTML page) opened as a page of the site, so a script in it ran as the viewer. Now only images, PDFs, audio and video open in the browser; anything else downloads under its own name. Every file but a PDF is served sandboxed
 - [Bugfix] A parent made from a typed path ("Indozoektpost: 04" in a tag picker) started as a concept no one saw: it now starts as its child - published, as visible (cmnsd `HierarchyMixin`)
 - cmnsd: `RegionMixin` (a box on an image as fractions), `regions.js` (linked regions, marking on an image), `gallery.js` (which item shows)
 - Person rows: their visibility, portrait and pointed-out icons in one line under the name; the row's styles in `components.css` (also loaded on an item's page)
