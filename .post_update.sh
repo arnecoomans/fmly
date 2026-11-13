@@ -5,6 +5,9 @@
 # when the pull brought changes. Each step is safe to repeat.
 set -e
 
+# The cache table (settings CACHES: the database) - made once, left alone after.
+python manage.py createcachetable
+
 # Default pages a new release adds - existing ones (edited in the admin) are left alone.
 python manage.py create_default_pages
 

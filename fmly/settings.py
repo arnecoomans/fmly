@@ -264,6 +264,30 @@ LOGOUT_REDIRECT_URL = '/'
 # is no first sight of the archive for a relative just invited.
 LOGIN_REDIRECT_URL = '/'
 
+# Password guesses (cmnsd/login_throttle.py): its backend first, so a
+# username or address over its limit is refused before any password is
+# checked. Limits: cmnsd's defaults (5 per account, 20 per address, 15
+# minutes). Counted in the cache below - shared by the gunicorn workers.
+AUTHENTICATION_BACKENDS = [
+  'cmnsd.login_throttle.ThrottleBackend',
+  'django.contrib.auth.backends.ModelBackend',
+]
+# Behind nginx, gunicorn on a unix socket sees no client address: it's the
+# entry nginx adds to X-Forwarded-For. The number of proxies in front of
+# Django (nginx: 1) - 0 locally, where runserver sees the address itself.
+CMNSD_PROXY_COUNT = env.int('CMNSD_PROXY_COUNT', default=0)
+
+# One cache for all worker processes - a local-memory cache is per process,
+# and a sign-in limit would count per worker. In the database: no files,
+# no server; the table is made by `manage.py createcachetable`
+# (.post_update.sh).
+CACHES = {
+  'default': {
+    'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+    'LOCATION': 'django_cache',
+  },
+}
+
 # Logging
 # Without this, a 500 with DEBUG=False is only mailed to ADMINS (none set) -
 # it leaves no trace. Warnings and errors, with their traceback, go to

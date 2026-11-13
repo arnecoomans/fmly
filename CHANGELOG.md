@@ -28,6 +28,7 @@
 - **Quiet transcripts on photos** - on a photo, an object or a recording the transcript shows once there is one; in edit mode a small *+ transcript*
 
 ### Under the hood
+- Security: **password guesses are limited** - 5 failed sign-ins for one username, or 20 from one address, within 15 minutes, and the next is refused, the right password too, until the time has passed; the sign-in page says so, and offers a login link. Also the admin's sign-in. In cmnsd (`login_throttle.py`), counted in a cache now shared by the workers (the database: `createcachetable`, in .post_update.sh). Sign-ins in the log show the visitor's address (`CMNSD_PROXY_COUNT=1` in .env behind nginx) ([#495](https://github.com/arnecoomans/fmly/issues/495))
 - [Bugfix] Security: an uploaded file that isn't media (an SVG, an HTML page) opened as a page of the site, so a script in it ran as the viewer. Now only images, PDFs, audio and video open in the browser; anything else downloads under its own name. Every file but a PDF is served sandboxed
 - [Bugfix] A parent made from a typed path ("Indozoektpost: 04" in a tag picker) started as a concept no one saw: it now starts as its child - published, as visible (cmnsd `HierarchyMixin`)
 - cmnsd: `RegionMixin` (a box on an image as fractions), `regions.js` (linked regions, marking on an image), `gallery.js` (which item shows)
