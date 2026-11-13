@@ -31,6 +31,21 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
+# Cookies only over HTTPS - a session cookie on a plain http:// request,
+# before nginx redirects, is readable on the way. Off while developing
+# (runserver speaks plain HTTP).
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=not DEBUG)
+CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=not DEBUG)
+# HSTS: browsers come back over HTTPS only, for this many seconds. Can't be
+# taken back from a browser that has seen it - start low (3600), raise it
+# once all is well (31536000, a year). 0: none.
+SECURE_HSTS_SECONDS = env.int('SECURE_HSTS_SECONDS', default=0)
+# Subdomains of the site's own name (*.fmly.cmns.nl - none): HTTPS too.
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# Silenced: http:// to https:// is nginx's job (its port-80 server); and no
+# HSTS preload - a list built into browsers, for the whole domain, slow to
+# leave again.
+SILENCED_SYSTEM_CHECKS = ['security.W008', 'security.W021']
 
 # Application definition
 
@@ -276,6 +291,12 @@ AUTHENTICATION_BACKENDS = [
 # entry nginx adds to X-Forwarded-For. The number of proxies in front of
 # Django (nginx: 1) - 0 locally, where runserver sees the address itself.
 CMNSD_PROXY_COUNT = env.int('CMNSD_PROXY_COUNT', default=0)
+# Behind nginx, which sets X-Forwarded-Proto on every request (overwriting
+# what a client sends): whether it came in over HTTPS - request.is_secure(),
+# https:// in addresses built for mail (login links). Only behind a proxy:
+# without one, a client could claim it.
+if CMNSD_PROXY_COUNT:
+  SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # One cache for all worker processes - a local-memory cache is per process,
 # and a sign-in limit would count per worker. In the database: no files,

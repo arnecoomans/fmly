@@ -37,12 +37,14 @@ A copy of this file is in `.env.example`.
 | `SECRET_KEY` | - (required) | Django's signing key |
 | `DEBUG` | - (required) | `False` in production: hashed static file names, no debug toolbar |
 | `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` | empty | The site's host name, and its `https://` origin |
+| `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE` | on, unless `DEBUG` | Cookies only over HTTPS: a session cookie never goes out on a plain `http://` request |
+| `SECURE_HSTS_SECONDS` | `0` (none) | Browsers come back over HTTPS only, for this many seconds. It can't be taken back from a browser that has seen it: start with `3600`, raise to `31536000` (a year) once all is well. The redirect from `http://` is nginx's |
 | `DATABASE_URL` | `db.sqlite3` in the project | Any database django-environ understands; PostgreSQL: `postgres://fmly:<password>@localhost:5432/fmly` (a password of letters, digits, `-` and `_` only - see below) |
 | `SENDFILE_BACKEND` | `simple` (Django sends files itself) | `nginx` in production |
 | `CMNSD_REGISTRATION_REQUIRES_APPROVAL` | `False` | `True`: registered accounts stay inactive until approved |
 | `REGISTER_DEFAULT_GROUPS` | `Visitors` | The groups a new account joins (Visitors may comment) |
 | `CMNSD_LOGIN_LINKS` | `False` | `True`: staff can mail someone a link that signs them in once, and the sign-in page offers *Mail me a login link*. Needs `EMAIL_URL` |
-| `CMNSD_PROXY_COUNT` | `0` | `1` in production (behind nginx): the visitor's address comes from nginx's `X-Forwarded-For` - for the limit on password guesses and the log. Gunicorn on a unix socket sees none itself |
+| `CMNSD_PROXY_COUNT` | `0` | `1` in production (behind nginx): the visitor's address comes from nginx's `X-Forwarded-For` - for the limit on password guesses and the log. Gunicorn on a unix socket sees none itself. It also lets Django trust nginx's `X-Forwarded-Proto`: a request over HTTPS is known as one, and addresses built for mail (login links) start with `https://` |
 | `SITE_NAME`, `META_DESCRIPTION` | "A Family Archive" | Shown in titles and pages |
 | `EMAIL_URL` | the console (mail in the log) | The mail server: `smtp+tls://user:password@host:587` or `smtp+ssl://user:password@host:465`. `@`, `/` and `:` in the user or password percent-encoded (`%40`, `%2F`, `%3A`) |
 | `DEFAULT_FROM_EMAIL`, `REGISTRATION_NOTIFY_EMAIL` | - | Sender address - one the mail server may send from (SPF/DKIM of its domain), or it's marked as spam; who hears of a new registration |
