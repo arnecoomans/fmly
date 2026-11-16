@@ -8,6 +8,7 @@ For editors: *More* → **Add content**, or drop files on the dashboard. Several
 
 - A file that's **already in the archive** is recognised and not added twice.
 - Each upload becomes a **draft** in your **inbox**: visible only to you until you publish it.
+- **Too big for the browser** - over about 1 GB, or too slow to send within 5 minutes (a long video, a podcast): on the server, with `manage.py content_add` ([Management commands](../developer/management-commands.md)). The file lands as a draft in an inbox, as any upload.
 
 ## The inbox
 
