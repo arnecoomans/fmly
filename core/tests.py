@@ -613,3 +613,95 @@ class LoginRedirectTests(TestCase):
     get_user_model().objects.create_user('relative', password='a-long-passphrase')
     response = Client().post('/accounts/login/?next=/people/', {'username': 'relative', 'password': 'a-long-passphrase'})
     self.assertRedirects(response, '/people/', fetch_redirect_response=False)
+
+
+class AccountPersonAdminTests(TestCase):
+  """The account's person, set on its admin page (core.admin.AccountChangeForm):
+  the link lives on the person; only people without an account yet."""
+
+  def setUp(self):
+    from people.models import Person
+    User = get_user_model()
+    self.root = User.objects.create(username='root', is_staff=True, is_superuser=True)
+    self.root.save()
+    self.account = User.objects.create(username='nicht')
+    self.cousin = Person.objects.create(given_name='Marinda', last_name='van Dorp', user=self.root, status='p', visibility='c')
+    self.other = Person.objects.create(given_name='Wendy', last_name='Coomans', user=self.root, status='p', visibility='c')
+    self.taken = Person.objects.create(given_name='Herko', last_name='Coomans', user=self.root, status='p', visibility='c', related_user=self.root)
+    self.client = Client()
+    self.client.force_login(self.root)
+
+  def save(self, person):
+    response = self.client.post(f'/admin/auth/user/{self.account.pk}/change/', {
+      'username': 'nicht', 'is_active': 'on', 'date_joined_0': '2026-01-01', 'date_joined_1': '00:00:00',
+      'person': person.pk if person else '', '_save': 'Save',
+      # The login links listed under the account (cmnsd LoginLinkInline): none.
+      'login_links-TOTAL_FORMS': '0', 'login_links-INITIAL_FORMS': '0',
+    })
+    return response
+
+  def person_of(self, user):
+    from people.models import Person
+    return Person.objects.filter(related_user=user).first()
+
+  def test_set_change_and_clear(self):
+    page = self.client.get(f'/admin/auth/user/{self.account.pk}/change/').content.decode()
+    self.assertIn('Marinda', page)
+    self.assertNotIn('Herko', page)                                    # has an account already
+    self.assertEqual(self.save(self.cousin).status_code, 302)
+    self.assertEqual(self.person_of(self.account), self.cousin)
+    self.save(self.other)                                              # another person: the first one is let go
+    self.assertEqual(self.person_of(self.account), self.other)
+    self.cousin.refresh_from_db()
+    self.assertIsNone(self.cousin.related_user)
+    self.save(None)
+    self.assertIsNone(self.person_of(self.account))
+
+  def test_not_someone_elses(self):
+    response = self.save(self.taken)
+    self.assertEqual(response.status_code, 200)                       # refused: not among the choices
+    self.taken.refresh_from_db()
+    self.assertEqual(self.taken.related_user, self.root)
+
+  def test_with_a_year_of_birth(self):
+    from events.models import Event
+    birth = Event.objects.create(kind=Event.Kind.BIRTH, year=1980, user=self.root)
+    birth.people.add(self.cousin)
+    self.assertIn('Marinda van Dorp (1980)', self.client.get(f'/admin/auth/user/{self.account.pk}/change/').content.decode())
+
+  def test_the_likely_person_first(self):
+    """By the account's name and address - suggested, not chosen."""
+    from people.models import Person
+    self.account.first_name, self.account.last_name = 'Marinda', 'Dorp'      # "Dorp" is "van Dorp"
+    self.account.save()
+    Person.objects.create(given_name='Wendy', last_name='van Dorp', user=self.root, status='p', visibility='c')
+    page = self.client.get(f'/admin/auth/user/{self.account.pk}/change/').content.decode().replace('"', '')
+    suggested = page[page.index('label=Suggested'):page.index('label=Family')]
+    self.assertIn('Marinda van Dorp', suggested)
+    self.assertNotIn('Wendy', suggested)                                # the same last name isn't enough
+    self.assertNotIn('selected', suggested)                             # never chosen for you
+
+  def test_an_address_alone(self):
+    from people.names import likely_people
+    from people.models import Person
+    self.account.email = 'marindavandorp@example.org'
+    self.assertEqual(likely_people(self.account, Person.objects.all()), [self.cousin])
+    self.account.email = 'anneliesdamen@example.org'                    # a piece of a name only
+    self.assertEqual(likely_people(self.account, Person.objects.all()), [])
+
+  def test_not_someone_who_died(self):
+    from events.models import Event
+    death = Event.objects.create(kind=Event.Kind.DEATH, user=self.root)   # died, details unknown
+    death.people.add(self.other)
+    self.assertNotIn('Wendy', self.client.get(f'/admin/auth/user/{self.account.pk}/change/').content.decode())
+    self.save(self.cousin)
+    death.people.add(self.cousin)                                       # died since: still shown as theirs
+    self.assertIn('Marinda', self.client.get(f'/admin/auth/user/{self.account.pk}/change/').content.decode())
+
+  def test_grouped_by_how_they_belong(self):
+    Person = type(self.cousin)
+    Person.objects.filter(pk=self.other.pk).update(family_connection=Person.FamilyConnection.OUTSIDER)
+    page = self.client.get(f'/admin/auth/user/{self.account.pk}/change/').content.decode().replace('"', '')
+    family, outsiders = page.index('label=Family'), page.index('label=Outsiders')
+    self.assertTrue(family < page.index('Marinda') < outsiders < page.index('Wendy'))
+    self.assertNotIn('label=Possibly family', page)                    # an empty group isn't shown

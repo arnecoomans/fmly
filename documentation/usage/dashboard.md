@@ -61,7 +61,7 @@ For staff who may change users, under *Accounts* in the user menu (top right):
 - **With login links on** (`CMNSD_LOGIN_LINKS`): per account, icons - point at one for its name:
   - the envelope, *send login link*: a page for an optional message and a page to land on, and the link signs them in once, for 7 days. Staff accounts too, and your own: to sign in on another device. Greyed out where no link can be sent, saying why - usually no email address;
   - the link, *copy login link* - superusers only: no mail, the link on a page to copy or share in a chat or a text, shown only that once. No email address needed. Whoever has it signs in as them, so send it to them alone;
-  - the pencil, *edit*: the account in the admin, e.g. to add an email address.
+  - the pencil, *edit*: the account in the admin, e.g. to add an email address, or to set its **person** - who the account is in the family, chosen by name and year of birth among the living people without an account yet - the most likely one first, under *suggested*, by the account's name and email address (never chosen for you); then the rest by *family*, *possibly family* and *outsiders*. That's what *your own record* and "what this person is to you" go by.
 
   An account shows its open link (from whom, until when), with *revoke*; a new one, sent or copied, replaces it. A waiting account gets *Approve and send login link*.
 

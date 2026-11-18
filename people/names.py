@@ -81,3 +81,49 @@ def matches_initials(person, term):
   """Whether this person's given names explain the search word as initials."""
   pattern = initials_pattern(term)
   return bool(pattern and re.search(pattern, person.given_name or '', re.IGNORECASE))
+
+
+def _compact(text):
+  """Lower case, letters and digits only: "van Dorp" -> "vandorp"."""
+  return re.sub(r'[^0-9a-z]', '', (text or '').lower())
+
+
+def _bare_last(text):
+  """A last name without its particles, compact: "van Dorp" -> "dorp"."""
+  words = (text or '').lower().split()
+  while len(words) > 1 and words[0] in PARTICLES:
+    words = words[1:]
+  return _compact(' '.join(words))
+
+
+def likely_people(user, people):
+  """The people `user`'s account most likely is - for choosing an
+  account's person (core.admin.AccountChangeForm): a suggestion, never a
+  choice made. Points per person:
+  - the account's first name is their first given name, called name or
+    nickname: 3;
+  - its last name is their last or married name (case, spaces and
+    particles aside: "Dorp" is "van Dorp"): 3;
+  - their first or last name is in the email address or username
+    ("marindavandorp@…" - an account without names): 1 each.
+  Only people whose first name matches one way or the other - a shared
+  last name alone is half the family - with at least 2 points (a piece of
+  a name inside an address, "lies" in "anneliesdamen", isn't enough on its
+  own), and of those only the best score: usually one."""
+  first = _compact(user.first_name)
+  last = _bare_last(user.last_name)
+  handle = _compact((user.email or '').split('@')[0]) + ' ' + _compact(user.get_username().split('@')[0])
+  scored = []
+  for person in people:
+    given = (person.given_name or '').split()
+    firsts = {_compact(name) for name in (given[0] if given else '', person.called_name, person.nickname) if name}
+    lasts = {_bare_last(name) for name in (person.last_name, person.married_name) if name}
+    first_matches = bool(first and first in firsts)
+    first_in_handle = any(len(name) >= 3 and name in handle for name in firsts)
+    if not (first_matches or first_in_handle):
+      continue
+    score = 3 * first_matches + 3 * bool(last and last in lasts) + first_in_handle
+    score += any(len(name) >= 3 and name in handle for name in lasts)
+    scored.append((score, person))
+  best = max((score for score, _person in scored), default=0)
+  return [person for score, person in scored if score == best] if best >= 2 else []

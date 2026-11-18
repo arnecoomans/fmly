@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FMLY\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 16:48+0100\n"
+"POT-Creation-Date: 2026-11-18 13:14+0100\n"
 "PO-Revision-Date: 2026-10-31 12:00+0100\n"
 "Last-Translator: Arne Coomans\n"
 "Language-Team: Dutch\n"
@@ -171,11 +171,11 @@ msgstr "tekst"
 msgid "@ mention"
 msgstr "@ noemen"
 
-#: content/languages.py:10 fmly/settings.py:138
+#: content/languages.py:10 fmly/settings.py:153
 msgid "Dutch"
 msgstr "Nederlands"
 
-#: content/languages.py:11 fmly/settings.py:137
+#: content/languages.py:11 fmly/settings.py:152
 msgid "English"
 msgstr "Engels"
 
@@ -693,7 +693,7 @@ msgstr "Hoe ze bij dit stuk horen"
 msgid "no role"
 msgstr "geen rol"
 
-#: content/templates/content/_person_role_form.html:13 people/templates/person/_relative_picker.html:21
+#: content/templates/content/_person_role_form.html:13 core/admin.py:99 people/templates/person/_relative_picker.html:21
 msgid "suggested"
 msgstr "voorgesteld"
 
@@ -1412,6 +1412,18 @@ msgstr "Kies er minstens twee om er één stuk van te maken."
 msgid "“%(whole)s” now has %(count)s parts."
 msgstr "“%(whole)s” heeft nu %(count)s delen."
 
+#: core/admin.py:67 core/templates/comment/_target.html:27 people/models/Person.py:183 people/models/Person.py:215 people/templates/person/functions/get_full_name.html:58
+msgid "person"
+msgstr "persoon"
+
+#: core/admin.py:68
+msgid "Who this account is in the family tree. Only living people without an account yet."
+msgstr "Wie dit account is in de stamboom. Alleen levende personen die nog geen account hebben."
+
+#: core/admin.py:100
+msgid "everyone else"
+msgstr "alle anderen"
+
 #: core/forms.py:30
 msgid "There's already a tag with this name here."
 msgstr "Er is hier al een tag met deze naam."
@@ -1649,10 +1661,6 @@ msgstr "sectie"
 #: core/sections.py:89
 msgid "That section isn't there any more - reload the page."
 msgstr "Die sectie is er niet meer - laad de pagina opnieuw."
-
-#: core/templates/comment/_target.html:27 people/models/Person.py:183 people/models/Person.py:215 people/templates/person/functions/get_full_name.html:58
-msgid "person"
-msgstr "persoon"
 
 #: core/templates/comment/_target.html:33 dashboard/templates/dashboard/housekeeping/linked-twice.html:21
 msgid "event"
